@@ -1,0 +1,229 @@
+.hour_squre_unit {
+  /* margin-bottom: 14px !important; */
+}
+.hour_squre_unitboxx.MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.MuiInputBase-formControl.MuiInputBase-adornedEnd.css-1enov63-MuiInputBase-root-MuiOutlinedInput-root {
+  height: 51px !important;
+}
+.qty .css-1rtugfm-MuiFormControl-root-MuiTextField-root .MuiOutlinedInput-root {
+  height: 51px;
+}
+
+.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+  padding: 6px !important;
+  font-size: 15px;
+}
+
+/* / 1680 / */
+@media (max-width: 1920px) {
+  .file-upload-total {
+    display: none !important;
+  }
+}
+
+/* / 1680 / */
+@media (max-width: 1700px) {
+  .file-upload-total {
+    display: none !important;
+  }
+}
+
+/* / 1500 / */
+@media (max-width: 1680px) {}
+
+/* / 1440 / */
+@media (max-width: 1449px) {}
+
+/* / 1280 / */
+@media (max-width: 1439px) {}
+
+/* / 992 / */
+@media (max-width: 1279px) {}
+
+/* / 768 / */
+@media (max-width: 991px) {}
+
+/* / 576 / */
+@media (max-width: 767px) {
+  .product-item {
+    padding-right: 5px !important;
+    padding-left: 5px !important;
+  }
+
+  /* .mb-3 {
+    margin-bottom: -1rem !important;
+  } */
+  .costInPutDetailHereToWrite {
+    margin-left: -3px !important;
+    width: 101.2% !important;
+  }
+
+  .hourQuoteBoxes {
+    width: 100% !important;
+    margin-bottom: 0rem !important;
+  }
+
+  .cost_input {
+    width: 100% !important;
+    margin-bottom: 0 !important;
+  }
+  .totalPaddin{
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+  }
+}
+
+/* / 525 / */
+@media (max-width: 575px) {
+  .product-item {
+    padding-right: 5px !important;
+    padding-left: 5px !important;
+  }
+
+  /* .mb-3 {
+    margin-bottom: -1rem !important;
+  } */
+  .dustbinIconDelere {
+    margin-top: 30px !important;
+  }
+}
+
+/* / 480 / */
+@media (max-width: 524px) {
+  .product-item {
+    padding-right: 5px !important;
+    padding-left: 5px !important;
+  }
+
+  /* .mb-3 {
+    margin-bottom: -1rem !important;
+  } */
+}
+
+/* / 425 / */
+@media (max-width: 479px) {
+  .product-item {
+    padding-right: 5px !important;
+    padding-left: 5px !important;
+  }
+
+  /* .mb-3 {
+    margin-bottom: -1rem !important;
+  } */
+}
+
+/* / 375 / */
+@media (max-width: 424px) {
+  .product-item {
+    padding-right: 5px !important;
+    padding-left: 5px !important;
+  }
+
+  .qty {
+    padding: 0 11px 0 13px !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* .mb-3 {
+    margin-bottom: -1rem !important;
+  } */
+}
+
+/* / 320 // */
+@media (max-width: 374px) {
+  .total {
+    width: 100% !important;
+    margin-top: 0px !important;
+    gap: 4px !important;
+  }
+
+  .unitprice {
+    width: 100% !important;
+    margin-top: 18px !important;
+  }
+
+  .quantity {
+    width: 100% !important;
+  }
+
+  .file-upload-quantity {
+    display: none !important;
+  }
+
+  .file-upload-total {
+    display: block !important;
+  }
+
+  .product-item {
+    padding-right: 5px !important;
+    padding-left: 5px !important;
+  }
+
+  /* .mb-3 {
+    margin-bottom: -1rem !important;
+  } */
+
+  .file-upload label {
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .descriptionItem {
+    margin-top: 50px !important;
+  }
+
+  .totalNumber {
+    margin-top: 20px !important;
+  }
+
+  .deleteIcon {
+    margin-top: 35px !important;
+  }
+
+  .hour_squre_unit {
+    width: 107% !important;
+    margin-left: -10px !important;
+  }
+}
+
+/* / 280 / */
+@media (max-width: 319px) {
+  .product-item {
+    padding-right: 5px !important;
+    padding-left: 5px !important;
+  }
+
+  /* .mb-3 {
+    margin-bottom: -30px !important;
+  } */
+
+  .file-upload label {
+    font-size: 7px !important;
+  }
+
+  .descriptionItem {
+    margin-top: 50px !important;
+  }
+
+  .totalNumber {
+    margin-top: 30px !important;
+  }
+
+  .deleteIcon {
+    margin-top: 40px !important;
+  }
+
+  .dustbinIconDelere {
+    margin-top: 40px !important;
+  }
+}
+
+.getproduct {}
+
+div#\:ra\: {
+  padding: 14px;
+}
+
+div#\:rc\: {
+  padding: 14px;
+}

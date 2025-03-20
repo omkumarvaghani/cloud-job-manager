@@ -1,0 +1,533 @@
+.file-uploader {
+  width: 100%;
+  height: 69px;
+  border: 1px dashed #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* .customerModelSearch{
+  height: 0px !important;
+} */
+ .colorBlue{
+  color: #063164;
+  font-size: 18px !important;
+  font-weight: bold !important;
+ }
+.customerModelSearch.css-12o0ghv-MuiFormControl-root-MuiTextField-root .MuiOutlinedInput-root {
+  height: 40px;
+}
+.overflow-auto {
+  overflow-x: auto; 
+  white-space: nowrap;  
+}
+.product_service_img{
+  margin-top: 14px !important;
+}
+/* .inputHoverBoxes.css-odsttg-MuiFormControl-root-MuiTextField-root .MuiOutlinedInput-root {
+  height: 35px !important;
+
+} */
+ 
+.file-uploader input[type="file"] {
+  display: none;
+}
+
+.file-uploader label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.file-uploader label span:first-child {
+  font-size: 24px;
+  margin-right: 10px;
+}
+
+.file-uploader label span:last-child {
+  font-size: 16px;
+}
+
+.last-row {
+  border-bottom-width: none !important;
+}
+
+.accordion-button:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+/* background: #07CF10; */
+
+textarea {
+  border: none;
+}
+.inputHoverBoxes.css-odsttg-MuiFormControl-root-MuiTextField-root .MuiOutlinedInput-root {
+  height: 40px !important;
+  align-items: center !important;
+}
+
+
+/* --------------------------------quote details --------------------------------*/
+
+/* / 1680 / */
+@media (max-width: 3000px) {
+  .totalinput {
+    margin-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+
+/* / 1680 / */
+@media (max-width: 1700px) {
+  .totalinput {
+    margin-left: 20px !important;
+  }
+}
+
+/* / 1500 / */
+@media (max-width: 1680px) {
+}
+
+/* / 1440 / */
+@media (max-width: 1449px) {
+}
+
+/* / 1280 / */
+@media (max-width: 1439px) {
+}
+
+/* / 992 / */
+@media (max-width: 1279px) {
+}
+
+/* / 768 / */
+@media (max-width: 991px) {
+  .client-message {
+    display: block !important;
+  }
+  .totalinput {
+    width: 100%;
+  }
+  .messageinput {
+    width: 100%;
+  }
+  .jobinput {
+    width: 100%;
+  }
+  .changesinput {
+    width: 100%;
+  }
+  .job-title {
+    display: block !important;
+  }
+  .file-upload label {
+    font-size: 10px;
+    line-height: 24px;
+  }
+  .file-upload span {
+    font-size: 10px;
+  }
+  .quantity-price-total {
+    width: 100% !important;
+  }
+  .totalinput {
+    margin-left: 0px !important;
+    padding-right: 0px !important;
+  }
+  .Sub-heading {
+    font-size: 15px !important;
+  }
+ 
+}
+
+@media (max-width: 819px) {
+  .Sub-heading {
+    font-size: 14px !important;
+  }
+}
+@media (max-width: 789px) {
+  .Sub-heading {
+    font-size: 13px !important;
+  }
+  .top-button{
+    margin-top: 31px !important;
+  }
+  
+}
+
+/* / 576 / */
+@media (max-width: 767px) {
+  .subName {
+    margin-top: 20px !important;
+  }
+  .unitQty {
+    margin-top: 24px !important;
+  }
+  .unitPrice {
+    margin-top: 24px !important;
+  }
+  .total-number {
+    margin-top: 23px !important;
+  }
+  .Sub-title {
+    margin-top: 30px !important;
+  }
+ 
+  .products img {
+    margin-top: 30px !important;
+  }
+  .unit {
+    margin-top: 30px !important;
+  }
+  .per-unit {
+    margin-top: 30px !important;
+  }
+  .total-pro {
+    margin-top: 30px !important;
+  }
+  .totalInput {
+    margin-top: 30px !important;
+  }
+  .contractDis {
+    margin-bottom: 52px !important;
+  }
+  .clientSerach_createNew{
+    flex-direction: column;
+  }
+  .searchClients{
+    width: 100% !important;
+    margin-left: 0px !important;
+  }
+  .selectCustomerOr{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .createNewCutomer{
+    margin-bottom: 17px !important;
+  }
+  .email_sendModel.css-74pg1f-MuiModal-root-MuiDialog-root .MuiDialog-paper{
+     width: 100% !important;
+  }
+  .email_quote_name{
+    font-size: 17px !important;
+  }
+  .address_quoteDetail{
+    flex-direction: column;
+  }
+  .property_address{
+    width: 100% !important;
+  }
+  .quoteDetail_create{
+    margin-left: 0px !important;
+    white-space: nowrap;
+  }
+  .selectCustomerMOdel{
+    /* display: contents !important; */
+    margin-left: auto !important;
+    margin-right: auto !important;
+    /* margin-top: 23px !important; */
+  }
+  .leadSelectCustomer{
+    display: contents !important;
+  }
+  .customerModelSearch {
+    width: 100% !important;
+  }
+}
+
+/* / 525 / */
+@media (max-width: 575px) {
+  .sign-first {
+    width: 80%;
+  }
+  .selectclientaddquote {
+    margin-top: "20px" !important;
+  }
+  .Sub-heading {
+    font-size: 14px !important;
+  }
+  .secondPropertyOpen{
+    flex-direction: column !important;
+  }
+  .imageOfProperty{
+    margin-right: auto !important;
+  }
+}
+
+/* / 480 / */
+@media (max-width: 524px) {
+  .btn-secondary {
+    font-size: 16px !important;
+  }
+  .btn-outline-secondary {
+    font-size: 12px;
+  }
+  .total-number {
+    margin-top: 23px !important;
+  }
+  .Sub-heading {
+    font-size: 13px !important;
+  }
+  .emailEditAction_btn{
+    flex-direction: column;
+    margin-top: 10px;
+    
+  }
+  .nevigator_btn{   
+     width: 40px !important;
+    height: 40px !important;
+  }
+  .sendMail_ediBtn{
+    width: 100% !important;
+  }
+
+}
+
+/* / 425 / */
+@media (max-width: 479px) {
+  .Sub-heading {
+    font-size: 14px !important;
+  }
+  
+  .Sub-title {
+    font-size: 12px !important;
+  }
+  .text-data {
+    font-size: 12px !important;
+  }
+  .cardtitle {
+    font-size: 18px !important;
+  }
+  .file-upload .label {
+    display: block !important;
+  }
+  .selectcreatebtns {
+    justify-content: center !important;
+    display: block !important;
+  }
+  .quot {
+    font-size: 20px;
+    margin-top: 10px;
+  }
+  .total-number {
+    margin-top: 23px !important;
+  }
+  .Sub-heading {
+    font-size: 11px !important;
+  }
+  .product-service {
+    width: 100% !important;
+  }
+  .sub-totl {
+    width: 100% !important;
+  }
+  .QUoteSendCancelBtn{
+    /* font-size: 14px !important; */
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  .yesSnedmailQuote{
+    margin-left: 0px !important;
+  }
+  .QUoteBackbtn{
+    width: 100% !important;
+  }
+}
+
+/* / 375 / */
+@media (max-width: 424px) {
+  .buttonGroup {
+    display: block !important;
+  }
+  .buttonGroupthree {
+    display: flex !important;
+    margin-top: 10px !important;
+    justify-content: space-between !important;
+    gap: 2px !important;
+  }
+  .price_padding_re {
+    margin: 0 !important;
+  }
+  .propertydetailsmodal {
+    flex-wrap: wrap !important;
+  }
+  .quot {
+    font-size: 15px;
+    margin-top: 10px;
+  }
+  .quotesearch {
+    margin-left: 20px;
+  }
+  .total-number {
+    margin-top: 23px !important;
+    /* font-size: 30px; */
+  }
+  .Sub-heading {
+    font-size: 10px !important;
+  }
+  .product-service {
+    width: 100% !important;
+  }
+  .sub-totl {
+    width: 100% !important;
+  }
+  .SelectCutomerHead{
+    font-size: 16px !important;
+  }
+  .SelectCutomerLike.css-d3wcwz-MuiTypography-rootp.MuiTypography-root.MuiTypography-body1.MuiTypography-gutterBottom.px-3.pt-3.text-blue-color.SelectCutomerLike.css-d3wcwz-MuiTypography-root{
+    font-size: 12px !important;
+    padding-left: 0px !important;
+  }
+.quotePersonName{
+  font-size: 17px;
+}
+.customerMOdelUserName{
+  flex-direction: column !important;
+}
+.customerDetailAddress{
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}
+.customerModelUserIcon{
+  height: 21px !important;
+}
+}
+.searchclientmodal.MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.MuiInputBase-formControl.css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root{
+  height: 10px !important;
+}
+/* / 320 // */
+@media (max-width: 374px) {
+  .cardtitle {
+    font-size: 16px !important;
+  }
+  .searchclientmodal {
+    font-size: 10px !important;
+    width: 80% !important;
+  }
+  .modelOfClicentSearch{
+    width: 100% !important;
+  }
+  .cratenclientmodal {
+    font-size: 10px !important;
+  }
+  .selectcreatebtns {
+    font-size: 10px !important;
+  }
+  .quot {
+    font-size: 15px;
+    margin-top: 10px;
+  }
+  .quotesearch {
+    margin-left: 20px;
+  }
+  .total-number {
+    margin-top: 23px !important;
+  }
+  /* .d-flex p {
+    margin-right: -2px !important;
+  } */
+  .product-service {
+    width: 100% !important;
+  }
+  .sub-totl {
+    width: 100% !important;
+  }
+  .contc {
+    width: 100% !important;
+  }
+  .contc {
+    width: 100% !important;
+  }
+  .products-colum {
+    flex-direction: column !important;
+  }
+  .selectCustomer_box.MuiDialogContent-root.css-ypiqx9-MuiDialogContent-root{
+    padding: 0px 0px !important ;
+  }
+
+  .cancelBtnQuotes{
+    width: 100% !important;
+  }
+  .sendEmailQuoteSend{
+    margin-left: 0px !important;
+    /* width: 43% !important; */
+    margin-top: 5px !important;
+    width: 100% !important;
+  }
+  /* .selectCustomerMOdel{
+    margin-top: 40px !important;
+  } */
+  .emailScrollImg{
+    min-width: 500px !important;
+  }
+}
+
+/* / 280 / */
+@media (max-width: 319px) {
+  .signature-main {
+    flex-direction: column;
+    width: 100%;
+  }
+  .quot {
+    font-size: 15px;
+    margin-top: 10px;
+  }
+  .quotesearch {
+    margin-left: 20px;
+  }
+  .unitQty {
+    margin-top: 34px !important;
+  }
+  .unitPrice {
+    margin-top: 34px !important;
+  }
+  .total-number {
+    margin-top: 34px !important;
+    /* font-size: 30px; */
+  }
+  .Sub-heading {
+    font-size: 11px !important ;
+  }
+  .subName {
+    margin-top: 33px !important;
+  }
+  /* .d-flex p {
+    margin-right: 0px !important;
+  } */
+  .product-service {
+    width: 100% !important;
+  }
+  .sub-totl {
+    width: 100% !important;
+  }
+  .contc {
+    width: 100% !important;
+  }
+  .products-colum {
+    flex-direction: column;
+  }
+  .totalInput {
+    margin-top: 30px !important;
+  }
+  .contractDis {
+    margin-top: 55px !important;
+    margin-bottom: 52px !important;
+  }
+  .changeText {
+    font-size: 12px !important;
+  }
+  .changesinput{
+    margin-top: 20px !important;
+  }
+.createNewCutomer{
+  margin-bottom: 30px !important;
+}
+ 
+}

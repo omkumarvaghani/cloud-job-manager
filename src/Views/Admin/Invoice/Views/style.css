@@ -1,0 +1,313 @@
+.whiteEditBtn {
+    background-color: #ffffff;
+    color: #007bff;
+    border: 1px solid #007bff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.whiteEditBtn:disabled,
+.whiteEditBtn.disabled {
+    background-color: #f5f5f5;
+    color: #b0b0b0;
+    border: 1px solid #dcdcdc;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.button.footer-buttons.outline-button-blue-color.backgroundWhiteBtn.btn.btn-secondary.disabled {
+    background: transparent !important;
+}
+.datPicherInvoice.MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.MuiInputBase-formControl.MuiInputBase-adornedEnd.css-1enov63-MuiInputBase-root-MuiOutlinedInput-root {
+    height: 34px !important;
+}
+.btn.disabled,
+.btn:disabled,
+fieldset:disabled .btn {
+    background-color: transparent;
+}
+
+.disabledText {
+    color: #b0b0b0;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.editImagePayment {
+    margin-right: 8px;
+}
+
+.whiteEditBtn:disabled .editImagePayment,
+.whiteEditBtn.disabled .editImagePayment {
+    opacity: 0.5;
+}
+
+
+.invoiceSubject_input {
+    width: 90% !important;
+}
+
+.incoiceNumber_auto {
+    margin-left: 7% !important;
+}
+
+.invoiceNumber_detailDate {
+    margin-left: 3% !important;
+}
+
+/* 1680 */
+@media (max-width: 1700px) {}
+
+/* 1500 */
+@media (max-width: 1680px) {}
+
+/* 1440 */
+@media (max-width: 1449px) {}
+
+/* 1280 */
+@media (max-width: 1439px) {}
+
+/* 992 */
+@media (max-width: 1279px) {
+    .nevigate_collect_cancel_invoice {
+        flex-direction: column;
+    }
+
+    .incoiceNumber_auto {
+        margin-top: 0px !important;
+        margin-left: 0% !important;
+    }
+
+    .invoiceSubject_part {
+        margin-bottom: 0px !important;
+    }
+
+    .invoiceNumber_detailDate {
+        margin-left: 0% !important;
+    }
+
+    .customerIncvoiceDetailFlex {
+        flex-direction: column !important;
+    }
+
+    .invoiceDetailLeft {
+        margin-left: -7px !important;
+    }
+
+    .propertyAddressSpacing {
+        width: 100% !important;
+    }
+}
+
+/* 768 */
+@media (max-width: 991px) {}
+
+/* 576 */
+@media (max-width: 767px) {
+    .invoiceAllDetails {
+        flex-direction: column !important;
+    }
+
+    .invoiceInvoiceNumber {
+        margin-left: 0px !important;
+    }
+
+    .incoiceNumber_auto {
+        margin-top: 10px !important;
+    }
+
+    .internal-notes {
+        margin-bottom: 18px !important;
+    }
+}
+
+/* 525 */
+@media (max-width: 575px) {
+    .customer_addCustomer_div {
+        flex-direction: column !important;
+    }
+
+    .customer_para {
+        margin-right: auto;
+    }
+
+    .customerAdd_btn {
+        margin-left: auto;
+    }
+
+    .nevigate_collect_cancel_invoice,
+    .paymentDetail_box,
+    .internalNotes_attachment {
+        margin-top: 2% !important;
+        margin-left: 0% !important;
+    }
+
+    .cancelInvoice_collectPayment_mail_btn {
+        flex-direction: column;
+        margin-top: 2% !important;
+    }
+
+    .cancelInvoice_btn {
+        justify-content: center !important;
+        align-items: center !important;
+        display: flex;
+    }
+
+    .moreAction_payment {
+        width: 100% !important;
+    }
+
+    .nevigatePayment {
+        padding: 6px !important;
+    }
+
+    .editInvoiceDetailPage {
+        font-weight: 500;
+        font-size: 18px !important;
+    }
+
+    .editImagePayment {
+        height: 19px !important;
+    }
+
+    .invoiceInvoiceNumber {
+        margin-top: 0px !important;
+    }
+
+    .peoprttyAddressQIdthScreenFive {
+        flex-direction: column !important;
+    }
+
+    .columnWidthSet {
+        width: 100% !important;
+    }
+
+    .subTitleRemoveTop {
+        margin-top: 5px !important;
+    }
+
+    .invoiceCancelBtn {
+        width: 100% !important;
+        flex-direction: column !important;
+    }
+
+    .saveBtnInvoiceChange {
+        width: 100% !important;
+    }
+
+    .invoiceHolderName {
+        font-size: 20px !important;
+    }
+    .invoice-detail-address{
+        flex-direction: column !important;
+        margin-top: 0px !important;
+    }
+}
+
+/* 480 */
+@media (max-width: 524px) {
+    .invoiceEditBtn{
+        width: 100% !important;
+    }
+}
+
+/* 425 */
+@media (max-width: 479px) {
+    .invoiceProduct_servicePart {
+        min-width: 600px !important;
+    }
+
+    .issuedDate_dueDate_paymentDue {
+        flex-direction: column;
+    }
+
+    .issueDateFlex {
+        flex-direction: column !important;
+    }
+
+    .issueDate_select {
+        margin-top: 0px !important;
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+    }
+
+    .dueDate_invoice {
+        margin-left: 0px !important;
+    }
+
+    .paymentDue_invoice {
+        margin-left: 32px !important;
+    }
+
+    .invoiceNameHolder_icon {
+        padding: 0px 11px 0px 11px !important;
+        height: 40px !important;
+    }
+
+    .invoiceHolder_person {
+        font-size: 17px !important;
+    }
+
+    .form-group {
+        align-items: start !important;
+    }
+
+    .payDueRange {
+        margin-left: 0px !important;
+        width: 100% !important;
+    }
+
+    .payDueRange2 {
+        justify-content: space-between !important;
+        width: 100% !important;
+    }
+
+    .issuedateReponsiveDate {
+        width: 100% !important;
+    }
+
+    .invoiceInerImg {
+        padding: 10px 1px 1px 5px !important;
+    }
+
+    .invoiceInputBoxes {
+        width: 100% !important;
+    }
+}
+
+/* 375 */
+@media (max-width: 424px) {
+    .cancelInvoice_collectPayment_mail_btn {
+        gap: 7px !important;
+    }
+}
+
+/* 320 */
+@media (max-width: 374px) {
+    .incoiceNumber_auto {
+        gap: 10px !important;
+        flex-direction: column !important;
+    }
+
+    .invoicePaidGap {
+        gap: 10px !important;
+    }
+
+    .invoicrNUmberAndImg {
+        flex-direction: column !important;
+        margin-right: auto !important;
+    }
+}
+
+/* 280 */
+@media (max-width: 319px) {
+    .invoiceMainSubjectNav {
+        margin-bottom: 0px !important;
+    }
+}
