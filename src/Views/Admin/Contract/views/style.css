@@ -1,0 +1,295 @@
+.addContractCancelBtn{
+ color: #063164 !important;   
+}
+.tableCOlor{
+    /* color: #063164 !important;   */
+    font-size: 16px  !important; 
+    font-weight: 600 !important;
+
+}
+.itemNameContractTable{
+    white-space: break-space;
+    padding-left: 1%;
+}
+/* 1680 */
+@media (max-width: 1700px) {}
+
+/* 1500 */
+@media (max-width: 1680px) {}
+
+/* 1440 */
+@media (max-width: 1449px) {}
+
+/* 1280 */
+@media (max-width: 1439px) {
+    .contractEditDeleteTable{
+        padding-left: 5% !important;
+    }
+    .labourDetails{
+        overflow-x: auto !important;
+    }
+}
+
+/* 992 */
+@media (max-width: 1279px) {
+    .teamPadding{
+        margin-top: 0% !important;
+    }
+    .teamAndAssign{
+        margin-top: 3% !important;
+    }
+    .teamAssignBox{
+        width: 100%  !important;
+    }
+    .scrollClip{
+        overflow-x: auto !important;
+    }
+}
+
+/* 768 */
+@media (max-width: 991px) {}
+
+/* 576 */
+@media (max-width: 767px) {
+    .totalPrice_contract{
+        margin-bottom: 0px !important;
+    }
+    .visitHeadData{
+        font-size: 14px !important;
+    }
+    .visitTableData{
+        font-size: 14px !important;
+    }
+    .editDelate{
+        height: 14px !important;
+    }
+    .itemDesAssingAction,.dataItemDesAssignAction{
+        padding-left: 5% !important;
+    }
+    .visitDescription{
+        padding-left: 11% !important;
+    }
+    .desriptionDataVisit{
+        padding-left: 11% !important;
+    }
+    .aasignVisitData{
+        padding-left: 15% !important;
+    }
+    .actionVisitHead{
+        padding-left: 20% !important;
+    }
+    .contractVisitHead{
+        font-size: 14px !important;
+    }
+    .contractDataTableSub{
+        font-size: 13px !important;
+    }
+    .contractEditDeleteImg{
+        height: 15px !important;
+    }
+    .typeContractAddSpacing{
+        margin-top: 0px !important;
+    }
+    .AdduserModelBoxes{
+        margin-top: 6% !important;
+    }
+    .AdduserModelBox{
+        margin-top: 6% !important;
+    }
+.oneoffsetBtnHereTonav{
+    width: 50% !important;
+}   
+.opv1{
+    width: 100% !important;
+}
+.contractNameH{
+    font-size: 1px !important;
+}
+}
+
+/* 525 */
+@media (max-width: 575px) {
+    .selectContract{
+        width: 100%  !important;
+    }
+    .subTotal_totalBoxColBox{
+        width: 100% !important;
+    }
+    .nevigateContract_mail{
+        flex-direction: column;
+    }
+    
+    .more-action{
+        width: 100% !important;
+    }
+   
+    .saveContractToget{
+        width: 100% !important;
+    }
+.addignTeamOvefFlowWidth{
+    overflow-y: auto !important;
+}
+.assignPersonNameHereTo{
+    margin-top: 10px !important;
+}
+.contractAllBtnToNaviGate{
+    flex-direction: column !important;
+}
+.contractNameINputToWriteHere{
+    margin-top: 6px !important;
+}
+.selectCustomerTOAddcustomet{
+    width: 100% !important;
+}
+.contrcatName{
+    font-size: 18px !important;
+}
+}
+
+/* 480 */
+@media (max-width: 524px) {
+    .contract_AddContract_div{
+        flex-direction: column;
+       }
+       .contract_para{
+        margin-right: auto;
+       }
+       .contarct_add{
+        margin-left: auto;
+       }
+      .emailEditAction_btn{
+        gap: 6px !important;
+      }
+      .contractDetailContractPersonName{
+        flex-direction: column !important;
+      }
+      .moreActionBtnContract{
+        width: 100% !important;
+      }
+      .buttonfromresponsive{
+        flex-direction: column  !important;
+      }
+}
+
+/* 425 */
+@media (max-width: 479px) {
+   .subTotal_totalBox{
+    justify-content: start !important;
+   } 
+   .recurringSchedule_hideCalender{
+    flex-direction: column !important;
+   }
+   .calender_head{
+    font-size: 13px !important;
+    margin-right: auto !important;
+   }
+   .hideCalenderOptionBtn{
+    width: 76% !important;
+    margin-left: auto;
+    font-size: 13px !important;
+   }
+   .AdduserModelBoxes{
+    margin-top: 30px !important;
+   }
+
+.cancelInvoiceBtn{
+    width: 100% !important;
+}
+}
+
+/* 375 */
+@media (max-width: 424px) {
+    .mailEditAction_contract{
+        flex-direction: column;
+    }
+    .moreAction_contract{
+        width: 100% !important;
+    }
+    .contract_AddContract_div{
+        width: 180px !important;
+        }
+        .contractEditBtnSendMail{
+            margin-top: 10px !important;
+        }
+      .contractTitleDescriptionTitle{
+        flex-direction: column !important;
+      }
+      .contractaddressDetailss{
+        flex-direction: column !important;
+      }
+      .widthOfdetailFull{
+        width: 100% !important;
+      }
+    }
+/* 320 */
+@media (max-width: 374px) {
+    .title_descriptionInput{
+        flex-direction: column;
+    }
+    .contractNUmber_doneBtn,.oneOffContarct_btn{
+        flex-direction: column;
+    }
+    .quoteChange_btn{
+        margin-top: 0px !important;
+    }
+    .recurring_nav{
+        border-top-left-radius: 11px !important;
+        border-bottom-left-radius: 11px  !important;
+
+    }
+ .saveMailContract{
+    width: 100% !important;
+ }
+ .contractAllBtnToNaviGate{
+    flex-direction: column !important;
+}
+.contractNameINputToWriteHere{
+    width: 100% !important;
+}
+.quoteChange_btn{
+    margin-top: -5% !important;
+}
+.contractNameINputToWriteHere {
+    margin-top: -15px !important;
+}
+.oneoffsetBtnHereTonav{
+    width: 100% !important;
+}   
+.contractDetailType{
+    gap: 10px !important;
+}
+.contractInvoicePerVisit{
+    flex-direction: column !important;
+    gap: 0px !important;
+}
+.automaticalliyPayCheckBoxHere{
+    margin-top: 0px !important;
+}
+.noPaymentMethodAndPara{
+    width: 100% !important;
+}
+.ContractName{
+    font-size: 17px !important;
+    padding-left: 0px !important;
+}
+.svaeUserModelWidth{
+    width: 100% !important;
+}
+.updateSaveBtnNaviGate{
+    flex-direction: column !important;
+    gap: 5px !important;
+}
+}
+
+/* 280 */
+@media (max-width: 319px) {
+    .AdduserModelBox{
+        margin-top: 14% !important;
+    }
+    .AdduserModelBoxes{
+        margin-top: 40px !important;
+    }
+    .adduserModelTop{
+        margin-top: 10px !important;
+    }
+}

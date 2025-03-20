@@ -1,0 +1,192 @@
+.service-input::placeholder {
+    color: red !important;
+}
+
+.container-fluid {
+    padding: 0 !important;
+}
+
+/* 768 */
+@media (max-width: 1980px) {
+    .navbar-setting {
+        display: none !important;
+    }
+}
+
+/* 1680 */
+
+/* 5150 start  */
+
+/* 1500 */
+@media (max-width: 1680px) {
+    .navbar-setting {
+        display: none !important;
+    }
+}
+
+@media (max-width: 3000px) {
+    .navbar-setting {
+        display: none !important;
+    }
+.setting-dropdown{
+    display: none;
+}
+}
+
+/* 1440 */
+@media (max-width: 1449px) {}
+
+/* 1280 */
+@media (max-width: 1439px) {}
+
+/* 992 */
+@media (max-width: 1279px) {}
+
+/* 992 */
+@media (max-width: 1228px) {
+
+    .sidebar {}
+
+    .product-service-table {
+        columns: 1;
+    }
+
+    .product-service-table {
+        width: 85%;
+    }
+
+}
+
+/* 768 */
+@media (max-width: 991px) {
+    .navbar-setting {
+        display: block !important;
+    }
+
+    .navbar-setting.dropdown-menu {
+        width: 105% !important;
+        margin-left: -12px;
+        margin-top: 10px;
+    }
+
+    .product-service-table {
+        width: 100%;
+    }
+
+    .manage-team{
+        display: block !important;
+    }
+
+    .divider-profile {
+        display: none;
+    }
+    .superAdminProfile{
+        flex-direction: column-reverse !important;
+    }
+}
+
+/* 576 */
+@media (max-width: 767px) {
+    .manage-team {
+        margin-left: 2%;
+        width: 95%;
+    }
+
+    .textfield_bottom {
+        margin-bottom: 5px !important;
+    }
+
+    .btn-bottm {
+        margin-top: 45px !important;
+    }
+
+    .cityitem {
+        margin-bottom: 15px !important;
+        margin-top: 10px !important;
+    }
+    .settingUserInfo{
+        font-size: 18px !important;
+        margin-top: 10px !important;
+    }
+    .profileWidthLeft{
+        padding-left: 0px !important;
+        width: 100% !important;
+    }
+        .profilePasswordSet{
+            /* margin-top: 40px !important; */
+        }
+}
+
+/* 525 */
+@media (max-width: 575px) {}
+
+/* 480 */
+@media (max-width: 524px) {
+    .cityitem {
+        display: flex;
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+
+    .widt {
+        width: 100% !important;
+
+    }
+
+    .city-gap {
+        /* margin-bottom: -17px !important; */
+        margin-bottom: 0px !important;
+    }
+
+    .zipp {
+        margin-bottom: 0px !important;
+        width: 100% !important;
+    }
+
+    .country_top {
+        width: 100% !important;
+    }
+
+
+
+}
+
+/* 425 */
+@media (max-width: 479px) {}
+
+/* 375 */
+@media (max-width: 424px) {}
+
+/* 320 */
+@media (max-width: 374px) {
+    .personlInfoDp{
+        width: 70px !important;
+        height: 70px !important;
+    }
+    .userOpinion{
+        font-size: 15px !important;
+    }
+    .indexProfileBtn{
+        width: 100% !important;
+    }
+}
+
+/* 280 */
+@media (max-width: 319px) {
+    .country_top {}
+
+    .btn-bottm {
+        margin-top: 80px !important;
+    }
+
+
+}
+
+.prfile-text .css-6dl4gh-MuiFormControl-root-MuiTextField-root .MuiOutlinedInput-root {
+    width: 97% !important;
+}
+
+.stat-input {
+    width: 96.8% !important;
+}
+/* 5150 :end  */

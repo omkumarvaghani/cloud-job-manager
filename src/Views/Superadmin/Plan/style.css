@@ -1,0 +1,113 @@
+.css-1ex1afd-MuiTableCell-root {
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.43;
+  letter-spacing: 0.01071em;
+  display: table-cell;
+  vertical-align: inherit;
+  border-bottom: 1px solid rgba(224, 224, 224, 1);
+  text-align: left;
+  padding: 16px;
+  color: rgba(0, 0, 0, 0.87);
+}
+.css-yz9k0d-MuiInputBase-input {
+  color: white !important;
+}
+.planCancelBtn{
+  height: 41px !important;
+  /* margin-top: 2% !important; */
+}
+/* 425 */
+@media (max-width: 479px) {
+  
+}
+@media (max-width: 767px) {
+  .custom-swal{
+    width: 90%; 
+    max-width: 300px; 
+  }
+}
+/* 375 */
+@media (max-width: 424px) {
+  .plansearch {
+    margin-left: 20px !important;
+  }
+  .plan_billing{
+     margin-top: 15px !important;
+  }
+  .pla-company{
+    margin-top: 0rem !important;
+  }
+  .topPlanInput{
+    margin-top: 15px !important;
+  }
+  .chargeBOXINPUT{
+    margin-top: 15px !important;
+  }
+}
+/* 320 */
+@media (max-width: 374px) {
+  
+    .plansearch {
+      margin-left: 20px !important;
+    }
+    .add-plan-super{
+      padding: 10px !important;
+      width: 35% !important;
+      white-space: nowrap;
+    }
+    .planFormBrn{
+      gap: 10px !important;
+    }
+    .flexPlanButn{
+      flex-direction: column !important;
+    }
+}
+/* 280 */
+
+.pla-company .css-1pysi21-MuiFormLabel-root-MuiInputLabel-root {
+  margin-top: 8px !important;
+}
+ @media (max-width: 767px) {
+  .plan_billing{
+    /* margin-top: 10px !important; */
+  }
+  .charge_box{
+    /* margin-top: 30px !important; */
+  }
+  .planFormSwitchDown{
+    margin-top: 35px !important;
+  }
+  .pla-company{
+    margin-top: 0.10rem !important;
+  }
+}
+@media (max-width: 319px) {
+  .plan_billing{
+    /* margin-top: 50px !important; */
+  }
+  .charge_box{
+    /* margin-top: 50px !important; */
+  }
+  .form-switch{
+    margin-top: 30px !important;
+  }
+  .plan {
+    font-size: 19px;
+    margin-top: 9px;
+  }
+  .plansearch {
+    margin-left: 20px !important;
+  }
+  .form-update-btn{
+    padding: 5px !important;
+    font-size: 15px !important;
+  }
+}
+label#PlanName-label {
+  margin-top: 5px !important;
+}
+label#PlanDetail-label {
+  margin-top: 5px !important;
+}

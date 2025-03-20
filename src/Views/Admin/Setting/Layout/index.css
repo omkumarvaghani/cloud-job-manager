@@ -1,0 +1,32 @@
+/* * {
+    margin: 0;
+    padding: 0;
+    transition: all 0.5s;
+}
+
+.light-theme {
+    --background-color: #063164;
+    --text-color: #fff;
+}
+
+.dark-theme {
+    --background-color: black;
+    --text-color: white;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.btn {
+    background-color: var(--background-color);
+    border: 1px solid var(--background-color);
+    color: var(--text-color);
+}
+
+.outline {
+    color: var(--background-color);
+    border: 1px solid var(--background-color);
+    background-color: var(--text-color);
+} */

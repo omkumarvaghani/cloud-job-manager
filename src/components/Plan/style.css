@@ -1,0 +1,231 @@
+.abcd {
+  display: flex;
+  gap: 20px;
+}
+
+/* 1680 */
+@media (max-width: 1700px) {
+}
+
+/* 1500 */
+@media (max-width: 1680px) {
+}
+
+/* 1440 */
+@media (max-width: 1449px) {
+}
+
+/* 1280 */
+@media (max-width: 1439px) {
+  .side h4 {
+    font-size: 17px !important;
+  }
+  .mn {
+    font-size: 10px !important;
+  }
+  .bill{
+    font-size: 12px !important;
+  }
+
+}
+
+/* 992 */
+@media (max-width: 1279px) {
+  .side h4 {
+    font-size: 13px !important;
+    flex-direction: column !important;
+  }
+  .test {
+    margin-top: 20px !important;
+    gap: 5px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .mn {
+    font-size: 12px !important;
+  }
+
+  .bill h4 {
+    font-size: 14px !important;
+  }
+  .first-section-payment {
+    flex-direction: column !important;
+  }
+  .first-section-payment .form {
+    width: 100% !important;
+  }
+  .cvv {
+    flex-direction: column !important;
+  }
+  .date {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  .abcd {
+    width: 100% !important;
+  }
+}
+/* 768 */
+@media (max-width: 991px) {
+  .side h4 {
+    font-size: 20px !important;
+  }
+  .second-card {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* 576 */
+@media (max-width: 767px) {
+
+  .side h4 {
+    font-size: 17px !important;
+  }
+  .bill h4 {
+    font-size: 20px !important;
+  }  
+  .second-card {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .mx-5{
+    margin-top: 20px;
+  }
+  .accountInformationInputTop{
+    /* margin-top: 30px !important; */
+  }
+  .selectTypeBoxInputAcc{
+    flex-direction: column !important;
+  }
+  .paymentInformationDateSelect{
+    margin-bottom: 0px !important;
+  }
+}
+
+/* 525 */
+@media (max-width: 575px) {
+ .side h4 {
+    font-size: 25px !important ;
+  }
+  .second-card {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* 480 */
+@media (max-width: 524px) {
+  .bill h4 {
+    font-size: 15px !important;
+  }  
+  .second-card {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* 425 */
+@media (max-width: 479px) {
+  .side h4 {
+    font-size: 20px !important ;
+  }
+  .second-card {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .mn {
+    font-size: 12px !important;
+  }
+}
+
+/* 375 */
+@media (max-width: 424px) {
+  .mn {
+    font-size: 12px !important;
+  }
+  .summaryPlanNamePayment{
+    flex-direction: column !important;
+  }
+}
+
+/* 320 */
+@media (max-width: 374px) {
+  .mn {
+    font-size: 10px !important;
+  }
+}
+
+@media (max-width: 319px) {
+  .space {
+    align-items: center !important;
+  }
+  .first-section-payment {
+    flex-direction: column !important;
+  }
+  .first-section-payment .form {
+    width: 100% !important;
+  }
+  .cvv {
+    flex-direction: column !important;
+  }
+  .date {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  .abcd {
+    width: 100% !important;
+  }
+  .test {
+    flex-direction: column !important;
+    margin-top: 30px !important;
+    gap: 10px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  .word-break {
+    word-break: break-word; 
+  }
+  .flex h4 {
+    flex-direction: column !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  .mn {
+    font-size: 13px !important;
+  }
+  .side h4 {
+    font-size: 17px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  .bill h4 {
+    font-size: 14px !important;
+    flex-direction: column !important;
+  }
+  .bill {
+    flex-direction: column !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  .second-card {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .note h4 {
+    font-size: 9px !important;
+  }
+  .mx-5{
+    margin-top: 30px;
+  }
+  .accountInformationTopMargin{
+    /* margin-top: 40px !important; */
+  }
+  .selectTypeUnderDropdownSe{
+    margin-bottom: 13px !important;
+  }
+}

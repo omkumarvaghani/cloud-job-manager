@@ -1,0 +1,186 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+/* :root {
+  --bg-blue-color: #063164;
+  --text-white-color: #ffffff;
+  --bg-white-color: #ffffff;
+  --text-otange-color: #e88c44;
+  --text-blue-color: #063164;
+  --bg-orange-color: #e88c44;
+  --border-orange-color: #e88c44;
+  --border-blue-color: #063164;
+  --border-white-color: #ffffff;
+} */
+
+/* .btn {
+  color: #063164;
+} */
+.bg-blue-color {
+  background-color: var(--bg-blue-color) !important;
+}
+
+.bg-white-color {
+  background-color: var(--bg-white-color) !important;
+}
+
+.bg-orange-color {
+  background-color: var(--bg-orange-color) !important;
+}
+
+.border-blue-color {
+  border-color: var(--border-blue-color) !important;
+}
+
+.bg-button-blue-color {
+  background-color: var(--bg-blue-color) !important;
+}
+
+.outline-button-blue-color {
+  border-color: var(--border-blue-color) !important;
+}
+
+.border-orange-color {
+  border-color: var(--border-orange-color) !important;
+}
+
+.text-blue-color {
+  color: var(--text-blue-color) !important;
+}
+
+.text-white-color {
+  color: var(--text-white-color) !important;
+}
+
+.text-orange-color {
+  color: var(--text-orange-color) !important;
+}
+
+.outline:hover {
+  color: #063164 !important;
+  background: transparent !important;
+}
+
+.border-rgba-blue {
+  border-color: rgba(6, 49, 100, 50%);
+}
+
+.job .nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+  background: red !important;
+  border: none !important;
+  /* color: #063164; */
+  /* font-weight: 600; */
+}
+
+.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+  color: #063164 !important;
+}
+
+.rbc-event,
+.rbc-day-slot .rbc-background-event {
+  background-color: #faecea !important;
+}
+
+/* .rbc-row-segment {
+  padding: 18px !important;
+} */
+
+.text-blue-color .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: #063164 !important;
+  border-radius: 4px !important;
+}
+
+.text-blue-color .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #063164 !important;
+  border-radius: 4px !important;
+}
+
+.text-blue-color .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #063164 !important;
+  border-radius: 4px !important;
+}
+
+.text-blue-color input {
+  color: #063164 !important;
+  border-radius: 4px !important;
+  align-items: start;
+}
+
+.MuiInputLabel-root {
+  color: #063164 !important;
+}
+
+.select__placeholder {
+  color: #063164 !important;
+}
+
+.bold-text {
+  font-weight: bold !important;
+}
+
+.heading-one {
+  font-size: 40px !important;
+}
+
+.heading-two {
+  font-size: 30px !important;
+}
+
+.heading-three {
+  font-size: 25px !important;
+}
+
+.heading-four {
+  font-size: 22px !important;
+}
+
+.heading-five {
+  font-size: 20px !important;
+}
+
+.heading-six {
+  font-size: 16px !important;
+}
+
+.underline-u {
+  text-decoration: underline !important;
+}
+
+.bold-text {
+  font-weight: bold !important;
+}
+
+
+
+
+
+
+
+
+
+.custom-input::-webkit-outer-spin-button,
+.custom-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.custom-input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
+  background-color:transparent !important;
+  /* border-color: var(--bs-btn-active-border-color); */
+}
