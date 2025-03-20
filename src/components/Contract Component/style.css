@@ -1,0 +1,597 @@
+.visit-schedule,
+.user-assignment {
+  width: 48%;
+}
+
+.boxShadowNone {
+  box-shadow: none !important;
+}
+
+.shceduleVistFormI .MuiOutlinedInput-root {
+  border-radius: 10px !important;
+}
+
+.shceduleVistFormI.MuiFormControl-root.MuiTextField-root.Note-details.text-blue-color.my-2.shceduleVistFormI.shceduleVisitItemNameInoutsss.css-10bpx9s-MuiFormControl-root-MuiTextField-root {
+  width: 82% !important;
+}
+
+.visitTitleTag.MuiFormControl-root.MuiTextField-root.text-blue-color.mb-2.mx-0.shceduleVisitItemNameInout.css-odsttg-MuiFormControl-root-MuiTextField-root {
+  width: 82% !important;
+}
+
+.shceduleAssignForm.shceduleAssignForm.card {
+  min-height: 100px !important;
+  overflow-y: auto !important;
+}
+
+.contractDurationInputBox
+  .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input {
+  padding: 5.5px 7px !important;
+}
+
+.timeentryremoveWIdth.MuiFormControl-root.MuiTextField-root.timeentryremoveWIdth.css-1qphyur-MuiFormControl-root-MuiTextField-root {
+  /* width: 70%; */
+}
+
+.ContrcatWidthDateFormat.MuiFormControl-root.MuiTextField-root.timeentryremoveWIdth.css-1qphyur-MuiFormControl-root-MuiTextField-root {
+  width: 70%;
+}
+
+.MuiFormControl-root.MuiTextField-root.ContrcatWidthDateFormat.secondPartContrcatHere.css-1qphyur-MuiFormControl-root-MuiTextField-root.secondPartContrcatHere {
+  width: 100% !important;
+}
+
+h2 {
+  font-size: 1.2rem;
+  color: #243a73;
+  margin-bottom: 20px;
+}
+
+.date-time-group {
+  margin-bottom: 15px;
+}
+
+.date-time-group label {
+  display: block;
+  font-size: 0.9rem;
+  color: #243a73;
+  margin-bottom: 5px;
+}
+
+.date-time-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #d0d4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.checkbox-group input {
+  margin-right: 10px;
+}
+
+.checkbox-group label {
+  font-size: 0.9rem;
+  color: #243a73;
+}
+
+.user-assignment p {
+  color: #9da2a7;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.assign-button {
+  display: inline-block;
+  background-color: #243a73;
+  color: #ffffff;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.assign-button:hover {
+  background-color: #1a2d54;
+}
+
+.file-upload-label {
+  cursor: pointer;
+  color: #063164;
+  border: 0.5px solid #063164;
+  padding: 4px 5px 4px 5px;
+  font-weight: 600;
+  border-radius: 5px;
+  width: 38%;
+  margin-left: 60px !important;
+}
+
+.jobs .css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root {
+  border-radius: 9px !important;
+  margin-bottom: 10px;
+  border-color: red !important;
+}
+
+.jobs .css-dmmspl-MuiFormGroup-root {
+  -webkit-flex-direction: row !important;
+  flex-direction: row !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+.nozindex .css-zw3mfo-MuiModal-root-MuiDialog-root {
+  z-index: 0 !important;
+}
+
+.recurring .css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root {
+  padding-right: 1px !important;
+  border-radius: 12px;
+  height: 43px !important;
+}
+
+.recurring .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
+  width: 9% !important;
+}
+
+.recurring
+  .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+  padding: 13px !important;
+}
+
+.recurring .css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root {
+  font-weight: 400;
+  font-size: 12px !important;
+  border-top-right-radius: 12px !important;
+  border-bottom-right-radius: 12px !important;
+}
+
+/* 1680 */
+@media (max-width: 1700px) {
+}
+
+/* 1500 */
+@media (max-width: 1680px) {
+}
+
+/* 1440 */
+@media (max-width: 1449px) {
+}
+
+/* 1280 */
+@media (max-width: 1439px) {
+}
+
+/* 992 */
+@media (max-width: 1279px) {
+  .startTimeFirst {
+    width: 50% !important;
+  }
+
+  .startEnd_contractTable {
+    flex-direction: column;
+  }
+
+  .contractEnd_time {
+    margin-top: 10px !important;
+  }
+  .calenderHeight {
+    margin-top: 0px !important;
+  }
+  .startEndDateCol {
+    width: 100% !important;
+  }
+  .statDateFormat.MuiFormControl-root.MuiTextField-root.ContrcatWidthDateFormat.css-1qphyur-MuiFormControl-root-MuiTextField-root {
+    width: 100% !important;
+  }
+  .EndadateFormat {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 1289px) {
+  .calenderHead_HideBtn {
+    flex-direction: column !important;
+  }
+  .recurringScheTitle {
+    margin-right: auto !important;
+  }
+  .btnhideFor {
+    margin-left: auto !important;
+    margin-bottom: 10px !important;
+  }
+  .btngotoright {
+    margin-left: auto !important;
+  }
+}
+
+/* 768 */
+@media (max-width: 991px) {
+  .calender_head {
+    font-size: 20px !important;
+  }
+
+  .internal-notes {
+    margin-bottom: 18px !important;
+  }
+
+  .internal-notes {
+    margin-bottom: 18px !important;
+  }
+}
+
+/* 576 */
+@media (max-width: 767px) {
+  .totalCost_timeEntry {
+    margin-top: 8% !important;
+  }
+
+  .shceduleVisitAddress {
+    flex-direction: column !important;
+  }
+
+  .internal-notes {
+    margin-bottom: 18px !important;
+  }
+
+  .shceduleVisitItemNameInout {
+    width: 100% !important;
+  }
+
+  .visit_itemNoteDetail {
+    width: 100% !important;
+  }
+
+  .shceduleVistFormI.MuiFormControl-root.MuiTextField-root.Note-details.text-blue-color.my-2.shceduleVistFormI.shceduleVisitItemNameInoutsss.css-10bpx9s-MuiFormControl-root-MuiTextField-root {
+    width: 100% !important;
+  }
+
+  .startDate_visitSchedulePart {
+    flex-direction: column !important;
+  }
+
+  .scheduleLineItem {
+    display: none !important;
+  }
+
+  .user_visitSchedule {
+    margin-left: 0px !important;
+  }
+
+  .totalCostTimeEntry {
+    margin-top: 20px !important;
+  }
+
+  .addUserFullName {
+    margin-top: 30px !important;
+  }
+
+  .user_visitSchedule {
+    width: 100% !important;
+  }
+
+  .visitScheduleBtn {
+    flex-direction: column !important;
+  }
+
+  .assignBtnDropDown {
+    justify-content: start !important;
+    flex-direction: column !important;
+  }
+
+  .assigndrop {
+    margin-top: 11px !important;
+  }
+
+  .assignBtnWidth {
+    width: 70% !important;
+    white-space: nowrap !important;
+  }
+
+  .internal-notes {
+    margin-bottom: 18px !important;
+  }
+}
+
+/* 525 */
+@media (max-width: 575px) {
+  .startTime_endTime {
+    flex-direction: column;
+  }
+
+  .internal-notes {
+    margin-bottom: 18px !important;
+  }
+
+  .hours_minutes {
+    flex-direction: column;
+  }
+
+  .hoursInput,
+  .minutesInput {
+    width: 100% !important;
+  }
+
+  .employeeInput,
+  .labourCostInput {
+    width: 100% !important;
+  }
+
+  .labourCostInput {
+    margin-top: 5% !important;
+  }
+
+  .vistSheduled_visit,
+  .itemNote_contractDetail,
+  .startDate_visitSchedulePart {
+    flex-direction: column !important;
+  }
+
+  .visit_itemNoteDetail,
+  .contract_visitDetail {
+    width: 100% !important;
+  }
+
+  .user_visitSchedule {
+    margin-left: 0px !important;
+    width: 100% !important;
+  }
+
+  .timeEntryEndAndStartDateFormat {
+    flex-direction: column !important;
+  }
+
+  .shceduleVisitItemNameInout.MuiFormControl-root.MuiTextField-root.text-blue-color.mb-2.mx-0.shceduleVisitItemNameInout.css-1u3bzj6-MuiFormControl-root-MuiTextField-root {
+    width: 100% !important;
+  }
+
+  .shceduleVisitItemNameInoutsss.MuiFormControl-root.MuiTextField-root.Note-details.text-blue-color.my-2.shceduleVistFormI.shceduleVisitItemNameInoutsss.css-10bpx9s-MuiFormControl-root-MuiTextField-root {
+    width: 100% !important;
+  }
+
+  .visitScheduleBtn {
+    flex-direction: column !important;
+  }
+
+  .visitScheduleMOdelBottom {
+    margin-bottom: 0px !important;
+    font-size: 22px !important;
+  }
+
+  .startAndEndTimeSchedule {
+    flex-direction: column !important;
+  }
+
+  .timeentryremoveWIdth.MuiFormControl-root.MuiTextField-root.timeentryremoveWIdth.css-1qphyur-MuiFormControl-root-MuiTextField-root {
+    width: 100%;
+  }
+
+  .timeEntryNewTiew {
+    flex-direction: column !important;
+  }
+
+  .startTImeINput {
+    width: 100% !important;
+  }
+
+  .MuiFormControl-root.MuiTextField-root.css-1qphyur-MuiFormControl-root-MuiTextField-root {
+    width: 100% !important;
+  }
+
+  .gapInputStartAnd {
+    gap: 10px !important;
+  }
+
+  .employeLabourCost {
+    /* gap: 30px !important; */
+  }
+}
+
+/* 480 */
+@media (max-width: 524px) {
+  .calenderHead_HideBtn {
+    flex-direction: column;
+    align-items: baseline !important;
+  }
+
+  .internal-notes {
+    margin-bottom: 18px !important;
+  }
+
+  .calender_head {
+    margin-right: auto;
+    margin-right: 0px !important;
+    font-size: 13px !important;
+  }
+
+  .hide-calendar {
+    margin-left: auto;
+  }
+
+  .newTimeEntryStartEndTimeEn {
+    flex-direction: column !important;
+  }
+
+  .startTimeTimeEntryWidth {
+    width: 100% !important;
+  }
+}
+
+/* 425 */
+@media (max-width: 479px) {
+  .internal-notes {
+    margin-bottom: 18px !important;
+  }
+}
+
+/* 375 */
+@media (max-width: 424px) {
+  .labourCostInput {
+    margin-top: 10% !important;
+  }
+
+  .slectShowNameModel {
+    width: 161px !important;
+    justify-content: space-between !important;
+  }
+
+  .internal-notes {
+    margin-bottom: 18px !important;
+  }
+  .WIdthDecrese {
+    width: 1% !important;
+  }
+}
+
+/* 320 */
+@media (max-width: 374px) {
+  .timeEntryForm {
+    flex-direction: column !important;
+  }
+
+  .contractDurationInputBox {
+    flex-direction: column !important;
+  }
+
+  .durationFIrstBox {
+    width: 100% !important;
+    margin-right: 0px !important;
+  }
+
+  .durationSecondBox {
+    margin-top: 10px !important;
+  }
+
+  .newTimeEntryAddContract {
+    font-size: 19px !important;
+  }
+
+  .gapBtn {
+    gap: 10px !important;
+  }
+
+  .timeEntryBtn.css-knqc4i-MuiDialogActions-root > :not(style) ~ :not(style) {
+    margin-left: 0px !important;
+  }
+
+  .css-knqc4i-MuiDialogActions-root > :not(style) ~ :not(style) {
+    margin-left: 0px !important;
+  }
+
+  .selectTeamModel {
+    width: 170px !important;
+  }
+}
+
+/* 280 */
+@media (max-width: 319px) {
+  .labourCostInput {
+    margin-top: 30px !important;
+  }
+
+  .totalCost_timeEntry {
+    margin-top: 16% !important;
+  }
+
+  .fileUploadDeshNo {
+    margin-top: 40px !important;
+  }
+
+  .timeExpensesBoxBtn {
+    flex-direction: column;
+  }
+
+  .startEndTimeFormatTime {
+    min-width: 0px !important;
+  }
+
+  .timeentryremoveWIdth.MuiFormControl-root.MuiTextField-root.css-1qphyur-MuiFormControl-root-MuiTextField-root {
+    min-width: 0px !important;
+  }
+
+  .totalCostTimeEntry {
+    margin-top: 30px !important;
+  }
+}
+
+label#\:r6\:-label {
+  margin-top: 0 !important;
+}
+
+label#\:r6\:-label {
+  margin-top: 0 !important;
+}
+
+/* 768 */
+@media (max-width: 1980px) {
+  .navbar-setting {
+    display: none !important;
+  }
+}
+
+/* 1680 */
+@media (max-width: 1700px) {
+  .navbar-setting {
+    display: none !important;
+  }
+}
+
+/* 1500 */
+@media (max-width: 1680px) {
+}
+
+/* 1440 */
+@media (max-width: 1449px) {
+}
+
+/* 1280 */
+@media (max-width: 1439px) {
+}
+
+/* 992 */
+@media (max-width: 1279px) {
+}
+
+/* 992 */
+@media (max-width: 1228px) {
+  .sidebar {
+  }
+
+  .product-service-table {
+    columns: 1;
+  }
+
+  .product-service-table {
+    width: 85%;
+  }
+}
+
+/* 5150 start  */
+/* 768 */
+@media (max-width: 991px) {
+  .selectTeamModel {
+    right: 0 !important;
+  }
+
+  .selectTeamModel {
+    width: 258px !important;
+  }
+}
+
+@media (max-width: 767px) {
+}
+
+/* 525 */
+@media (max-width: 575px) {
+}
+
+.reccuringStartDate {
+  width: 100% !important;
+}

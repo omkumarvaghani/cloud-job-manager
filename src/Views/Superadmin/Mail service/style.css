@@ -1,0 +1,209 @@
+.css-1t1j96h-MuiPaper-root-MuiDialog-paper {
+    width: 100% !important;
+}
+.host-mail-port{
+    display: flex;
+}
+/* 1680 */
+@media (max-width: 1700px) {}
+
+/* 1500 */
+@media (max-width: 1680px) {}
+
+/* 1440 */
+@media (max-width: 1449px) {}
+
+/* 1280 */
+@media (max-width: 1127px) {
+    .configuration-box{
+        flex-direction: column !important;
+    }
+}
+
+/* 992 */
+@media (max-width: 1279px) {
+    .mail-card {
+        width: 100% !important;
+    }
+
+    .mail-modal-main {
+        flex-direction: column;
+    }
+
+    .mail-modal-main .col-6 {
+        width: 100%;
+        align-items: center !important;
+    }
+
+    .formgroups {
+        align-items: center !important;
+    }
+
+    .inputs-mail {
+        margin-left: 35px !important;
+    }
+
+    .inputs-maill {
+        margin-left: 45px !important;
+    }
+    .port-input{
+        margin-right: -14px;
+    }
+    .mail-modal-main {
+        flex-direction: column !important;
+    }
+}
+
+/* 768 */
+@media (max-width: 991px) {
+    .mail-section {
+        margin-bottom: 20px !important;
+    }
+
+    .formgroups {
+        margin-bottom: 18px !important;
+    }
+    .new_confi.css-1t1j96h-MuiPaper-root-MuiDialog-papercss-1t1j96h-MuiPaper-root-MuiDialog-paper{
+        width: 100%  !important;
+    }
+}
+
+/* 576 */
+@media (max-width: 767px) {
+    .formgroups {
+        flex-direction: column;
+    }
+    .mail-card {
+        width: 100% !important;
+    }
+    .mail_per.port-input.col{
+        margin-top: 4% !important;
+    }
+}
+
+/* 525 */
+@media (max-width: 575px) {
+    .configuration-box{
+        padding-left: 13px !important;
+        padding-right: 0px !important;
+    }
+    .mail-card {
+        width: 97% !important;
+    }
+
+}
+
+/* 480 */
+@media (max-width: 524px) {
+    .mail-header {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .mail-header p {
+        margin-bottom: 10px !important;
+    }
+}
+
+/* 425 */
+@media (max-width: 479px) {
+    .cancel-email-btn{
+        flex-direction: column-reverse !important;
+        width: 100% !important;
+        gap: 10px;
+    }
+    .calcel-email{
+        flex-direction: column !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+    .email-blue-button{
+        width: 100% !important;
+    }
+    .email-blue{
+        width: 100% !important;
+    }
+    .configurationAddMail{
+        width: 100%  !important;
+    }
+}
+
+/* 375 */
+@media (max-width: 424px) {
+    .backgroundBlurBtn{
+        /* width: 100%; */
+    }
+}
+/* 320 */
+@media (max-width: 374px) {
+    .config-head{
+        font-size: 14px;
+    }
+    .edit-icon{
+        height: 13px !important;
+    }
+    .add-confi-host.MuiFormGroup-root.MuiFormGroup-row.gap-2.align-items-center.mb-3.formgroups.add-confi-host.css-qfz70r-MuiFormGroup-root {
+        flex-direction: column;
+    }
+    .host-title{
+        margin-right: auto;
+    }
+    .inputs-maill {
+        margin-left: 0px !important;
+    }
+    .host-user-input{
+        width: 100% !important;
+    }
+    .port-input{
+        margin-left: 0px !important;
+        width: 100% !important;
+    }
+    .inputs-mail {
+       margin-left: 0px !important;
+       width: 100%  !important;
+    }
+  .mail-top{
+    margin-top: 10% !important
+    ;
+  }
+  .cancel-email-btn{
+    flex-direction: column;
+  }
+  .calcel-email{
+    margin-top: 10px !important;
+  }
+}
+
+/* 280 */
+@media (max-width: 319px) {
+
+}
+
+
+
+.password-input-container {
+    position: relative;
+    width: 100%;
+}
+
+.password-toggle-button {
+    position: absolute;
+    right: 10px;
+    /* Adjust based on your design */
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #007bff;
+    /* Adjust color based on your design */
+    font-size: 18px;
+    /* Adjust size based on your design */
+}
+
+.password-input-container input[type="password"] {
+    padding-right: 40px;
+    /* Make space for the icon */
+}
+
+

@@ -1,0 +1,73 @@
+.edit-Icon {
+  background-repeat: no-repeat;
+  border: none !important;
+  margin: 3px !important;
+  width: 17px !important;
+  height: 17px !important;
+}
+@media (max-width: 1700px) {
+}
+
+/* 1500 */
+@media (max-width: 1680px) {
+}
+
+/* 1440 */
+@media (max-width: 1449px) {
+}
+
+/* 1280 */
+@media (max-width: 1439px) {
+  .margin-rightNone {
+    /* margin-right: 0px !important; */
+  }
+}
+
+/* 992 */
+@media (max-width: 1279px) {
+  .productAndServiceScroll {
+    min-width: 800px !important;
+    overflow-x: auto !important;
+  }
+  .ScrollDiv {
+    overflow-x: auto !important;
+  }
+}
+
+/* 768 */
+@media (max-width: 991px) {
+}
+
+/* 576 */
+@media (max-width: 767px) {
+  .totalOfQuoteDes {
+    margin-top: 5px !important;
+  }
+  .productServiceHead {
+    font-size: 14px !important;
+  }
+}
+
+/* 525 */
+@media (max-width: 575px) {
+}
+
+/* 480 */
+@media (max-width: 524px) {
+}
+
+/* 425 */
+@media (max-width: 479px) {
+}
+
+/* 375 */
+@media (max-width: 424px) {
+}
+
+/* 320 */
+@media (max-width: 374px) {
+}
+
+/* 280 */
+@media (max-width: 319px) {
+}

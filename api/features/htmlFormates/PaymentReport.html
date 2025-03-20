@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quote</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap"
+    rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: white;
+      color: #333;
+      font-family: "Poppins", system-ui;
+    }
+
+    .invoice-container {
+      /* width: 820px; */
+      /* height: 1103px; */
+      margin: 0 auto;
+      background-color: #fff;
+      /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+      position: relative;
+    }
+
+    header {
+      background-color: rgba(6, 49, 100, 1);
+      padding: 20px;
+      color: rgba(6, 49, 100, 1);
+      display: flex;
+      justify-content: space-between;
+      font-size: 24px;
+      font-weight: 700;
+      border-radius: 0px 0px 0 0;
+    }
+
+    .invoice-details {
+      /* background-color: rgba(6, 40, 100, 1);
+        padding: 20px;
+        color: white;
+        display: flex;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: 700;
+        border-radius: 0px 0px 0 0; */
+      display: flex;
+      justify-content: space-between;
+      padding-left: 25px;
+      padding-right: 50px !important;
+    }
+
+    .invoice-details p {
+      margin: 5px 0;
+    }
+
+    .left {
+      color: rgba(6, 49, 100, 1);
+      padding: 10px;
+    }
+
+    .total {
+      color: rgba(6, 49, 100, 1);
+      font-weight: 700;
+    }
+
+    .right p {
+      font-size: "Poppins";
+    }
+
+    .logo {
+      /* / background-color: white;  */
+      /* / width: 255px; / */
+      display: flex;
+      justify-content: space-between;
+      height: 30px;
+      color: white;
+      border-radius: 3px;
+      padding: 5px;
+      /* margin-left: 15px; */
+    }
+
+    .invoice-table {
+      position: relative;
+    }
+
+    .invoice-table table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 1px 1px 1px;
+    }
+
+    .invoice-table th,
+    .invoice-table td {
+      padding: 8px;
+      padding-left: 30px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+      font-weight: 500;
+      color: #495160;
+      font-size: 12px;
+    }
+
+    .invoice-table th {
+      background-color: rgba(6, 49, 100, 1);
+      color: #fff;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .paid-stamp {
+      text-align: center;
+      position: absolute;
+      transform: translate(-50%, -50%) !important;
+      left: 50%;
+      top: 50%;
+      z-index: 10;
+    }
+
+    .paid-stamp h3 {
+      color: black;
+      font-size: 110px;
+      font-weight: 400;
+      opacity: 0.3;
+      transform: rotate(-35deg);
+      margin: 0;
+    }
+
+    .invoice-summary {
+      text-align: right;
+      padding: 10px;
+      margin-top: 20px;
+    }
+
+    .invoice-summary p {
+      margin: 5px 0;
+      font-weight: 500;
+      font-size: 16px;
+    }
+
+    .total-summary {
+      width: 50%;
+      /* / margin-left: 50%; / */
+    }
+
+    .total-summary p {
+      display: flex;
+      justify-content: space-between;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .grand-total {
+      background-color: rgba(6, 49, 100, 1);
+      color: #fff;
+      padding: 10px;
+      font-weight: 500;
+    }
+
+    /* footer {
+      text-align: center;
+      padding: 20px 0;
+      font-size: 14px;
+      color: #999;
+    } */
+
+    .horizontalline {
+      border: 1px solid rgba(6, 49, 100, 1);
+      margin-top: 0px;
+    }
+
+    .textreceipt {
+      color: rgba(232, 140, 68, 1);
+      font-weight: 400;
+    }
+
+    .texthead {
+      color: rgba(6, 49, 100, 1);
+      font-weight: 700;
+    }
+
+    .curved-bar {
+      width: 100%;
+      height: 20px;
+      background-color: rgba(6, 49, 100, 1);
+      border-radius: 100% 100% 0% 0%;
+    }
+
+    .lastthankyou {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(6, 49, 100, 1);
+    }
+
+    .linehorizontal {
+      border-top: 1px solid #e0e0e0;
+      opacity: 30%;
+    }
+
+    .bottomtextpadding {
+      padding-bottom: 6px;
+    }
+
+    .bottomtextpaddinggrand {
+      margin-top: 15px !important;
+    }
+
+    /* .totaltop {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+    } */
+
+    .business-name {
+      color: white;
+    }
+
+    .last-section {
+      display: flex;
+      justify-content: end;
+      padding-right: 30px;
+    }
+
+    .spanp {
+      opacity: 70%;
+      font-weight: 400;
+    }
+
+    .textreceipt1 {
+      color: rgba(232, 140, 68, 1);
+    }
+
+    @media print {
+      .page-break {
+        page-break-before: always;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main">
+    <div class="invoice-container">
+      <header class="header">
+        <div class="logo">
+          <!-- <img height="100%" width="auto"
+            src="https://app.cloudjobmanager.com/cdn/upload/20240925111357_cmslogoreceipt.png" alt="logo" /> -->
+          <div>Cloud Job Manager</div>
+        </div>
+        <div class="business-name">Payment Report</div>
+      </header>
+      <div class="horizontalline"></div>
+      <section class="invoice-details">
+        <div class="left">
+          <strong class="texthead">From : </strong>
+
+          <p>
+            <strong class="texthead">Company Name:</strong>
+            <span class="textreceipt1"><b>#{{CompanyName}}</b></span>
+          </p>
+          <br />
+          <p>
+            <strong class="texthead">Date: </strong>
+            <span class="textreceipt">{{TodayDate}}</span>
+          </p>
+          <!-- <p>
+              <strong class="texthead">Total : </strong>
+              <span class="textreceipt">${{Total}}</span>
+            </p> -->
+        </div>
+        <div class="right">
+          <!-- <p><strong class="texthead">RECIPIENT</strong></p>
+            <p class="textreceipt1 bottomtextpadding">
+              <b>{{customerName}}</b>
+            </p> -->
+          <p class="bottomtextpadding">
+            <strong class="texthead">Address:</strong>
+            <span class="textreceipt">{{Address}},</span><br />
+          </p>
+          <p class="bottomtextpadding">
+            <strong class="texthead">Mobile: </strong><span class="textreceipt">{{phoneNumber}}</span>
+          </p>
+          <p>
+            <strong class="texthead">Email: </strong><span class="textreceipt">{{EmailAddress}}</span>
+          </p>
+        </div>
+      </section>
+      <section class="invoice-table">
+        <table>
+          <!-- <thead>
+            <tr>
+              <th>Sr. No.</th>
+              <th>Method</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <!-- <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+          </thead> -->
+          <tbody>
+            <!-- ENTRY DATA ROWS -->
+            {{invoiceRows}}
+          </tbody>
+        </table>
+      </section>
+      <!-- <div class="totaltop"> -->
+        <!-- <section class="invoice-summary">
+            <hr class="linehorizontal" />
+            <div class="last-section">
+              <div class="total-summary">
+                <p class="bottomtextpadding">
+                  <strong style="color: rgba(6, 49, 100, 1)">Sub Total</strong>
+                  <span style="color: rgba(6, 49, 100, 1); font-weight: 700"
+                    >${{SubTotal}}</span
+                  >
+                </p>
+                <p class="bottomtextpadding">
+                  <span>Discount({{Discount}}%)</span>
+                  <span>-${{discountAmount}}</span>
+                </p>
+                <p class="bottomtextpadding">
+                  <span>Tax({{Tax}}%)</span> <span>+${{gstAmount}}</span>
+                </p>
+                <p class="grand-total bottomtextpaddinggrand">
+                  Total
+                  <span>${{grandTotal}}</span>
+                </p>
+              </div>
+            </div>
+          </section> -->
+
+        <!-- <footer>
+            <p class="lastthankyou">
+              Thank you for choosing us. If you have any inquiries regarding
+              this Quote, please don't hesitate to contact us.
+            </p>
+          </footer> -->
+        <!-- <div class="curved-bar"></div> -->
+      <!-- </div> -->
+    </div>
+  </div>
+</body>
+
+</html>

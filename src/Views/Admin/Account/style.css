@@ -1,0 +1,126 @@
+.cardViewPlan{
+  border: none;
+}
+.full-sentence {
+  overflow: auto;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: keep-all;
+}
+.paymentHistoryWidthSet{
+  width: 50% !important;
+}
+.cancelAccountWidth{
+  width: 49% !important;
+}
+.text-left {
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .text-md-right {
+    text-align: right;
+  }
+}
+
+.accounts input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #063164;
+}
+paymentHistoryOverflow
+.accounts input[type="radio"]:checked {
+  background-color: #063164;
+  border-color: #063164;
+}
+
+.accounts input[type="radio"]:checked::after {
+  border: 2px solid #063164;
+}
+/* 1680 */
+@media (max-width: 1700px) {}
+
+/* 1500 */
+@media (max-width: 1680px) {
+  /* .cancelAccountOverflow{
+    overflow-x: auto !important;
+  } */
+}
+
+/* 1440 */
+@media (max-width: 1449px) {
+  .billingAndDetail{
+    flex-direction: column;
+  }
+  .accountBillingCardDetail{
+    width: 100% !important;
+  }
+  .billingDetailCardc{
+    width: 100% !important;
+    margin-top: 10px !important;
+  }
+}
+
+/* 1280 */
+@media (max-width: 1439px) {
+  .widthNoneReponse{
+    width: 100% !important;
+  }
+}
+
+/* 992 */
+@media (max-width: 1279px) {}
+
+/* 768 */
+@media (max-width: 991px) {
+  .paymentHistoryOverflow{
+    overflow-x: auto !important;
+  }
+}
+ 
+/* 576 */
+@media (max-width: 767px) {
+  .cancelBtnAccout{
+    margin-top: 20px !important;
+  }
+}
+
+/* 525 */
+@media (max-width: 575px) {}
+
+/* 480 */
+@media (max-width: 524px) {}
+
+/* 425 */
+@media (max-width: 479px) {}
+
+/* 375 */
+@media (max-width: 424px) {
+  .cardOverviewViewplan{
+    flex-direction: column !important;
+  }
+  .cardViewPlan{
+    padding: 7px;
+    margin-left: auto;
+    width: 50%;
+  }
+  .accountOverviewHead{
+    font-size: 17px !important;
+  }
+  .buttonResponsiveHere{
+    gap: 10px !important;
+  }
+  .CancelAccInFO{
+    flex-direction: column !important;
+  }
+}
+
+/* 320 */
+@media (max-width: 374px) {
+  .accountInformationBtn{
+    width: 100% !important;
+  }
+}
+
+/* 280 */
+@media (max-width: 319px) {}

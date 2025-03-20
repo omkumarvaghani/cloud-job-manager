@@ -1,0 +1,75 @@
+/* 1680 */
+@media (max-width: 1700px) {}
+
+/* 1500 */
+@media (max-width: 1680px) {}
+
+/* 1440 */
+@media (max-width: 1449px) {}
+
+/* 1280 */
+@media (max-width: 1439px) {}
+
+/* 992 */
+@media (max-width: 1279px) {}
+
+/* 768 */
+@media (max-width: 991px) {}
+
+/* 576 */
+@media (max-width: 767px) {
+    .cardWhichTypeToSelect{
+        margin-top: 29px !important;
+        height: 130px !important;
+    }
+    .invoiceNumberStart{
+        margin-right: auto !important;
+    }
+    .invoiceChangeBtn{
+        margin-right: auto !important;
+    }
+    .invoiceSubject_part{
+        padding: 0px !important;
+    }
+}
+
+/* 525 */
+@media (max-width: 575px) {
+    .AchBankAccountAndAddBtnToAdd{
+        flex-direction: column !important;
+    }
+    .AddNewAccountToAddCardSave{
+        width: 100% !important;
+    }
+    .marginLeftRemove{
+        /* margin-left: 0px !important; */
+        /* margin-right: 0px !important; */
+    }
+}
+
+/* 480 */
+@media (max-width: 524px) {
+    .AddCardButtonBoxPayment{
+        float: inline-start !important;
+        margin-top: 20px !important;
+    }
+}
+
+/* 425 */
+@media (max-width: 479px) {}
+
+/* 375 */
+@media (max-width: 424px) {}
+
+/* 320 */
+@media (max-width: 374px) {}
+
+/* 280 */
+@media (max-width: 319px) {
+    .cardWhichTypeToSelect{
+        margin-top: 60px  !important;
+    }
+    .creditCardBoxSelectDate{
+        margin-top: 60px !important;
+    }
+}
