@@ -221,7 +221,7 @@ const Customer = () => {
                       ? "none"
                       : "auto",
                 }}
-              />    
+              />
               <DeleteIcone
                 className="customerEditImgToEdit"
                 onClick={(e) => {

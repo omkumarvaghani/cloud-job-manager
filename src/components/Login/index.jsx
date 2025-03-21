@@ -251,9 +251,7 @@ const Login = () => {
               className="loginform loginFormFirst"
             >
               <Typography className="text text-blue-color">Login</Typography>
-              <Typography className="text2">
-                
-              </Typography>
+              <Typography className="text2"></Typography>
               <FormGroup
                 className="text-boxes"
                 style={{ width: "100%", marginTop: "24px" }}

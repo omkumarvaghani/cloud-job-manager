@@ -219,7 +219,7 @@ exports.companyProfile = async function (req, res) {
 exports.getCompanyDropdown = async (req, res) => {
     try {
         const data = await User.find({ IsDelete: false, Role: "Company" });
-        console.log(data, 'data')
+
         return res.status(201).json({
             statusCode: 201,
             message: "Data retrieved successfully",
@@ -284,6 +284,271 @@ exports.updateCompanyProfile = async (req, res) => {
         return res.status(500).json({
             statusCode: 500,
             message: "Something went wrong, please try later!",
+        });
+    }
+};
+
+// exports.getCustomersByCompanyId = async (req, res) => {
+//     try {
+//         const { CompanyId } = req.params;
+//         const query = req.query;
+
+//         const pageSize = Math.max(parseInt(query.pageSize) || 10, 1);
+//         const pageNumber = Math.max(parseInt(query.pageNumber) || 0, 0);
+//         const search = query.search;
+//         const sortOrder = query.sortOrder?.toLowerCase() === "desc" ? -1 : 1;
+
+//         const allowedSortFields = [
+//             "profile.FirstName",
+//             "profile.LastName",
+//             "EmailAddress",
+//             "profile.PhoneNumber",
+//             "createdAt",
+//             "updatedAt",
+//         ];
+
+//         const sortField = allowedSortFields.includes(query.sortField)
+//             ? query.sortField
+//             : "updatedAt";
+
+//         let customerSearchQuery = {
+//             CompanyId,
+//             Role: "Customer",
+//             IsDelete: false,
+//         };
+
+//         if (search) {
+//             const searchParts = search.split(" ").filter(Boolean);
+//             const searchConditions = searchParts.map((part) => {
+//                 const searchRegex = new RegExp(part, "i");
+//                 return {
+//                     $or: [
+//                         { "profile.FirstName": { $regex: searchRegex } },
+//                         { "profile.LastName": { $regex: searchRegex } },
+//                         { EmailAddress: { $regex: searchRegex } },
+//                         { "profile.PhoneNumber": { $regex: searchRegex } },
+//                         { "profile.Address": { $regex: searchRegex } },
+//                         { "profile.City": { $regex: searchRegex } },
+//                         { "profile.State": { $regex: searchRegex } },
+//                         { "profile.Country": { $regex: searchRegex } },
+//                         { "profile.Zip": { $regex: searchRegex } },
+//                     ],
+//                 };
+//             });
+
+//             customerSearchQuery = {
+//                 $and: [customerSearchQuery, { $or: searchConditions }],
+//             };
+//         }
+
+//         let sortOptions = {};
+//         if (sortField) {
+//             sortOptions[sortField] = sortOrder;
+//         }
+
+//         const collation = { locale: "en", strength: 2 };
+
+//         const customers = await User.aggregate([
+//             { $match: customerSearchQuery },
+//             {
+//                 $lookup: {
+//                     from: "user-profiles",
+//                     localField: "UserId",
+//                     foreignField: "UserId",
+//                     as: "profile",
+//                 },
+//             },
+//             { $unwind: { path: "$profile", preserveNullAndEmptyArrays: true } },
+//             {
+//                 $project: {
+//                     UserId: 1,
+//                     EmailAddress: 1,
+//                     IsActive: 1,
+//                     "profile.FirstName": 1,
+//                     "profile.LastName": 1,
+//                     "profile.PhoneNumber": 1,
+//                     "profile.Address": 1,
+//                     "profile.City": 1,
+//                     "profile.State": 1,
+//                     "profile.Country": 1,
+//                     "profile.Zip": 1,
+//                     "profile.ProfileImage": 1,
+//                     createdAt: 1,
+//                     updatedAt: 1,
+//                 },
+//             },
+//             { $sort: sortOptions },
+//             { $skip: pageNumber * pageSize },
+//             { $limit: pageSize },
+//         ]).collation(collation);
+
+//         const total = await User.aggregate([
+//             { $match: customerSearchQuery },
+//             { $count: "totalCount" },
+//         ]);
+
+//         const totalCount = total[0]?.totalCount || 0;
+
+//         if (customers.length > 0) {
+//             return res.status(200).json({
+//                 success: true,
+//                 message: "Customers retrieved successfully",
+//                 data: customers,
+//                 totalPages: Math.ceil(totalCount / pageSize),
+//                 currentPage: pageNumber,
+//                 totalCount: totalCount,
+//             });
+//         } else {
+//             return res.status(204).json({
+//                 success: false,
+//                 message: "No customers found",
+//             });
+//         }
+//     } catch (error) {
+//         console.error("Error getting customers:", error);
+//         return res.status(500).json({
+//             success: false,
+//             message: "Something went wrong, please try later.",
+//         });
+//     }
+// };
+
+exports.getCustomersByCompanyId = async (req, res) => {
+    try {
+        const { CompanyId } = req.params;
+        const query = req.query;
+
+        const pageSize = Math.max(parseInt(query.pageSize) || 10, 1);
+        const pageNumber = Math.max(parseInt(query.pageNumber) || 0, 0);
+        const search = query.search;
+        const sortOrder = query.sortOrder?.toLowerCase() === "desc" ? -1 : 1;
+
+        const allowedSortFields = [
+            "FirstName",
+            "LastName",
+            "EmailAddress",
+            "PhoneNumber",
+            "Address",
+            "City",
+            "State",
+            "Country",
+            "Zip",
+            "createdAt",
+            "updatedAt",
+        ];
+
+        const sortField = allowedSortFields.includes(query.sortField)
+            ? query.sortField
+            : "updatedAt";
+
+        let customerSearchQuery = {
+            CompanyId,
+            Role: "Customer",
+            IsDelete: false,
+        };
+
+        let searchConditions = [];
+        if (search) {
+            const searchRegex = new RegExp(search, "i");
+            searchConditions = [
+                { "profile.FirstName": searchRegex },
+                { "profile.LastName": searchRegex },
+                { EmailAddress: searchRegex },
+                { "profile.PhoneNumber": searchRegex },
+                { "profile.Address": searchRegex },
+                { "profile.City": searchRegex },
+                { "profile.State": searchRegex },
+                { "profile.Country": searchRegex },
+                { "profile.Zip": searchRegex },
+            ];
+
+            customerSearchQuery = {
+                $and: [
+                    customerSearchQuery,
+                    { $or: searchConditions },
+                ],
+            };
+        }
+
+        let sortOptions = {};
+        if (sortField === "Address" || sortField === "City" || sortField === "State" || sortField === "Country" || sortField === "Zip") {
+            sortOptions[`profile.${sortField}`] = sortOrder;
+        } else {
+            sortOptions[sortField] = sortOrder;
+        }
+
+        const collation = { locale: "en", strength: 2 };
+
+        const customers = await User.aggregate([
+            { $match: customerSearchQuery },
+            {
+                $lookup: {
+                    from: "user-profiles",
+                    localField: "UserId",
+                    foreignField: "UserId",
+                    as: "profile",
+                },
+            },
+            { $unwind: { path: "$profile", preserveNullAndEmptyArrays: true } },
+            {
+                $set: {
+                    Address: "$profile.Address",
+                    City: "$profile.City",
+                    State: "$profile.State",
+                    Country: "$profile.Country",
+                    Zip: "$profile.Zip",
+                },
+            },
+            {
+                $project: {
+                    UserId: 1,
+                    EmailAddress: 1,
+                    IsActive: 1,
+                    "profile.FirstName": 1,
+                    "profile.LastName": 1,
+                    "profile.PhoneNumber": 1,
+                    "profile.Address": 1,
+                    "profile.City": 1,
+                    "profile.State": 1,
+                    "profile.Country": 1,
+                    "profile.Zip": 1,
+                    "profile.ProfileImage": 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                },
+            },
+            { $sort: sortOptions },
+            { $skip: pageNumber * pageSize },
+            { $limit: pageSize },
+        ]).collation(collation);
+
+        const total = await User.aggregate([
+            { $match: customerSearchQuery },
+            { $count: "totalCount" },
+        ]);
+
+        const totalCount = total[0]?.totalCount || 0;
+
+        if (customers.length > 0) {
+            return res.status(200).json({
+                success: true,
+                message: "Customers retrieved successfully",
+                data: customers,
+                totalPages: Math.ceil(totalCount / pageSize),
+                currentPage: pageNumber,
+                totalCount: totalCount,
+            });
+        } else {
+            return res.status(204).json({
+                success: false,
+                message: "No customers found",
+            });
+        }
+    } catch (error) {
+        console.error("Error getting customers:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong, please try later.",
         });
     }
 };
