@@ -6,7 +6,8 @@ const {
   updateCompanyProfile,
   getAllUsers,
   getUserById,
-  updateUser
+  updateUser,
+  getCustomersByCompanyId
 } = require("../../controllers/v1/User/userController");
 const { protect } = require("../../middleware/authMiddleware");
 const router = express.Router();
@@ -19,5 +20,7 @@ router.get("/", protect, getAllUsers);
 router.get("/profile/:CompanyId", protect, companyProfile);
 router.get("/dropdown", protect, getCompanyDropdown);
 router.put("/update-profile/:CompanyId", protect, updateCompanyProfile);
+
+router.get('/customers/:CompanyId', getCustomersByCompanyId);
 
 module.exports = router;
