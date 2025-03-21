@@ -18,7 +18,7 @@
 //   const location = useLocation();
 //   const toggle = () => setDropdown(!dropdown);
 //   const navigate = useNavigate();
-//   const { companyName } = useParams();
+//   const { CompanyName } = useParams();
 //   const [redirectToContract, setRedirectToContract] = useState(false);
 //   const [isNumChange, setIsNumChange] = useState(false);
 //   const [isError, setIsError] = useState(false);
@@ -189,7 +189,7 @@
 //     //       SubTotal: calculateSubTotal(),
 //     //       Total: Total,
 //     //       Attachment: strings,
-//     //       role: tokenDecode?.role,
+//     //       Role: tokenDecode?.Role,
 //     //       AddedAt: new Date(),
 //     //       CompanyId:
 //     //         localStorage.getItem("CompanyId") || tokenDecode?.companyId,
@@ -211,8 +211,8 @@
 //     //       }, 500);
 //     //       if (redirectToContract) {
 //     //         navigate(
-//     //           companyName
-//     //             ? `/${companyName}/add-contract`
+//     //           CompanyName
+//     //             ? `/${CompanyName}/add-contract`
 //     //             : `/staff-member/add-contract`,
 //     //           {
 //     //             state: {
@@ -225,15 +225,15 @@
 //     //         );
 //     //       } else {
 //     //         navigate(
-//     //           companyName
-//     //             ? `/${companyName}/quotes`
+//     //           CompanyName
+//     //             ? `/${CompanyName}/quotes`
 //     //             : `/staff-member/WorkerQuotes`,
 //     //           {
 //     //             replace: true,
 //     //             state: {
 //     //               navigats: [
 //     //                 "/index",
-//     //                 companyName ? "/quotes" : "/WorkerQuotes",
+//     //                 CompanyName ? "/quotes" : "/WorkerQuotes",
 //     //               ],
 //     //             },
 //     //           }
@@ -297,7 +297,7 @@
 //           SubTotal: calculateSubTotal(),
 //           Total: Total,
 //           Attachment: strings,
-//           role: tokenDecode?.role,
+//           Role: tokenDecode?.Role,
 //           AddedAt: new Date(),
 //           CompanyId:
 //             localStorage.getItem("CompanyId") || tokenDecode?.companyId,
@@ -321,8 +321,8 @@
 
 //           if (redirectToContract) {
 //             navigate(
-//               companyName
-//                 ? `/${companyName}/add-contract`
+//               CompanyName
+//                 ? `/${CompanyName}/add-contract`
 //                 : `/staff-member/add-contract`,
 //               {
 //                 state: {
@@ -335,15 +335,15 @@
 //             );
 //           } else {
 //             navigate(
-//               companyName
-//                 ? `/${companyName}/quotes`
+//               CompanyName
+//                 ? `/${CompanyName}/quotes`
 //                 : `/staff-member/WorkerQuotes`,
 //               {
 //                 replace: true,
 //                 state: {
 //                   navigats: [
 //                     "/index",
-//                     companyName ? "/quotes" : "/WorkerQuotes",
+//                     CompanyName ? "/quotes" : "/WorkerQuotes",
 //                   ],
 //                 },
 //               }
@@ -671,7 +671,7 @@
 //         setIsProperty={setIsProperty}
 //         setPropertyData={setPropertyData}
 //         setCustomersData={setCustomersData}
-//         companyName={companyName}
+//         CompanyName={CompanyName}
 //       />
 //     </>
 //   );
@@ -698,7 +698,7 @@ function AddQuote() {
   const location = useLocation();
   const toggle = () => setDropdown(!dropdown);
   const navigate = useNavigate();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [redirectToContract, setRedirectToContract] = useState(false);
   const [isNumChange, setIsNumChange] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -871,7 +871,7 @@ function AddQuote() {
           SubTotal: calculateSubTotal(),
           Total: Total,
           Attachment: strings,
-          role: tokenDecode?.role,
+          Role: tokenDecode?.Role,
           AddedAt: new Date(),
           CompanyId:
             localStorage.getItem("CompanyId") || tokenDecode?.companyId,
@@ -896,8 +896,8 @@ function AddQuote() {
 
           if (redirectToContract) {
             navigate(
-              companyName
-                ? `/${companyName}/add-contract`
+              CompanyName
+                ? `/${CompanyName}/add-contract`
                 : `/staff-member/add-contract`,
               {
                 state: {
@@ -910,15 +910,15 @@ function AddQuote() {
             );
           } else {
             navigate(
-              companyName
-                ? `/${companyName}/quotes`
+              CompanyName
+                ? `/${CompanyName}/quotes`
                 : `/staff-member/WorkerQuotes`,
               {
                 replace: true,
                 state: {
                   navigats: [
                     "/index",
-                    companyName ? "/quotes" : "/WorkerQuotes",
+                    CompanyName ? "/quotes" : "/WorkerQuotes",
                   ],
                 },
               }
@@ -1004,7 +1004,7 @@ function AddQuote() {
   //       SubTotal: calculateSubTotal(),
   //       Total: Total,
   //       Attachment: strings,
-  //       role: tokenDecode?.role,
+  //       Role: tokenDecode?.Role,
   //       AddedAt: new Date(),
   //       CompanyId: localStorage.getItem("CompanyId") || tokenDecode?.companyId,
   //     };
@@ -1024,7 +1024,7 @@ function AddQuote() {
   
   //       if (redirectToContract) {
   //         navigate(
-  //           companyName ? `/${companyName}/add-contract` : `/staff-member/add-contract`,
+  //           CompanyName ? `/${CompanyName}/add-contract` : `/staff-member/add-contract`,
   //           {
   //             state: {
   //               formData: values,
@@ -1036,11 +1036,11 @@ function AddQuote() {
   //         );
   //       } else {
   //         navigate(
-  //           companyName ? `/${companyName}/quotes` : `/staff-member/WorkerQuotes`,
+  //           CompanyName ? `/${CompanyName}/quotes` : `/staff-member/WorkerQuotes`,
   //           {
   //             replace: true,
   //             state: {
-  //               navigats: ["/index", companyName ? "/quotes" : "/WorkerQuotes"],
+  //               navigats: ["/index", CompanyName ? "/quotes" : "/WorkerQuotes"],
   //             },
   //           }
   //         );
@@ -1384,10 +1384,10 @@ function AddQuote() {
   //   if (formik.dirty || lineItems.some(item => item.isNew)) {
   //     const confirmCancel = window.confirm("You have unsaved changes. Are you sure you want to cancel?");
   //     if (confirmCancel) {
-  //       navigate(companyName ? `/${companyName}/quotes` : `/staff-member/WorkerQuotes`);
+  //       navigate(CompanyName ? `/${CompanyName}/quotes` : `/staff-member/WorkerQuotes`);
   //     }
   //   } else {
-  //     navigate(companyName ? `/${companyName}/quotes` : `/staff-member/WorkerQuotes`);
+  //     navigate(CompanyName ? `/${CompanyName}/quotes` : `/staff-member/WorkerQuotes`);
   //   }
   // };
   return (
@@ -1440,7 +1440,7 @@ function AddQuote() {
         setIsProperty={setIsProperty}
         setPropertyData={setPropertyData}
         setCustomersData={setCustomersData}
-        companyName={companyName}
+        CompanyName={CompanyName}
       />
     </>
   );

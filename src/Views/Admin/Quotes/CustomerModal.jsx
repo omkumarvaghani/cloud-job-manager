@@ -55,7 +55,7 @@
 // }) => {
 //   const navigate = useNavigate();
 //   const location = useLocation();
-//   const { companyName } = useParams();
+//   const { CompanyName } = useParams();
 //   const [customerData, setCustomerData] = useState([]);
 //   const [locationData, setLocationData] = useState([]);
 //   const [searchInput, setSearchInput] = useState("");
@@ -114,8 +114,8 @@
 //   //           }, 500);
 //   //           navigate(
 //   //             `/${
-//   //               companyName
-//   //                 ? companyName + "/customer"
+//   //               CompanyName
+//   //                 ? CompanyName + "/customer"
 //   //                 : "staff-member" + "/workercustomer"
 //   //             }`,
 //   //             {
@@ -230,7 +230,7 @@
 //           console.error("Token not found in localStorage");
 //           return;
 //         }
-//         const res = await AxiosInstance.post(`/company/token_data`, {
+//         const res = await AxiosInstance.post(`/v1/auth/token_data`, {
 //           token,
 //         });
 //         if (res?.data?.data?.CompanyId) {
@@ -253,7 +253,7 @@
 
 //     const newPath = isStaffMember
 //       ? `/staff-member/workerinvoicetable`
-//       : `/${companyName}/invoicetable`;
+//       : `/${CompanyName}/invoicetable`;
 
 //     navigate(newPath, {
 //       state: {
@@ -480,7 +480,7 @@
 //                       alignItems: "center",
 //                     }}
 //                     onClick={() => {
-//                       navigate(`/${companyName}/add-customer`, {
+//                       navigate(`/${CompanyName}/add-customer`, {
 //                         state: {
 //                           previewPage: location?.pathname,
 //                           previewData: {
@@ -962,7 +962,7 @@ const CustomerModal = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [customerData, setCustomerData] = useState([]);
   const [locationData, setLocationData] = useState([]);
   const [searchInput, setSearchInput] = useState("");
@@ -980,7 +980,7 @@ const CustomerModal = ({
           console.error("Token not found in localStorage");
           return;
         }
-        const res = await AxiosInstance.post(`/company/token_data`, {
+        const res = await AxiosInstance.post(`/v1/auth/token_data`, {
           token,
         });
         if (res?.data?.data?.companyId) {
@@ -1003,7 +1003,7 @@ const CustomerModal = ({
 
     const newPath = isStaffMember
       ? `/staff-member/workerinvoicetable`
-      : `/${companyName}/invoicetable`;
+      : `/${CompanyName}/invoicetable`;
 
     navigate(newPath, {
       state: {
@@ -1189,7 +1189,7 @@ const CustomerModal = ({
                     }}
                     // onClick={() => {
                     //   // Navigate to /add-customer
-                    //   navigate(`/${companyName}/add-customer`, {
+                    //   navigate(`/${CompanyName}/add-customer`, {
                     //     state: {
                     //       previewPage: location?.pathname, 
                     //       previewData: {
@@ -1208,7 +1208,7 @@ const CustomerModal = ({
                       // Form data ko Local Storage me save karna
                       localStorage.setItem("formData", JSON.stringify(values));
                     
-                      navigate(`/${companyName}/add-customer`, {
+                      navigate(`/${CompanyName}/add-customer`, {
                         state: {
                           previewPage: location?.pathname,
                           previewData: {

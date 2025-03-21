@@ -65,7 +65,7 @@ const QuotesDetails = ({
   collectSignatureLoader,
   handleDelete,
   dateFormat,
-  companyName,
+  CompanyName,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -142,8 +142,8 @@ const QuotesDetails = ({
                     // navigate(-1);
                     navigate(
                       `/${
-                        companyName
-                          ? companyName + "/quotes"
+                        CompanyName
+                          ? CompanyName + "/quotes"
                           : "staff-member" + "/workerquotes"
                       }`,
                       {

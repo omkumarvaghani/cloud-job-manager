@@ -33,7 +33,7 @@ function AddClient() {
           token,
         });
         if (res?.data) {
-          setCompanyId(res?.data?.data?.companyId);
+          setCompanyId(res?.data?.data?.CompanyId);
         }
       } catch (error) {
         console.error("Error:", error?.message);
@@ -450,9 +450,9 @@ function AddClient() {
     setPhoneNumbers([...phoneNumbers, ""]);
   };
 
-useEffect(() => {
+  useEffect(() => {
     const handleBeforeUnload = (event) => {
-      if (formik.dirty ) {
+      if (formik.dirty) {
         const message =
           "You have unsaved changes. Are you sure you want to leave?";
         event.returnValue = message;
@@ -466,8 +466,6 @@ useEffect(() => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [formik.dirty]);
-  
-
 
   return (
     <>

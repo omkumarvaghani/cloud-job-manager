@@ -16,7 +16,7 @@ function AddContract() {
     handleAuth(navigate, location);
   }, []);
 
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -173,15 +173,15 @@ function AddContract() {
             showToast.success(response?.data?.message);
           }, 500);
           navigate(
-            companyName
-              ? `/${companyName}/contract`
+            CompanyName
+              ? `/${CompanyName}/contract`
               : `/staff-member/workercontract`,
             {
               replace: true,
               state: {
                 navigats: [
                   "/index",
-                  companyName ? "/contract" : "/workercontract",
+                  CompanyName ? "/contract" : "/workercontract",
                 ],
               },
             }
@@ -766,7 +766,7 @@ function AddContract() {
         customersData={customersData}
         propertyData={propertyData}
         formik={formik}
-        companyName={companyName}
+        CompanyName={CompanyName}
         handleSaveQuote={handleSaveQuote}
         toggle={toggle}
         dropdownOpen={dropdownOpen}

@@ -69,7 +69,7 @@ const generatePDF = (data) => {
 
   doc.setFontSize(20);
   doc.setFont("helvetica", "bold");
-  doc.text(data?.clientDetails?.companyName, 14, 22);
+  doc.text(data?.clientDetails?.CompanyName, 14, 22);
 
   doc.setFontSize(12);
   doc.text("RECIPIENT:", 14, 33);

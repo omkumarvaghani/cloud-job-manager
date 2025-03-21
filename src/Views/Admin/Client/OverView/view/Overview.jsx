@@ -27,7 +27,7 @@ const CustomerDetails = ({
   loader,
   navigate,
   data,
-  companyName,
+  CompanyName,
   location,
   activeTabId,
   handleClick,
@@ -88,8 +88,8 @@ const CustomerDetails = ({
                     <DropdownItem
                       className="dropdown-items text-blue-color"
                       onClick={() => {
-                        if (companyName) {
-                          navigate(`/${companyName}/add-quotes`, {
+                        if (CompanyName) {
+                          navigate(`/${CompanyName}/add-quotes`, {
                             state: {
                               Customer: data,
                               CustomerId: data?.CustomerId,
@@ -119,8 +119,8 @@ const CustomerDetails = ({
                     <DropdownItem
                       className="dropdown-items text-blue-color"
                       onClick={() => {
-                        if (companyName) {
-                          navigate(`/${companyName}/add-contract`, {
+                        if (CompanyName) {
+                          navigate(`/${CompanyName}/add-contract`, {
                             state: {
                               Customer: data,
                               CustomerId: data?.CustomerId,
@@ -150,8 +150,8 @@ const CustomerDetails = ({
                     <DropdownItem
                       className="dropdown-items text-blue-color"
                         onClick={() => {
-                            if (companyName) {
-                              navigate(`/${companyName}/invoicetable`, {
+                            if (CompanyName) {
+                              navigate(`/${CompanyName}/invoicetable`, {
                                 state: {
                                   Customer: data,
                                   CustomerId: data?.CustomerId,
@@ -175,11 +175,11 @@ const CustomerDetails = ({
                             }
                           }}
                       // onClick={() => {
-                      //   if (companyName && data?.CustomerId) {
+                      //   if (CompanyName && data?.CustomerId) {
                       //     if (data?.location?.length > 1) {
                       //       setIsCustomer(true); 
                       //     } else {
-                      //       navigate(`/${companyName}/invoicetable`, {
+                      //       navigate(`/${CompanyName}/invoicetable`, {
                       //         state: {
                       //           Customer: data,
                       //           CustomerId: data?.CustomerId,

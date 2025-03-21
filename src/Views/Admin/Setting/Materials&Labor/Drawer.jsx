@@ -24,7 +24,7 @@ import { Drawer } from "@mui/material";
 
 export default function CombinedComponent() {
   const navigate = useNavigate();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
 
   const [state, setState] = React.useState({
     top: false,
@@ -48,7 +48,7 @@ export default function CombinedComponent() {
   const myDrawer = [
     {
       name: "Materials & Labor",
-      link: `/${companyName}/materials&labor`,
+      link: `/${CompanyName}/materials&labor`,
     },
   ];
   const list = (

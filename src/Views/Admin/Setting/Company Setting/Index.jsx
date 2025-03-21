@@ -13,7 +13,7 @@ import moment from "moment";
 function AddClient() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [loader, setLoader] = useState(false);
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -31,7 +31,7 @@ function AddClient() {
           console.error("Token not found in localStorage");
           return;
         }
-        const res = await AxiosInstance.post(`/company/token_data`, {
+        const res = await AxiosInstance.post(`/v1/auth/token_data`, {
           token,
         });
         if (res?.data) {
@@ -96,8 +96,8 @@ function AddClient() {
             }, 500);
             navigate(
               `/${
-                companyName
-                  ? companyName + "/customer"
+                CompanyName
+                  ? CompanyName + "/customer"
                   : "staff-member" + "/workercustomer"
               }`,
               {
@@ -161,8 +161,8 @@ function AddClient() {
               showToast.success(response?.data?.message);
               navigate(
                 `/${
-                  companyName
-                    ? companyName + "/customer"
+                  CompanyName
+                    ? CompanyName + "/customer"
                     : "staff-member" + "/workercustomer"
                 }`,
                 {
@@ -392,7 +392,7 @@ function AddClient() {
         setSelectedCountry={setSelectedCountry}
         handlePhoneChange={handlePhoneChange}
         isEdited={isEdited}
-        companyName={companyName}
+        CompanyName={CompanyName}
         handleZipChange={handleZipChange}
 
 

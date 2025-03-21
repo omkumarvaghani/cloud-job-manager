@@ -20,7 +20,7 @@ function InvoiceDetails() {
   }, []);
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [invoicedata, setInvoicedata] = useState({});
   const [data, setdata] = useState({});
   const [loader, setLoader] = useState(true);
@@ -100,14 +100,14 @@ function InvoiceDetails() {
   };
 
   const handleEditClick = (id) => {
-    // navigate(`/${companyName}/addinvoice`, {
+    // navigate(`/${CompanyName}/addinvoice`, {
     //   state: {
     //     invoiceId: location?.state?.id,
     //     navigats: [...location?.state?.navigats, "/addinvoice"],
     //   },
     // });
-    if (companyName) {
-      navigate(`/${companyName}/addinvoice`, {
+    if (CompanyName) {
+      navigate(`/${CompanyName}/addinvoice`, {
         state: {
           invoiceId: location?.state?.id,
           navigats: [...location?.state?.navigats, "/addinvoice"],
@@ -524,7 +524,7 @@ function InvoiceDetails() {
     <>
       <InvoiceDetail
         loader={loader}
-        companyName={companyName}
+        CompanyName={CompanyName}
         location={location}
         invoicedata={invoicedata}
         data={data}

@@ -58,7 +58,7 @@ import PasswordValidationSchema from "../../../../components/Password/PasswordVa
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const cdnUrl = process.env.REACT_APP_CDN_API;
 
   const [loader, setLoader] = useState(true);
@@ -151,7 +151,7 @@ const Profile = () => {
               dangerMode: true,
             }
             ).then(() => {
-              navigate(`/${companyName}/index`, {
+              navigate(`/${CompanyName}/index`, {
                 state: { navigats: ["/index"] },
               });
             });
@@ -214,7 +214,7 @@ const Profile = () => {
             },
             dangerMode: true,
           }).then(() => {
-            navigate(`/${companyName}/profile`, {
+            navigate(`/${CompanyName}/profile`, {
               state: { navigats: ["/profile"] },
             });
           });
@@ -401,7 +401,7 @@ const Profile = () => {
   //     "success"
   //   ).then(() => {
   //     if (!postLoader) {
-  //       navigate(`/${companyName}/index`, {
+  //       navigate(`/${CompanyName}/index`, {
   //         state: { navigats: ["/index"] },
   //       });
   //     }
@@ -477,7 +477,7 @@ const Profile = () => {
                     className="sidebar-link-setting"
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      navigate(`/${companyName}/materials&labor`, {
+                      navigate(`/${CompanyName}/materials&labor`, {
                         state: { navigats: ["/index", "/materials&labor"] },
                       });
                     }}
@@ -488,7 +488,7 @@ const Profile = () => {
                     className="sidebar-link-setting"
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      navigate(`/${companyName}/profile`, {
+                      navigate(`/${CompanyName}/profile`, {
                         state: { navigats: ["/index", "/profile"] },
                       });
                     }}

@@ -45,7 +45,7 @@ function AddAccount({fetchAccounts,modelOpen,setModelOpen}) {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);

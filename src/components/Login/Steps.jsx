@@ -353,7 +353,7 @@ const Steps = ({ EmailAddress, Password }) => {
                 >
                   <Grid
                     className="progress-bar"
-                    role="progressbar"
+                    Role="progressbar"
                     style={{ width: currentStep > 0 ? "100%" : "0%" }}
                     aria-valuenow="0"
                     aria-valuemin="0"
@@ -367,7 +367,7 @@ const Steps = ({ EmailAddress, Password }) => {
                 >
                   <Grid
                     className="progress-bar"
-                    role="progressbar"
+                    Role="progressbar"
                     style={{ width: currentStep > 1 ? "100%" : "0%" }}
                     aria-valuenow="0"
                     aria-valuemin="0"

@@ -29,7 +29,7 @@ function RecurringPayments() {
   }, []);
 
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const navigate = useNavigate();
   const [loader, setLoader] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -725,7 +725,7 @@ function RecurringPayments() {
         CompanyId={CompanyId}
         fetchRecurringCardData={fetchRecurringCardData}
         submitloading={submitloading}
-        companyName={companyName}
+        CompanyName={CompanyName}
         recurringChargeId={recurringChargeId}
         setRecurringChargeId={setRecurringChargeId}
         setSortField={setSortField}

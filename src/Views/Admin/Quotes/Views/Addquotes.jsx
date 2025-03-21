@@ -72,7 +72,7 @@ const Addquotes = ({
   setIsProperty,
   setPropertyData,
   setCustomersData,
-  companyName,
+  CompanyName,
   handleSubmits
 }) => {
   const navigate = useNavigate();
@@ -105,8 +105,8 @@ const Addquotes = ({
               }
               navigate(
                 `/${
-                  companyName
-                    ? companyName + "/quotes"
+                  CompanyName
+                    ? CompanyName + "/quotes"
                     : "staff-member" + "/workerinvoice"
                 }`,
                 {

@@ -151,7 +151,7 @@ const Industry = () => {
     }
   };
 
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [isOpen, setIsOpen] = useState(false);
 
   const [isDropdownVisible, setDropdownVisible] = useState(false);
@@ -256,7 +256,7 @@ const Industry = () => {
                     className="sidebar-link-setting"
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      navigate(`/${companyName}/materials&labor`, {
+                      navigate(`/${CompanyName}/materials&labor`, {
                         state: { navigats: ["/index", "/materials&labor"] },
                       });
                     }}
@@ -267,7 +267,7 @@ const Industry = () => {
                     className="sidebar-link-setting"
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      navigate(`/${companyName}/profile`, {
+                      navigate(`/${CompanyName}/profile`, {
                         state: { navigats: ["/index", "/profile"] },
                       });
                     }}

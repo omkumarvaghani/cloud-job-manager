@@ -24,7 +24,7 @@ const Invoice = ({
   page,
   setPage,
   setRowsPerPage,
-  companyName,
+  CompanyName,
   countData,
   rowsPerPage,
   isCustomer,
@@ -156,8 +156,8 @@ const Invoice = ({
                 cellData={cellData}
                 isNavigate={true}
                 navigatePath={
-                  companyName
-                    ? `/${companyName}/invoice-details`
+                  CompanyName
+                    ? `/${CompanyName}/invoice-details`
                     : "/staff-member/worker-invoice-detail"
                 }
                 isCollapse={false}

@@ -132,14 +132,15 @@ const Customer = ({
             <CardBody style={{ padding: "10px 0px" }}>
               <JobberTable
                 headerData={[
-                  { label: "Sr No." },
-                  { label: "Full Name", field: "FirstName" },
+                  { label: "Sr No." },  
+                  { label: "Full Name", field: "item.FirstName " },
                   { label: "Email", field: "EmailAddress" },
-                  { label: "Address", field: "properties.Address" },
-                  ...(!staffData?.CustomersProperties?.ViewCustomerNameAndAddressOnly
+                  { label: "Address", field: "property.Address" },
+                  ...(!staffData?.CustomersProperties
+                    ?.ViewCustomerNameAndAddressOnly
                     ? [{ label: "Action", field: "" }]
                     : []),
-                ]}  
+                ]}
                 setSortField={setSortField}
                 setSortOrder={setSortOrder}
                 sortOrder={sortOrder}
