@@ -308,8 +308,12 @@ const AddCustomer = ({
                   Property details
                 </span>
               </CardTitle>
-              {!location?.state?.id ||
-              (location?.state?.id && formik?.values?.location?.length <= 1) ? (
+              {console.log(
+                formik?.values?.location,
+                "formik?.values?.location?.length"
+              )}
+
+              {!location?.state?.id || formik?.values?.location?.length <= 1 ? (
                 <Grid className="my-4 mb-0 px-0">
                   <Address
                     setSelectedCountry={setSelectedCountry}
@@ -322,7 +326,7 @@ const AddCustomer = ({
                 </Grid>
               ) : (
                 <Grid
-                  className="my-4 mb-0 px-0 customerAddMOdel"
+                  className="my-4 mb-0 px-0 customerAddModel"
                   style={{ width: "98%" }}
                 >
                   <Card
@@ -347,8 +351,8 @@ const AddCustomer = ({
                         This Customer has multiple properties
                       </CardHeader>
                       <CardBody>
-                        Multiple properties can only edited inGrididually. To
-                        edit a property, select if from the Customer's list of
+                        Multiple properties can only be edited individually. To
+                        edit a property, select it from the Customer's list of
                         properties.
                       </CardBody>
                     </Grid>

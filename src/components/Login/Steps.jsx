@@ -98,7 +98,6 @@ const Steps = ({ EmailAddress, Password }) => {
     } else {
       try {
         const res = await AxiosInstance.get(`${baseUrl}/v1/revenue/dropdown`);
-        console.log(res, "res");
         const res2 = await AxiosInstance.get(`${baseUrl}/v1/teamsize/dropdown`);
         if (res.data.statusCode === 200 && res2.data.statusCode === 200) {
           const data1 = res.data.data?.map((item) => {

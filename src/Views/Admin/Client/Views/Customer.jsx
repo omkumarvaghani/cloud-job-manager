@@ -20,7 +20,7 @@ const Customer = ({
   page,
   setPage,
   setRowsPerPage,
-  companyName,
+  CompanyName,
   countData,
   rowsPerPage,
   isEdited,
@@ -52,8 +52,8 @@ const Customer = ({
             <Grid className="searchBarOfTable">
               <BlueButton
                 onClick={() => {
-                  if (companyName) {
-                    navigate(`/${companyName}/add-customer`, {
+                  if (CompanyName) {
+                    navigate(`/${CompanyName}/add-customer`, {
                       state: {
                         navigats: [
                           ...location?.state?.navigats,
@@ -74,8 +74,8 @@ const Customer = ({
                 }}
                 // onClick={() => {
                 //   const navigats = location?.state?.navigats || [];
-                //   if (companyName) {
-                //     navigate(`/${companyName}/add-customer`, {
+                //   if (CompanyName) {
+                //     navigate(`/${CompanyName}/add-customer`, {
                 //       state: {
                 //         navigats: [...navigats, "/add-customer"],
                 //       },
@@ -132,8 +132,8 @@ const Customer = ({
             <CardBody style={{ padding: "10px 0px" }}>
               <JobberTable
                 headerData={[
-                  { label: "Sr No." },  
-                  { label: "Full Name", field: "item.FirstName " },
+                  { label: "Sr No." },
+                  { label: "Full Name", field: "FirstName" },
                   { label: "Email", field: "EmailAddress" },
                   { label: "Address", field: "property.Address" },
                   ...(!staffData?.CustomersProperties
@@ -151,8 +151,8 @@ const Customer = ({
                 page={page}
                 isNavigate={true}
                 navigatePath={
-                  companyName
-                    ? `/${companyName}/customerdetails`
+                  CompanyName
+                    ? `/${CompanyName}/customerdetails`
                     : `/staff-member/ClientDetails`
                 }
               />

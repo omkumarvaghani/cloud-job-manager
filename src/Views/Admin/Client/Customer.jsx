@@ -13,12 +13,11 @@ import { TroubleshootOutlined } from "@mui/icons-material";
 const Customer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [customersData, setcustomersData] = useState([]);
-  console.log(customersData, "customersData");
   const [loader, setLoader] = useState(TroubleshootOutlined);
   const [countData, setCountData] = useState(0);
   const [tokenDecode, setTokenDecode] = useState(null);
@@ -28,9 +27,7 @@ const Customer = () => {
   const fetchData = async () => {
     try {
       const res = await handleAuth(navigate, location);
-      console.log(res, "resresresres");
       setTokenDecode(res?.data);
-      console.log(res?.data, "res?.data");
       if (res?.data?.CompanyId) {
         getData(res?.data?.CompanyId);
       }
@@ -79,7 +76,6 @@ const Customer = () => {
     }
 
     try {
-      console.log("API 1");
       const res = await AxiosInstance.get(`/v1/user/customers/${CompanyId}`, {
         params: {
           pageSize: rowsPerPage,
@@ -89,8 +85,7 @@ const Customer = () => {
           sortOrder: sortOrder,
         },
       });
-      console.log("API 2");
-      console.log(res, "res123");
+
       if (res?.data) {
         setcustomersData(res?.data?.data || []);
         setCountData(res?.data?.totalCount || 0);
@@ -111,8 +106,9 @@ const Customer = () => {
   }, [page, search, sortField, sortOrder]);
 
   const handleEditClick = (id) => {
-    if (companyName) {
-      navigate(`/${companyName}/add-customer`, {
+    console.log(id, "ididid");
+    if (CompanyName) {
+      navigate(`/${CompanyName}/add-customer`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/add-customer"],
@@ -132,15 +128,15 @@ const Customer = () => {
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
-          const response = await AxiosInstance.delete(`/customer/${id}`, {
+          const response = await AxiosInstance.delete(`/v1/user/${id}`, {
             data: { DeleteReason: deleteReason },
           });
-
-          if (response?.data?.statusCode === 200) {
+          console.log(response, "responssasase");
+          if (response?.data?.statusCode == 200) {
             showToast.success(response?.data?.message);
-
+            
             setcustomersData((prevData) =>
-              prevData.filter((customer) => customer.CustomerId !== id)
+              prevData.filter((customer) => customer.UserId !== id)
             );
 
             getData(tokenDecode?.CompanyId);
@@ -170,8 +166,6 @@ const Customer = () => {
   const cellData = customersData?.map((item, index) => {
     // const properties = item?.location || [];
     const properties = item?.profile ? [item.profile] : [];
-    console.log(properties, "propertiesproperties");
-    console.log(item, "item");
 
     let propertyDisplay;
     if (properties.length === 1) {
@@ -187,10 +181,8 @@ const Customer = () => {
       }`;
     }
 
-    console.log(propertyDisplay, "propertyDisplay");
-
     return {
-      key: item?.CustomerId,
+      key: item?.UserId,
       value: [
         page * rowsPerPage + index + 1,
 
@@ -215,7 +207,7 @@ const Customer = () => {
                 onClick={(e) => {
                   if (item?.Status !== "Canceled") {
                     e.stopPropagation();
-                    handleEditClick(item?.CustomerId);
+                    handleEditClick(item?.UserId);
                   }
                 }}
                 style={{
@@ -234,11 +226,12 @@ const Customer = () => {
                       : "auto",
                 }}
               />
+              {console.log(item?.UserId, "item?.UserId")}
               <DeleteIcone
                 className="customerEditImgToEdit"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDelete(item?.CustomerId);
+                  handleDelete(item?.UserId);
                 }}
                 style={{
                   pointerEvents: !(
@@ -276,7 +269,7 @@ const Customer = () => {
         setPage={setPage}
         setRowsPerPage={setRowsPerPage}
         rowsPerPage={rowsPerPage}
-        companyName={companyName}
+        CompanyName={CompanyName}
         countData={countData}
         isEdited={isEdited}
         setSortField={setSortField}

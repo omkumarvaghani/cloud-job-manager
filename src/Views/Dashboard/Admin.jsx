@@ -21,7 +21,6 @@ const AdminDashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { CompanyName } = useParams();
-  console.log(CompanyName,"CompanyName")
 const currentHour = new Date().getHours();
 
   let welcomeMessage;

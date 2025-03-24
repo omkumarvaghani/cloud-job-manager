@@ -37,8 +37,8 @@ const Quotes = () => {
       const res = await handleAuth(navigate, location);
       setTokenDecode(res.data);
       setDateDecode(res.themes);
-      if (res?.data?.companyId) {
-        getData(res?.data?.companyId);
+      if (res?.data?.CompanyId) {
+        getData(res?.data?.CompanyId);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -65,7 +65,7 @@ const Quotes = () => {
 
   const [sortField, setSortField] = useState("asc");
   const [sortOrder, setSortOrder] = useState("desc");
-  const getData = async (companyId) => {
+  const getData = async (CompanyId) => {
     try {
       setLoader(true);
       const params = {
@@ -77,10 +77,10 @@ const Quotes = () => {
         sortOrder: sortOrder,
       };
 
-      const res = await AxiosInstance.get(`/quote/get_quotes/${companyId}`, {
+      const res = await AxiosInstance.get(`/v1/quote/get_quotes/${CompanyId}`, {
         params,
       });
-
+      console.log(res, "resresresres");
       if (res?.data) {
         setQuotesData(res?.data?.data || []);
         setCountData(res?.data?.totalCount || 0);
@@ -94,8 +94,8 @@ const Quotes = () => {
     }
   };
   useEffect(() => {
-    if (tokenDecode?.companyId) {
-      getData(tokenDecode?.companyId);
+    if (tokenDecode?.CompanyId) {
+      getData(tokenDecode?.CompanyId);
     }
   }, [page, search, sortField, sortOrder]);
 
@@ -128,7 +128,7 @@ const Quotes = () => {
             setTimeout(() => {
               showToast.success(response?.data?.message);
             }, 500);
-            getData(tokenDecode?.companyId);
+            getData(tokenDecode?.CompanyId);
           } else {
             showToast.warning(response?.data?.message);
           }

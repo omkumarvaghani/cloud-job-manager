@@ -249,7 +249,7 @@ function AddClient() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await AxiosInstance.get(`/customer/${location?.state?.id}`);
+        const res = await AxiosInstance.get(`/v1/user/${location?.state?.id}`);
         formik.setValues(res.data.data);
         formik.setValues({
           ...res?.data?.data,
@@ -362,24 +362,22 @@ function AddClient() {
     setOpen(false);
   };
 
+  const [isChecked, setIsChecked] = useState({
+    Sunday: false,
+    Monday: true,
+    Tuesday: true,
+    Wednesday: true,
+    Thursday: true,
+    Friday: true,
+    Saturday: false,
+  });
 
-    const [isChecked, setIsChecked] = useState({
-      Sunday: false,
-      Monday: true,
-      Tuesday: true,
-      Wednesday: true,
-      Thursday: true,
-      Friday: true,
-      Saturday: false,
-    });
-  
-    const handleCheckboxChange = (day) => {
-      setIsChecked((prev) => ({
-        ...prev,
-        [day]: !prev[day],
-      }));
-    };
-  
+  const handleCheckboxChange = (day) => {
+    setIsChecked((prev) => ({
+      ...prev,
+      [day]: !prev[day],
+    }));
+  };
 
   return (
     <>
@@ -394,17 +392,10 @@ function AddClient() {
         isEdited={isEdited}
         CompanyName={CompanyName}
         handleZipChange={handleZipChange}
-
-
-
-
-
-
         times={times}
         handleSave={handleSave}
         handleTimeChange={handleTimeChange}
         handleOpenDialog={handleOpenDialog}
-
         handleCloseDialog={handleCloseDialog}
         handleCheckboxChange={handleCheckboxChange}
         isChecked={isChecked}
