@@ -7,11 +7,11 @@ const secretKey = process.env.JWT_SECRET || "f00e2fb1a87d0663bfc7f38cbab5091e032
 const protect = async (req, res, next) => {
   let token;
   if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
+    req.headers.authorization
   ) {
     token = req.headers.authorization.split(" ")[1];
   }
+
 
   if (!token) {
     return res.status(401).json({ error: "Not authorized, no token" });
@@ -31,6 +31,7 @@ const protect = async (req, res, next) => {
 
     next();
   } catch (error) {
+    console.log(token, '222')
     res.status(401).json({ error: "Not authorized, token failed" });
   }
 };
@@ -49,17 +50,26 @@ const protect = async (req, res, next) => {
 //       });
 //     }
 
-//     const decoded = jwt.verify(
-//       token,
-//       process.env.JWT_SECRET ||
-//       "f00e2fb1a87d0663bfc7f38cbab5091e0326e6e668a315a587b54ac2ee98456e"
-//     );
+//     let decoded; // Declare decoded before using it
+//     try {
+//       decoded = jwt.verify(
+//         token,
+//         process.env.JWT_SECRET ||
+//         "f00e2fb1a87d0663bfc7f38cbab5091e0326e6e668a315a587b54ac2ee98456e"
+//       );
+//     } catch (error) {
+//       return res.status(401).json({
+//         statusCode: 401,
+//         message: "Invalid or expired token",
+//       });
+//     }
 
 //     console.log(decoded, "decoded");
 
+//     // Fix for Company role comparison
 //     if (
 //       (decoded.Role === "Admin" && id !== decoded.UserId) ||
-//       (decoded.Role === "Company" && id !== decoded.CompanyId) ||
+//       (decoded.Role === "Company" && !(Array.isArray(decoded.CompanyId) ? decoded.CompanyId.includes(id) : id === decoded.CompanyId)) ||
 //       (decoded.Role === "Customer" && id !== decoded.UserId) ||
 //       (decoded.Role === "Worker" && id !== decoded.UserId)
 //     ) {
@@ -68,8 +78,6 @@ const protect = async (req, res, next) => {
 //         error: "User is not verified or does not have the correct ID for the role",
 //       });
 //     }
-
-//     console.log(decoded, 'decodeddecoded')
 
 //     req.user = {
 //       UserId: decoded.UserId,
@@ -80,7 +88,6 @@ const protect = async (req, res, next) => {
 //     next();
 //   } catch (error) {
 //     console.error(error);
-
 //     return res.status(500).json({
 //       statusCode: 500,
 //       message: "Authorization token is expired or invalid",
