@@ -120,7 +120,7 @@ const Quotes = () => {
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
-          const response = await AxiosInstance.delete(`/quote/${id}`, {
+          const response = await AxiosInstance.delete(`/v1/quote/${id}`, {
             data: { DeleteReason: deleteReason },
           });
           if (response?.data?.statusCode === 200) {

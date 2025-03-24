@@ -253,7 +253,7 @@ const QuotesDetails = ({
                         marginBottom: 0,
                       }}
                     ></Typography>
-                    {quotesData?.status || "status not available"}
+                    {quotesData?.Status || "status not available"}
                   </Typography>
                 </Grid>
                 <Typography

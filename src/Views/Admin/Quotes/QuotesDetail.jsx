@@ -36,7 +36,7 @@ function QuotesDetail() {
     try {
       handleAuth(navigate, location);
       const res = await AxiosInstance.get(
-        `/quote/quote_details/${location?.state?.id}`
+        `/v1/quote/quote_details/${location?.state?.id}`
       );
       setQuotesData(res?.data?.data);
     } catch (error) {
@@ -228,7 +228,6 @@ function QuotesDetail() {
 
   const menuItems = [
     {
-
       // convrt to contarct is comment but the in live got error so that temporarily this is comment
       label: "Convert to contract",
       // UCOMMENT FOR THE CONVERT TO CONTRACT

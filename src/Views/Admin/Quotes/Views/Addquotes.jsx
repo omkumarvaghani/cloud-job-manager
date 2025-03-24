@@ -155,8 +155,13 @@ const Addquotes = ({
                       }}
                     >
                       {console.log(customersData, "customersData")}
-                      {customersData?.FirstName
-                        ? `${customersData?.FirstName} ${customersData?.LastName}`
+                      {console.log(
+                        customersData?.location?.FirstName,
+                        "customersData?.location?.FirstName"
+                      )}
+
+                      {customersData?.location?.FirstName
+                        ? `${customersData?.location?.FirstName} ${customersData?.location?.LastName}`
                         : "Customer Name"}
                     </Typography>
                     {!Object.keys(customersData).length > 0 ? (
@@ -197,7 +202,7 @@ const Addquotes = ({
                         name="Title"
                         id="title"
                         placeholder="Enter job title"
-                        label="Job Title"
+                        label="Quote Title"
                         type="text"
                         className="text-blue-color w-100"
                       />

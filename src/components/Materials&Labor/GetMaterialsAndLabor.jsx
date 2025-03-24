@@ -192,7 +192,7 @@ const GetProducts = ({
   const getProducts = async () => {
     try {
       const res = await AxiosInstance.get(
-        `${baseUrl}/materialslabor/get_materialslabor/${
+        `${baseUrl}/v1/material/get_material/${
           localStorage.getItem("CompanyId") || tokenDecode?.companyId
         }`
       );

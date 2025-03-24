@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import "../Client/style.css";
 import { handleAuth } from "../../../components/Login/Auth";
@@ -33,6 +32,7 @@ function AddQuote() {
   const [dropdown, setDropdown] = useState(false);
   const [modal, setModal] = useState(false);
   const [customersData, setCustomersData] = useState({});
+  console.log(customersData, "customersDatacustomersData");
   const [propertyData, setPropertyData] = useState({});
   const [quotesData, setQuotesData] = useState({});
   const [showTax, setShowTax] = useState(false);
@@ -104,7 +104,6 @@ function AddQuote() {
   };
 
   const handleSelectChange = (index, selectedOption) => {
-   
     const newLineItems = [...lineItems];
 
     newLineItems[index] = {
@@ -204,11 +203,11 @@ function AddQuote() {
           response = await AxiosInstance.post(`/v1/quote`, object);
         } else {
           response = await AxiosInstance.put(
-            `/quote/${location?.state?.id}`,
+            `/v1/quote/${location?.state?.id}`,
             object
           );
         }
-        
+
         if (response?.data?.statusCode === 200) {
           setTimeout(() => {
             showToast.success(response?.data?.message);
@@ -274,7 +273,6 @@ function AddQuote() {
     },
   });
 
-  
   const updateStatus = (status) => {
     if (status === "Awaiting Response") {
       formik.setFieldValue("status", "Awaiting Response");
@@ -344,8 +342,9 @@ function AddQuote() {
         setLoader(true);
         try {
           const res = await AxiosInstance.get(
-            `/quote/quote_details/${location?.state?.id}`
+            `/v1/quote/quote_details/${location?.state?.id}`
           );
+          console.log(res,"res")
           if (res.data?.statusCode === 200) {
             const data = res?.data?.data;
 
@@ -399,7 +398,7 @@ function AddQuote() {
     const getNumber = async () => {
       try {
         const res = await AxiosInstance.get(
-          `/quote/get_number/${
+          `/v1/quote/get_number/${
             localStorage.getItem("CompanyId") || tokenDecode?.companyId
           }`
         );
@@ -503,12 +502,15 @@ function AddQuote() {
     const enteredQuoteNumber = Number(formik?.values?.QuoteNumber);
 
     const companyId =
-      localStorage.getItem("CompanyId") || tokenDecode?.companyId;
-
+      localStorage.getItem("CompanyId") || tokenDecode?.CompanyId;
+    console.log(tokenDecode, "tokenDecode");
     try {
-      const res = await AxiosInstance.post(`/quote/check_number/${companyId}`, {
-        QuoteNumber: enteredQuoteNumber,
-      });
+      const res = await AxiosInstance.post(
+        `/v1/quote/check_number/${companyId}`,
+        {
+          QuoteNumber: enteredQuoteNumber,
+        }
+      );
 
       if (res?.data?.statusCode === 200) {
         setTimeout(() => {
