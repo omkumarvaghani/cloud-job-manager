@@ -106,7 +106,6 @@ const Customer = () => {
   }, [page, search, sortField, sortOrder]);
 
   const handleEditClick = (id) => {
-    console.log(id, "ididid");
     if (CompanyName) {
       navigate(`/${CompanyName}/add-customer`, {
         state: {
@@ -131,7 +130,6 @@ const Customer = () => {
           const response = await AxiosInstance.delete(`/v1/user/${id}`, {
             data: { DeleteReason: deleteReason },
           });
-          console.log(response, "responssasase");
           if (response?.data?.statusCode == 200) {
             showToast.success(response?.data?.message);
             
@@ -226,7 +224,6 @@ const Customer = () => {
                       : "auto",
                 }}
               />
-              {console.log(item?.UserId, "item?.UserId")}
               <DeleteIcone
                 className="customerEditImgToEdit"
                 onClick={(e) => {

@@ -385,7 +385,6 @@ const Sidebar = ({
                       }}
                     >
                       {prop?.name}
-                      {console.log(prop?.name,"prop?.name")}
                     </Typography>
                   </DropdownToggle>
 

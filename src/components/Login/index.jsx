@@ -78,7 +78,6 @@ const Login = () => {
       const res = await AxiosInstance.post(`${baseUrl}/v1/auth/login`, {
         ...values,
       });
-      console.log(res, "res");
       if (res.data.statusCode == "200") {
         localStorage.setItem("adminToken", res.data.token);
         localStorage.setItem("CompanyId", res.data.data.UserId);
@@ -89,7 +88,6 @@ const Login = () => {
           navigate(`/${res.data.data.CompanyName}/index`, {
             state: { navigats: ["/index"] },
           });
-          console.log(res.data.data.CompanyName,"res.data.data.CompanyName")
         }, 1000);
       } else if (res.data.statusCode == "300") {
         localStorage.setItem("adminToken", res.data.token);
@@ -144,7 +142,6 @@ const Login = () => {
           const res = await AxiosInstance.post(`/v1/auth/token_data`, {
             token,
           });
-          console.log(res, "res");
           if (res.data.statusCode !== "200") {
             // localStorage.clear();
             // navigate("/auth/login");

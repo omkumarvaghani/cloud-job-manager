@@ -16,7 +16,6 @@ const Address = ({
 }) => {
   return (
     <Grid className="d-flex flex-column gap-3 ">
-      {console.log(formik?.values?.Address,"formik?.values?.Address")}
       <InputText
         value={formik?.values?.Address}
         onChange={handleChange}

@@ -258,7 +258,6 @@ function AddClient() {
           if (response?.data?.statusCode === "200") {
             setLoader(false);
             showToast.success(response?.data?.message);
-            console.log(response?.data?.message, "response?.data?.message");
             // Handle navigatio n after successful update
             navigate(
               `/${
@@ -286,7 +285,6 @@ function AddClient() {
             AddedAt: new Date(),
             Role: "Customer",
           });
-          console.log(response, "kp");
           if (response?.data?.statusCode == "200") {
             setLoader(false);
             showToast.success(response?.data?.message);
@@ -351,7 +349,6 @@ function AddClient() {
     },
   });
 
-  console.log(formik, "krushil");
   const formatPhoneNumber = (value) => {
     const PhoneNumber = value.replace(/[^\d]/g, "");
     const limitedPhoneNumber = PhoneNumber.slice(0, 10);
@@ -399,11 +396,9 @@ function AddClient() {
     const fetchData = async () => {
       try {
         const res = await AxiosInstance.get(`/v1/user/${location?.state?.id}`);
-        console.log(res?.data, "API Response"); // ✅ Debug API Response
 
         const userProfile = res?.data?.data?.userProfile;
         if (userProfile) {
-          console.log(userProfile, "userProfile"); // ✅ Debug UserProfile
 
           formik.setValues({
             FirstName: userProfile?.FirstName || "",
@@ -416,7 +411,6 @@ function AddClient() {
             Zip: userProfile?.Zip || "",
             Country: userProfile?.Country || "",
           });
-          console.log(userProfile?.City, "userProfile?.City");
         }
       } catch (error) {
         console.error("Error: ", error?.message);

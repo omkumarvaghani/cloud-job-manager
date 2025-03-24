@@ -858,7 +858,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
       //   // `/notifications/${localStorage.getItem("CompanyId")}`
       // );
       let response;
-      
+
       if (response?.data.statusCode === 200) {
         const filteredNotifications = response?.data?.notifications?.filter(
           (notification) =>
@@ -1123,7 +1123,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             className="bold-text"
                             style={{ fontSize: "12px" }}
                           >
-                            {data?.full_name ||
+                            {console.log(data, "data")}
+                            {data?.full_name || 
                               data?.FirstName + " " + data?.LastName}
                           </Typography>
                         </Typography>

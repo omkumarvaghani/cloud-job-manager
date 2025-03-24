@@ -279,7 +279,6 @@ const Steps = ({ EmailAddress, Password }) => {
         `${baseUrl}/v1/auth/register`,
         values
       ); 
-      console.log(res, "res");
       if (res.data.statusCode === "200") {
         showToast.success(res.data.message);
         setTimeout(() => { 

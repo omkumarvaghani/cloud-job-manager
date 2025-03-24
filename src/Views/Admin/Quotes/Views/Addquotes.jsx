@@ -73,7 +73,7 @@ const Addquotes = ({
   setPropertyData,
   setCustomersData,
   CompanyName,
-  handleSubmits
+  handleSubmits,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -100,7 +100,7 @@ const Addquotes = ({
                   "You have unsaved changes. Are you sure you want to leave?"
                 );
                 if (!confirmLeave) {
-                  return; 
+                  return;
                 }
               }
               navigate(
@@ -113,7 +113,7 @@ const Addquotes = ({
                   state: {
                     navigats: location?.state?.navigats.filter(
                       (item) => item !== "/quotes"
-                    ),  
+                    ),
                   },
                 }
               );
@@ -154,6 +154,7 @@ const Addquotes = ({
                         fontWeight: "600",
                       }}
                     >
+                      {console.log(customersData, "customersData")}
                       {customersData?.FirstName
                         ? `${customersData?.FirstName} ${customersData?.LastName}`
                         : "Customer Name"}
@@ -180,26 +181,6 @@ const Addquotes = ({
                 >
                   <Col className="col-4 mt-3 order-1 jobinput " xl={5}>
                     <Grid>
-                      {/* <TextField
-                        required
-                        ref={setTitleRef}
-                        value={formik?.values?.Title}
-                        onChange={handleChange}
-                        onBlur={formik?.handleBlur}
-                        error={
-                          formik?.touched?.Title &&
-                          Boolean(formik?.errors?.Title)
-                        }
-                        helperText={
-                          formik?.touched?.Title && formik?.errors?.Title
-                        }
-                        name="Title"
-                        id="title"
-                        placeholder="Enter job title"
-                        label="Job Title"
-                        type="text"
-                        className="text-blue-color w-100"
-                      /> */}
                       <InputText
                         required
                         ref={setTitleRef}
@@ -240,7 +221,8 @@ const Addquotes = ({
                           <Typography className="text-blue-color">
                             {propertyData?.Address ||
                               customersData?.location[0]?.Address ||
-                              "-"}{" "},
+                              "-"}{" "}
+                            ,
                             <br />
                             {propertyData?.City ||
                               customersData?.location[0]?.City ||
@@ -248,10 +230,12 @@ const Addquotes = ({
                             ,{" "}
                             {propertyData?.State ||
                               customersData?.location[0]?.State ||
-                              "-"}{" "},
+                              "-"}{" "}
+                            ,
                             {propertyData?.Zip ||
                               customersData?.location[0]?.Zip ||
-                              "-"},
+                              "-"}
+                            ,
                             <br />
                             {propertyData?.Country ||
                               customersData?.location[0]?.Country ||

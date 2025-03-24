@@ -286,6 +286,7 @@ const Index = ({
                         Property details
                       </span>
                     </CardTitle>
+               
                     {!location?.state?.id ||
                     (location?.state?.id &&
                       formik?.values?.location?.length <= 1) ? (
