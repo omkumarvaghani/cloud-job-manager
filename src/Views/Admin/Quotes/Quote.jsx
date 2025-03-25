@@ -172,16 +172,16 @@ const Quotes = () => {
         <b
           style={{
             color:
-              item?.status === "Awaiting Response"
+              item?.Status === "Awaiting Response"
                 ? "orange"
-                : item?.status === "Approved"
+                : item?.Status === "Approved"
                 ? "#58cc58"
-                : item?.status === "Request changed"
+                : item?.Status === "Request changed"
                 ? "#FF33C6"
                 : "",
           }}
         >
-          {item?.status}
+          {item?.Status}
         </b>,
         <>{`$${new Intl.NumberFormat("en-US", {
           minimumFractionDigits: 2,

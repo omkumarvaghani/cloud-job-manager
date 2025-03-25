@@ -649,7 +649,7 @@ const Addquotes = ({
                                 ) {
                                   // handleSaveQuote("Awaiting Response");
                                   formik.setFieldValue(
-                                    "status",
+                                    "Status",
                                     "Awaiting Response"
                                   );
                                   setModal(true);
@@ -674,7 +674,7 @@ const Addquotes = ({
                                   formik?.values?.Title
                                 ) {
                                   formik.setFieldValue(
-                                    "status",
+                                    "Status",
                                     "Awaiting Response"
                                   );
                                   setModal(true); // Mail send nahi hoga, sirf modal open hoga
@@ -701,7 +701,7 @@ const Addquotes = ({
                             {/* <DropdownItem
                               // onClick={() => {
                               //   formik.setFieldValue(
-                              //     "status",
+                              //     "Status",
                               //     "Awaiting Response"
                               //   );
                               //   handleSaveQuote(true);
@@ -709,7 +709,7 @@ const Addquotes = ({
                               onClick={() => {
                                 handleSaveQuote("Awaiting Response")
                                 formik.setFieldValue(
-                                  "status",
+                                  "Status",
                                   "Awaiting Response"
                                 );
                               }}
@@ -719,7 +719,7 @@ const Addquotes = ({
                             <DropdownItem
                               onClick={() => {
                                 formik.setFieldValue(
-                                  "status",
+                                  "Status",
                                   "Awaiting Response"
                                 );
                                 handleSaveQuote("Awaiting Response");

@@ -159,8 +159,8 @@ function AddQuote() {
       Attachment: [],
       Discount: "",
       Tax: "",
-      status: "",
-    },
+      Status: "",
+    },        
     validationSchema: Yup.object({
       Title: Yup.string().required("Title Required"),
     }),
@@ -273,17 +273,17 @@ function AddQuote() {
     },
   });
 
-  const updateStatus = (status) => {
-    if (status === "Awaiting Response") {
-      formik.setFieldValue("status", "Awaiting Response");
+  const updateStatus = (Status) => {
+    if (Status === "Awaiting Response") {
+      formik.setFieldValue("Status", "Awaiting Response");
     } else if (location?.state?.id) {
-      if (formik?.values?.status === "Draft") {
-        formik?.setFieldValue("status", "Draft");
-      } else if (formik?.values?.status === "Awaiting Response") {
-        formik?.setFieldValue("status", "Awaiting Response");
+      if (formik?.values?.Status === "Draft") {
+        formik?.setFieldValue("Status", "Draft");
+      } else if (formik?.values?.Status === "Awaiting Response") {
+        formik?.setFieldValue("Status", "Awaiting Response");
       }
     } else {
-      formik.setFieldValue("status", "Awaiting Response");
+      formik.setFieldValue("Status", "Awaiting Response");
     }
   };
 
@@ -301,11 +301,11 @@ function AddQuote() {
   //   }
   // };
 
-  const handleSaveQuote = async (status) => {
-    if (status === "Awaiting Response") {
-      formik.setFieldValue("status", "Awaiting Response");
+  const handleSaveQuote = async (Status) => {
+    if (Status === "Awaiting Response") {
+      formik.setFieldValue("Status", "Awaiting Response");
     }
-    updateStatus(status);
+    updateStatus(Status);
     try {
       return await formik.submitForm();
     } catch (error) {
@@ -315,7 +315,7 @@ function AddQuote() {
 
   const handleConvertJob = async () => {
     if (lineItems.length > 0 && lineItems[0].Name !== "") {
-      await formik.setFieldValue("status", "Draft");
+      await formik.setFieldValue("Status", "Draft");
       try {
         setRedirectToContract(true);
         await formik.submitForm();

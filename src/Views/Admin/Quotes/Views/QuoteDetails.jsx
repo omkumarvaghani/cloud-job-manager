@@ -220,13 +220,13 @@ const QuotesDetails = ({
                       fontSize: "14px",
                       display: "flex",
                       backgroundColor:
-                        quotesData?.status === "Awaiting Response"
+                        quotesData?.Status === "Awaiting Response"
                           ? "rgba(255, 165, 0, 0.2)"
-                          : quotesData?.status === "Approved"
+                          : quotesData?.Status === "Approved"
                           ? "rgba(88, 230, 88, 0.2)"
-                          : quotesData?.status === "Draft"
+                          : quotesData?.Status === "Draft"
                           ? "rgba(0, 0, 255, 0.2)"
-                          : quotesData?.status === "Request changed"
+                          : quotesData?.Status === "Request changed"
                           ? "#FFDFF6"
                           : "",
                       alignItems: "center",
@@ -238,13 +238,13 @@ const QuotesDetails = ({
                       className=""
                       style={{
                         backgroundColor:
-                          quotesData?.status === "Awaiting Response"
+                          quotesData?.Status === "Awaiting Response"
                             ? "orange"
-                            : quotesData?.status === "Approved"
+                            : quotesData?.Status === "Approved"
                             ? "#58cc58"
-                            : quotesData?.status === "Draft"
+                            : quotesData?.Status === "Draft"
                             ? "rgb(6, 49, 100)"
-                            : quotesData?.status === "Request changed"
+                            : quotesData?.Status === "Request changed"
                             ? "#FF33C6"
                             : "",
                         borderRadius: "50%",
@@ -253,7 +253,7 @@ const QuotesDetails = ({
                         marginBottom: 0,
                       }}
                     ></Typography>
-                    {quotesData?.Status || "status not available"}
+                    {quotesData?.Status || "Status not available"}
                   </Typography>
                 </Grid>
                 <Typography
