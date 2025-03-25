@@ -43,9 +43,9 @@ const ForgotPassword = () => {
           position: "top-center",
           autoClose: 1000,
         });
-        setTimeout(() => {
-          navigate(`/auth/login`);
-        }, 2000);
+        // setTimeout(() => {
+        //   navigate(`/auth/login`);
+        // }, 2000);
       } else {
         throw new Error("Email sending failed");
       }

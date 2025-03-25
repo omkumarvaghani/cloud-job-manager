@@ -11,7 +11,7 @@ import { Typography } from "@mui/material";
 const Reports = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -64,8 +64,8 @@ const Reports = () => {
   };
 
   const handleEditClick = (id) => {
-    if (companyName) {
-      navigate(`/${companyName}/add-customer`, {
+    if (CompanyName) {
+      navigate(`/${CompanyName}/add-customer`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/add-customer"],
@@ -185,7 +185,7 @@ const Reports = () => {
         setPage={setPage}
         setRowsPerPage={setRowsPerPage}
         rowsPerPage={rowsPerPage}
-        companyName={companyName}
+        CompanyName={CompanyName}
         countData={countData}
         isEdited={isEdited}
         tokenDecode={tokenDecode}

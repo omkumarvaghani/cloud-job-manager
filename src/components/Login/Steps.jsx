@@ -98,7 +98,6 @@ const Steps = ({ EmailAddress, Password }) => {
     } else {
       try {
         const res = await AxiosInstance.get(`${baseUrl}/v1/revenue/dropdown`);
-        console.log(res, "res");
         const res2 = await AxiosInstance.get(`${baseUrl}/v1/teamsize/dropdown`);
         if (res.data.statusCode === 200 && res2.data.statusCode === 200) {
           const data1 = res.data.data?.map((item) => {
@@ -280,7 +279,6 @@ const Steps = ({ EmailAddress, Password }) => {
         `${baseUrl}/v1/auth/register`,
         values
       ); 
-      console.log(res, "res");
       if (res.data.statusCode === "200") {
         showToast.success(res.data.message);
         setTimeout(() => { 
@@ -353,7 +351,7 @@ const Steps = ({ EmailAddress, Password }) => {
                 >
                   <Grid
                     className="progress-bar"
-                    role="progressbar"
+                    Role="progressbar"
                     style={{ width: currentStep > 0 ? "100%" : "0%" }}
                     aria-valuenow="0"
                     aria-valuemin="0"
@@ -367,7 +365,7 @@ const Steps = ({ EmailAddress, Password }) => {
                 >
                   <Grid
                     className="progress-bar"
-                    role="progressbar"
+                    Role="progressbar"
                     style={{ width: currentStep > 1 ? "100%" : "0%" }}
                     aria-valuenow="0"
                     aria-valuemin="0"

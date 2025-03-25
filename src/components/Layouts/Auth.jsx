@@ -32,7 +32,7 @@ const Auth = () => {
         <Grid style={{ width: "100%" }}>
           <Routes>
             {getRoutes(routes)}
-            <Route path="*" element={<Navigate to="/auth/login" replace />} />
+            {/* <Route path="*" element={<Navigate to="/auth/login" replace />} /> */}
           </Routes>
         </Grid>
       </Grid>

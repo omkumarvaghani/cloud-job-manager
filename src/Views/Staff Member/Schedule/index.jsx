@@ -22,7 +22,7 @@ import BlueButton from "../../../components/Button/BlueButton";
 function Schedual() {
   const baseUrl = process.env.REACT_APP_BASE_API;
   const navigate = useNavigate();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
 
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);

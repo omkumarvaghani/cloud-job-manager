@@ -22,7 +22,7 @@ const Quotes = () => {
   }, []);
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_API;
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);

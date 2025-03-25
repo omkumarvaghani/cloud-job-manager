@@ -25,9 +25,10 @@ const StaffMember = () => {
   useEffect(() => {
     const fetchStaffData = async () => {
       try {
-        const response = await AxiosInstance.get(
-          `${baseUrl}/worker/get/${localStorage.getItem("worker_id")}`
-        );
+        let response;   
+        // const response = await AxiosInstance.get(
+        //   `${baseUrl}/worker/get/${localStorage.getItem("worker_id")}`
+        // );
         setStaffData(response?.data?.data?.permissions);
       } catch (error) {}
     };
@@ -64,7 +65,6 @@ const StaffMember = () => {
           Object.entries(staffData?.CustomersProperties).every(
             ([key, value]) => !value
           );
-
 
         const newRoutes = data.filter((item) => {
           if (item.path === "/WorkerQuotes" && !quotes) {

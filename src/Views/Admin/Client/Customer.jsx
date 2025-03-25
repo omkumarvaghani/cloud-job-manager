@@ -8,16 +8,17 @@ import showToast from "../../../components/Toast/Toster.jsx";
 import { DeleteIcone, EditIcon } from "../../../components/Icon/Index.jsx";
 import { Typography } from "@mui/material";
 import { useStaffContext } from "../../../components/StaffData/Staffdata.jsx";
+import { TroubleshootOutlined } from "@mui/icons-material";
 
 const Customer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [customersData, setcustomersData] = useState([]);
-  const [loader, setLoader] = useState(true);
+  const [loader, setLoader] = useState(TroubleshootOutlined);
   const [countData, setCountData] = useState(0);
   const [tokenDecode, setTokenDecode] = useState(null);
   const isEdited = true;
@@ -27,8 +28,8 @@ const Customer = () => {
     try {
       const res = await handleAuth(navigate, location);
       setTokenDecode(res?.data);
-      if (res?.data?.companyId) {
-        getData(res?.data?.companyId);
+      if (res?.data?.CompanyId) {
+        getData(res?.data?.CompanyId);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -38,15 +39,15 @@ const Customer = () => {
     fetchData();
   }, [rowsPerPage, page, search]);
 
-  // const getData = async (companyId) => {
+  // const getData = async (CompanyId) => {
   //   setLoader(true);
   //   try {
-  //     if (!companyId) {
+  //     if (!CompanyId) {
   //       console.error("Company ID is not available.");
   //       return;
   //     }
 
-  //     const res = await AxiosInstance.get(`/customer/get/${companyId}`, {
+  //     const res = await AxiosInstance.get(`/customer/get/${CompanyId}`, {
   //       params: {
   //         pageSize: rowsPerPage,
   //         pageNumber: page,
@@ -68,14 +69,14 @@ const Customer = () => {
   // };
   const [sortField, setSortField] = useState("asc");
   const [sortOrder, setSortOrder] = useState("desc");
-  const getData = async (companyId) => {
-    if (!companyId) {
+  const getData = async (CompanyId) => {
+    if (!CompanyId) {
       console.error("Company ID is not available.");
       return;
     }
 
     try {
-      const res = await AxiosInstance.get(`/customer/get/${companyId}`, {
+      const res = await AxiosInstance.get(`/v1/user/customers/${CompanyId}`, {
         params: {
           pageSize: rowsPerPage,
           pageNumber: page,
@@ -99,14 +100,14 @@ const Customer = () => {
   };
 
   useEffect(() => {
-    if (tokenDecode?.companyId) {
-      getData(tokenDecode?.companyId);
+    if (tokenDecode?.CompanyId) {
+      getData(tokenDecode?.CompanyId);
     }
   }, [page, search, sortField, sortOrder]);
 
   const handleEditClick = (id) => {
-    if (companyName) {
-      navigate(`/${companyName}/add-customer`, {
+    if (CompanyName) {
+      navigate(`/${CompanyName}/add-customer`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/add-customer"],
@@ -126,18 +127,17 @@ const Customer = () => {
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
-          const response = await AxiosInstance.delete(`/customer/${id}`, {
+          const response = await AxiosInstance.delete(`/v1/user/${id}`, {
             data: { DeleteReason: deleteReason },
           });
-
-          if (response?.data?.statusCode === 200) {
+          if (response?.data?.statusCode == 200) {
             showToast.success(response?.data?.message);
-
+            
             setcustomersData((prevData) =>
-              prevData.filter((customer) => customer.CustomerId !== id)
+              prevData.filter((customer) => customer.UserId !== id)
             );
 
-            getData(tokenDecode?.companyId);
+            getData(tokenDecode?.CompanyId);
           } else {
             showToast.warning(response?.data?.message);
           }
@@ -162,7 +162,8 @@ const Customer = () => {
   };
 
   const cellData = customersData?.map((item, index) => {
-    const properties = item?.location || [];
+    // const properties = item?.location || [];
+    const properties = item?.profile ? [item.profile] : [];
 
     let propertyDisplay;
     if (properties.length === 1) {
@@ -171,19 +172,20 @@ const Customer = () => {
         property?.City || "City not available"
       }, ${property?.State || "State not available"}, ${
         property?.Country || "Country not available"
-      }, ${property?.Zip || "Zip not available"} `;
+      }, ${property?.Zip || "Zip not available"}`;
     } else {
       propertyDisplay = `${properties.length} ${
-        properties?.length > 1 ? "Properties" : "Property"
+        properties.length > 1 ? "Properties" : "Property"
       }`;
     }
+
     return {
-      key: item?.CustomerId,
+      key: item?.UserId,
       value: [
         page * rowsPerPage + index + 1,
 
-        `${item?.FirstName || "FirstName not available"} ${
-          item?.LastName || "LastName not available"
+        `${item?.profile?.FirstName || "FirstName not available"} ${
+          item?.profile?.LastName || "LastName not available"
         }`,
         item?.EmailAddress || "EmailAddress not available",
 
@@ -203,7 +205,7 @@ const Customer = () => {
                 onClick={(e) => {
                   if (item?.Status !== "Canceled") {
                     e.stopPropagation();
-                    handleEditClick(item?.CustomerId);
+                    handleEditClick(item?.UserId);
                   }
                 }}
                 style={{
@@ -226,7 +228,7 @@ const Customer = () => {
                 className="customerEditImgToEdit"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDelete(item?.CustomerId);
+                  handleDelete(item?.UserId);
                 }}
                 style={{
                   pointerEvents: !(
@@ -264,7 +266,7 @@ const Customer = () => {
         setPage={setPage}
         setRowsPerPage={setRowsPerPage}
         rowsPerPage={rowsPerPage}
-        companyName={companyName}
+        CompanyName={CompanyName}
         countData={countData}
         isEdited={isEdited}
         setSortField={setSortField}

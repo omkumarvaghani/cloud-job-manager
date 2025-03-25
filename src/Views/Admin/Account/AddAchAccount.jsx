@@ -26,7 +26,7 @@ const AddAchAccount = ({
   fetchData,
   CustomerId,
 }) => {
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const planFormik = useFormik({
     initialValues: {
       Number: "",
@@ -75,7 +75,7 @@ const AddAchAccount = ({
           country: values.Country,
           phone: values.Number,
           email: values.Email,
-          company: companyName,
+          company: CompanyName,
           CompanyId: localStorage.getItem("CompanyId"),
           customer_vault_id: vaultId,
           type: "ach",

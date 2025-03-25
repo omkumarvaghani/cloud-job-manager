@@ -315,7 +315,7 @@ const NmiKeys = ({ modelOpen, setModelOpen, item, getAllData }) => {
           <Formik
             initialValues={{
               CompanyId: selectedPlan?.CompanyId || item?.companyId || "",
-              CompanyName: selectedPlan?.CompanyName || item?.companyName || "",
+              CompanyName: selectedPlan?.CompanyName || item?.CompanyName || "",
               SecurityKey: selectedPlan?.SecurityKey || item?.SecurityKey || "",
               PublicKey: selectedPlan?.PublicKey || item?.PublicKey || "",
               SigningKey: selectedPlan?.SigningKey || item?.SigningKey || "",
@@ -345,7 +345,7 @@ const NmiKeys = ({ modelOpen, setModelOpen, item, getAllData }) => {
                         <Autocomplete
                           className="text-blue-color"
                           options={NmiData || []}
-                          getOptionLabel={(option) => option?.companyName || ""}
+                          getOptionLabel={(option) => option?.CompanyName || ""}
                           value={
                             NmiData.find(
                               (ind) => ind.companyId === values?.CompanyId
@@ -359,7 +359,7 @@ const NmiKeys = ({ modelOpen, setModelOpen, item, getAllData }) => {
                             );
                             setFieldValue(
                               "CompanyName",
-                              newValue ? newValue?.companyName : ""
+                              newValue ? newValue?.CompanyName : ""
                             );
                           }}
                           onInputChange={(_, newInputValue) => {
@@ -378,7 +378,7 @@ const NmiKeys = ({ modelOpen, setModelOpen, item, getAllData }) => {
                                   event.key === "Enter" &&
                                   !NmiData.some(
                                     (ind) =>
-                                      ind.companyName.toLowerCase() ===
+                                      ind.CompanyName.toLowerCase() ===
                                       inputValue2.toLowerCase()
                                   )
                                 ) {
@@ -388,7 +388,7 @@ const NmiKeys = ({ modelOpen, setModelOpen, item, getAllData }) => {
                           )}
                           filterOptions={(options, state) => {
                             return options.filter((option) =>
-                              option.companyName
+                              option.CompanyName
                                 .toLowerCase()
                                 .includes(state.inputValue.toLowerCase())
                             );

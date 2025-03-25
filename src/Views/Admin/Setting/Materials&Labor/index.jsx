@@ -81,6 +81,7 @@ const MaterialsLabor = () => {
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedAdminId, setSelectedAdminId] = useState("");
+  console.log(selectedAdminId, "selectedAdminId");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [productAndService, setProductAndService] = useState([]);
@@ -95,9 +96,8 @@ const MaterialsLabor = () => {
   const [imageLoader, setImageLoader] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [tokenDecode, setTokenDecode] = useState({});
-    const [inputValue, setInputValue] = useState("");
-    const [searchInput, setSearchInput] = useState("");
-
+  const [inputValue, setInputValue] = useState("");
+  const [searchInput, setSearchInput] = useState("");
 
   const [DateDecode, setDateDecode] = useState({});
   const fetchData = async () => {
@@ -129,7 +129,7 @@ const MaterialsLabor = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const getData = async () => {
     try {
-      const res = await AxiosInstance.get(`/materialslabor/get/${CompanyId}`, {
+      const res = await AxiosInstance.get(`/v1/material/get/${CompanyId}`, {
         params: {
           pageSize: rowsPerPage,
           pageNumber: page,
@@ -139,6 +139,7 @@ const MaterialsLabor = () => {
           sortOrder: sortOrder,
         },
       });
+      console.log(res, "resresres");
       setProductAndService(res?.data?.data);
       setCountData(res?.data?.count);
     } catch (error) {
@@ -305,10 +306,11 @@ const MaterialsLabor = () => {
   };
 
   const handleDelete = (id) => {
+    console.log(id,"idididid")
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
-          const response = await AxiosInstance.delete(`/materialslabor/${id}`, {
+          const response = await AxiosInstance.delete(`/v1/material/${id}`, {
             data: { DeleteReason: deleteReason },
           });
           if (response?.data?.statusCode === 200) {
@@ -343,6 +345,9 @@ const MaterialsLabor = () => {
   };
 
   const CollapseData = ({ data }) => {
+    {
+      console.log(data, "dtaaaaaaaaa");
+    }
     return (
       <Grid className="d-flex gap-4 mt-3 mb-3 w-100">
         <Col className="card col-8 productDetaillTable">
@@ -362,6 +367,7 @@ const MaterialsLabor = () => {
                 }}
                 className="text-blue-color"
               >
+                {console.log(data?.Description, "data?.Description")}
                 {data?.Description || "Description not available"}
               </Typography>
             </Grid>
@@ -495,7 +501,7 @@ const MaterialsLabor = () => {
   //   setSelectedUnitsAndHours(null);
   // }, [selectedProductAndService]);
 
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [isOpenDropDown, setIsOpenDropDown] = useState(false);
   const toggle = () => setIsOpenDropDown(!isOpenDropDown);
 
@@ -544,7 +550,7 @@ const MaterialsLabor = () => {
                     <SettingDropdown
                       isOpenDropDown={isOpenDropDown}
                       toggle={toggle}
-                      companyName={companyName}
+                      CompanyName={CompanyName}
                     />
                   )}
                 </Grid> */}
@@ -552,7 +558,7 @@ const MaterialsLabor = () => {
                 <SettingDropdown
                   isOpenDropDown={isOpenDropDown}
                   toggle={toggle}
-                  companyName={companyName}
+                  CompanyName={CompanyName}
                 />
               </Grid>
               <Grid
@@ -699,8 +705,8 @@ const MaterialsLabor = () => {
         handleDrop={handleDrop}
         previewModalOpen={previewModalOpen}
         handleFilePreview={handleFilePreview}
-          setInputValue={setInputValue}
-                setSearchInput={setSearchInput}
+        setInputValue={setInputValue}
+        setSearchInput={setSearchInput}
       />
     </>
   );
