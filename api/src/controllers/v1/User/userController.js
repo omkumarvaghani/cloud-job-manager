@@ -604,3 +604,69 @@ exports.addLocation = async (req, res) => {
         });
     }
 };
+
+exports.getCustomerDetail = async (req, res) => {
+    const { UserId } = req.params;
+    const sortField = queryParams.sortField || "updatedAt";
+    const sortOrder = queryParams.sortOrder === "desc" ? -1 : 1;
+
+    let userSearchQuery = { UserId, IsDelete: false };
+
+    let sortOptions = {};
+    if (sortField) {
+        sortOptions[sortField] = sortOrder;
+    }
+
+    const customers = await User.aggregate([
+        {
+            $match: userSearchQuery,
+        },
+        {
+            $lookup: {
+                from: "user-profiles",
+                localField: "UserId",
+                foreignField: "UserId",
+                as: "profile",
+            },
+        },
+        {
+            $unwind: {
+                path: "$profile",
+                preserveNullAndEmptyArrays: true,
+            },
+        },
+        {
+            $project: {
+                _id: 1,
+                UserId: 1,
+                EmailAddress: 1,
+                FirstName: "$profile.FirstName",
+                LastName: "$profile.LastName",
+                Address: "$profile.Address",
+                City: "$profile.City",
+                State: "$profile.State",
+                Country: "$profile.Country",
+                Zip: "$profile.Zip",
+                PhoneNumber: "$profile.PhoneNumber",
+                CompanyName: "$profile.CompanyName",
+                createdAt: 1,
+                updatedAt: 1,
+                IsDelete: 1,
+            },
+        },
+        { $sort: sortOptions },
+    ]);
+
+    if (customers.length > 0) {
+        return {
+            statusCode: 200,
+            message: "Customer retrieved successfully",
+            data: customers[0],
+        };
+    } else {
+        return {
+            statusCode: 404,
+            message: "No Customer found",
+        };
+    }
+};

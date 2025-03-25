@@ -11,7 +11,8 @@ const {
   getCustomersByCompanyId,
   deleteUser,
   getUserByCompanyId,
-  getCustomersWithLocations
+  getCustomersWithLocations,
+  getCustomerDetail
 } = require("../../controllers/v1/User/userController");
 const { protect } = require("../../middleware/authMiddleware");
 const router = express.Router();
@@ -31,5 +32,6 @@ router.put("/update-profile/:CompanyId", protect, updateCompanyProfile);
 
 router.get('/customers/:CompanyId', protect, getCustomersByCompanyId);
 router.get('/get_customer/:CompanyId', protect, getCustomersWithLocations);
+router.get('/detail/:UserId', protect, getCustomerDetail);
 
 module.exports = router;
