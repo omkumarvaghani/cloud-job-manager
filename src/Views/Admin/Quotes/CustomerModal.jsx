@@ -7,7 +7,7 @@ import {
   Typography,
   Grid,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import DomainAddOutlinedIcon from "@mui/icons-material/DomainAddOutlined";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -40,7 +40,8 @@ const CustomerModal = ({
   const [loader, setLoader] = useState(true);
   const [CompanyId, setCompanyId] = useState();
 
-  const fetchTokenData = async () => {
+  // Memoized fetch function
+  const fetchTokenData = useCallback(async () => {
     if (!CompanyId) {
       try {
         const token =
@@ -63,11 +64,11 @@ const CustomerModal = ({
         setLoader(false);
       }
     }
-  };
+  }, [CompanyId]);
 
   useEffect(() => {
     fetchTokenData();
-  }, []);
+  }, [fetchTokenData]);
 
   const handleClose = (id) => {
     const isStaffMember = locations?.pathname?.includes("/staff-member");
@@ -84,7 +85,8 @@ const CustomerModal = ({
     });
   };
 
-  const fetchData = async () => {
+  // Improved fetchData with error handling
+  const fetchData = useCallback(async () => {
     try {
       setLoader(true);
       const res = await AxiosInstance.get(
@@ -92,59 +94,130 @@ const CustomerModal = ({
       );
 
       if (res?.data?.statusCode === 200) {
-        const normalizedData = res?.data?.data.map((customer) => {
-          // Ensure locations is always an array, even if empty
-          const locations = customer.locations
+        const normalizedData = res?.data?.data.map((customer) => ({
+          ...customer,
+          locations: customer.locations
             ? Array.isArray(customer.locations)
               ? customer.locations
               : [customer.locations]
-            : [];
-
-          return {
-            ...customer,
-            locations,
-            FirstName: customer.FirstName || "",
-            LastName: customer.LastName || "",
-            PhoneNumber: customer.PhoneNumber || "",
-          };
-        });
+            : [],
+          FirstName: customer.FirstName || "",
+          LastName: customer.LastName || "",
+          PhoneNumber: customer.PhoneNumber || "",
+        }));
 
         setCustomerData(normalizedData);
+
+        // If there's a customer in location state, update it
+        if (locations?.state?.Customer) {
+          const customer = locations.state.Customer;
+          setCustomersData(customer);
+          setFieldValue("UserId", customer.UserId);
+        }
       }
     } catch (error) {
       console.error("Error: ", error?.message);
     } finally {
       setLoader(false);
     }
-  };
+  }, [CompanyId, locations?.state?.Customer, setCustomersData, setFieldValue]);
 
   useEffect(() => {
     if (CompanyId) {
       fetchData();
     }
-  }, [CompanyId]);
+  }, [CompanyId, fetchData]);
 
-  useEffect(() => {
-    if (
-      formik?.values?.UserId &&
-      formik?.values?.LocationId &&
-      customerData?.length > 0
-    ) {
-      const data = customerData.find(
-        (item) => item?.UserId === formik?.values?.UserId
-      );
-      if (data) {
-        setCustomersData(data);
-        console.log(data, "datadatadata");
-        const locations = data?.locations?.find(
-          (item) => item?.LocationId === formik?.values?.LocationId
-        );
-        if (locations) {
-          setPropertyData(locations);
+  // Improved customer and property selection handlers
+  const handleCustomerSelect = useCallback(
+    (customer) => {
+      if (!customer) return;
+
+      setFieldValue("UserId", customer.UserId);
+      setCustomersData(customer); // This should now properly update the parent component
+
+      if (customer?.locations?.length === 1) {
+        const property = customer.locations[0];
+        setPropertyData(property);
+        setFieldValue("LocationId", property?.LocationId);
+        setIsCustomer(false);
+        if (source === "Invoice") {
+          handleClose(customer.UserId);
+        }
+      } else if (customer?.locations?.length > 1) {
+        setLocationData(customer.locations);
+        setIsProperty(true);
+      } else {
+        setIsCustomer(false);
+        if (source === "Invoice") {
+          handleClose(customer.UserId);
         }
       }
+    },
+    [
+      setFieldValue,
+      setCustomersData,
+      setPropertyData,
+      setIsCustomer,
+      setIsProperty,
+      source,
+    ]
+  );
+
+  const handlePropertySelect = useCallback(
+    (property) => {
+      if (!property) return;
+
+      setFieldValue("LocationId", property.LocationId);
+      setPropertyData(property);
+      setIsProperty(false);
+      setIsCustomer(false);
+
+      if (source === "Invoice") {
+        handleClose(property.UserId);
+      }
+    },
+    [setFieldValue, setPropertyData, setIsProperty, setIsCustomer, source]
+  );
+
+  // Effect for initial data setup
+  useEffect(() => {
+    const updateData = () => {
+      if (locations?.state?.UserId) {
+        setFieldValue("UserId", locations.state.UserId);
+      }
+
+      if (locations?.state?.Customer) {
+        const customer = locations.state.Customer;
+        setCustomersData(customer);
+        setFieldValue("UserId", customer.UserId);
+
+        if (customer?.locations?.length === 1) {
+          setPropertyData(customer.locations[0]);
+          setFieldValue("LocationId", customer.locations[0]?.LocationId);
+        } else if (customer?.locations?.length > 1) {
+          setLocationData(customer.locations);
+          setIsProperty(true);
+        }
+      }
+    };
+
+    updateData();
+  }, [
+    locations?.state,
+    setFieldValue,
+    setCustomersData,
+    setPropertyData,
+    setIsProperty,
+  ]);
+
+  // Effect for saved form data
+  useEffect(() => {
+    const savedData = localStorage.getItem("formData");
+    if (savedData) {
+      formik.setValues(JSON.parse(savedData));
     }
-  }, [formik?.values, customerData]);
+  }, [formik]);
 
   const filteredCustomers = !isProperty
     ? customerData?.filter((customer) =>
@@ -152,88 +225,13 @@ const CustomerModal = ({
           .toLowerCase()
           .includes(searchInput?.toLowerCase())
       )
-    : [
-        ...new Map(
-          locationData?.map((locations) => [
-            `${locations?.Address || ""}-${locations?.City || ""}-${
-              locations?.State || ""
-            }-${locations?.Country || ""}`,
-            locations,
-          ])
-        ).values(),
-      ];
-
-  useEffect(() => {
-    const updateData = () => {
-      if (locations?.state?.UserId) {
-        setFieldValue("UserId", locations?.state?.UserId);
-      }
-
-      if (locations?.state?.Customer) {
-        const customer = locations?.state?.Customer;
-        setCustomersData(customer);
-        setFieldValue("UserId", customer?.UserId);
-        console.log(customer, "customercustomer");
-        if (customer?.locations?.length === 1) {
-          setPropertyData(customer.locations[0]);
-          setFieldValue("LocationId", customer.locations[0]?.LocationId);
-        } else {
-          setLocationData(customer?.locations || []);
-          setIsCustomer(true);
-          setIsProperty(customer?.locations?.length > 0);
-        }
-      }
-    };
-
-    updateData();
-  }, [locations?.state?.UserId]);
-
-  useEffect(() => {
-    const savedData = localStorage.getItem("formData");
-    if (savedData) {
-      formik.setValues(JSON.parse(savedData));
-    }
-  }, []);
-
-  const handleCustomerSelect = (customer) => {
-    if (!customer) return;
-
-    setFieldValue("UserId", customer.UserId);
-    setCustomersData(customer);
-
-    if (customer?.locations?.length === 1) {
-      // If only one property, select it automatically
-      setPropertyData(customer.locations[0]);
-      setFieldValue("LocationId", customer.locations[0]?.LocationId);
-      setIsCustomer(false);
-      if (source === "Invoice") {
-        handleClose(customer.UserId);
-      }
-    } else if (customer?.locations?.length > 1) {
-      // Show properties if multiple
-      setLocationData(customer.locations);
-      setIsProperty(true);
-    } else {
-      // No properties - just select the customer
-      setIsCustomer(false);
-      if (source === "Invoice") {
-        handleClose(customer.UserId);
-      }
-    }
-  };
-
-  const handlePropertySelect = (property) => {
-    if (!property) return;
-
-    setFieldValue("LocationId", property.LocationId);
-    setPropertyData(property);
-    setIsProperty(false);
-    setIsCustomer(false);
-
-    if (source === "Invoice") {
-      handleClose(property.UserId);
-    }
-  };
+    : locationData?.filter((location) =>
+        `${location?.Address || ""} ${location?.City || ""} ${
+          location?.State || ""
+        } ${location?.Country || ""}`
+          .toLowerCase()
+          .includes(searchInput?.toLowerCase())
+      );
 
   return (
     <Dialog
@@ -386,6 +384,7 @@ const CustomerModal = ({
                         <img
                           src={QuoteUser}
                           className="customerModelUserIcon"
+                          alt="Customer"
                         />
                       </Grid>
                       <Grid
@@ -417,7 +416,6 @@ const CustomerModal = ({
                               <>No properties | {item?.PhoneNumber}</>
                             )}
                           </Typography>
-                          {/* Display primary address if available */}
                           {item?.locations?.length > 0 && (
                             <Typography
                               style={{ fontSize: "11px", marginTop: "4px" }}
