@@ -51,7 +51,7 @@ const Index = ({
   setSelectedCountry,
   handlePhoneChange,
   isEdited,
-  companyName,
+  CompanyName,
   handleZipChange,
   times,
   handleSave,
@@ -95,8 +95,8 @@ const Index = ({
                   // navigate(-1);
                   navigate(
                     `/${
-                      companyName
-                        ? companyName + "/customer"
+                      CompanyName
+                        ? CompanyName + "/customer"
                         : "staff-member" + "/workercustomer"
                     }`,
                     {
@@ -286,6 +286,7 @@ const Index = ({
                         Property details
                       </span>
                     </CardTitle>
+               
                     {!location?.state?.id ||
                     (location?.state?.id &&
                       formik?.values?.location?.length <= 1) ? (

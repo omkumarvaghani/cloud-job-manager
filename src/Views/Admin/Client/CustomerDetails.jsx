@@ -21,7 +21,7 @@ function CustomerDetails() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [data, setData] = useState();
   const [open, setOpen] = useState({ isOpen: false, propertyData: null });
   const [loader, setLoader] = useState(true);
@@ -157,7 +157,7 @@ function CustomerDetails() {
         </>
       ),
       onClick: () => {
-        navigate(`/${companyName}/add-quotes`, {
+        navigate(`/${CompanyName}/add-quotes`, {
           state: {
             Customer: data,
             CustomerId: data?.CustomerId,
@@ -177,7 +177,7 @@ function CustomerDetails() {
         </>
       ),
       onClick: () => {
-        navigate(`/${companyName}/add-contract`, {
+        navigate(`/${CompanyName}/add-contract`, {
           state: {
             Customer: data,
             CustomerId: data?.CustomerId,
@@ -197,7 +197,7 @@ function CustomerDetails() {
         </>
       ),
       onClick: () => {
-        navigate(`/${companyName}/invoicetable`, {
+        navigate(`/${CompanyName}/invoicetable`, {
           state: {
             CustomerId: data?.CustomerId,
             navigats: [...location?.state?.navigats, "/invoicetable"],
@@ -323,7 +323,7 @@ function CustomerDetails() {
         handleSelect={handleSelect}
         dropdownOpen={dropdownOpen}
         moreActiontoggle={moreActiontoggle}
-        companyName={companyName}
+        CompanyName={CompanyName}
         dropdownOpens={dropdownOpens}
         setDropdownOpens={setDropdownOpens}
         toggle={toggle}

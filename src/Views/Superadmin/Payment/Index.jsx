@@ -298,7 +298,7 @@ const Payment = () => {
       key: item.companyId,
       value: [
         item.ownerName,
-        item.companyName,
+        item.CompanyName,
         item.EmailAddress,
         item.status,
         "-",
@@ -635,7 +635,7 @@ const Payment = () => {
               EmailAddress: selectedIndustry
                 ? selectedIndustry.EmailAddress
                 : "",
-              companyName: selectedIndustry ? selectedIndustry.companyName : "",
+              CompanyName: selectedIndustry ? selectedIndustry.CompanyName : "",
               Password: selectedIndustry ? selectedIndustry.Password : "",
               ConfirmPassword: selectedIndustry
                 ? selectedIndustry.Password
@@ -652,7 +652,7 @@ const Payment = () => {
                   /^[^@]+@[^@]+\.[^@]+$/,
                   "Email must contain '@' and '.'"
                 ),
-              companyName: Yup.string().required(" Company Name is Required"),
+              CompanyName: Yup.string().required(" Company Name is Required"),
               Password: Yup.string().required("Password is Required"),
               ConfirmPassword: Yup.string()
                 .required("Confirm Password is Required")
@@ -725,13 +725,13 @@ const Payment = () => {
                       fullWidth
                       placeholder="Enter company name"
                       label="Company Name"
-                      name="companyName"
-                      value={values?.companyName}
+                      name="CompanyName"
+                      value={values?.CompanyName}
                       onBlur={handleBlur}
                       onChange={handleChange}
                     />
-                    {touched.companyName && errors.companyName ? (
-                      <Grid className="text-danger">{errors.companyName}</Grid>
+                    {touched.CompanyName && errors.CompanyName ? (
+                      <Grid className="text-danger">{errors.CompanyName}</Grid>
                     ) : null}
                   </Grid>
 

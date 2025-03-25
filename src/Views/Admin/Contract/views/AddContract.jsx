@@ -59,7 +59,7 @@ const AddContract = ({
   setCustomersData,
   mail,
   setMail,
-  companyName,
+  CompanyName,
   customersData,
   contractData,
   propertyData,
@@ -129,8 +129,8 @@ const AddContract = ({
               // navigate(-1);
               navigate(
                 `/${
-                  companyName
-                    ? companyName + "/contract"
+                  CompanyName
+                    ? CompanyName + "/contract"
                     : "staff-member" + "/workercontract"
                 }`,
                 {
@@ -165,8 +165,8 @@ const AddContract = ({
               }
               navigate(
                 `/${
-                  companyName
-                    ? companyName + "/contract"
+                  CompanyName
+                    ? CompanyName + "/contract"
                     : "staff-member" + "/workercontract"
                 }`,
                 {

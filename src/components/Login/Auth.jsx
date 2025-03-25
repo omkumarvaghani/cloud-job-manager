@@ -19,8 +19,8 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
   }
 
   try {
-    const res = await AxiosInstance.post(`/company/token_data`, { token });
-    if (res.data.statusCode !== 200) {
+    const res = await AxiosInstance.post(`/v1/auth/token_data`, { token });
+    if (res.data.statusCode != "200") {
       localStorage.clear();
       navigate(redirectPath, {
         state: { error: "Invalid token or unauthorized access" },
@@ -29,17 +29,17 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
     }
 
     const {
-      role,
+      Role,
       superAdminId,
       CustomerId,
-      companyId,
-      companyName,
+      CompanyId,
+      CompanyName,
       WorkerId,
       IsPlanActive,
     } = res.data.data;
-    const state = { role, id: null, navigats: [] };
+    const state = { Role, id: null, navigats: [] };
 
-    switch (role) {
+    switch (Role) {
       case "Superadmin":
         if (!window.location.pathname.includes("/superadmin")) {
           localStorage.setItem("admin_id", superAdminId);
@@ -57,13 +57,13 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
         break;
 
       case "Company":
-        if (!window.location.pathname.includes(`/${companyName}`)) {
-          localStorage.setItem("CompanyId", companyId);
-          state.redirect = `/${companyName}/index`;
+        if (!window.location.pathname.includes(`/${CompanyName}`)) {
+          localStorage.setItem("CompanyId", CompanyId);
+          state.redirect = `/${CompanyName}/index`;
           state.navigats = ["/index"];
         } else if (!IsPlanActive) {
           if (!location.state?.navigats?.includes("/account-billing")) {
-            state.redirect = `/${companyName}/account-billing`;
+            state.redirect = `/${CompanyName}/account-billing`;
             state.navigats = ["/index", "/account-billing"];
           }
         }
@@ -78,9 +78,9 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
         break;
 
       default:
-        console.error("Unrecognized role");
-        localStorage.clear();
-        navigate(redirectPath);
+        console.error("Unrecognized Role");
+        // localStorage.clear();
+        // navigate(redirectPath);
         return;
     }
 
@@ -88,12 +88,12 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
   } catch (error) {
     console.error("Error:", error.message);
     if (error.response && error.response.status === 401) {
-      localStorage.clear();
-      navigate(redirectPath, { state: { error: "Unauthorized access" } });
+      // localStorage.clear();
+      // navigate(redirectPath, { state: { error: "Unauthorized access" } });
     } else {
-      navigate(redirectPath, {
-        state: { error: "An unexpected error occurred" },
-      });
+      // navigate(redirectPath, {
+      //   state: { error: "An unexpected error occurred" },
+      // });
     }
   }
 };

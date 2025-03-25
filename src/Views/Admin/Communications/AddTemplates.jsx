@@ -29,7 +29,7 @@ import showToast from "../../../components/Toast/Toster";
 const AddTemplates = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [loader, setLoader] = useState(false);
   const CompanyId = localStorage.getItem("CompanyId");
 
@@ -154,8 +154,8 @@ const AddTemplates = () => {
           onClick={() => {
             navigate(
               `/${
-                companyName
-                  ? companyName + "/templates"
+                CompanyName
+                  ? CompanyName + "/templates"
                   : "staff-member" + "/workertemplates"
               }`,
               {
@@ -190,8 +190,8 @@ const AddTemplates = () => {
             }
             navigate(
               `/${
-                companyName
-                  ? companyName + "/templates"
+                CompanyName
+                  ? CompanyName + "/templates"
                   : "staff-member" + "/workertemplates"
               }`,
               {

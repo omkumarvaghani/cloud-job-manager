@@ -11,7 +11,7 @@ import "./style.css";
 import { Grid, Typography } from "@mui/material";
 import { Row, Col } from "react-bootstrap"; // React Bootstrap components
 
-const SettingDropdown = ({ isOpenDropDown, toggle, companyName }) => {
+const SettingDropdown = ({ isOpenDropDown, toggle, CompanyName }) => {
   const navigate = useNavigate();
 
   return (
@@ -35,8 +35,8 @@ const SettingDropdown = ({ isOpenDropDown, toggle, companyName }) => {
               className="dropdown-link-setting"
               onClick={(e) => {
                 navigate(
-                  companyName
-                    ? `/${companyName}/materials&labor`
+                  CompanyName
+                    ? `/${CompanyName}/materials&labor`
                     : "/superadmin/materials&labor",
                   {
                     state: {
@@ -69,8 +69,8 @@ const SettingDropdown = ({ isOpenDropDown, toggle, companyName }) => {
               className="dropdown-link-setting"
               onClick={() => {
                 navigate(
-                  companyName
-                    ? `/${companyName}/manageteam`
+                  CompanyName
+                    ? `/${CompanyName}/manageteam`
                     : "/superadmin/manageteam",
                   {
                     state: { navigats: ["/index", "/manageteam"] },
@@ -97,8 +97,8 @@ const SettingDropdown = ({ isOpenDropDown, toggle, companyName }) => {
               className="dropdown-link-setting"
               onClick={() => {
                 navigate(
-                  companyName
-                    ? `/${companyName}/manage-template`
+                  CompanyName
+                    ? `/${CompanyName}/manage-template`
                     : "/superadmin/manage-template",
                   {
                     state: { navigats: ["/index", "/manage-template"] },
@@ -124,8 +124,8 @@ const SettingDropdown = ({ isOpenDropDown, toggle, companyName }) => {
               className="dropdown-link-setting"
               onClick={() => {
                 navigate(
-                  companyName
-                    ? `/${companyName}/account`
+                  CompanyName
+                    ? `/${CompanyName}/account`
                     : "/superadmin/account",
                   {
                     state: { navigats: ["/index", "/account"] },

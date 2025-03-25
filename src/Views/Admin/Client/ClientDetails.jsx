@@ -64,7 +64,7 @@ function ClientDetails() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
 
   const [data, setData] = useState();
   const [open, setOpen] = useState({ isOpen: false, propertyData: null });
@@ -148,8 +148,8 @@ function ClientDetails() {
     fetchQuote();
   }, [data]);
 
-  const handleNavigate = (quoteId, companyName) => {
-    navigate(`/${companyName}/quotes-detail`, {
+  const handleNavigate = (quoteId, CompanyName) => {
+    navigate(`/${CompanyName}/quotes-detail`, {
       state: {
         id: quoteId,
         navigats: ["/index", `/quotes-detail`],
@@ -238,7 +238,7 @@ function ClientDetails() {
                     className="dropdown-items"
                     style={{ fontSize: "16px" }}
                     onClick={() => {
-                      navigate(`/${companyName}/add-quotes`, {
+                      navigate(`/${CompanyName}/add-quotes`, {
                         state: {
                           navigats: [
                             ...location?.state?.navigats,
@@ -312,7 +312,7 @@ function ClientDetails() {
                     >
                       Properties
                     </Typography>
-                    {companyName && (
+                    {CompanyName && (
                       <BlueButton
                         className="bg-button-blue-color company-detail-btn"
                         onClick={() =>
@@ -336,7 +336,7 @@ function ClientDetails() {
                           <TableHead className="text-center">State</TableHead>
                           <TableHead className="text-center">Country</TableHead>
                           <TableHead className="text-center">Zip</TableHead>
-                          {companyName && (
+                          {CompanyName && (
                             <TableHead style={{ textAlign: "center" }}>
                               Actions
                             </TableHead>
@@ -349,7 +349,7 @@ function ClientDetails() {
                             style={{ cursor: "pointer", width: "318px" }}
                             key={index}
                             onClick={() =>
-                              navigate(`/${companyName}/property-details`, {
+                              navigate(`/${CompanyName}/property-details`, {
                                 state: {
                                   id: property?.LocationId,
                                   navigats: [
@@ -402,7 +402,7 @@ function ClientDetails() {
                             >
                               {property?.Zip ? property?.Zip : "-"}
                             </TableCell>
-                            {companyName && (
+                            {CompanyName && (
                               <TableCell
                                 style={{
                                   textAlign: "center",
@@ -464,7 +464,7 @@ function ClientDetails() {
                       Overview
                     </Typography>
 
-                    {companyName && (
+                    {CompanyName && (
                       <UncontrolledDropdown>
                         <DropdownToggle
                           className="bg-button-blue-color"
@@ -482,7 +482,7 @@ function ClientDetails() {
                           <DropdownItem
                             className="dropdown-items text-blue-color "
                             onClick={() => {
-                              navigate(`/${companyName}/add-quotes`, {
+                              navigate(`/${CompanyName}/add-quotes`, {
                                 state: {
                                   navigats: [
                                     ...location?.state?.navigats,
@@ -838,7 +838,7 @@ function ClientDetails() {
                       Schedule
                     </Typography>
 
-                    {companyName && (
+                    {CompanyName && (
                       <UncontrolledDropdown>
                         <DropdownToggle
                           className="bg-blue-color"
@@ -998,7 +998,7 @@ function ClientDetails() {
                       Billing History
                     </Typography>
 
-                    {companyName && (
+                    {CompanyName && (
                       <UncontrolledDropdown>
                         <DropdownToggle
                           className="bg-button-blue-color"

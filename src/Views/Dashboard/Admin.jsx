@@ -20,9 +20,8 @@ const AdminDashboard = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { companyName } = useParams();
-
-  const currentHour = new Date().getHours();
+  const { CompanyName } = useParams();
+const currentHour = new Date().getHours();
 
   let welcomeMessage;
   if (currentHour < 12) {
@@ -47,7 +46,7 @@ const AdminDashboard = () => {
       }
 
       try {
-        const res = await AxiosInstance.post(`${baseUrl}/company/token_data`, {
+        const res = await AxiosInstance.post(`${baseUrl}/v1/auth/token_data`, {
           token,
         });
 
@@ -88,11 +87,11 @@ const AdminDashboard = () => {
         console.error("Company ID is not available.");
         return;
       }
-
-      const res = await AxiosInstance.get(
-        `/company/admincounts/${activeCompanyId}`,
-        {}
-      );
+      let res;
+      // const res = await AxiosInstance.get(
+      //   `/company/admincounts/${activeCompanyId}`,
+      //   {}
+      // );
 
       if (res?.data) {
         setcustomersData(res.data.data || []);
@@ -121,7 +120,8 @@ const AdminDashboard = () => {
     try {
       const companyId =
         localStorage.getItem("CompanyId") || tokenDecode?.companyId;
-      const res = await AxiosInstance.get(`/admingraph/${companyId}`);
+      let res;
+      // const res = await AxiosInstance.get(`/admingraph/${companyId}`);
       const currentYear = new Date().getFullYear();
       const yearToFetch =
         selectedYear === "This Year" ? currentYear : currentYear - 1;
@@ -195,10 +195,10 @@ const AdminDashboard = () => {
 
       const yearToFetch =
         selectedYear === "This Year" ? currentYear : currentYear - 1;
-
-      const res = await AxiosInstance.get(`/admingraph/graphss/${companyId}`);
+      let res;
+      // const res = await AxiosInstance.get(`/admingraph/graphss/${companyId}`);
       setInvoiceReponse(res.data.data);
-
+    
       if (res.data.statusCode === 200) {
         const months = [
           "Jan",
@@ -268,7 +268,7 @@ const AdminDashboard = () => {
       desc: "Record new service requests from your Customer.",
       option: "Create a Customer",
       onClick: () => {
-        navigate(`/${companyName}/add-customer`, {
+        navigate(`/${CompanyName}/add-customer`, {
           state: { navigats: ["/index", "/add-customer"] },
         });
       },
@@ -282,7 +282,7 @@ const AdminDashboard = () => {
       desc: "Send your Customer professional quotes they can approve online.",
       option: "Create a quote",
       onClick: () => {
-        navigate(`/${companyName}/add-quotes`, {
+        navigate(`/${CompanyName}/add-quotes`, {
           state: { navigats: ["/index", "/add-quotes"] },
         });
       },
@@ -295,7 +295,7 @@ const AdminDashboard = () => {
       desc: "Schedule contract with all the details you need to get them done.",
       option: "Create a contract",
       onClick: () => {
-        navigate(`/${companyName}/add-contract`, {
+        navigate(`/${CompanyName}/add-contract`, {
           state: { navigats: ["/index", "/add-contract"] },
         });
       },
@@ -307,7 +307,7 @@ const AdminDashboard = () => {
       desc: "Send your Customer professional invoices they can pay online",
       option: "Create an invoice",
       onClick: () => {
-        navigate(`/${companyName}/invoice`, {
+        navigate(`/${CompanyName}/invoice`, {
           state: { navigats: ["/index", "/invoice"] },
         });
       },
@@ -322,9 +322,9 @@ const AdminDashboard = () => {
           style={{
             height: "70vh", // Full viewport height for centering
             textAlign: "center",
-            alignItems:"center",
-            display:"flex",
-            justifyContent:"center",
+            alignItems: "center",
+            display: "flex",
+            justifyContent: "center",
             margin: "0", // Reset unnecessary margin
             padding: "0", // Reset unnecessary padding
           }}
@@ -360,15 +360,21 @@ const AdminDashboard = () => {
                           height={34}
                         />
                       </Grid>
-                      <h4 className="name">{item.title || "title not available"}</h4>
+                      <h4 className="name">
+                        {item.title || "title not available"}
+                      </h4>
                     </Grid>
-                    <Grid className="desc">{item.desc || "desc not available"}</Grid>
+                    <Grid className="desc">
+                      {item.desc || "desc not available"}
+                    </Grid>
                   </Grid>
                   <Grid
                     className="options bg-orange-color text-white-color"
                     onClick={item.onClick}
                   >
-                    <Typography>{item.option || "option not available"}</Typography>
+                    <Typography>
+                      {item.option || "option not available"}
+                    </Typography>
                     <Typography>
                       <EastRoundedIcon />
                     </Typography>

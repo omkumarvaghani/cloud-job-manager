@@ -141,6 +141,29 @@ exports.updateUser = async (req, res) => {
         if (updateData.Role || updateData.CompanyId) {
             return res.status(400).json({ message: "Role and CompanyId cannot be updated." });
         }
+        const { EmailAddress } = updateData;
+        if (EmailAddress) {
+            let emailExists;
+            if (req.user.Role === "Company" || req.user.Role === "Worker") {
+                emailExists = await User.findOne({
+                    EmailAddress,
+                    IsDelete: false,
+                    UserId: { $ne: UserId },
+                });
+            } else if (req.user.Role === "Customer") {
+                emailExists = await User.findOne({
+                    EmailAddress,
+                    CompanyId: user.CompanyId,
+                    IsDelete: false,
+                    UserId: { $ne: UserId },
+                });
+            }
+
+            if (emailExists) {
+                return res.status(409).json({ message: "Email already exists!" });
+            }
+        }
+
 
         const updatedUser = await User.findOneAndUpdate(
             { UserId },
@@ -374,233 +397,5 @@ exports.updateCompanyProfile = async (req, res) => {
     }
 };
 
-exports.getCustomersByCompanyId = async (req, res) => {
-    try {
-        const { CompanyId } = req.params;
-        const query = req.query;
 
-        const pageSize = Math.max(parseInt(query.pageSize) || 10, 1);
-        const pageNumber = Math.max(parseInt(query.pageNumber) || 0, 0);
-        const search = query.search;
-        const sortOrder = query.sortOrder?.toLowerCase() === "desc" ? -1 : 1;
 
-        const allowedSortFields = [
-            "FirstName",
-            "LastName",
-            "EmailAddress",
-            "PhoneNumber",
-            "Address",
-            "City",
-            "State",
-            "Country",
-            "Zip",
-            "createdAt",
-            "updatedAt",
-        ];
-
-        const sortField = allowedSortFields.includes(query.sortField)
-            ? query.sortField
-            : "updatedAt";
-
-        let customerSearchQuery = {
-            CompanyId,
-            Role: "Customer",
-            IsDelete: false,
-        };
-
-        let searchConditions = [];
-        if (search) {
-            const searchRegex = new RegExp(search, "i");
-            searchConditions = [
-                { "profile.FirstName": searchRegex },
-                { "profile.LastName": searchRegex },
-                { EmailAddress: searchRegex },
-                { "profile.PhoneNumber": searchRegex },
-                { "profile.Address": searchRegex },
-                { "profile.City": searchRegex },
-                { "profile.State": searchRegex },
-                { "profile.Country": searchRegex },
-                { "profile.Zip": searchRegex },
-            ];
-
-            customerSearchQuery = {
-                $and: [
-                    customerSearchQuery,
-                    { $or: searchConditions },
-                ],
-            };
-        }
-
-        let sortOptions = {};
-        if (sortField === "Address" || sortField === "City" || sortField === "State" || sortField === "Country" || sortField === "Zip") {
-            sortOptions[`profile.${sortField}`] = sortOrder;
-        } else {
-            sortOptions[sortField] = sortOrder;
-        }
-
-        const collation = { locale: "en", strength: 2 };
-
-        const customers = await User.aggregate([
-            { $match: customerSearchQuery },
-            {
-                $lookup: {
-                    from: "user-profiles",
-                    localField: "UserId",
-                    foreignField: "UserId",
-                    as: "profile",
-                },
-            },
-            { $unwind: { path: "$profile", preserveNullAndEmptyArrays: true } },
-            {
-                $set: {
-                    Address: "$profile.Address",
-                    City: "$profile.City",
-                    State: "$profile.State",
-                    Country: "$profile.Country",
-                    Zip: "$profile.Zip",
-                },
-            },
-            {
-                $project: {
-                    UserId: 1,
-                    EmailAddress: 1,
-                    IsActive: 1,
-                    "profile.FirstName": 1,
-                    "profile.LastName": 1,
-                    "profile.PhoneNumber": 1,
-                    "profile.Address": 1,
-                    "profile.City": 1,
-                    "profile.State": 1,
-                    "profile.Country": 1,
-                    "profile.Zip": 1,
-                    "profile.ProfileImage": 1,
-                    createdAt: 1,
-                    updatedAt: 1,
-                },
-            },
-            { $sort: sortOptions },
-            { $skip: pageNumber * pageSize },
-            { $limit: pageSize },
-        ]).collation(collation);
-
-        const total = await User.aggregate([
-            { $match: customerSearchQuery },
-            { $count: "totalCount" },
-        ]);
-
-        const totalCount = total[0]?.totalCount || 0;
-
-        if (customers.length > 0) {
-            return res.status(200).json({
-                success: true,
-                message: "Customers retrieved successfully",
-                data: customers,
-                totalPages: Math.ceil(totalCount / pageSize),
-                currentPage: pageNumber,
-                totalCount: totalCount,
-            });
-        } else {
-            return res.status(204).json({
-                success: false,
-                message: "No customers found",
-            });
-        }
-    } catch (error) {
-        console.error("Error getting customers:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong, please try later.",
-        });
-    }
-};
-
-// **GET CUSTOMER FOR SELECT CUSTOMERS**
-exports.getCustomersWithLocations = async (req, res) => {
-    try {
-        const { CompanyId } = req.params;
-
-        const customers = await User.aggregate([
-            {
-                $match: {
-                    CompanyId: CompanyId,
-                    IsDelete: false,
-                },
-            },
-            {
-                $sort: { updatedAt: -1 },
-            },
-            {
-                $lookup: {
-                    from: "user-profiles",
-                    localField: "UserId",
-                    foreignField: "UserId",
-                    as: "location",
-                },
-            },
-            {
-                $addFields: {
-                    location: {
-                        $filter: {
-                            input: "$location",
-                            as: "loc",
-                            cond: { $eq: ["$$loc.IsDelete", false] },
-                        },
-                    },
-                },
-            },
-            {
-                $unwind: {
-                    path: "$location",
-                    preserveNullAndEmptyArrays: true,
-                },
-            },
-        ]);
-
-        if (customers.length === 0) {
-            return res.status(204).json({
-                message: "No customers found for this company.",
-            });
-        }
-
-        return res.status(200).json({
-            statusCode: 200,
-            message: "Customers retrieved successfully with location details",
-            data: customers,
-        });
-    } catch (error) {
-        console.error("Error in getCustomersWithLocations:", error.message);
-        return res.status(500).json({
-            message: "Failed to fetch customers with locations",
-        });
-    }
-};
-
-// **Post Properties for customer
-exports.addLocation = async (req, res) => {
-    const locationData = req.body;
-
-    try {
-        if (!locationData || !locationData.Address || !locationData.City) {
-            return res.status(400).json({
-                statusCode: 400,
-                message: "Location data is incomplete.",
-            });
-        }
-
-        const newLocation = await UserProfile.create(locationData);
-
-        return res.status(200).json({
-            statusCode: 200,
-            message: "Location added successfully",
-            data: newLocation,
-        });
-    } catch (error) {
-        console.error(error);
-
-        return res.status(500).json({
-            statusCode: 500,
-            message: "Failed to add location.",
-            error: error.message,
-        });
-    }
-};

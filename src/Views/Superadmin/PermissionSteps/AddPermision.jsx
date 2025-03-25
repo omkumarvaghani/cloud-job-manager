@@ -26,7 +26,7 @@ function AddPermision() {
   const baseUrl = process.env.REACT_APP_BASE_API;
   const location = useLocation();
   const navigate = useNavigate();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [loader, setLoader] = useState(false);
   const [loading, setLoading] = useState(false);
 

@@ -23,7 +23,7 @@
 
 // const CustomerProperty = ({ open, setOpen, data, getData }) => {
 //   const baseUrl = process.env.REACT_APP_BASE_API;
-//   const { companyName } = useParams();
+//   const { CompanyName } = useParams();
 //   const CustomerId = data?.CustomerId;
 
 //   var companyId = localStorage.getItem("CompanyId");
@@ -319,7 +319,7 @@ import "./style.css";
 
 const CustomerProperty = ({ open, setOpen, data, getData }) => {
   const baseUrl = process.env.REACT_APP_BASE_API;
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const CustomerId = data?.CustomerId;
   const companyId = localStorage.getItem("CompanyId");
   const [loading, setLoading] = useState(false);

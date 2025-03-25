@@ -13,6 +13,9 @@ const eventLogSchema = new mongoose.Schema(
             required: true,
             ref: "Company",
         },
+        UserId: {
+            type: String,
+        },
 
         EventType: {
             type: String,

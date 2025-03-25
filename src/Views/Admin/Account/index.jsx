@@ -30,7 +30,7 @@ import WhiteButton from "../../../components/Button/WhiteButton";
 const Account = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [loading, setLoading] = useState(true);
   const [planDetails, setPlanDetails] = useState([]);
   const [activePlanDetails, setActivePlanDetails] = useState(undefined);
@@ -232,7 +232,7 @@ const Account = () => {
                           const plan = planDetails.find(
                             (item) => item?.status && item?.plan !== "Trial"
                           );
-                          navigate(`/${companyName}/plan`, {
+                          navigate(`/${CompanyName}/plan`, {
                             state: {
                               navigats: [...location.state.navigats, "/plan"],
                               plan,
@@ -490,7 +490,7 @@ const Account = () => {
                               (item) => item?.status && item?.plan !== "Trial"
                             );
                             if (selectedCard) {
-                              navigate(`/${companyName}/plan`, {
+                              navigate(`/${CompanyName}/plan`, {
                                 state: {
                                   navigats: [
                                     ...location.state.navigats,
@@ -506,7 +506,7 @@ const Account = () => {
                                 },
                               });
                             } else {
-                              navigate(`/${companyName}/plan`, {
+                              navigate(`/${CompanyName}/plan`, {
                                 state: {
                                   navigats: [
                                     ...location.state.navigats,

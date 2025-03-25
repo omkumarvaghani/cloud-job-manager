@@ -78,49 +78,49 @@ const Login = () => {
       const res = await AxiosInstance.post(`${baseUrl}/v1/auth/login`, {
         ...values,
       });
-      if (res.data.statusCode === 301) {
+      if (res.data.statusCode == "200") {
         localStorage.setItem("adminToken", res.data.token);
-        localStorage.setItem("CompanyId", res.data.data.id);
+        localStorage.setItem("CompanyId", res.data.data.UserId);
         showToast.success(res.data.message, {
           autoClose: 3000,
         });
         setTimeout(() => {
-          navigate(`/${res.data.data.companyName}/index`, {
+          navigate(`/${res.data.data.CompanyName}/index`, {
             state: { navigats: ["/index"] },
           });
         }, 1000);
-      } else if (res.data.statusCode === 300) {
+      } else if (res.data.statusCode == "300") {
         localStorage.setItem("adminToken", res.data.token);
-        localStorage.setItem("admin_id", res.data.data.id);
+        localStorage.setItem("admin_id", res.data.data.UserId);
         setTimeout(() => {
           navigate("/superadmin/index", {
             state: { navigats: ["/index"] },
           });
         }, 1000);
         showToast.success(res.data.message);
-      } else if (res.data.statusCode === 302) {
+      } else if (res.data.statusCode == "302") {
         localStorage.setItem("workerToken", res.data.token);
-        localStorage.setItem("worker_id", res.data.data.id);
+        localStorage.setItem("worker_id", res.data.data.UserId);
         setTimeout(() => {
           navigate("/staff-member/index", {
             state: { navigats: ["/index"] },
           });
         }, 1000);
         showToast.success(res.data.message);
-      } else if (res.data.statusCode === 303) {
+      } else if (res.data.statusCode == "303") {
         localStorage.setItem("customerToken", res.data.token);
-        localStorage.setItem("CustomerId", res.data.data.id);
+        localStorage.setItem("CustomerId", res.data.data.UserId);
         setTimeout(() => {
           navigate("/customers/index", {
             state: { navigats: ["/index"] },
           });
         }, 1000);
         showToast.success(res.data.message);
-      } else if (res.data.statusCode === 201) {
+      } else if (res.data.statusCode == "201") {
         sendToast(res.data.message);
-      } else if (res.data.statusCode === 202) {
+      } else if (res.data.statusCode == "202") {
         sendToast(res.data.message);
-      } else if (res.data.statusCode === 204) {
+      } else if (res.data.statusCode == "204") {
         sendToast(res.data.message);
       }
     } catch (error) {
@@ -139,15 +139,15 @@ const Login = () => {
       const token = getToken();
       if (token) {
         try {
-          const res = await AxiosInstance.post(`/v1/company/token_data`, {
+          const res = await AxiosInstance.post(`/v1/auth/token_data`, {
             token,
           });
           if (res.data.statusCode !== "200") {
-            localStorage.clear();
-            navigate("/auth/login");
+            // localStorage.clear();
+            // navigate("/auth/login");
           } else {
             if (
-              res.data.data.role === "Superadmin" &&
+              res.data.data.Role == "Superadmin" &&
               !location.pathname.includes("/superadmin")
             ) {
               localStorage.setItem("admin_id", res.data.data.superAdminId);
@@ -155,7 +155,7 @@ const Login = () => {
                 state: { navigats: ["/index"] },
               });
             } else if (
-              res.data.data.role === "client" &&
+              res.data.data.Role == "client" &&
               !location.pathname.includes("/customers")
             ) {
               localStorage.setItem("CustomerId", res.data.data.CustomerId);
@@ -163,15 +163,15 @@ const Login = () => {
                 state: { navigats: ["/index"] },
               });
             } else if (
-              res.data.data.role === "Company" &&
-              !location.pathname.includes(`/${res.data.data.companyName}`)
+              res.data.data.Role == "Company" &&
+              !location.pathname.includes(`/${res.data.data.CompanyName}`)
             ) {
               localStorage.setItem("CompanyId", res.data.data.companyId);
-              navigate(`/${res.data.data.companyName}/index`, {
+              navigate(`/${res.data.data.CompanyName}/index`, {
                 state: { navigats: ["/index"] },
               });
             } else if (
-              res.data.data.role === "worker" &&
+              res.data.data.Role == "worker" &&
               !location.pathname.includes(`/staff-member`)
             ) {
               localStorage.setItem("worker_id", res.data.data.WorkerId);
@@ -182,10 +182,10 @@ const Login = () => {
           }
         } catch (err) {
           if (err.response) {
-            if (err.response.status === 401) {
+            if (err.response.status == 401) {
               sendToast("Session has expired. Please log in again.");
               localStorage.clear();
-            } else if (err.response.status === 404) {
+            } else if (err.response.status == 404) {
               sendToast("Session not found. Please log in again.");
               localStorage.clear();
             } else {
@@ -207,7 +207,7 @@ const Login = () => {
   useEffect(() => {
     const imageLoaded = sessionStorage.getItem("imageLoaded");
 
-    if (imageLoaded === "true") {
+    if (imageLoaded == "true") {
       setIsLoaded(true);
     } else {
       setIsLoaded(false);
@@ -251,7 +251,9 @@ const Login = () => {
               className="loginform loginFormFirst"
             >
               <Typography className="text text-blue-color">Login</Typography>
-              <Typography className="text2"></Typography>
+              <Typography className="text2">
+                Please login to access your account.
+              </Typography>
               <FormGroup
                 className="text-boxes"
                 style={{ width: "100%", marginTop: "24px" }}
@@ -298,7 +300,7 @@ const Login = () => {
                   fieldHeight="56px"
                   autoComplete="new-password"
                   onKeyDown={(e) => {
-                    if (e.key === "Tab" && !e.shiftKey) {
+                    if (e.key == "Tab" && !e.shiftKey) {
                       e.preventDefault(); // Prevent default tab behavior
                       const nextElement = document.getElementById("cpassword"); // "cpassword" is the Re-enter Password field's ID
                       if (nextElement) {

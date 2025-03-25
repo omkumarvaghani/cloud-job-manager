@@ -16,8 +16,7 @@ import AxiosInstance from "../../AxiosInstance";
 import { Circles } from "react-loader-spinner";
 import { Grid } from "@mui/material";
 import { Row, Col } from "react-bootstrap";
-import  {Typography} from "@mui/material";
-
+import { Typography } from "@mui/material";
 
 const ClientModal = ({
   isClient,
@@ -35,7 +34,7 @@ const ClientModal = ({
   const baseUrl = process.env.REACT_APP_BASE_API;
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [clientData, setClientData] = useState([]);
   const [locationData, setLocationData] = useState([]);
   const [searchInput, setSearchInput] = useState("");
@@ -54,7 +53,7 @@ const ClientModal = ({
           console.error("Token not found in localStorage");
           return;
         }
-        const res = await AxiosInstance.post(`${baseUrl}/company/token_data`, {
+        const res = await AxiosInstance.post(`${baseUrl}/v1/auth/token_data`, {
           token,
         });
         if (res?.data?.data?.companyId) {
@@ -71,7 +70,7 @@ const ClientModal = ({
   }, []);
 
   const handleClose = (id) => {
-    navigate(`/${companyName}/invoicetable`, {
+    navigate(`/${CompanyName}/invoicetable`, {
       state: {
         CustomerId: id,
         navigats: [...location?.state?.navigats, "/invoicetable"],
@@ -81,11 +80,9 @@ const ClientModal = ({
 
   const fetchData = async () => {
     try {
-      const res = await AxiosInstance.get(
-        `/customer/get_customer/${companyId}`
-      );
-      setClientData(res?.data?.data);
-    } catch (error) {
+      const res = await AxiosInstance.get(`/v1/user/customers${companyId}`);
+      setClientData(res?.data?.data); 
+    } catch (error) { 
       console.error("Error: ", error?.message);
     } finally {
       setLoader(false);
@@ -194,7 +191,10 @@ const ClientModal = ({
                     />
                   </Grid>
                   <Grid>
-                    <Typography className="mt-2 mb-2" style={{ textAlign: "center" }}>
+                    <Typography
+                      className="mt-2 mb-2"
+                      style={{ textAlign: "center" }}
+                    >
                       or
                     </Typography>
                   </Grid>
@@ -202,7 +202,7 @@ const ClientModal = ({
                     className="btn bg-button-blue-color text-white-color flex-grow-1 ms-2 mb-2 cratenclientmodal"
                     style={{ minWidth: "0", fontSize: "14px" }}
                     onClick={() => {
-                      navigate(`/${companyName}/add-client`, {
+                      navigate(`/${CompanyName}/add-client`, {
                         state: {
                           previewPage: location?.pathname,
                           previewData: {
@@ -283,13 +283,17 @@ const ClientModal = ({
                                     className="py-0 my-0"
                                     style={{ fontSize: "12px" }}
                                   >
-                                    {item?.FirstName || "FirstName not available"} {item?.LastName || "LastName not available"}
+                                    {item?.FirstName ||
+                                      "FirstName not available"}{" "}
+                                    {item?.LastName || "LastName not available"}
                                   </Typography>
                                   {item?.location?.length}{" "}
                                   {item?.location?.length === 1
                                     ? "Property"
                                     : "Properties"}{" "}
-                                  | {item?.PhoneNumber || "PhoneNumber not available"}
+                                  |{" "}
+                                  {item?.PhoneNumber ||
+                                    "PhoneNumber not available"}
                                 </Typography>
                               </Grid>
                             </Grid>
@@ -322,9 +326,12 @@ const ClientModal = ({
                               fontSize: "13px",
                             }}
                           >
-                            <Typography>{location?.Address || ""} </Typography>, &nbsp;
-                            <Typography>{location?.City || ""} </Typography>, &nbsp;
-                            <Typography>{location?.State || ""} </Typography>, &nbsp;
+                            <Typography>{location?.Address || ""} </Typography>,
+                            &nbsp;
+                            <Typography>{location?.City || ""} </Typography>,
+                            &nbsp;
+                            <Typography>{location?.State || ""} </Typography>,
+                            &nbsp;
                             <Typography>{location?.Country || ""} </Typography>
                           </Grid>
                           <ChevronRightIcon style={{ color: "#958e8edd" }} />

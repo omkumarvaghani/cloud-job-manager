@@ -15,7 +15,7 @@ import { useStaffContext } from "../../../components/StaffData/Staffdata.jsx";
 const Quotes = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -37,8 +37,8 @@ const Quotes = () => {
       const res = await handleAuth(navigate, location);
       setTokenDecode(res.data);
       setDateDecode(res.themes);
-      if (res?.data?.companyId) {
-        getData(res?.data?.companyId);
+      if (res?.data?.CompanyId) {
+        getData(res?.data?.CompanyId);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -65,7 +65,7 @@ const Quotes = () => {
 
   const [sortField, setSortField] = useState("asc");
   const [sortOrder, setSortOrder] = useState("desc");
-  const getData = async (companyId) => {
+  const getData = async (CompanyId) => {
     try {
       setLoader(true);
       const params = {
@@ -77,10 +77,9 @@ const Quotes = () => {
         sortOrder: sortOrder,
       };
 
-      const res = await AxiosInstance.get(`/quote/get_quotes/${companyId}`, {
+      const res = await AxiosInstance.get(`/v1/quote/get_quotes/${CompanyId}`, {
         params,
       });
-
       if (res?.data) {
         setQuotesData(res?.data?.data || []);
         setCountData(res?.data?.totalCount || 0);
@@ -94,14 +93,14 @@ const Quotes = () => {
     }
   };
   useEffect(() => {
-    if (tokenDecode?.companyId) {
-      getData(tokenDecode?.companyId);
+    if (tokenDecode?.CompanyId) {
+      getData(tokenDecode?.CompanyId);
     }
   }, [page, search, sortField, sortOrder]);
 
   const handleEditClick = (id) => {
-    if (companyName) {
-      navigate(`/${companyName}/add-quotes`, {
+    if (CompanyName) {
+      navigate(`/${CompanyName}/add-quotes`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/add-quotes"],
@@ -121,14 +120,14 @@ const Quotes = () => {
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
-          const response = await AxiosInstance.delete(`/quote/${id}`, {
+          const response = await AxiosInstance.delete(`/v1/quote/${id}`, {
             data: { DeleteReason: deleteReason },
           });
           if (response?.data?.statusCode === 200) {
             setTimeout(() => {
               showToast.success(response?.data?.message);
             }, 500);
-            getData(tokenDecode?.companyId);
+            getData(tokenDecode?.CompanyId);
           } else {
             showToast.warning(response?.data?.message);
           }
@@ -261,7 +260,7 @@ const Quotes = () => {
         page={page}
         setPage={setPage}
         setRowsPerPage={setRowsPerPage}
-        companyName={companyName}
+        CompanyName={CompanyName}
         countData={countData}
         dropdownOptions={dropdownOptions}
         rowsPerPage={rowsPerPage}

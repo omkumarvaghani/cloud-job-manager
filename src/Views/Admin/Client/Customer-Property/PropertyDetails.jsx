@@ -30,7 +30,7 @@ import Previous from "../../../../assets/image/icons/Previous.png";
 
 const PropertyDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_API;
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const location = useLocation();
   const [tokenDecode, setTokenDecode] = useState({});
   const [DateDecode, setDateDecode] = useState({});
@@ -152,7 +152,7 @@ const PropertyDetails = () => {
   }, [data, tokenDecode]);
 
   const handleNavigate = (quoteId) => {
-    navigate(`/${companyName}/quotes-detail`, {
+    navigate(`/${CompanyName}/quotes-detail`, {
       state: {
         id: quoteId,
         navigats: [`/index`, `/quotes-detail`],
@@ -161,7 +161,7 @@ const PropertyDetails = () => {
   };
 
   const handleContractNavigate = (id) => {
-    navigate(`/${companyName}/contractdetails`, {
+    navigate(`/${CompanyName}/contractdetails`, {
       state: {
         id,
         navigats: [`/index`, `/contractdetails`],
@@ -170,7 +170,7 @@ const PropertyDetails = () => {
   };
 
   const handleInvoiceNavigate = (id) => {
-    navigate(`/${companyName}/invoice-details`, {
+    navigate(`/${CompanyName}/invoice-details`, {
       state: {
         id,
         navigats: [`/index`, `/invoice-details`],
@@ -203,8 +203,8 @@ const PropertyDetails = () => {
               navigate(-1);
               // navigate(
               //   `/${
-              //     companyName
-              //       ? companyName + "/customer"
+              //     CompanyName
+              //       ? CompanyName + "/customer"
               //       : "staff-member" + "/workercustomer"
               //   }`,
               //   {

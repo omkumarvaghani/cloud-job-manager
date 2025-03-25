@@ -53,10 +53,10 @@ root.render(
           <Route path="/superadmin/*" element={<SuperAdmin />} />
           <Route path="/customers/*" element={<Client />} />
           <Route path="/staff-member/*" element={<StaffMember />} />
-          <Route path="/:companyName/*" element={<Admin />} />
+          <Route path="/:CompanyName/*" element={<Admin />} />
           <Route path="/plan" element={<Plan />} />
           <Route path="/plan-purchase" element={<PlanPurchase />} />
-          <Route path="/" element={<Navigate to="/auth/login" replace />} />
+          {/* <Route path="/" element={<Navigate to="/auth/login" replace />} /> */}
           <Route path="/InvoicePayment" element={<InvoicePayment />} />
         </Routes>
         <Toaster />
