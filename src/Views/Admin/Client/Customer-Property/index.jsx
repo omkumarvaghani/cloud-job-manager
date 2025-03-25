@@ -23,8 +23,8 @@
 
 // const CustomerProperty = ({ open, setOpen, data, getData }) => {
 //   const baseUrl = process.env.REACT_APP_BASE_API;
-//   const { companyName } = useParams();
-//   const CustomerId = data?.CustomerId;
+//   const { CompanyName } = useParams();
+//   const UserId = data?.UserId;
 
 //   var companyId = localStorage.getItem("CompanyId");
 
@@ -94,7 +94,7 @@
 //         try {
 //           setLoader(true);
 //           values["CompanyId"] = companyId;
-//           values["CustomerId"] = CustomerId;
+//           values["UserId"] = UserId;
 //           const response = await AxiosInstance.post(
 //             `${baseUrl}/location`,
 //             values
@@ -319,8 +319,8 @@ import "./style.css";
 
 const CustomerProperty = ({ open, setOpen, data, getData }) => {
   const baseUrl = process.env.REACT_APP_BASE_API;
-  const { companyName } = useParams();
-  const CustomerId = data?.CustomerId;
+  const { CompanyName } = useParams();
+  const UserId = data?.UserId;
   const companyId = localStorage.getItem("CompanyId");
   const [loading, setLoading] = useState(false);
 
@@ -364,9 +364,9 @@ const CustomerProperty = ({ open, setOpen, data, getData }) => {
         try {
           setLoading(true);
           const response = await AxiosInstance.put(
-            `${baseUrl}/location/${open.propertyData.LocationId}`,
+            `${baseUrl}/v1/location/${open.propertyData.LocationId}`,
             values
-          );
+          ); 
           if (response?.data.statusCode === 200) {
             showToast.success("Property updated successfully!");
             getData();
@@ -378,16 +378,16 @@ const CustomerProperty = ({ open, setOpen, data, getData }) => {
           showToast.error(error.message);
           setLoading(true);
         } finally {
-          setLoading(false); 
+          setLoading(false);
         }
       } else {
         // Create property logic
         try {
           setLoading(true);
           values["CompanyId"] = companyId;
-          values["CustomerId"] = CustomerId;
+          values["UserId"] = UserId;
           const response = await AxiosInstance.post(
-            `${baseUrl}/location`,
+            `${baseUrl}/v1/location`,
             values
           );
           if (response?.data.statusCode === 200) {
@@ -399,7 +399,6 @@ const CustomerProperty = ({ open, setOpen, data, getData }) => {
           }
         } catch (error) {
           if (error.response && error.response.status === 400) {
-     
             const validationErrors = error.response?.data?.errors;
             if (validationErrors && validationErrors.length > 0) {
               validationErrors.forEach((errorMessage) => {
@@ -407,9 +406,12 @@ const CustomerProperty = ({ open, setOpen, data, getData }) => {
               });
             }
           } else {
-            console.error("Error during submit:", error.response?.data || error.message);
+            console.error(
+              "Error during submit:",
+              error.response?.data || error.message
+            );
             showToast.error("An error occurred while submitting data.");
-          };
+          }
         } finally {
           setLoading(false); // Ensure loading is always reset at the end
         }
@@ -511,7 +513,6 @@ const CustomerProperty = ({ open, setOpen, data, getData }) => {
   };
 
   return (
- 
     <Dialog
       open={open.isOpen}
       onClose={() => {
@@ -530,7 +531,7 @@ const CustomerProperty = ({ open, setOpen, data, getData }) => {
             countries={countries}
             handleChange={(e) => {
               formik.handleChange(e);
-              setIsChanged(true); 
+              setIsChanged(true);
             }}
             formik={formik}
             handleZipChange={handleZipChange}

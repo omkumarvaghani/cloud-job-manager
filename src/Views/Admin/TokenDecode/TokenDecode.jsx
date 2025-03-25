@@ -16,9 +16,9 @@ function TokenDecode() {
         return;
       }
 
-      const res = await axios.post(`${baseUrl}/company/token_data`, {
+      const res = await axios.post(`${baseUrl}/v1/auth/token_data`, {
         token,
-      });
+      }); 
       if (res?.data) {
         setTokenDecode(res?.data?.data);
       }

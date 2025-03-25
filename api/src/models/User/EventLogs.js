@@ -35,6 +35,10 @@ const eventLogSchema = new mongoose.Schema(
             type: String,
         },
 
+        DeletedBy: {
+            type: String,
+        },
+
         Metadata: {
             type: mongoose.Schema.Types.Mixed,
             default: {},

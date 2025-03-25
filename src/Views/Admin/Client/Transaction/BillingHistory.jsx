@@ -111,7 +111,7 @@ function BillingHistory({ data, getData }) {
   const [customersData, setcustomersData] = useState([]);
   const [loader, setLoader] = useState(true);
   const [countData, setCountData] = useState(0);
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [sortField, setSortField] = useState("asc");
 
   const [sortOrder, setSortOrder] = useState("desc");
@@ -508,7 +508,7 @@ function BillingHistory({ data, getData }) {
                 billing_id: Number(values?.billing_id),
                 customer_vault_id: Number(values?.customer_vault_id),
                 date: values?.date,
-                company: companyName,
+                company: CompanyName,
                 amount: values?.amount,
                 CompanyId: localStorage?.getItem("CompanyId"),
                 Total: paymentsData?.Total,
@@ -545,7 +545,7 @@ function BillingHistory({ data, getData }) {
                 billing_id: Number(values?.billing_id),
                 customer_vault_id: Number(values?.customer_vault_id),
                 date: values?.date,
-                company: companyName,
+                company: CompanyName,
                 amount: values?.amount,
                 CompanyId: localStorage?.getItem("CompanyId"),
                 Total: paymentsData?.Total,
@@ -576,7 +576,7 @@ function BillingHistory({ data, getData }) {
               var object = {
                 paymentDetails: {
                   date: values?.date,
-                  company: companyName,
+                  company: CompanyName,
                   amount: values?.amount,
                   CompanyId: localStorage?.getItem("CompanyId"),
                   Total: paymentsData?.Total,
@@ -590,7 +590,7 @@ function BillingHistory({ data, getData }) {
                 paymentDetails: {
                   date: values?.date,
                   cheque_number: values?.cheque_number,
-                  company: companyName,
+                  company: CompanyName,
                   amount: values?.amount,
                   CompanyId: localStorage?.getItem("CompanyId"),
                   Total: paymentsData?.Total,
@@ -1069,7 +1069,7 @@ function BillingHistory({ data, getData }) {
                 >
                   <DropdownItem
                     onClick={() => {
-                      navigate(`/${companyName}/account`);
+                      navigate(`/${CompanyName}/account`);
                     }}
                     style={{
                       fontWeight: "600",
@@ -1261,7 +1261,7 @@ function BillingHistory({ data, getData }) {
                               marginLeft: "30px",
                             }}
                             onClick={() => {
-                              navigate(`/${companyName}/account`);
+                              navigate(`/${CompanyName}/account`);
                             }}
                           >
                             Add Account
@@ -1558,7 +1558,7 @@ function BillingHistory({ data, getData }) {
                           >
                             <DropdownItem
                               onClick={() => {
-                                navigate(`/${companyName}/account`);
+                                navigate(`/${CompanyName}/account`);
                               }}
                               style={{
                                 fontWeight: "600",
@@ -1750,7 +1750,7 @@ function BillingHistory({ data, getData }) {
                                         marginLeft: "30px",
                                       }}
                                       onClick={() => {
-                                        navigate(`/${companyName}/account`);
+                                        navigate(`/${CompanyName}/account`);
                                       }}
                                     >
                                       Add Account

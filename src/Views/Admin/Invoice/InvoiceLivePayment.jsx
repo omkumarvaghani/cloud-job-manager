@@ -165,7 +165,7 @@ const InvoiceLivePayment = () => {
                 billing_id: Number(values?.billing_id),
                 customer_vault_id: Number(values?.customer_vault_id),
                 date: values?.date,
-                company: tokenData?.company?.companyName,
+                company: tokenData?.company?.CompanyName,
                 amount: values?.amount,
                 CompanyId: localStorage?.getItem("CompanyId"),
                 Total: invoiceData?.Total,
@@ -205,7 +205,7 @@ const InvoiceLivePayment = () => {
                 billing_id: Number(values?.billing_id),
                 customer_vault_id: Number(values?.customer_vault_id),
                 date: values?.date,
-                company: tokenData?.company?.companyName,
+                company: tokenData?.company?.CompanyName,
                 amount: values?.amount,
                 CompanyId: localStorage?.getItem("CompanyId"),
                 Total: invoiceData?.Total,
@@ -238,7 +238,7 @@ const InvoiceLivePayment = () => {
               var object = {
                 paymentDetails: {
                   date: values?.date,
-                  company: tokenData?.company?.companyName,
+                  company: tokenData?.company?.CompanyName,
                   amount: values?.amount,
                   CompanyId: localStorage?.getItem("CompanyId"),
                   Total: invoiceData?.Total,
@@ -252,7 +252,7 @@ const InvoiceLivePayment = () => {
                 paymentDetails: {
                   date: values?.date,
                   cheque_number: values?.cheque_number,
-                  company: tokenData?.company?.companyName,
+                  company: tokenData?.company?.CompanyName,
                   amount: values?.amount,
                   CompanyId: localStorage?.getItem("CompanyId"),
                   Total: invoiceData?.Total,

@@ -99,15 +99,11 @@ const SignUp = () => {
   // };
 
   const handleSubmit = async (values) => {
-    console.log(values, "values");
     try {
       setLoader(true);
       const res = await AxiosInstance.post(`/v1/auth/check_user`, {
         EmailAddress: values.EmailAddress,
       });
-      console.log(res, "res");
-      console.log(values.EmailAddress, "values.EmailAddress");
-      console.log(res.data.statusCode, "res.data.statusCode");
       if (res.data.statusCode === "200") {
         if (step === "1") {
           navigate(`/auth/signup?step=2`);

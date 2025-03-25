@@ -95,7 +95,7 @@ exports.login = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(Password, user.Password);
-    console.log("Password Match:", isMatch);
+
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -263,7 +263,6 @@ exports.verifyAndFetchCompany = async (req, res) => {
   try {
     const token = req.query.token || req.body.token;
     const tokenResult = verifyToken(token);
-    console.log(tokenResult, 'tokenResult')
 
     if (!tokenResult.success) {
       return res.status(tokenResult.statusCode).json({ message: tokenResult.message });

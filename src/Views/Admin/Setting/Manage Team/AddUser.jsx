@@ -66,7 +66,7 @@ const AddUser = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
 
   const [selectedRole, setSelectedRole] = useState(undefined);
   const [loader, setLoader] = useState(true);
@@ -543,7 +543,7 @@ const AddUser = () => {
                       className="sidebar-link-setting"
                       style={{ cursor: "pointer" }}
                       onClick={() => {
-                        navigate(`/${companyName}/materials&labor`, {
+                        navigate(`/${CompanyName}/materials&labor`, {
                           state: { navigats: ["/index", "/materials&labor"] },
                         });
                       }}
@@ -554,7 +554,7 @@ const AddUser = () => {
                       className="sidebar-link-setting"
                       style={{ cursor: "pointer" }}
                       onClick={() => {
-                        navigate(`/${companyName}/profile`, {
+                        navigate(`/${CompanyName}/profile`, {
                           state: { navigats: ["/index", "/profile"] },
                         });
                       }}
@@ -598,8 +598,8 @@ const AddUser = () => {
                 }
                 navigate(
                   `/${
-                    companyName
-                      ? companyName + "/manageteam"
+                    CompanyName
+                      ? CompanyName + "/manageteam"
                       : "staff-member" + "/workermanageteam"
                   }`,
                   {

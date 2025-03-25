@@ -18,7 +18,7 @@ import { Typography } from "@mui/material";
 const PlanPurchase = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
 
   const [companyData, setCompanyData] = useState(undefined);
   const [customerVault, setCustomerVault] = useState(undefined);
@@ -135,7 +135,7 @@ const PlanPurchase = () => {
             state: values?.State,
             zip: values?.Zip,
             country: values?.Country,
-            company: companyName,
+            company: CompanyName,
             CompanyId: values?.CompanyId,
             customer_vault_id: customerVault?.customer_vault_id
               ? Number(customerVault?.customer_vault_id)
@@ -168,7 +168,7 @@ const PlanPurchase = () => {
             country: values?.Country,
             FirstName: values?.FirstName,
             LastName: values?.LastName,
-            company: companyName,
+            company: CompanyName,
             amount: plan?.PlanPrice,
             PlanId: plan?.PlanId,
             first_name: values?.FirstName,
@@ -186,9 +186,9 @@ const PlanPurchase = () => {
           showToast.success(res?.data?.message || "Payment successful!");
           localStorage.setItem("adminToken", res?.data?.token);
           navigate(
-            companyName
-              ? `/${companyName}/index`
-              : `/${companyData?.companyName}/index`,
+            CompanyName
+              ? `/${CompanyName}/index`
+              : `/${companyData?.CompanyName}/index`,
             { state: { navigats: ["/index"] } }
           );
         } else {

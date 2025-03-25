@@ -13,7 +13,7 @@ import { useStaffContext } from "../../../components/StaffData/Staffdata.jsx";
 const Contract = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -90,8 +90,8 @@ const Contract = () => {
   }, [page, search, sortField, sortOrder]);
 
   const handleEditClick = (id) => {
-    if (companyName) {
-      navigate(`/${companyName}/add-contract`, {
+    if (CompanyName) {
+      navigate(`/${CompanyName}/add-contract`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/add-contract"],
@@ -303,7 +303,7 @@ const Contract = () => {
         page={page}
         setPage={setPage}
         setRowsPerPage={setRowsPerPage}
-        companyName={companyName}
+        CompanyName={CompanyName}
         countData={countData}
         rowsPerPage={rowsPerPage}
         dropdownOptions={dropdownOptions}

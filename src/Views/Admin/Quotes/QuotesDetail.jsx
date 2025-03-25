@@ -19,7 +19,7 @@ function QuotesDetail() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [collectSignatureLoader, setCollectSignatureLoader] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -36,8 +36,9 @@ function QuotesDetail() {
     try {
       handleAuth(navigate, location);
       const res = await AxiosInstance.get(
-        `/quote/quote_details/${location?.state?.id}`
+        `/v1/quote/quote_details/${location?.state?.id}`
       );
+      console.log(res,"resresresres")
       setQuotesData(res?.data?.data);
     } catch (error) {
       console.error("Error: ", error?.messae);
@@ -131,14 +132,14 @@ function QuotesDetail() {
   const moreActiontoggle = () => setDropdownOpen((prevState) => !prevState);
 
   const handleEditClick = (id) => {
-    // navigate(`/${companyName}/add-quotes`, {
+    // navigate(`/${CompanyName}/add-quotes`, {
     //   state: {
     //     id: location?.state?.id,
     //     navigats: [...location?.state?.navigats, "/add-quotes"],
     //   },
     // });
-    if (companyName) {
-      navigate(`/${companyName}/add-quotes`, {
+    if (CompanyName) {
+      navigate(`/${CompanyName}/add-quotes`, {
         state: {
           id: location?.state?.id,
           navigats: [...location?.state?.navigats, "/add-quotes"],
@@ -228,12 +229,11 @@ function QuotesDetail() {
 
   const menuItems = [
     {
-
       // convrt to contarct is comment but the in live got error so that temporarily this is comment
       label: "Convert to contract",
       // UCOMMENT FOR THE CONVERT TO CONTRACT
       // onClick: () => {
-      //   navigate(`/${companyName}/add-contract`, {
+      //   navigate(`/${CompanyName}/add-contract`, {
       //     state: {
       //       navigats: [...location?.state?.navigats, "/add-contract"],
       //       QuoteId: location?.state?.id,
@@ -243,8 +243,8 @@ function QuotesDetail() {
       //   });
       // },
       onClick: () => {
-        if (companyName) {
-          navigate(`/${companyName}/add-contract`, {
+        if (CompanyName) {
+          navigate(`/${CompanyName}/add-contract`, {
             state: {
               QuoteId: location?.state?.id,
               formData: quotesData,
@@ -478,7 +478,7 @@ function QuotesDetail() {
         Previous={Previous}
         toggle={toggle}
         setMail={setMail}
-        companyName={companyName}
+        CompanyName={CompanyName}
         handleEditClick={handleEditClick}
         dropdownOpen={dropdownOpen}
         moreActiontoggle={moreActiontoggle}

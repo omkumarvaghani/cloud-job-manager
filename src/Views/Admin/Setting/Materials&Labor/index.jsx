@@ -95,9 +95,8 @@ const MaterialsLabor = () => {
   const [imageLoader, setImageLoader] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [tokenDecode, setTokenDecode] = useState({});
-    const [inputValue, setInputValue] = useState("");
-    const [searchInput, setSearchInput] = useState("");
-
+  const [inputValue, setInputValue] = useState("");
+  const [searchInput, setSearchInput] = useState("");
 
   const [DateDecode, setDateDecode] = useState({});
   const fetchData = async () => {
@@ -129,7 +128,7 @@ const MaterialsLabor = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const getData = async () => {
     try {
-      const res = await AxiosInstance.get(`/materialslabor/get/${CompanyId}`, {
+      const res = await AxiosInstance.get(`/v1/material/get/${CompanyId}`, {
         params: {
           pageSize: rowsPerPage,
           pageNumber: page,
@@ -308,7 +307,7 @@ const MaterialsLabor = () => {
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
-          const response = await AxiosInstance.delete(`/materialslabor/${id}`, {
+          const response = await AxiosInstance.delete(`/v1/material/${id}`, {
             data: { DeleteReason: deleteReason },
           });
           if (response?.data?.statusCode === 200) {
@@ -343,6 +342,8 @@ const MaterialsLabor = () => {
   };
 
   const CollapseData = ({ data }) => {
+    {
+    }
     return (
       <Grid className="d-flex gap-4 mt-3 mb-3 w-100">
         <Col className="card col-8 productDetaillTable">
@@ -495,7 +496,7 @@ const MaterialsLabor = () => {
   //   setSelectedUnitsAndHours(null);
   // }, [selectedProductAndService]);
 
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [isOpenDropDown, setIsOpenDropDown] = useState(false);
   const toggle = () => setIsOpenDropDown(!isOpenDropDown);
 
@@ -544,7 +545,7 @@ const MaterialsLabor = () => {
                     <SettingDropdown
                       isOpenDropDown={isOpenDropDown}
                       toggle={toggle}
-                      companyName={companyName}
+                      CompanyName={CompanyName}
                     />
                   )}
                 </Grid> */}
@@ -552,7 +553,7 @@ const MaterialsLabor = () => {
                 <SettingDropdown
                   isOpenDropDown={isOpenDropDown}
                   toggle={toggle}
-                  companyName={companyName}
+                  CompanyName={CompanyName}
                 />
               </Grid>
               <Grid
@@ -699,8 +700,8 @@ const MaterialsLabor = () => {
         handleDrop={handleDrop}
         previewModalOpen={previewModalOpen}
         handleFilePreview={handleFilePreview}
-          setInputValue={setInputValue}
-                setSearchInput={setSearchInput}
+        setInputValue={setInputValue}
+        setSearchInput={setSearchInput}
       />
     </>
   );

@@ -72,8 +72,8 @@ const Addquotes = ({
   setIsProperty,
   setPropertyData,
   setCustomersData,
-  companyName,
-  handleSubmits
+  CompanyName,
+  handleSubmits,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -100,20 +100,20 @@ const Addquotes = ({
                   "You have unsaved changes. Are you sure you want to leave?"
                 );
                 if (!confirmLeave) {
-                  return; 
+                  return;
                 }
               }
               navigate(
                 `/${
-                  companyName
-                    ? companyName + "/quotes"
+                  CompanyName
+                    ? CompanyName + "/quotes"
                     : "staff-member" + "/workerinvoice"
                 }`,
                 {
                   state: {
                     navigats: location?.state?.navigats.filter(
                       (item) => item !== "/quotes"
-                    ),  
+                    ),
                   },
                 }
               );
@@ -154,9 +154,12 @@ const Addquotes = ({
                         fontWeight: "600",
                       }}
                     >
-                      {customersData?.FirstName
-                        ? `${customersData?.FirstName} ${customersData?.LastName}`
-                        : "Customer Name"}
+                      {console.log(customersData, "customersData")}
+                      {console.log(propertyData?.FirstName,"propertyData?.FirstName")}
+                      {propertyData?.FirstName
+                        ? `${propertyData?.FirstName} ${propertyData?.LastName}`
+                        : "Customer Name"} 
+    
                     </Typography>
                     {!Object.keys(customersData).length > 0 ? (
                       <Button
@@ -180,26 +183,6 @@ const Addquotes = ({
                 >
                   <Col className="col-4 mt-3 order-1 jobinput " xl={5}>
                     <Grid>
-                      {/* <TextField
-                        required
-                        ref={setTitleRef}
-                        value={formik?.values?.Title}
-                        onChange={handleChange}
-                        onBlur={formik?.handleBlur}
-                        error={
-                          formik?.touched?.Title &&
-                          Boolean(formik?.errors?.Title)
-                        }
-                        helperText={
-                          formik?.touched?.Title && formik?.errors?.Title
-                        }
-                        name="Title"
-                        id="title"
-                        placeholder="Enter job title"
-                        label="Job Title"
-                        type="text"
-                        className="text-blue-color w-100"
-                      /> */}
                       <InputText
                         required
                         ref={setTitleRef}
@@ -216,7 +199,7 @@ const Addquotes = ({
                         name="Title"
                         id="title"
                         placeholder="Enter job title"
-                        label="Job Title"
+                        label="Quote Title"
                         type="text"
                         className="text-blue-color w-100"
                       />
@@ -238,23 +221,27 @@ const Addquotes = ({
                             </Typography>
                           </Typography>
                           <Typography className="text-blue-color">
+                            {console.log(propertyData, "propertyData")}
                             {propertyData?.Address ||
-                              customersData?.location[0]?.Address ||
-                              "-"}{" "},
+                              customersData?.location?.Address ||
+                              "-"}{" "}
+                            ,
                             <br />
                             {propertyData?.City ||
-                              customersData?.location[0]?.City ||
+                              customersData?.location?.City ||
                               "-"}
                             ,{" "}
                             {propertyData?.State ||
-                              customersData?.location[0]?.State ||
-                              "-"}{" "},
+                              customersData?.location?.State ||
+                              "-"}{" "}
+                            ,
                             {propertyData?.Zip ||
-                              customersData?.location[0]?.Zip ||
-                              "-"},
+                              customersData?.location?.Zip ||
+                              "-"}
+                            ,
                             <br />
                             {propertyData?.Country ||
-                              customersData?.location[0]?.Country ||
+                              customersData?.location?.Country ||
                               "-"}{" "}
                             <br />
                             <a
@@ -660,7 +647,7 @@ const Addquotes = ({
                                 ) {
                                   // handleSaveQuote("Awaiting Response");
                                   formik.setFieldValue(
-                                    "status",
+                                    "Status",
                                     "Awaiting Response"
                                   );
                                   setModal(true);
@@ -685,7 +672,7 @@ const Addquotes = ({
                                   formik?.values?.Title
                                 ) {
                                   formik.setFieldValue(
-                                    "status",
+                                    "Status",
                                     "Awaiting Response"
                                   );
                                   setModal(true); // Mail send nahi hoga, sirf modal open hoga
@@ -712,7 +699,7 @@ const Addquotes = ({
                             {/* <DropdownItem
                               // onClick={() => {
                               //   formik.setFieldValue(
-                              //     "status",
+                              //     "Status",
                               //     "Awaiting Response"
                               //   );
                               //   handleSaveQuote(true);
@@ -720,7 +707,7 @@ const Addquotes = ({
                               onClick={() => {
                                 handleSaveQuote("Awaiting Response")
                                 formik.setFieldValue(
-                                  "status",
+                                  "Status",
                                   "Awaiting Response"
                                 );
                               }}
@@ -730,7 +717,7 @@ const Addquotes = ({
                             <DropdownItem
                               onClick={() => {
                                 formik.setFieldValue(
-                                  "status",
+                                  "Status",
                                   "Awaiting Response"
                                 );
                                 handleSaveQuote("Awaiting Response");

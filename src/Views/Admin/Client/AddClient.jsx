@@ -11,7 +11,7 @@ import showToast from "../../../components/Toast/Toster";
 function AddClient() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [loader, setLoader] = useState(false);
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -33,7 +33,7 @@ function AddClient() {
           token,
         });
         if (res?.data) {
-          setCompanyId(res?.data?.data?.companyId);
+          setCompanyId(res?.data?.data?.CompanyId);
         }
       } catch (error) {
         console.error("Error:", error?.message);
@@ -94,8 +94,8 @@ function AddClient() {
   //           }, 500);
   //           navigate(
   //             `/${
-  //               companyName
-  //                 ? companyName + "/customer"
+  //               CompanyName
+  //                 ? CompanyName + "/customer"
   //                 : "staff-member" + "/workercustomer"
   //             }`,
   //             {
@@ -164,8 +164,8 @@ function AddClient() {
   //           showToast.success(response?.data?.message);
   //           navigate(
   //             `/${
-  //               companyName
-  //                 ? companyName + "/customer"
+  //               CompanyName
+  //                 ? CompanyName + "/customer"
   //                 : "staff-member" + "/workercustomer"
   //             }`,
   //             {
@@ -223,7 +223,7 @@ function AddClient() {
       PhoneNumber: "",
       EmailAddress: "",
       Address: "",
-      CustomerId: "",
+      // CustomerId: "",
     },
     validationSchema: Yup.object({
       FirstName: Yup.string().required("First Name Required"),
@@ -251,18 +251,18 @@ function AddClient() {
         // If it's an update, handle PUT request
         if (location?.state?.id) {
           const response = await AxiosInstance.put(
-            `/customer/${location?.state?.id}`,
+            `/v1/user/${location?.state?.id}`,
             values
           );
-          if (response?.data?.statusCode === 200) {
+          // consol.log(response, "responsess");
+          if (response?.data?.statusCode === "200") {
             setLoader(false);
             showToast.success(response?.data?.message);
-
-            // Handle navigation after successful update
+            // Handle navigatio n after successful update
             navigate(
               `/${
-                companyName
-                  ? companyName + "/customer"
+                CompanyName
+                  ? CompanyName + "/customer"
                   : "staff-member" + "/workercustomer"
               }`,
               {
@@ -276,21 +276,24 @@ function AddClient() {
           } else {
             showToast.error(response?.data?.message, "error");
           }
-        } else {
-          // If it's a new customer, handle POST request
-          const response = await AxiosInstance.post(`/customer`, {
+        }
+        // If it's a new customer, handle POST request
+        else {
+          const response = await AxiosInstance.post(`/v1/user`, {
             ...values,
             CompanyId: CompanyId,
             AddedAt: new Date(),
+            Role: "Customer",
           });
-          if (response?.data?.statusCode === 201) {
+          if (response?.data?.statusCode == "200") {
             setLoader(false);
             showToast.success(response?.data?.message);
+
             if (location?.state?.previewPage) {
               navigate(location?.state?.previewPage, {
                 state: {
                   Customer: { ...response?.data.data, ...values },
-                  CustomerId: response?.data.data?.CustomerId,
+                  UserId: response?.data.data?.UserId,
                   navigats: location?.state?.navigats.filter(
                     (item) => item !== "/add-customer"
                   ),
@@ -299,8 +302,8 @@ function AddClient() {
             } else {
               navigate(
                 `/${
-                  companyName
-                    ? companyName + "/customer"
+                  CompanyName
+                    ? CompanyName + "/customer"
                     : "staff-member" + "/workercustomer"
                 }`,
                 {
@@ -345,6 +348,7 @@ function AddClient() {
       }
     },
   });
+
   const formatPhoneNumber = (value) => {
     const PhoneNumber = value.replace(/[^\d]/g, "");
     const limitedPhoneNumber = PhoneNumber.slice(0, 10);
@@ -376,7 +380,7 @@ function AddClient() {
     }
     setIsEdited(true);
   };
-
+  console.log(formik,"formikformik")
   useEffect(() => {
     setCountries(Country.getAllCountries());
     if (formik?.values?.Country) {
@@ -388,24 +392,31 @@ function AddClient() {
       });
     }
   }, [formik]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await AxiosInstance.get(`/customer/${location?.state?.id}`);
-        formik.setValues(res.data.data);
-        formik.setValues({
-          ...res?.data?.data,
-          Address: res?.data?.data?.location[0]?.Address,
-          City: res?.data?.data?.location[0]?.City,
-          State: res?.data?.data?.location[0]?.State,
-          Zip: res?.data?.data?.location[0]?.Zip,
-          Country: res?.data?.data?.location[0]?.Country,
-        });
+        const res = await AxiosInstance.get(`/v1/user/${location?.state?.id}`);
+
+        const userProfile = res?.data?.data?.userProfile;
+        if (userProfile) {
+
+          formik.setValues({
+            FirstName: userProfile?.FirstName || "",
+            LastName: userProfile?.LastName || "",
+            PhoneNumber: userProfile?.PhoneNumber || "",
+            EmailAddress: res?.data?.data?.user?.EmailAddress || "",
+            Address: userProfile?.Address || "",
+            City: userProfile?.City || "",
+            State: userProfile?.State || "",
+            Zip: userProfile?.Zip || "",
+            Country: userProfile?.Country || "",
+          });
+        }
       } catch (error) {
         console.error("Error: ", error?.message);
       }
     };
+
     if (location?.state?.id) {
       fetchData();
     }
@@ -450,9 +461,9 @@ function AddClient() {
     setPhoneNumbers([...phoneNumbers, ""]);
   };
 
-useEffect(() => {
+  useEffect(() => {
     const handleBeforeUnload = (event) => {
-      if (formik.dirty ) {
+      if (formik.dirty) {
         const message =
           "You have unsaved changes. Are you sure you want to leave?";
         event.returnValue = message;
@@ -466,8 +477,6 @@ useEffect(() => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [formik.dirty]);
-  
-
 
   return (
     <>
@@ -480,7 +489,7 @@ useEffect(() => {
         setSelectedCountry={setSelectedCountry}
         handlePhoneChange={handlePhoneChange}
         isEdited={isEdited}
-        companyName={companyName}
+        CompanyName={CompanyName}
         handleZipChange={handleZipChange}
         addPhoneNumber={addPhoneNumber}
         phoneNumbers={phoneNumbers}

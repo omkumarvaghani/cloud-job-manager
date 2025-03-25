@@ -304,7 +304,7 @@ const Financial = () => {
         setPage={setPage}
         setRowsPerPage={setRowsPerPage}
         rowsPerPage={rowsPerPage}
-        // companyName={companyName}
+        // CompanyName={CompanyName}
         // countData={countData}
         selectedEndDate={selectedEndDate}
         selectedStartDate={selectedStartDate}

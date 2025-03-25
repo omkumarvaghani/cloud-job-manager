@@ -45,7 +45,7 @@ const PaymentReporte = ({
   setRowsPerPage,
   rowsPerPage,
   collapseData,
-  // companyName,
+  // CompanyName,
   // countData,
   // dateFormat,
   reportData,

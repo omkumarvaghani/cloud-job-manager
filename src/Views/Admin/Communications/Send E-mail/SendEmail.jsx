@@ -36,7 +36,7 @@ const SendEmail = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -194,7 +194,7 @@ const SendEmail = () => {
         setPage={setPage}
         setRowsPerPage={setRowsPerPage}
         rowsPerPage={rowsPerPage}
-        companyName={companyName}
+        CompanyName={CompanyName}
         countData={countData}
         isEdited={isEdited}
         customersData={customersData}

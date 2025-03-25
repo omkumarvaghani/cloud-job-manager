@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
     },
     Password: {
       type: String,
-      required: true,
+      // required: true,
     },
     IsActive: {
       type: Boolean,
@@ -43,12 +43,19 @@ const userSchema = new mongoose.Schema(
 userSchema.index({ EmailAddress: 1 });
 userSchema.index({ CompanyId: 1, Role: 1 });
 
-// Hash password before saving
+
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("Password")) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.Password = await bcrypt.hash(this.Password, salt);
-  next();
+  if (!this.Password) return next();
+
+  if (!this.isModified("Password")) return next(); 
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.Password = await bcrypt.hash(this.Password, salt);
+    next();
+  } catch (error) {
+    return next(error); 
+  }
 });
 
 // Method to compare passwords

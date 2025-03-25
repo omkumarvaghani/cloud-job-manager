@@ -34,15 +34,16 @@ const FooterDetails = ({
               borderRadius: "50%",
             }}
           >
-            {data?.customer?.FirstName?.charAt(0)?.toUpperCase()}
-            {data?.customer?.LastName?.charAt(0)?.toUpperCase()}
+            {data?.customerData?.FirstName?.charAt(0)?.toUpperCase()}
+            {data?.customerData?.LastName?.charAt(0)?.toUpperCase()}
           </Typography>
           <Grid className="mx-2">
             <Typography className="mb-0" style={{ fontSize: "12px" }}>
               <b className="text-blue-color">
-                {data?.customer?.FirstName || ""}
-                {data?.customer?.LastName || ""}
+                {data?.customerData?.FirstName || ""}
+                {data?.customerData?.LastName || ""} 
               </b>
+              {console.log(data,"data123")}
             </Typography>
             <Typography
               style={{ fontSize: "12px" }}

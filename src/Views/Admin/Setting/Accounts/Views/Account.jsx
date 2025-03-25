@@ -37,7 +37,7 @@ const Account = ({
   page,
   setPage,
   setRowsPerPage,
-  companyName,
+  CompanyName,
   countData,
   rowsPerPage,
   isEdited,
@@ -90,7 +90,7 @@ const Account = ({
               <SettingDropdown
                 isOpenDropDown={isOpenDropDown}
                 toggle={toggle}
-                companyName={companyName}
+                CompanyName={CompanyName}
               />
             </Grid>
             <Grid className="d-flex justify-content-end mb-2 align-items-center customersAddCustomers">

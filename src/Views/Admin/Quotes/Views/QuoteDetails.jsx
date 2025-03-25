@@ -65,7 +65,7 @@ const QuotesDetails = ({
   collectSignatureLoader,
   handleDelete,
   dateFormat,
-  companyName,
+  CompanyName,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -142,8 +142,8 @@ const QuotesDetails = ({
                     // navigate(-1);
                     navigate(
                       `/${
-                        companyName
-                          ? companyName + "/quotes"
+                        CompanyName
+                          ? CompanyName + "/quotes"
                           : "staff-member" + "/workerquotes"
                       }`,
                       {
@@ -220,13 +220,13 @@ const QuotesDetails = ({
                       fontSize: "14px",
                       display: "flex",
                       backgroundColor:
-                        quotesData?.status === "Awaiting Response"
+                        quotesData?.Status === "Awaiting Response"
                           ? "rgba(255, 165, 0, 0.2)"
-                          : quotesData?.status === "Approved"
+                          : quotesData?.Status === "Approved"
                           ? "rgba(88, 230, 88, 0.2)"
-                          : quotesData?.status === "Draft"
+                          : quotesData?.Status === "Draft"
                           ? "rgba(0, 0, 255, 0.2)"
-                          : quotesData?.status === "Request changed"
+                          : quotesData?.Status === "Request changed"
                           ? "#FFDFF6"
                           : "",
                       alignItems: "center",
@@ -238,13 +238,13 @@ const QuotesDetails = ({
                       className=""
                       style={{
                         backgroundColor:
-                          quotesData?.status === "Awaiting Response"
+                          quotesData?.Status === "Awaiting Response"
                             ? "orange"
-                            : quotesData?.status === "Approved"
+                            : quotesData?.Status === "Approved"
                             ? "#58cc58"
-                            : quotesData?.status === "Draft"
+                            : quotesData?.Status === "Draft"
                             ? "rgb(6, 49, 100)"
-                            : quotesData?.status === "Request changed"
+                            : quotesData?.Status === "Request changed"
                             ? "#FF33C6"
                             : "",
                         borderRadius: "50%",
@@ -253,7 +253,7 @@ const QuotesDetails = ({
                         marginBottom: 0,
                       }}
                     ></Typography>
-                    {quotesData?.status || "status not available"}
+                    {quotesData?.Status || "Status not available"}
                   </Typography>
                 </Grid>
                 <Typography
@@ -269,8 +269,10 @@ const QuotesDetails = ({
                   className="my-4 mb-0 text-blue-color quotePersonName heading-three"
                   style={{ fontWeight: 700 }}
                 >
-                  {quotesData?.customer?.FirstName || "FirstName not available"}{" "}
-                  {quotesData?.customer?.LastName || "LastName not available"}
+                  {quotesData?.customerData?.FirstName ||
+                    "FirstName not available"}{" "}
+                  {quotesData?.customerData?.LastName ||
+                    "LastName not available"}
                   <img
                     src={Copy}
                     style={{ cursor: "pointer" }}
@@ -301,11 +303,14 @@ const QuotesDetails = ({
                     className="mb-0 text-data text-blue-color"
                     style={{ fontSize: "14px", width: "80%" }}
                   >
-                    {quotesData?.location?.Address || "Address not available"}{" "},
-                    {quotesData?.location?.City || "City not available"}{" "},
-                    {quotesData?.location?.State || "State not available"}{" "},
-                    {quotesData?.location?.Country || "Country not available"}{" "},
-                    {quotesData?.location?.Zip || "Zip not available"}
+                    {console.log(quotesData, "quotesData")}
+                    {quotesData?.customerData?.Address ||
+                      "Address not available"}{" "}
+                    ,{quotesData?.customerData?.City || "City not available"} ,
+                    {quotesData?.customerData?.State || "State not available"} ,
+                    {quotesData?.customerData?.Country ||
+                      "Country not available"}{" "}
+                    ,{quotesData?.customerData?.Zip || "Zip not available"}
                   </Typography>
                 </Col>
                 <Col className="col-2 " xl={3}>

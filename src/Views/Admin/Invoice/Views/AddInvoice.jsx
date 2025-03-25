@@ -63,7 +63,7 @@ const AddInvoice = ({
   mail,
   setMail,
   setIsCollect,
-  companyName,
+  CompanyName,
   loading,
   setLoading,
 }) => {
@@ -92,8 +92,8 @@ const AddInvoice = ({
               // navigate(-1);
               navigate(
                 `/${
-                  companyName
-                    ? companyName + "/invoice"
+                  CompanyName
+                    ? CompanyName + "/invoice"
                     : "staff-member" + "/workerinvoice"
                 }`,
                 {
@@ -132,8 +132,8 @@ const AddInvoice = ({
               }
               navigate(
                 `/${
-                  companyName
-                    ? companyName + "/invoice"
+                  CompanyName
+                    ? CompanyName + "/invoice"
                     : "staff-member" + "/workerinvoice"
                 }`,
                 {
@@ -734,7 +734,7 @@ const AddInvoice = ({
                         >
                           Send As Email
                         </DropdownItem> */}
-                        {companyName && (
+                        {CompanyName && (
                           <DropdownItem
                             className="text-blue-color"
                             onClick={() => {

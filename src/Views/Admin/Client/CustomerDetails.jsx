@@ -21,7 +21,7 @@ function CustomerDetails() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [data, setData] = useState();
   const [open, setOpen] = useState({ isOpen: false, propertyData: null });
   const [loader, setLoader] = useState(true);
@@ -62,7 +62,8 @@ function CustomerDetails() {
 
   const getData = async () => {
     try {
-      const res = await AxiosInstance.get(`/customer/${location?.state?.id}`);
+      const res = await AxiosInstance.get(`/v1/customer/${location?.state?.id}`);
+      console.log(res,"res")
       setData(res?.data?.data);
       setCustomersDetails([res?.data?.data]);
     } catch (error) {
@@ -79,7 +80,7 @@ function CustomerDetails() {
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
-          const res = await AxiosInstance.delete(`/location/${id}`, {
+          const res = await AxiosInstance.delete(`/v1/location/${id}`, {
             data: { DeleteReason: deleteReason },
           });
           if (res?.data?.statusCode === 200) {
@@ -157,7 +158,7 @@ function CustomerDetails() {
         </>
       ),
       onClick: () => {
-        navigate(`/${companyName}/add-quotes`, {
+        navigate(`/${CompanyName}/add-quotes`, {
           state: {
             Customer: data,
             CustomerId: data?.CustomerId,
@@ -177,7 +178,7 @@ function CustomerDetails() {
         </>
       ),
       onClick: () => {
-        navigate(`/${companyName}/add-contract`, {
+        navigate(`/${CompanyName}/add-contract`, {
           state: {
             Customer: data,
             CustomerId: data?.CustomerId,
@@ -197,7 +198,7 @@ function CustomerDetails() {
         </>
       ),
       onClick: () => {
-        navigate(`/${companyName}/invoicetable`, {
+        navigate(`/${CompanyName}/invoicetable`, {
           state: {
             CustomerId: data?.CustomerId,
             navigats: [...location?.state?.navigats, "/invoicetable"],
@@ -323,7 +324,7 @@ function CustomerDetails() {
         handleSelect={handleSelect}
         dropdownOpen={dropdownOpen}
         moreActiontoggle={moreActiontoggle}
-        companyName={companyName}
+        CompanyName={CompanyName}
         dropdownOpens={dropdownOpens}
         setDropdownOpens={setDropdownOpens}
         toggle={toggle}

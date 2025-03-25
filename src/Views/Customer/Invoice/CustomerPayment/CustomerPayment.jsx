@@ -50,7 +50,7 @@ const CustomerPayment = () => {
   }, []);
   const CompanyId =
     localStorage?.getItem("CompanyId") || tokenDecode?.CompanyId;
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [invoiceData, setInvoiceData] = useState();
 
   let paymentMethods = ["Credit/debit card"];
@@ -123,7 +123,7 @@ const CustomerPayment = () => {
                 billing_id: Number(values?.billing_id),
                 customer_vault_id: Number(values?.customer_vault_id),
                 date: values?.date,
-                company: companyName,
+                company: CompanyName,
                 amount: values?.amount,
                 CompanyId: CompanyId,
                 Total: invoiceData?.Total,
@@ -163,7 +163,7 @@ const CustomerPayment = () => {
                 billing_id: Number(values?.billing_id),
                 customer_vault_id: Number(values?.customer_vault_id),
                 date: values?.date,
-                company: companyName,
+                company: CompanyName,
                 amount: values?.amount,
                 CompanyId: localStorage?.getItem("CompanyId"),
                 Total: invoiceData?.Total,
@@ -196,7 +196,7 @@ const CustomerPayment = () => {
               var object = {
                 paymentDetails: {
                   date: values?.date,
-                  company: companyName,
+                  company: CompanyName,
                   amount: values?.amount,
                   CompanyId: localStorage?.getItem("CompanyId"),
                   Total: invoiceData?.Total,
@@ -210,7 +210,7 @@ const CustomerPayment = () => {
                 paymentDetails: {
                   date: values?.date,
                   cheque_number: values?.cheque_number,
-                  company: companyName,
+                  company: CompanyName,
                   amount: values?.amount,
                   CompanyId: localStorage?.getItem("CompanyId"),
                   Total: invoiceData?.Total,

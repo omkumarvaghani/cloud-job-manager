@@ -29,7 +29,7 @@ const JobModal = ({
   const baseUrl = process.env.REACT_APP_BASE_API;
   const navigate = useNavigate();
   const location = useLocation();
-  const { companyName } = useParams();
+  const { CompanyName } = useParams();
   const [clientData, setClienData] = useState([]);
   const [properties, setProperties] = useState([]);
 
@@ -121,7 +121,7 @@ const JobModal = ({
                   className="btn bg-button-blue-color text-white-color"
                   style={{ width: "40%", fontSize: "14px" }}
                   onClick={() =>
-                    navigate(`/${companyName}/add-customer`, {
+                    navigate(`/${CompanyName}/add-customer`, {
                       state: {
                         previewPage: location?.pathname,
                         previewData: {
@@ -194,7 +194,7 @@ const JobModal = ({
                                   style={{ fontSize: "12px" }}
                                 >
                                   {item?.first_name || "first name not available"} {item?.last_name || "last name not available"} (
-                                  {item?.companyName || "companyName not available"})
+                                  {item?.CompanyName || "CompanyName not available"})
                                 </Typography>
                                 {item?.properties?.length || "length not available"}{" "}
                                 {item?.properties?.length === 1

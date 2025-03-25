@@ -32,7 +32,7 @@ const SentEmail = ({
   page,
   setPage,
   setRowsPerPage,
-  companyName,
+  CompanyName,
   countData,
   rowsPerPage,
   handleDialogOpen,
@@ -56,8 +56,8 @@ const SentEmail = ({
           <Grid className="searchBarOfTable">
             <BlueButton
               onClick={() => {
-                if (companyName) {
-                  navigate(`/${companyName}/add-new-email`, {
+                if (CompanyName) {
+                  navigate(`/${CompanyName}/add-new-email`, {
                     state: {
                       navigats: [
                         ...location?.state?.navigats,
