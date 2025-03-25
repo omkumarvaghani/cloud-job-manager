@@ -76,7 +76,7 @@ const Customer = () => {
     }
 
     try {
-      const res = await AxiosInstance.get(`/v1/user/customers/${CompanyId}`, {
+      const res = await AxiosInstance.get(`/v1/customer/customers/${CompanyId}`, {
         params: {
           pageSize: rowsPerPage,
           pageNumber: page,

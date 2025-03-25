@@ -713,8 +713,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
   }, [navigate]);
 
   const useRemoveToken = async () => {
-    // localStorage.clear();
-    // navigate("/auth/login");
+    localStorage.clear();
+    navigate("/auth/login");
   };
 
   const [isNotify, setIsNotify] = useState(false);
@@ -1123,7 +1123,6 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             className="bold-text"
                             style={{ fontSize: "12px" }}
                           >
-                            {console.log(data, "data")}
                             {data?.full_name || 
                               data?.FirstName + " " + data?.LastName}
                           </Typography>

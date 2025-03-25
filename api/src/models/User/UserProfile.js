@@ -18,6 +18,10 @@ const userProfileSchema = new mongoose.Schema(
       required: true,
       ref: "Company",
     },
+    LocationId: {
+      type: String,
+      default: uuidv4,
+    },
     /*** COMMON FIELDS ***/
     FirstName: { type: String, trim: true },
     LastName: { type: String, trim: true },
@@ -40,10 +44,6 @@ const userProfileSchema = new mongoose.Schema(
     /*** WORKER-SPECIFIC FIELDS ***/
     LaborCost: { type: Number },
     ScheduleTime: { type: String },
-
-    /*** CUSTOMER-SPECIFIC FIELDS ***/
-    CustomerId: { type: String },
-    LocationId: { type: String },
 
     /*** STATUS ***/
     IsActive: { type: Boolean, default: true },

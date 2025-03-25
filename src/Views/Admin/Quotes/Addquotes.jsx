@@ -32,7 +32,6 @@ function AddQuote() {
   const [dropdown, setDropdown] = useState(false);
   const [modal, setModal] = useState(false);
   const [customersData, setCustomersData] = useState({});
-  console.log(customersData, "customersDatacustomersData");
   const [propertyData, setPropertyData] = useState({});
   const [quotesData, setQuotesData] = useState({});
   const [showTax, setShowTax] = useState(false);
@@ -344,7 +343,6 @@ function AddQuote() {
           const res = await AxiosInstance.get(
             `/v1/quote/quote_details/${location?.state?.id}`
           );
-          console.log(res,"res")
           if (res.data?.statusCode === 200) {
             const data = res?.data?.data;
 
@@ -503,7 +501,6 @@ function AddQuote() {
 
     const companyId =
       localStorage.getItem("CompanyId") || tokenDecode?.CompanyId;
-    console.log(tokenDecode, "tokenDecode");
     try {
       const res = await AxiosInstance.post(
         `/v1/quote/check_number/${companyId}`,

@@ -9,5 +9,7 @@ router.use("/v1/revenue", require("../routes/v1/revenueRoutes"));
 router.use("/v1/teamsize", require("../routes/v1/teamsizeRoutes"));
 router.use("/v1/plan", require("../routes/v1/planRoutes"));
 router.use("/v1/permission", require("../routes/v1/permissionRoutes"));
+router.use("/v1/quote", require("../routes/v1/quoteRoutes"));
+router.use("/v1/material", require("../routes/v1/materialRoutes"));
 
 module.exports = router;

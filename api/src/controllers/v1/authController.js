@@ -7,11 +7,10 @@ const { v4: uuidv4 } = require("uuid");
 const { logUserEvent } = require("../../middleware/eventMiddleware");
 const { verifyToken } = require("../../middleware/authMiddleware");
 
-const secretKey = process.env.SECRET_KEY;
-
 const generateToken = (user) => {
+  console.log(user, 'userr')
   return jwt.sign(
-    { id: user.UserId, role: user.Role, CompanyId: user.CompanyId },
+    { UserId: user.UserId, Role: user.Role, CompanyId: user.CompanyId, EmailAddress: user.EmailAddress, OwnerName: user.OwnerName },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRATION || "7d" }
   );
@@ -65,9 +64,9 @@ exports.register = async (req, res) => {
       statusCode: "200",
       message: "User created successfully",
       user: {
-        id: newUser.UserId,
-        email: newUser.EmailAddress,
-        role: newUser.Role,
+        UserId: newUser.UserId,
+        EmailAddress: newUser.EmailAddress,
+        Role: newUser.Role,
         CompanyId: newUser.CompanyId || null,
       },
       token,
@@ -83,53 +82,75 @@ exports.login = async (req, res) => {
   try {
     const { EmailAddress, Password } = req.body;
 
-    // **Find user**
     const user = await User.findOne({ EmailAddress, IsDelete: false });
-    console.log(user, "user");
+
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-
-    // const isMatch = await bcrypt.compare(Password, user.Password);
-    // console.log("Password Match:", isMatch);
-    // if (!isMatch) {
-    //   return res.status(401).json({ message: "Invalid email or password" });
-    // }
 
     if (!user.IsActive) {
       return res
         .status(400)
         .json({ message: "Account is deactivated. Please contact support." });
     }
-    console.log(user, "user");
 
-    // **Fetch user profile**
+    const isMatch = await bcrypt.compare(Password, user.Password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
     const userProfile = await UserProfile.findOne({ UserId: user.UserId });
-    console.log(userProfile, "userProfile");
+
     const tokenData = {
       UserId: user.UserId,
       EmailAddress: user.EmailAddress,
       Role: user.Role,
       ProfileImage: userProfile?.ProfileImage || null,
       CompanyId: user.CompanyId,
+      CompanyName: userProfile?.CompanyName || "",
       OwnerName: userProfile?.OwnerName || "",
     };
 
     logUserEvent(user.CompanyId, "LOGIN", `User ${user.EmailAddress} logged in.`);
 
     const token = generateToken(tokenData);
-    console.log("Token Data:", tokenData);
-    return res.status(200).json({
-      statusCode: "200",
-      message: `${user.Role} Authenticated`,
+
+    let roleSpecificId;
+    switch (user.Role) {
+      case "Admin":
+        roleSpecificId = user.UserId;
+        break;
+      case "Company":
+        roleSpecificId = user.CompanyId;
+        break;
+      case "Worker":
+        roleSpecificId = user.UserId;
+        break;
+      case "Customer":
+        roleSpecificId = user.UserId;
+        break;
+      default:
+        roleSpecificId = null;
+    }
+
+    let response = {
+      statusCode: 200,
       token,
-      user: tokenData,
-    });
+      UserId: roleSpecificId,
+      data: {
+        UserId: roleSpecificId,
+        OwnerName: user.Role === "Company" ? userProfile?.OwnerName : undefined,
+        EmailAddress: user.EmailAddress,
+        CompanyName: userProfile.CompanyName,
+        Role: user.Role,
+        IsActive: user.IsActive,
+      },
+    };
+    return res.status(200).json(response);
   } catch (error) {
     console.error("Login Error:", error);
-    res
-      .status(500)
-      .json({ message: "Something went wrong, please try later!" });
+    res.status(500).json({ message: "Something went wrong, please try later!" });
   }
 };
 
@@ -159,78 +180,8 @@ exports.checkUserExists = async (req, res) => {
     });
   }
 };
+
 // // Token Decode
-// exports.getTokenData = async (req, res) => {
-//   try {
-//     const token = req.query.token || req.body.token;
-
-//     if (!token) {
-//       return res.status(400).json({
-//         statusCode: 400,
-//         message: "Token is required",
-//       });
-//     }
-
-//     let data = verifyToken(token, secretKey);
-
-//     if (data.Role === "Admin") {
-//       const superadminData = await UserProfile.findOne({
-//         UserId: data?.UserId,
-//       });
-
-//       if (superadminData) {
-//         data = {
-//           ...data,
-//           ...superadminData.toObject(),
-//           FirstName: superadminData.FirstName,
-//           LastName: superadminData.LastName,
-//         };
-//       }
-//     }
-
-//     return res.status(200).json({
-//       statusCode: 200,
-//       data,
-//     });
-//   } catch (error) {
-//     console.error(error.message);
-//     return res.status(500).json({
-//       statusCode: 500,
-//       message: "Something went wrong, please try later!",
-//     });
-//   }
-// };
-
-// // Middleware to check token and company status
-// exports.checkTokenData = async (req, res, next) => {
-//   try {
-//     const { token } = req.body;
-//     const response = await getTokenData({ query: { token } }, res);
-
-//     if (response?.data?.CompanyId) {
-//       const companyFind = await User.findOne({
-//         CompanyId: response?.data?.CompanyId,
-//       });
-
-//       if (companyFind && !companyFind.IsActive) {
-//         return res.status(401).json({
-//           statusCode: 401,
-//           message: "Company is inactive. Please log in again.",
-//         });
-//       }
-//     }
-
-//     req.tokenData = response.data;
-//     next();
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(500).json({
-//       statusCode: 500,
-//       message: "Something went wrong, please try later!",
-//     });
-//   }
-// };
-
 const decodeToken = async (token) => {
   if (!token) {
     return { statusCode: 400, message: "Token is required" };
@@ -240,32 +191,26 @@ const decodeToken = async (token) => {
   try {
     data = verifyToken(token);
   } catch (error) {
-    console.error("Error in verifyToken:", error);
-    return { statusCode: 401, message: "Invalid token" };
+    console.error('Error during token verification:', error.message);
+    return { statusCode: 401, message: error.message };
   }
 
-  if (!data) {
-    return { statusCode: 401, message: "Invalid token" };
-  }
+  const userProfile = await UserProfile.findOne({ UserId: data.UserId });
 
-  if (data.Role === "Admin") {
-    const superadminData = await UserProfile.findOne({
-      UserId: data?.UserId,
-    });
-
-    if (superadminData) {
-      data = {
-        ...data,
-        ...superadminData.toObject(),
-        FirstName: superadminData.FirstName,
-        LastName: superadminData.LastName,
-      };
-    }
+  if (userProfile) {
+    data = {
+      ...data,
+      ...userProfile.toObject(),
+      FirstName: userProfile.FirstName,
+      LastName: userProfile.LastName,
+    };
   }
 
   return { statusCode: 200, data };
 };
 
+
+// Endpoint to get token data
 exports.getTokenData = async (req, res) => {
   try {
     const token = req.query.token || req.body.token;
@@ -285,7 +230,6 @@ exports.checkTokenData = async (req, res, next) => {
   try {
     const { token } = req.body;
     const response = await decodeToken(token);
-
     if (response.statusCode !== 200) {
       return res.status(response.statusCode).json(response);
     }
@@ -293,6 +237,7 @@ exports.checkTokenData = async (req, res, next) => {
     if (response?.data?.CompanyId) {
       const companyFind = await User.findOne({
         CompanyId: response.data.CompanyId,
+        Role: "Company",
       });
 
       if (companyFind && !companyFind.IsActive) {
@@ -302,7 +247,6 @@ exports.checkTokenData = async (req, res, next) => {
         });
       }
     }
-
     req.tokenData = response.data;
     next();
   } catch (error) {
@@ -311,5 +255,35 @@ exports.checkTokenData = async (req, res, next) => {
       statusCode: 500,
       message: "Something went wrong, please try later!",
     });
+  }
+};
+
+// Auth (Check Logged-in Company)
+exports.verifyAndFetchCompany = async (req, res) => {
+  try {
+    const token = req.query.token || req.body.token;
+    const tokenResult = verifyToken(token);
+
+    if (!tokenResult.success) {
+      return res.status(tokenResult.statusCode).json({ message: tokenResult.message });
+    }
+
+    const user = tokenResult.data;
+
+    const company = await User.findOne({ CompanyId: user.CompanyId, IsDelete: false });
+
+    if (!company) {
+      return res.status(404).json({ success: false, message: "Company not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Company found",
+      Role: company.Role,
+      data: company,
+    });
+  } catch (error) {
+    console.error("Error in verifyAndFetchCompany:", error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };

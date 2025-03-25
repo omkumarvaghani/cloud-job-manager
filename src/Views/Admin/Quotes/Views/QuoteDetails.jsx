@@ -269,8 +269,8 @@ const QuotesDetails = ({
                   className="my-4 mb-0 text-blue-color quotePersonName heading-three"
                   style={{ fontWeight: 700 }}
                 >
-                  {quotesData?.customer?.FirstName || "FirstName not available"}{" "}
-                  {quotesData?.customer?.LastName || "LastName not available"}
+                  {quotesData?.customerData?.FirstName || "FirstName not available"}{" "}
+                  {quotesData?.customerData?.LastName || "LastName not available"}
                   <img
                     src={Copy}
                     style={{ cursor: "pointer" }}
