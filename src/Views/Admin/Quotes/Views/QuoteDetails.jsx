@@ -269,8 +269,10 @@ const QuotesDetails = ({
                   className="my-4 mb-0 text-blue-color quotePersonName heading-three"
                   style={{ fontWeight: 700 }}
                 >
-                  {quotesData?.customerData?.FirstName || "FirstName not available"}{" "}
-                  {quotesData?.customerData?.LastName || "LastName not available"}
+                  {quotesData?.customerData?.FirstName ||
+                    "FirstName not available"}{" "}
+                  {quotesData?.customerData?.LastName ||
+                    "LastName not available"}
                   <img
                     src={Copy}
                     style={{ cursor: "pointer" }}
@@ -301,11 +303,14 @@ const QuotesDetails = ({
                     className="mb-0 text-data text-blue-color"
                     style={{ fontSize: "14px", width: "80%" }}
                   >
-                    {quotesData?.location?.Address || "Address not available"}{" "},
-                    {quotesData?.location?.City || "City not available"}{" "},
-                    {quotesData?.location?.State || "State not available"}{" "},
-                    {quotesData?.location?.Country || "Country not available"}{" "},
-                    {quotesData?.location?.Zip || "Zip not available"}
+                    {console.log(quotesData, "quotesData")}
+                    {quotesData?.customerData?.Address ||
+                      "Address not available"}{" "}
+                    ,{quotesData?.customerData?.City || "City not available"} ,
+                    {quotesData?.customerData?.State || "State not available"} ,
+                    {quotesData?.customerData?.Country ||
+                      "Country not available"}{" "}
+                    ,{quotesData?.customerData?.Zip || "Zip not available"}
                   </Typography>
                 </Col>
                 <Col className="col-2 " xl={3}>

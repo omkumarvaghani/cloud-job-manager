@@ -62,7 +62,8 @@ function CustomerDetails() {
 
   const getData = async () => {
     try {
-      const res = await AxiosInstance.get(`/customer/${location?.state?.id}`);
+      const res = await AxiosInstance.get(`/v1/customer/${location?.state?.id}`);
+      console.log(res,"res")
       setData(res?.data?.data);
       setCustomersDetails([res?.data?.data]);
     } catch (error) {
@@ -79,7 +80,7 @@ function CustomerDetails() {
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
-          const res = await AxiosInstance.delete(`/location/${id}`, {
+          const res = await AxiosInstance.delete(`/v1/location/${id}`, {
             data: { DeleteReason: deleteReason },
           });
           if (res?.data?.statusCode === 200) {

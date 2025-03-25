@@ -135,6 +135,7 @@ const CustomerModal = ({
       );
       if (data) {
         setCustomersData(data);
+        console.log(data, "datadatadata");
         const locations = data?.locations?.find(
           (item) => item?.LocationId === formik?.values?.LocationId
         );
@@ -172,8 +173,7 @@ const CustomerModal = ({
         const customer = locations?.state?.Customer;
         setCustomersData(customer);
         setFieldValue("UserId", customer?.UserId);
-
-        // Handle locations (now using customer.locations instead of customer.locations)
+        console.log(customer, "customercustomer");
         if (customer?.locations?.length === 1) {
           setPropertyData(customer.locations[0]);
           setFieldValue("LocationId", customer.locations[0]?.LocationId);
