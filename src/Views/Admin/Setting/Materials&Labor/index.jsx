@@ -81,7 +81,6 @@ const MaterialsLabor = () => {
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedAdminId, setSelectedAdminId] = useState("");
-  console.log(selectedAdminId, "selectedAdminId");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [productAndService, setProductAndService] = useState([]);
@@ -139,7 +138,6 @@ const MaterialsLabor = () => {
           sortOrder: sortOrder,
         },
       });
-      console.log(res, "resresres");
       setProductAndService(res?.data?.data);
       setCountData(res?.data?.count);
     } catch (error) {
@@ -306,7 +304,6 @@ const MaterialsLabor = () => {
   };
 
   const handleDelete = (id) => {
-    console.log(id,"idididid")
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
@@ -346,7 +343,6 @@ const MaterialsLabor = () => {
 
   const CollapseData = ({ data }) => {
     {
-      console.log(data, "dtaaaaaaaaa");
     }
     return (
       <Grid className="d-flex gap-4 mt-3 mb-3 w-100">
@@ -367,7 +363,6 @@ const MaterialsLabor = () => {
                 }}
                 className="text-blue-color"
               >
-                {console.log(data?.Description, "data?.Description")}
                 {data?.Description || "Description not available"}
               </Typography>
             </Grid>

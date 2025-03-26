@@ -32,7 +32,7 @@ function AddQuote() {
   const [dropdown, setDropdown] = useState(false);
   const [modal, setModal] = useState(false);
   const [customersData, setCustomersData] = useState({});
-  console.log(customersData, "customersDatacustomersData");
+  console.log(customersData,"customersData098")
   const [propertyData, setPropertyData] = useState({});
   const [quotesData, setQuotesData] = useState({});
   const [showTax, setShowTax] = useState(false);
@@ -159,8 +159,8 @@ function AddQuote() {
       Attachment: [],
       Discount: "",
       Tax: "",
-      status: "",
-    },
+      Status: "",
+    },        
     validationSchema: Yup.object({
       Title: Yup.string().required("Title Required"),
     }),
@@ -273,17 +273,17 @@ function AddQuote() {
     },
   });
 
-  const updateStatus = (status) => {
-    if (status === "Awaiting Response") {
-      formik.setFieldValue("status", "Awaiting Response");
+  const updateStatus = (Status) => {
+    if (Status === "Awaiting Response") {
+      formik.setFieldValue("Status", "Awaiting Response");
     } else if (location?.state?.id) {
-      if (formik?.values?.status === "Draft") {
-        formik?.setFieldValue("status", "Draft");
-      } else if (formik?.values?.status === "Awaiting Response") {
-        formik?.setFieldValue("status", "Awaiting Response");
+      if (formik?.values?.Status === "Draft") {
+        formik?.setFieldValue("Status", "Draft");
+      } else if (formik?.values?.Status === "Awaiting Response") {
+        formik?.setFieldValue("Status", "Awaiting Response");
       }
     } else {
-      formik.setFieldValue("status", "Awaiting Response");
+      formik.setFieldValue("Status", "Awaiting Response");
     }
   };
 
@@ -301,11 +301,11 @@ function AddQuote() {
   //   }
   // };
 
-  const handleSaveQuote = async (status) => {
-    if (status === "Awaiting Response") {
-      formik.setFieldValue("status", "Awaiting Response");
+  const handleSaveQuote = async (Status) => {
+    if (Status === "Awaiting Response") {
+      formik.setFieldValue("Status", "Awaiting Response");
     }
-    updateStatus(status);
+    updateStatus(Status);
     try {
       return await formik.submitForm();
     } catch (error) {
@@ -315,7 +315,7 @@ function AddQuote() {
 
   const handleConvertJob = async () => {
     if (lineItems.length > 0 && lineItems[0].Name !== "") {
-      await formik.setFieldValue("status", "Draft");
+      await formik.setFieldValue("Status", "Draft");
       try {
         setRedirectToContract(true);
         await formik.submitForm();
@@ -344,7 +344,6 @@ function AddQuote() {
           const res = await AxiosInstance.get(
             `/v1/quote/quote_details/${location?.state?.id}`
           );
-          console.log(res,"res")
           if (res.data?.statusCode === 200) {
             const data = res?.data?.data;
 
@@ -503,7 +502,6 @@ function AddQuote() {
 
     const companyId =
       localStorage.getItem("CompanyId") || tokenDecode?.CompanyId;
-    console.log(tokenDecode, "tokenDecode");
     try {
       const res = await AxiosInstance.post(
         `/v1/quote/check_number/${companyId}`,

@@ -7,10 +7,9 @@ require("./config/env");
 require("./config/db");
 
 const app = express();
-const appUrl = process.env.APP_URL;
 
 app.use(logger("dev"));
-app.use(cors({ origin: appUrl }));
+app.use(cors());
 
 // Place express.json() before your routes
 app.use(express.json());

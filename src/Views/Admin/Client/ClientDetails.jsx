@@ -85,8 +85,9 @@ function ClientDetails() {
   const getData = async () => {
     try {
       const res = await AxiosInstance.get(
-        `/customer/detail/${location?.state?.id}`
+        `/v1/customer/detail/${location?.state?.id}`
       );
+      console.log(res,"resresresresres")
       setData(res?.data?.data);
     } catch (error) {
       console.error("Error fetching customer data:", error);
@@ -103,7 +104,7 @@ function ClientDetails() {
     swal().then(async (willDelete) => {
       if (willDelete) {
         try {
-          const res = await AxiosInstance.delete(`/location/${id}`);
+          const res = await AxiosInstance.delete(`//location/${id}`);
           if (res?.data?.statusCode === 200) {
             setTimeout(() => {
               showToast.success(res?.data?.message);
@@ -131,11 +132,11 @@ function ClientDetails() {
   const [quotes, setQuotes] = useState([]);
   useEffect(() => {
     const fetchQuote = async () => {
-      if (data && data.CustomerId) {
+      if (data && data.UserId) {
         try {
           const response = await AxiosInstance.get(
             `/quote/get_quotes_client/${localStorage.getItem("CompanyId")}/${
-              data.CustomerId
+              data.UserId
             }`
           );
           setQuotes(response?.data?.data);

@@ -43,11 +43,11 @@ exports.getCustomersByCompanyId = async (req, res) => {
                 { "profile.LastName": searchRegex },
                 { EmailAddress: searchRegex },
                 { "profile.PhoneNumber": searchRegex },
-                { "profile.Address": searchRegex },
-                { "profile.City": searchRegex },
-                { "profile.State": searchRegex },
-                { "profile.Country": searchRegex },
-                { "profile.Zip": searchRegex },
+                { "locationsData.Address": searchRegex },
+                { "locationsData.City": searchRegex },
+                { "locationsData.State": searchRegex },
+                { "locationsData.Country": searchRegex },
+                { "locationsData.Zip": searchRegex },
             ];
 
             customerSearchQuery = {
@@ -79,12 +79,16 @@ exports.getCustomersByCompanyId = async (req, res) => {
             },
             { $unwind: { path: "$profile", preserveNullAndEmptyArrays: true } },
             {
-                $set: {
-                    Address: "$profile.Address",
-                    City: "$profile.City",
-                    State: "$profile.State",
-                    Country: "$profile.Country",
-                    Zip: "$profile.Zip",
+                $lookup: {
+                    from: "locations",
+                    localField: "UserId",
+                    foreignField: "UserId",
+                    as: "locationsData",
+                },
+            },
+            {
+                $addFields: {
+                    locationsCount: { $size: "$locationsData" },
                 },
             },
             {
@@ -95,14 +99,16 @@ exports.getCustomersByCompanyId = async (req, res) => {
                     "profile.FirstName": 1,
                     "profile.LastName": 1,
                     "profile.PhoneNumber": 1,
-                    "profile.Address": 1,
-                    "profile.City": 1,
-                    "profile.State": 1,
-                    "profile.Country": 1,
-                    "profile.Zip": 1,
-                    "profile.ProfileImage": 1,
                     createdAt: 1,
                     updatedAt: 1,
+                    locationsCount: 1,
+                    locationsData: {
+                        $cond: {
+                            if: { $eq: [{ $size: "$locationsData" }, 1] },
+                            then: { $arrayElemAt: ["$locationsData", 0] },
+                            else: "$locationsCount",
+                        },
+                    },
                 },
             },
             { $sort: sortOptions },
@@ -140,6 +146,7 @@ exports.getCustomersByCompanyId = async (req, res) => {
         });
     }
 };
+
 
 // **GET CUSTOMERS DETAILS WITH ALL LOCATIONS API**
 exports.getCustomerDetail = async (req, res) => {
@@ -248,65 +255,36 @@ exports.getCustomersWithLocations = async (req, res) => {
                     from: "user-profiles",
                     localField: "UserId",
                     foreignField: "UserId",
-                    as: "location",
+                    as: "profile",
+                },
+            },
+            {
+                $lookup: {
+                    from: "locations",
+                    localField: "UserId",
+                    foreignField: "UserId",
+                    as: "location", 
                 },
             },
             {
                 $addFields: {
-                    location: {
-                        $filter: {
-                            input: "$location",
-                            as: "loc",
-                            cond: { $eq: ["$$loc.IsDelete", false] },
-                        },
-                    },
-                    addressData: {
-                        $map: {
-                            input: "$location",
-                            as: "loc",
-                            in: {
-                                Address: "$$loc.Address",
-                                City: "$$loc.City",
-                                State: "$$loc.State",
-                                Country: "$$loc.Country",
-                                Zip: "$$loc.Zip",
-                                FirstName: "$$loc.FirstName",
-                                LastName: "$$loc.LastName",
-                                PhoneNumber: "$$loc.PhoneNumber",
-                            },
-                        },
-                    },
-                },
-            },
-            {
-                $unwind: "$addressData",
-            },
-            {
-                $group: {
-                    _id: "$UserId",
-                    EmailAddress: { $first: "$EmailAddress" },
-                    Role: { $first: "$Role" },
-                    IsActive: { $first: "$IsActive" },
-                    IsDelete: { $first: "$IsDelete" },
-                    createdAt: { $first: "$createdAt" },
-                    updatedAt: { $first: "$updatedAt" },
-                    locations: { $push: "$addressData" },
+                    profile: { $arrayElemAt: ["$profile", 0] },
                 },
             },
             {
                 $project: {
                     _id: 0,
-                    UserId: "$_id",
+                    UserId: 1,
                     EmailAddress: 1,
-                    FirstName: { $arrayElemAt: ["$locations.FirstName", 0] },
-                    LastName: { $arrayElemAt: ["$locations.LastName", 0] },
-                    PhoneNumber: { $arrayElemAt: ["$locations.PhoneNumber", 0] },
+                    FirstName: "$profile.FirstName",
+                    LastName: "$profile.LastName",
+                    PhoneNumber: "$profile.PhoneNumber",
                     Role: 1,
                     IsActive: 1,
                     IsDelete: 1,
                     createdAt: 1,
                     updatedAt: 1,
-                    locations: 1,
+                    locations: "$location", 
                 },
             },
         ]);
@@ -329,6 +307,7 @@ exports.getCustomersWithLocations = async (req, res) => {
         });
     }
 };
+
 
 // **GET CUSTOMERS DETAILS WITH ALL LOCATIONS API**
 exports.getUserDetailWithInvoices = async (req, res) => {

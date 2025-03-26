@@ -5,8 +5,9 @@ import {
   DialogTitle,
   IconButton,
   Typography,
+  Grid,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import DomainAddOutlinedIcon from "@mui/icons-material/DomainAddOutlined";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -14,7 +15,6 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import AxiosInstance from "../../AxiosInstance";
 import QuoteUser from "../../../assets/Blue-sidebar-icon/Customermodel.svg";
 import "./style.css";
-import { Grid } from "@mui/material";
 import { LoaderComponent } from "../../../components/Icon/Index";
 import InputText from "../../../components/InputFields/InputText";
 
@@ -32,7 +32,7 @@ const CustomerModal = ({
   source,
 }) => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const locations = useLocation();
   const { CompanyName } = useParams();
   const [customerData, setCustomerData] = useState([]);
   const [locationData, setLocationData] = useState([]);
@@ -40,7 +40,8 @@ const CustomerModal = ({
   const [loader, setLoader] = useState(true);
   const [CompanyId, setCompanyId] = useState();
 
-  const fetchTokenData = async () => {
+  // Memoized fetch function
+  const fetchTokenData = useCallback(async () => {
     if (!CompanyId) {
       try {
         const token =
@@ -63,14 +64,14 @@ const CustomerModal = ({
         setLoader(false);
       }
     }
-  };
+  }, [CompanyId]);
 
   useEffect(() => {
     fetchTokenData();
-  }, []);
+  }, [fetchTokenData]);
 
   const handleClose = (id) => {
-    const isStaffMember = location?.pathname?.includes("/staff-member");
+    const isStaffMember = locations?.pathname?.includes("/staff-member");
 
     const newPath = isStaffMember
       ? `/staff-member/workerinvoicetable`
@@ -79,73 +80,151 @@ const CustomerModal = ({
     navigate(newPath, {
       state: {
         UserId: id,
-        navigats: [...location?.state?.navigats, newPath],
+        navigats: [...locations?.state?.navigats, newPath],
       },
     });
   };
 
-  const fetchData = async () => {
+  // Improved fetchData with error handling
+  const fetchData = useCallback(async () => {
     try {
       setLoader(true);
-      const res = await AxiosInstance.get(`/v1/user/get_customer/${CompanyId}`);
+      const res = await AxiosInstance.get(
+        `/v1/customer/get_customer/${CompanyId}`
+      );
+
       if (res?.data?.statusCode === 200) {
-        // Normalize data structure to ensure locations is always an array
-        const normalizedData = res?.data?.data.map((customer) => {
-          // Handle cases where location might be single object or array
-          let locations = [];
-          if (customer.location) {
-            locations = Array.isArray(customer.location)
-              ? customer.location
-              : [customer.location];
-          }
-          return {
-            ...customer,
-            locations,
-          };
-        });
+        const normalizedData = res?.data?.data.map((customer) => ({
+          ...customer,
+          locations: customer.locations
+            ? Array.isArray(customer.locations)
+              ? customer.locations
+              : [customer.locations]
+            : [],
+          FirstName: customer.FirstName || "",
+          LastName: customer.LastName || "",
+          PhoneNumber: customer.PhoneNumber || "",
+        }));
+
         setCustomerData(normalizedData);
+
+        // If there's a customer in location state, update it
+        if (locations?.state?.Customer) {
+          const customer = locations.state.Customer;
+          setCustomersData(customer);
+          setFieldValue("UserId", customer.UserId);
+        }
       }
     } catch (error) {
       console.error("Error: ", error?.message);
     } finally {
       setLoader(false);
     }
-  };
+  }, [CompanyId, locations?.state?.Customer, setCustomersData, setFieldValue]);
 
   useEffect(() => {
-    fetchData();
-  }, [CompanyId]);
+    if (CompanyId) {
+      fetchData();
+    }
+  }, [CompanyId, fetchData]);
 
-  useEffect(() => {
-    if (
-      formik?.values?.UserId &&
-      formik?.values?.LocationId &&
-      customerData?.length > 0
-    ) {
-      const customer = customerData.find(
-        (item) => item?.UserId === formik?.values?.UserId
-      );
-      if (customer) {
-        setCustomersData(customer);
-        const location = customer.locations.find(
-          (loc) => loc?.LocationId === formik?.values?.LocationId
-        );
-        if (location) {
-          setPropertyData(location);
+  // Improved customer and property selection handlers
+  const handleCustomerSelect = useCallback(
+    (customer) => {
+      if (!customer) return;
+
+      setFieldValue("UserId", customer.UserId);
+      setCustomersData(customer); // This should now properly update the parent component
+
+      if (customer?.locations?.length === 1) {
+        const property = customer.locations[0];
+        setPropertyData(property);
+        setFieldValue("LocationId", property?.LocationId);
+        setIsCustomer(false);
+        if (source === "Invoice") {
+          handleClose(customer.UserId);
+        }
+      } else if (customer?.locations?.length > 1) {
+        setLocationData(customer.locations);
+        setIsProperty(true);
+      } else {
+        setIsCustomer(false);
+        if (source === "Invoice") {
+          handleClose(customer.UserId);
         }
       }
+    },
+    [
+      setFieldValue,
+      setCustomersData,
+      setPropertyData,
+      setIsCustomer,
+      setIsProperty,
+      source,
+    ]
+  );
+
+  const handlePropertySelect = useCallback(
+    (property) => {
+      if (!property) return;
+
+      setFieldValue("LocationId", property.LocationId);
+      setPropertyData(property);
+      setIsProperty(false);
+      setIsCustomer(false);
+
+      if (source === "Invoice") {
+        handleClose(property.UserId);
+      }
+    },
+    [setFieldValue, setPropertyData, setIsProperty, setIsCustomer, source]
+  );
+
+  // Effect for initial data setup
+  useEffect(() => {
+    const updateData = () => {
+      if (locations?.state?.UserId) {
+        setFieldValue("UserId", locations.state.UserId);
+      }
+
+      if (locations?.state?.Customer) {
+        const customer = locations.state.Customer;
+        setCustomersData(customer);
+        setFieldValue("UserId", customer.UserId);
+
+        if (customer?.locations?.length === 1) {
+          setPropertyData(customer.locations[0]);
+          setFieldValue("LocationId", customer.locations[0]?.LocationId);
+        } else if (customer?.locations?.length > 1) {
+          setLocationData(customer.locations);
+          setIsProperty(true);
+        }
+      }
+    };
+
+    updateData();
+  }, [
+    locations?.state,
+    setFieldValue,
+    setCustomersData,
+    setPropertyData,
+    setIsProperty,
+  ]);
+
+  // Effect for saved form data
+  useEffect(() => {
+    const savedData = localStorage.getItem("formData");
+    if (savedData) {
+      formik.setValues(JSON.parse(savedData));
     }
-  }, [formik?.values, customerData]);
+  }, [formik]);
 
   const filteredCustomers = !isProperty
-    ? customerData?.filter((customer) => {
-        const firstLocation = customer.locations[0] || {};
-        return `${firstLocation.FirstName || ""} ${
-          firstLocation.LastName || ""
-        }`
+    ? customerData?.filter((customer) =>
+        `${customer?.FirstName || ""} ${customer?.LastName || ""}`
           .toLowerCase()
-          .includes(searchInput?.toLowerCase());
-      })
+          .includes(searchInput?.toLowerCase())
+      )
     : locationData?.filter((location) =>
         `${location?.Address || ""} ${location?.City || ""} ${
           location?.State || ""
@@ -153,60 +232,6 @@ const CustomerModal = ({
           .toLowerCase()
           .includes(searchInput?.toLowerCase())
       );
-
-  const handleCustomerClick = (customer) => {
-    // Always show properties selection, even if only one property
-    setLocationData(customer.locations);
-    setFieldValue("UserId", customer.UserId);
-    setCustomersData(customer);
-    setIsProperty(true);
-  };
-
-  const handleLocationClick = (location) => {
-    setFieldValue("LocationId", location.LocationId);
-    setPropertyData(location);
-    setIsProperty(false);
-    setIsCustomer(false);
-
-    if (source === "Invoice") {
-      handleClose(location.UserId);
-    }
-  };
-
-  useEffect(() => {
-    const updateData = () => {
-      if (location?.state?.UserId) {
-        setFieldValue("UserId", location?.state?.UserId);
-      }
-
-      if (location?.state?.Customer) {
-        const customer = location?.state?.Customer;
-        // Ensure locations is an array
-        let locations = [];
-        if (customer.location) {
-          locations = Array.isArray(customer.location)
-            ? customer.location
-            : [customer.location];
-        }
-
-        setCustomersData({ ...customer, locations });
-        setFieldValue("UserId", customer.UserId);
-
-        setLocationData(locations);
-        setIsCustomer(true);
-        setIsProperty(true);
-      }
-    };
-
-    updateData();
-  }, [location?.state?.UserId]);
-
-  useEffect(() => {
-    const savedData = localStorage.getItem("formData");
-    if (savedData) {
-      formik.setValues(JSON.parse(savedData));
-    }
-  }, []);
 
   return (
     <Dialog
@@ -216,23 +241,18 @@ const CustomerModal = ({
         setIsProperty(false);
       }}
       style={{ height: "100%" }}
-      maxWidth="sm"
-      fullWidth
     >
       <DialogTitle className="text-blue-color SelectCutomerHead">
-        {isProperty ? "Select Property" : "Select Customer"}
-        <Typography
-          gutterBottom
-          className="px-3 pt-3 text-blue-color SelectCutomerLike"
-        >
-          {isProperty ? "Please select a property" : "Please select a customer"}
+        Select or Create a Customer
+        <Typography className="px-3 pt-3 text-blue-color SelectCutomerLike">
+          Which Customer would you like to create this for?
         </Typography>
       </DialogTitle>
       <DialogContent className="selectCustomer_box">
         <IconButton
           aria-label="close"
           onClick={() => {
-            setIsCustomer(false);
+            setIsCustomer(!isCustomer);
             setIsProperty(false);
           }}
           sx={{
@@ -268,63 +288,54 @@ const CustomerModal = ({
                   <InputText
                     id="search"
                     name="search"
-                    placeholder={
-                      isProperty
-                        ? "Search properties..."
-                        : "Search customers..."
-                    }
+                    placeholder="Enter search customer"
                     type="text"
                     className="text-blue-color border-blue-color customerModelSearch"
-                    style={{ fontSize: "14px" }}
+                    style={{
+                      fontSize: "14px",
+                    }}
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                   />
                 </Grid>
-                {!isProperty && (
-                  <>
-                    <Grid className="selectCustomerMOdel">
-                      <Typography
-                        className="mt-2 mb-2 selectCustomerOr text-blue-color"
-                        style={{ textAlign: "center" }}
-                      >
-                        or
-                      </Typography>
-                    </Grid>
-                    <Grid
-                      className="btn bg-button-blue-color text-white-color flex-grow-1 ms-2 mb-2 cratenclientmodal searchClients createNewCutomer"
-                      style={{
-                        minWidth: "0",
-                        fontSize: "14px",
-                        height: "40px",
-                        justifyContent: "start",
-                        display: "flex",
-                        alignItems: "center",
-                      }}
-                      onClick={() => {
-                        localStorage.setItem(
-                          "formData",
-                          JSON.stringify(values)
-                        );
-                        navigate(`/${CompanyName}/add-customer`, {
-                          state: {
-                            previewPage: location?.pathname,
-                            previewData: {
-                              values,
-                              lineItems,
-                              id: location?.state?.id || null,
-                            },
-                            navigats: [
-                              ...location?.state?.navigats,
-                              "/add-customer",
-                            ],
-                          },
-                        });
-                      }}
-                    >
-                      Create New Customer
-                    </Grid>
-                  </>
-                )}
+                <Grid className="selectCustomerMOdel">
+                  <Typography
+                    className="mt-2 mb-2 selectCustomerOr text-blue-color"
+                    style={{ textAlign: "center" }}
+                  >
+                    or
+                  </Typography>
+                </Grid>
+                <Grid
+                  className="btn bg-button-blue-color text-white-color flex-grow-1 ms-2 mb-2 cratenclientmodal searchClients createNewCutomer"
+                  style={{
+                    minWidth: "0",
+                    fontSize: "14px",
+                    height: "40px",
+                    justifyContent: "start",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                  onClick={() => {
+                    localStorage.setItem("formData", JSON.stringify(values));
+                    navigate(`/${CompanyName}/add-customer`, {
+                      state: {
+                        previewPage: locations?.pathname,
+                        previewData: {
+                          values,
+                          lineItems,
+                          id: locations?.state?.id || null,
+                        },
+                        navigats: [
+                          ...locations?.state?.navigats,
+                          "/add-customer",
+                        ],
+                      },
+                    });
+                  }}
+                >
+                  Create new Customer
+                </Grid>
               </Grid>
 
               {filteredCustomers?.length === 0 && (
@@ -332,7 +343,7 @@ const CustomerModal = ({
                   className="text-center mt-3 text-blue-color"
                   style={{ fontSize: "14px" }}
                 >
-                  No {isProperty ? "properties" : "customers"} found
+                  No customers found
                 </Grid>
               )}
 
@@ -341,7 +352,6 @@ const CustomerModal = ({
                   <Typography
                     className="mt-2 leadSelectCustomer"
                     style={{
-                      paddingLeft: "30px",
                       color: "#07CF10",
                       fontSize: "14px",
                       fontWeight: "600",
@@ -349,6 +359,7 @@ const CustomerModal = ({
                   >
                     Active
                   </Typography>
+
                   <Grid
                     style={{
                       marginLeft: "-15px",
@@ -356,86 +367,108 @@ const CustomerModal = ({
                       marginTop: "-10px",
                     }}
                   >
-                    <hr style={{ border: "1px solid #063164CC" }} />
+                    <hr style={{ border: " 1px solid #063164CC" }} />
                   </Grid>
                 </>
               )}
 
               {!isProperty
-                ? filteredCustomers?.map((customer, index) => {
-                    const firstLocation = customer.locations[0] || {};
-                    return (
+                ? filteredCustomers?.map((item, index) => (
+                    <Grid
+                      className="w-100 mt-3 d-flex justify-content-between text-blue-color customerMOdelUserName"
+                      key={index}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleCustomerSelect(item)}
+                    >
+                      <Grid style={{ width: "8%" }}>
+                        <img
+                          src={QuoteUser}
+                          className="customerModelUserIcon"
+                          alt="Customer"
+                        />
+                      </Grid>
                       <Grid
-                        className="w-100 mt-3 d-flex justify-content-between text-blue-color customerMOdelUserName"
-                        key={index}
-                        style={{ cursor: "pointer" }}
-                        onClick={() => handleCustomerClick(customer)}
+                        className="w-100 d-flex justify-content-between propertydetailsmodal"
+                        style={{ fontSize: "14px" }}
                       >
-                        <Grid style={{ width: "8%" }}>
-                          <img
-                            src={QuoteUser}
-                            className="customerModelUserIcon"
-                            alt="Customer"
-                          />
-                        </Grid>
-                        <Grid
-                          className="w-100 d-flex justify-content-between propertydetailsmodal"
-                          style={{ fontSize: "14px" }}
-                        >
-                          <Grid className="px-2 w-100 customerDetailAddress">
+                        <Grid className="px-2 w-100 customerDetailAddress">
+                          <Typography
+                            className="py-0 my-0"
+                            style={{ fontSize: "12px", fontWeight: "bold" }}
+                          >
+                            {item?.FirstName} {item?.LastName}
+                          </Typography>
+                          <Typography
+                            style={{ fontSize: "11px", color: "#666" }}
+                          >
+                            {item?.EmailAddress}
+                          </Typography>
+                          <Typography style={{ fontSize: "11px" }}>
+                            {item?.locations?.length > 0 ? (
+                              <>
+                                {item.locations.length}{" "}
+                                {item.locations.length === 1
+                                  ? "Property"
+                                  : "Properties"}{" "}
+                                | {item?.PhoneNumber}
+                              </>
+                            ) : (
+                              <>No properties | {item?.PhoneNumber}</>
+                            )}
+                          </Typography>
+                          {item?.locations?.length > 0 && (
                             <Typography
-                              className="py-0 my-0"
-                              style={{ fontSize: "12px" }}
+                              style={{ fontSize: "11px", marginTop: "4px" }}
                             >
-                              {firstLocation.FirstName} {firstLocation.LastName}
+                              Primary Address: {item.locations[0]?.Address},{" "}
+                              {item.locations[0]?.City}
                             </Typography>
-                            {customer.locations.length}{" "}
-                            {customer.locations.length === 1
-                              ? "Property"
-                              : "Properties"}{" "}
-                            | {firstLocation.PhoneNumber}
-                          </Grid>
+                          )}
                         </Grid>
                       </Grid>
-                    );
-                  })
-                : locationData?.map((location, index) => (
+                    </Grid>
+                  ))
+                : filteredCustomers?.map((locations, index) => (
                     <Grid
-                      key={index}
-                      className="py-2 text-blue-color border-blue-color property-item"
+                      onClick={() => handlePropertySelect(locations)}
+                      className="py-2 text-blue-color border-blue-color"
                       style={{
-                        borderTop: index !== 0 ? "1px solid #eee" : undefined,
+                        borderTop: index !== 0 ? "1px solid " : undefined,
                         display: "flex",
                         justifyContent: "space-between",
                         cursor: "pointer",
-                        alignItems: "center",
-                        padding: "12px 16px",
-                        "&:hover": {
-                          backgroundColor: "#f5f5f5",
-                        },
                       }}
-                      onClick={() => handleLocationClick(location)}
+                      key={index}
                     >
-                      <Grid className="d-flex align-items-center w-100">
-                        <Grid style={{ width: "8%", marginRight: "12px" }}>
-                          <DomainAddOutlinedIcon style={{ color: "#063164" }} />
+                      <Grid className="d-flex align-items-center w-100 secondPropertyOpen">
+                        <Grid
+                          style={{ width: "8%" }}
+                          className="imageOfProperty"
+                        >
+                          <DomainAddOutlinedIcon />
                         </Grid>
-                        <Grid style={{ flex: 1 }}>
-                          <Typography
-                            style={{ fontWeight: 500, fontSize: "14px" }}
-                          >
-                            {location.Address || "No address"}
+                        <Grid
+                          className="imageOfProperty"
+                          style={{ fontSize: "13px" }}
+                        >
+                          <Typography style={{ fontWeight: "bold" }}>
+                            {locations?.Address || "No address specified"}
                           </Typography>
-                          <Typography
-                            style={{ fontSize: "12px", color: "#666" }}
-                          >
-                            {[location.City, location.State, location.Country]
-                              .filter(Boolean)
-                              .join(", ")}
+                          <Typography>
+                            {locations?.City || ""}
+                            {locations?.City && ", "}
+                            {locations?.State || ""}
+                            {locations?.State && ", "}
+                            {locations?.Country || ""}
                           </Typography>
+                          {locations?.PostalCode && (
+                            <Typography>
+                              Postal Code: {locations.PostalCode}
+                            </Typography>
+                          )}
                         </Grid>
                       </Grid>
-                      <ChevronRightIcon style={{ color: "#958e8e" }} />
+                      <ChevronRightIcon style={{ color: "#958e8edd" }} />
                     </Grid>
                   ))}
             </DialogContent>

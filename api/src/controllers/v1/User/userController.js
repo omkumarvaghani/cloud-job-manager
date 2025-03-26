@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
 const { logUserEvent } = require("../../../middleware/eventMiddleware");
+const Location = require("../../../models/User/Location");
 
 // **CREATE COMPANY BY ADMIN, CUSTOMER & WORKER API**
 exports.createUser = async (req, res) => {
@@ -12,7 +13,7 @@ exports.createUser = async (req, res) => {
             return res.status(403).json({ message: "Unauthorized: Role not found in token." });
         }
 
-        const { Role, EmailAddress, Password, ...profileDetails } = req.body;
+        const { Role, EmailAddress, Password, Address, City, State, Zip, Country, ...profileDetails } = req.body;
 
         if (!["Company", "Worker", "Customer"].includes(Role)) {
             return res.status(400).json({ message: "Invalid Role! Only Company, Worker, or Customer allowed." });
@@ -35,24 +36,35 @@ exports.createUser = async (req, res) => {
         if (Role === "Worker" || Role === "Company") {
             existingUser = await User.findOne({ EmailAddress, IsDelete: false });
         } else if (Role === "Customer") {
-            existingUser = await User.findOne({ EmailAddress, CompanyId, IsDelete: false });
+            existingUser = await User.findOne({ EmailAddress, CompanyId: CompanyId[0], IsDelete: false });
         }
 
         if (existingUser) {
             return res.status(202).json({ message: "Email Already Exists!" });
         }
 
-        let additionalFields = {};
-        if (Role === "Worker") {
-            additionalFields.WorkerId = uuidv4();
-        } else if (Role === "Customer") {
-            additionalFields.CustomerId = uuidv4();
-        }
-
+        // Generate the same UserId for the new user
         const UserId = uuidv4();
 
+        let additionalFields = {};
+        if (Role === "Worker" || Role === "Customer") {
+            additionalFields.UserId = UserId; // Ensure UserId is the same for Worker or Customer
+        }
+
+        const newLocation = new Location({
+            UserId: UserId, // Same UserId
+            CompanyId: CompanyId[0],
+            Address,
+            City,
+            State,
+            Zip,
+            Country,
+        });
+
+        await newLocation.save();
+
         const newUser = new User({
-            UserId,
+            UserId: UserId, // Same UserId
             Role,
             CompanyId,
             EmailAddress,
@@ -61,16 +73,17 @@ exports.createUser = async (req, res) => {
         await newUser.save();
 
         const newUserProfile = new UserProfile({
-            UserId,
+            UserId: UserId, // Same UserId
             CompanyId: CompanyId[0],
             ...profileDetails,
+            LocationId: newLocation.LocationId,
             ...additionalFields,
         });
         await newUserProfile.save();
 
         await logUserEvent(newUser.CompanyId, "REGISTRATION", "New user registered", {
             EmailAddress,
-            Role
+            Role,
         });
 
         return res.status(200).json({
@@ -82,10 +95,11 @@ exports.createUser = async (req, res) => {
         console.error("Error in createUser:", error);
 
         return res.status(500).json({
-            message: "Something went wrong, please try later!"
+            message: "Something went wrong, please try later!",
         });
     }
 };
+
 
 // **GET USERS API**
 exports.getUserById = async (req, res) => {

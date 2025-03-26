@@ -16,8 +16,8 @@ const contractSchema = new Schema(
         QuoteId: { type: String },
         WorkerId: { type: [String] },
 
-        Title: { type: String },
-        Description: { type: String },
+        Title: { type: String, required: true },
+        Description: { type: String, required: true },
         ContractNumber: { type: Number },
         StartDate: { type: String },
         CompletionDate: { type: String },
@@ -34,7 +34,6 @@ const contractSchema = new Schema(
             StartTime: { type: String },
             EndTime: { type: String },
             ScheduleLetter: { type: Boolean, default: false },
-            Repeats: { type: String },
         },
         RecuringJob: {
             StartDate: { type: String },

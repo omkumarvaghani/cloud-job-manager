@@ -228,6 +228,15 @@ exports.getQuotes = async (req, res) => {
                 },
             },
             { $unwind: { path: "$usersDetails", preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: "locations",
+                    localField: "LocationId",
+                    foreignField: "LocationId",
+                    as: "locationDetails",
+                },
+            },
+            { $unwind: { path: "$usersDetails", preserveNullAndEmptyArrays: true } },
 
             {
                 $addFields: {
@@ -236,11 +245,11 @@ exports.getQuotes = async (req, res) => {
                         LastName: "$usersDetails.LastName",
                     },
                     location: {
-                        Address: "$usersDetails.Address",
-                        City: "$usersDetails.City",
-                        State: "$usersDetails.State",
-                        Country: "$usersDetails.Country",
-                        Zip: "$usersDetails.Zip",
+                        Address: "$locationDetails.Address",
+                        City: "$locationDetails.City",
+                        State: "$locationDetails.State",
+                        Country: "$locationDetails.Country",
+                        Zip: "$locationDetails.Zip",
                     },
                     Total: {
                         $toInt: { $round: [{ $toDouble: "$Total" }, 0] },
@@ -367,6 +376,20 @@ exports.getQuoteDetails = async (req, res) => {
                 },
             },
             {
+                $lookup: {
+                    from: "locations",
+                    localField: "LocationId",
+                    foreignField: "LocationId",
+                    as: "locationData"
+                },
+            },
+            {
+                $unwind: {
+                    path: "$locationData",
+                    preserveNullAndEmptyArrays: true 
+                },
+            },
+            {
                 $project: {
                     QuoteId: 1,
                     CompanyId: 1,
@@ -393,11 +416,11 @@ exports.getQuoteDetails = async (req, res) => {
                     IsApprovedByCustomer: 1,
                     "customerData.FirstName": 1,
                     "customerData.LastName": 1,
-                    "customerData.Address": 1,
-                    "customerData.City": 1,
-                    "customerData.State": 1,
-                    "customerData.Zip": 1,
-                    "customerData.Country": 1,
+                    "locationData.Address": 1,
+                    "locationData.City": 1,
+                    "locationData.State": 1,
+                    "locationData.Zip": 1,
+                    "locationData.Country": 1,
                     products: 1,
                 },
             },
@@ -719,7 +742,7 @@ exports.getScheduleData = async (req, res) => {
                     QuoteNumber: 1,
                     CompanyId: 1,
                     QuoteId: 1,
-                    CustomerId: 1,
+                    UserId: 1,
                     LocationId: 1,
                     createdAt: 1,
                     updatedAt: 1,

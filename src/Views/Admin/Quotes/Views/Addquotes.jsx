@@ -154,14 +154,8 @@ const Addquotes = ({
                         fontWeight: "600",
                       }}
                     >
-                      {console.log(customersData, "customersData")}
-                      {console.log(
-                        customersData?.location?.FirstName,
-                        "customersData?.location?.FirstName"
-                      )}
-
-                      {customersData?.location?.FirstName
-                        ? `${customersData?.location?.FirstName} ${customersData?.location?.LastName}`
+                      {customersData?.FirstName
+                        ? `${customersData?.FirstName} ${customersData?.LastName}`
                         : "Customer Name"}
                     </Typography>
                     {!Object.keys(customersData).length > 0 ? (
@@ -224,26 +218,27 @@ const Addquotes = ({
                             </Typography>
                           </Typography>
                           <Typography className="text-blue-color">
+                            {console.log(propertyData, "propertyData")}
                             {propertyData?.Address ||
-                              customersData?.location[0]?.Address ||
+                              customersData?.location?.Address ||
                               "-"}{" "}
                             ,
                             <br />
                             {propertyData?.City ||
-                              customersData?.location[0]?.City ||
+                              customersData?.location?.City ||
                               "-"}
                             ,{" "}
                             {propertyData?.State ||
-                              customersData?.location[0]?.State ||
+                              customersData?.location?.State ||
                               "-"}{" "}
                             ,
                             {propertyData?.Zip ||
-                              customersData?.location[0]?.Zip ||
+                              customersData?.location?.Zip ||
                               "-"}
                             ,
                             <br />
                             {propertyData?.Country ||
-                              customersData?.location[0]?.Country ||
+                              customersData?.location?.Country ||
                               "-"}{" "}
                             <br />
                             <a
@@ -649,7 +644,7 @@ const Addquotes = ({
                                 ) {
                                   // handleSaveQuote("Awaiting Response");
                                   formik.setFieldValue(
-                                    "status",
+                                    "Status",
                                     "Awaiting Response"
                                   );
                                   setModal(true);
@@ -674,7 +669,7 @@ const Addquotes = ({
                                   formik?.values?.Title
                                 ) {
                                   formik.setFieldValue(
-                                    "status",
+                                    "Status",
                                     "Awaiting Response"
                                   );
                                   setModal(true); // Mail send nahi hoga, sirf modal open hoga
@@ -701,7 +696,7 @@ const Addquotes = ({
                             {/* <DropdownItem
                               // onClick={() => {
                               //   formik.setFieldValue(
-                              //     "status",
+                              //     "Status",
                               //     "Awaiting Response"
                               //   );
                               //   handleSaveQuote(true);
@@ -709,7 +704,7 @@ const Addquotes = ({
                               onClick={() => {
                                 handleSaveQuote("Awaiting Response")
                                 formik.setFieldValue(
-                                  "status",
+                                  "Status",
                                   "Awaiting Response"
                                 );
                               }}
@@ -719,7 +714,7 @@ const Addquotes = ({
                             <DropdownItem
                               onClick={() => {
                                 formik.setFieldValue(
-                                  "status",
+                                  "Status",
                                   "Awaiting Response"
                                 );
                                 handleSaveQuote("Awaiting Response");

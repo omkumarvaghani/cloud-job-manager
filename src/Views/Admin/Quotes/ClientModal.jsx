@@ -80,7 +80,7 @@ const ClientModal = ({
 
   const fetchData = async () => {
     try {
-      const res = await AxiosInstance.get(`/v1/user/customers${companyId}`);
+      const res = await AxiosInstance.get(`/v1/customer/customers${companyId}`);
       setClientData(res?.data?.data); 
     } catch (error) { 
       console.error("Error: ", error?.message);
@@ -107,6 +107,7 @@ const ClientModal = ({
         (item) => item?.LocationId === formik?.values?.LocationId
       );
       setPropertyData(location);
+      
     }
   }, [formik?.values, clientData]);
 

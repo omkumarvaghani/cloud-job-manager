@@ -38,6 +38,7 @@ function QuotesDetail() {
       const res = await AxiosInstance.get(
         `/v1/quote/quote_details/${location?.state?.id}`
       );
+      console.log(res,"resresresres")
       setQuotesData(res?.data?.data);
     } catch (error) {
       console.error("Error: ", error?.messae);
