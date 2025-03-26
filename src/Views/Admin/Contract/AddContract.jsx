@@ -83,7 +83,7 @@ function AddContract() {
       QuoteId: "",
       Description: "",
       ContractNumber: 1,
-      CustomerId: "",
+      UserId: "",
       CompanyId: "",
       LocationId: "",
       contract_disclaimer:
@@ -203,6 +203,7 @@ function AddContract() {
       }
     },
   });
+  console.log(formik, "formik");
 
   useEffect(() => {
     if (location?.state && location?.state?.id) {
@@ -283,17 +284,19 @@ function AddContract() {
         const res = await AxiosInstance.get(
           `/v1/contract/contract_details/${location?.state?.id}`
         );
-        if (res.data?.statusCode == 200) {
+        console.log(res, "resres");
+        console.log(location?.state?.id, "location?.state?.id");
+        if (res.data?.statusCode === 200) {
           setloader(true);
           const data = res.data?.data;
-          
+          console.log(data, "datadatadata");
           formik.setValues({
             Title: data?.Title,
             Firstname: data?.customer?.Firstname,
             LastName: data?.customer?.LastName,
             ContractNumber: data?.ContractNumber,
             CompanyId: data.CompanyId,
-            CustomerId: data?.CustomerId,
+            UserId: data?.UserId,
             LocationId: data?.LocationId,
             CustomerMessage: data?.CustomerMessage,
             ContractDisclaimer: data?.ContractDisclaimer,
@@ -309,6 +312,7 @@ function AddContract() {
             IsRecuringJob: data?.IsRecuringJob,
             WorkerId: data?.WorkerId[0],
           });
+          console.log(res.data?.data?.Title, "res.data?.data?.Title");
           setContractData(data);
           setActiveTab(data?.IsOneoffJob ? 1 : 2);
           const members = teamData.filter((item) =>
@@ -367,7 +371,7 @@ function AddContract() {
   };
   useEffect(() => {
     fetchData();
-  }, [teamData]);
+  }, [location, tokenDecode]);
 
   useEffect(() => {
     const getNumber = async () => {
@@ -417,7 +421,7 @@ function AddContract() {
             },
           ]
         );
-        formik.setFieldValue("CustomerId", location?.state?.CustomerId);
+        formik.setFieldValue("UserId", location?.state?.UserId);
         formik.setFieldValue("LocationId", location?.state?.LocationId);
         window.history.replaceState(
           {
