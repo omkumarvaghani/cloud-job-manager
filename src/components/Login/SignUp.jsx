@@ -109,7 +109,7 @@ const SignUp = () => {
           navigate(`/auth/signup?step=2`);
         } else {
           navigate(`/auth/signup?step=1`);
-        } 
+        }
       } else {
         sendToast(res.data.message);
       }
@@ -251,7 +251,7 @@ const SignUp = () => {
                       placeholder="Enter password"
                       className="text-blue-color w-100"
                       fieldHeight="56px"
-                      autoComplete="new-password"
+                      autoComplete="off" // Disable autocomplete
                       onKeyDown={(e) => {
                         if (e.key === "Tab" && !e.shiftKey) {
                           e.preventDefault();

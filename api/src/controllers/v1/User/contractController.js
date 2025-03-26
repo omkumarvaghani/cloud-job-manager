@@ -1022,32 +1022,7 @@ exports.getInvoiceDataByCustomerId = async (req, res) => {
                 ],
             },
         },
-        {
-            $project: {
-                _id: 0,
-                customer: {
-                    id: "$UserId",
-                    name: "$FirstName",
-                },
-                data: {
-                    $map: {
-                        input: "$contracts",
-                        as: "contract",
-                        in: {
-                            contract: "$$contract",
-                            location: {
-                                id: "$$contract.locationDetails.LocationId",
-                                address: "$$contract.locationDetails.Address",
-                                city: "$$contract.locationDetails.City",
-                                state: "$$contract.locationDetails.State",
-                                zip: "$$contract.locationDetails.Zip",
-                                country: "$$contract.locationDetails.Country",
-                            },
-                        },
-                    },
-                },
-            },
-        },
+
     ]);
 
     if (!result || !result.length) {

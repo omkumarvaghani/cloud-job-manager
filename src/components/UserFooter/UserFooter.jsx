@@ -15,7 +15,6 @@ const FooterDetails = ({
   };
 
   const data = quotesData || contractData || invoicedata;
-
   return (
     <Grid
       className="p-3 my-4 border-blue-color"
@@ -34,16 +33,19 @@ const FooterDetails = ({
               borderRadius: "50%",
             }}
           >
-            {data?.customerData?.FirstName?.charAt(0)?.toUpperCase()}
-            {data?.customerData?.LastName?.charAt(0)?.toUpperCase()}
+            {data?.customerData?.FirstName?.charAt(0)?.toUpperCase() ||
+              data?.customer?.FirstName?.charAt(0)?.toUpperCase()}
+            {data?.customerData?.LastName?.charAt(0)?.toUpperCase() ||
+              data?.customer?.LastName?.charAt(0)?.toUpperCase()}
           </Typography>
           <Grid className="mx-2">
             <Typography className="mb-0" style={{ fontSize: "12px" }}>
               <b className="text-blue-color">
-                {data?.customerData?.FirstName || ""}
-                {data?.customerData?.LastName || ""} 
+                {data?.customerData?.FirstName ||
+                  data?.customer?.FirstName ||
+                  ""}
+                {data?.customerData?.LastName || data?.customer?.LastName || ""}
               </b>
-              {console.log(data,"data123")}
             </Typography>
             <Typography
               style={{ fontSize: "12px" }}

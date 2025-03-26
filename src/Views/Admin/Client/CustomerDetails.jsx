@@ -63,7 +63,6 @@ function CustomerDetails() {
   const getData = async () => {
     try {
       const res = await AxiosInstance.get(`/v1/customer/${location?.state?.id}`);
-      console.log(res,"res")
       setData(res?.data?.data);
       setCustomersDetails([res?.data?.data]);
     } catch (error) {

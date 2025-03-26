@@ -380,7 +380,6 @@ function AddClient() {
     }
     setIsEdited(true);
   };
-  console.log(formik,"formikformik")
   useEffect(() => {
     setCountries(Country.getAllCountries());
     if (formik?.values?.Country) {

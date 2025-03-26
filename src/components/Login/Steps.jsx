@@ -278,11 +278,11 @@ const Steps = ({ EmailAddress, Password }) => {
       const res = await AxiosInstance.post(
         `${baseUrl}/v1/auth/register`,
         values
-      ); 
+      );
       if (res.data.statusCode === "200") {
         showToast.success(res.data.message);
-        setTimeout(() => { 
-          navigate("/auth");
+        setTimeout(() => {
+          navigate("/auth/login");
         }, 500);
       } else {
         sendToast(res.data.message);

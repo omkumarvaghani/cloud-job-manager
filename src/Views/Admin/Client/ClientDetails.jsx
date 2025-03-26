@@ -87,7 +87,6 @@ function ClientDetails() {
       const res = await AxiosInstance.get(
         `/v1/customer/detail/${location?.state?.id}`
       );
-      console.log(res,"resresresresres")
       setData(res?.data?.data);
     } catch (error) {
       console.error("Error fetching customer data:", error);

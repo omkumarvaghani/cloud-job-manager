@@ -115,20 +115,20 @@ function AddContract() {
     },
     validationSchema: Yup.object({
       Title: Yup.string().required("Title Required"),
-    }), 
-    onSubmit: async (values) => {  
-      try { 
-        setLoading(true);  
-        const attachmentURLs = []; 
-        for (let file of formik.values.Attachment) { 
-          if (typeof file !== "string") { 
-            const uploadedFilePath = await postFile(file); 
+    }),
+    onSubmit: async (values) => {
+      try {
+        setLoading(true);
+        const attachmentURLs = [];
+        for (let file of formik.values.Attachment) {
+          if (typeof file !== "string") {
+            const uploadedFilePath = await postFile(file);
             attachmentURLs.push(uploadedFilePath);
-          } else { 
-            attachmentURLs.push(file); 
+          } else {
+            attachmentURLs.push(file);
           }
-        } 
- 
+        }
+
         for (let item of lineItems) {
           if (typeof item?.Attachment !== "string") {
             const string = await postFile(item?.Attachment);
@@ -150,7 +150,7 @@ function AddContract() {
           Duration: values?.RecuringJob?.Duration,
           AddedAt: new Date(),
           CompanyId:
-            localStorage.getItem("CompanyId") || tokenDecode?.companyId,
+            localStorage.getItem("CompanyId") || tokenDecode?.CompanyId,
         };
 
         if (activeTab === 1) {
@@ -161,7 +161,7 @@ function AddContract() {
 
         let response;
         if (!location.state?.id) {
-          response = await AxiosInstance.post(`/contract`, object);
+          response = await AxiosInstance.post(`/v1/contract`, object);
         } else {
           response = await AxiosInstance.put(
             `/contract/${location?.state?.id}`,
@@ -281,11 +281,12 @@ function AddContract() {
       setloader(true);
       try {
         const res = await AxiosInstance.get(
-          `/contract/contract_details/${location?.state?.id}`
+          `/v1/contract/contract_details/${location?.state?.id}`
         );
-        if (res.data?.statusCode === 200) {
+        if (res.data?.statusCode == 200) {
           setloader(true);
           const data = res.data?.data;
+          
           formik.setValues({
             Title: data?.Title,
             Firstname: data?.customer?.Firstname,
@@ -310,7 +311,6 @@ function AddContract() {
           });
           setContractData(data);
           setActiveTab(data?.IsOneoffJob ? 1 : 2);
-
           const members = teamData.filter((item) =>
             data.WorkerId.includes(item.WorkerId)
           );
@@ -375,7 +375,7 @@ function AddContract() {
         if (!location.state?.id) {
           const res = await AxiosInstance.get(
             `/contract/get_number/${
-              localStorage.getItem("CompanyId") || tokenDecode?.companyId
+              localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
             }`
           );
           if (res.data?.statusCode === 200) {
@@ -477,12 +477,12 @@ function AddContract() {
 
   const handleContractNumberChange = async () => {
     const enteredContractNumber = Number(formik?.values?.ContractNumber);
-    const companyId =
-      localStorage.getItem("CompanyId") || tokenDecode?.companyId;
+    const CompanyId =
+      localStorage.getItem("CompanyId") || tokenDecode?.CompanyId;
 
     try {
       const res = await AxiosInstance.post(
-        `/contract/check_number/${companyId}`,
+        `/contract/check_number/${CompanyId}`,
         {
           ContractNumber: enteredContractNumber,
         }
@@ -600,15 +600,15 @@ function AddContract() {
   const fetchTeamData = async () => {
     setloader(true);
     try {
-      const companyId =
-        localStorage.getItem("CompanyId") || tokenDecode?.companyId;
+      const CompanyId =
+        localStorage.getItem("CompanyId") || tokenDecode?.CompanyId;
 
-      if (!companyId) {
+      if (!CompanyId) {
         console.error("CompanyId is not found in localStorage or tokenDecode.");
         return;
       }
 
-      const response = await AxiosInstance.get(`/worker/${companyId}`);
+      const response = await AxiosInstance.get(`/worker/${CompanyId}`);
 
       if (response?.status === 200) {
         setTeamData(response?.data?.data);
@@ -649,16 +649,16 @@ function AddContract() {
     onSubmit: async (values) => {
       try {
         setLoading(true);
-        const companyId =
-          localStorage.getItem("CompanyId") || tokenDecode?.companyId;
+        const CompanyId =
+          localStorage.getItem("CompanyId") || tokenDecode?.CompanyId;
 
-        if (!companyId) {
+        if (!CompanyId) {
           console.error("CompanyId is not found in localStorage");
           return;
         }
         const object = {
           ...values,
-          companyId: companyId,
+          CompanyId: CompanyId,
           WorkerId: values?.WorkerId,
           FullName: values?.FullName,
           EmailAddress: values?.EmailAddress,

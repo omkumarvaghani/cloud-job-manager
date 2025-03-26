@@ -166,8 +166,29 @@ const Customer = () => {
 
   const cellData = customersData?.map((item, index) => {
     // const properties = item?.location || [];
-    const properties = item?.locationsData ? [item.locationsData] : [];
-    console.log(item, "item");
+    // const properties = item?.locationsData ? [item.locationsData] : [];
+    // console.log(properties, "properties");
+    // console.log(item, "item");
+
+    // let propertyDisplay;
+    // const locationsCount = properties.length; // Count of properties
+
+    // if (locationsCount === 1) {
+    //   const property = properties[0];
+    //   propertyDisplay = `${property?.Address || "Address not available"}, ${
+    //     property?.City || "City not available"
+    //   }, ${property?.State || "State not available"}, ${
+    //     property?.Country || "Country not available"
+    //   }, ${property?.Zip || "Zip not available"}`;
+    // } else {
+    //   propertyDisplay = `${locationsCount} ${
+    //     locationsCount > 1 ? "Properties" : "Property"
+    //   }`;
+    // }
+
+    const properties = item?.locationsCount ? [item.locationsData] : [];
+    console.log(item.locationsData, "locationsData");
+    console.log(item,"item")
     let propertyDisplay;
     if (properties.length === 1) {
       const property = properties[0];
@@ -175,12 +196,13 @@ const Customer = () => {
         property?.City || "City not available"
       }, ${property?.State || "State not available"}, ${
         property?.Country || "Country not available"
-      }, ${property?.Zip || "Zip not available"}`;
+      }, ${property?.Zip || "Zip not available"} `;
     } else {
       propertyDisplay = `${properties.length} ${
-        properties.length > 1 ? "Properties" : "Property"
+        properties?.length > 1 ? "Properties" : "Property"
       }`;
     }
+    // Display the propertyDisplay
 
     return {
       key: item?.UserId,

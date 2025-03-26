@@ -19,7 +19,7 @@ const generateToken = (user) => {
 // **REGISTER API**
 exports.register = async (req, res) => {
   try {
-    const { Role, EmailAddress, Password, ...profileDetails } = req.body;
+    const { Role, EmailAddress, Password, CompanyName, ...profileDetails } = req.body;
 
     const existingUser = await User.findOne({ EmailAddress, IsDelete: false });
     if (existingUser) {
@@ -29,6 +29,9 @@ exports.register = async (req, res) => {
     let CompanyId = profileDetails.CompanyId;
     if (Role === "Company") {
       CompanyId = uuidv4();
+      if (CompanyName) {
+        profileDetails.CompanyName = CompanyName.split(" ").join("");
+      }
     } else if (!CompanyId) {
       return res
         .status(400)
@@ -136,7 +139,6 @@ exports.login = async (req, res) => {
 
     let response = {
       statusCode: 200,
-      message: "Login Successful",
       token,
       UserId: roleSpecificId,
       data: {
