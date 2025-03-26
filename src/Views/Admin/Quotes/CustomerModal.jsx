@@ -92,7 +92,6 @@ const CustomerModal = ({
       const res = await AxiosInstance.get(
         `/v1/customer/get_customer/${CompanyId}`
       );
-      console.log(res, "res");
       if (res?.data?.statusCode === 200) {
         const normalizedData = res?.data?.data.map((customer) => ({
           ...customer,

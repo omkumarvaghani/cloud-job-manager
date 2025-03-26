@@ -38,7 +38,6 @@ const JobModal = ({
       const res = await AxiosInstance.get(
         `${baseUrl}/client/get_client/${localStorage?.getItem("admin_id")}`
       );
-      console.log(res,"resres")
       setClienData(res?.data?.data);
     } catch (error) {
       console.error("Error: ", error?.message);

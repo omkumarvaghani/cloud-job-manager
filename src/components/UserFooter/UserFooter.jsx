@@ -15,7 +15,6 @@ const FooterDetails = ({
   };
 
   const data = quotesData || contractData || invoicedata;
-  console.log(data, "datadatadata");
   return (
     <Grid
       className="p-3 my-4 border-blue-color"
@@ -47,7 +46,6 @@ const FooterDetails = ({
                   ""}
                 {data?.customerData?.LastName || data?.customer?.LastName || ""}
               </b>
-              {console.log(data, "data123")}
             </Typography>
             <Typography
               style={{ fontSize: "12px" }}

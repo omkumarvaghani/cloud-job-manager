@@ -308,12 +308,6 @@ const AddCustomer = ({
                   Property details 
                 </span>
               </CardTitle>
-              {console.log(formik, "formik")}
-              {console.log(
-                formik?.values?.location?.length ?? 0,
-                "formik?.values?.location?.length"
-              )}
-              {console.log(location?.state?.id, "location?.state?.id")}
               {!location?.state?.id ||
               (location?.state?.id && (formik?.values?.length ?? 0) <= 1) ? (
                 <Grid className="my-4 mb-0 px-0">

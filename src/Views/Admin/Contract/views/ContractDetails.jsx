@@ -345,11 +345,6 @@ const ContractDetails = ({
                       className="my-4 mb-0 text-blue-color heading-three"
                       style={{ fontWeight: 700 }}
                     >
-                      {console.log(contractData, "contractData1234")}
-                      {console.log(
-                        contractData?.customer?.FirstName,
-                        "customer?.FirstName"
-                      )}
                       {contractData?.customer?.FirstName ||
                         "FirstName not available"}{" "}
                       {contractData?.customer?.LastName ||

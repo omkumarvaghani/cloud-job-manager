@@ -154,8 +154,6 @@ const Addquotes = ({
                         fontWeight: "600",
                       }}
                     >
-                      {console.log(customersData, "customersData")}
-                      {console.log(propertyData?.FirstName,"propertyData?.FirstName")}
                       {propertyData?.FirstName
                         ? `${propertyData?.FirstName} ${propertyData?.LastName}`
                         : "Customer Name"} 
@@ -221,7 +219,7 @@ const Addquotes = ({
                             </Typography>
                           </Typography>
                           <Typography className="text-blue-color">
-                            {console.log(propertyData, "propertyData")}
+                            {console.log(propertyData,"propertyData")}
                             {propertyData?.Address ||
                               customersData?.location?.Address ||
                               "-"}{" "}

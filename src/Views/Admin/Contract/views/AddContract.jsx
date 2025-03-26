@@ -214,8 +214,6 @@ const AddContract = ({
                         fontWeight: "600",
                       }}
                     >
-                      {console.log(customersData?.FirstName,"customersData?.FirstName")}
-                        {console.log(customersData,"customersDatacustomersData")}
                       {customersData?.FirstName
                         ? `${customersData?.FirstName} ${customersData?.LastName}`
                         : "Customer Name"}
@@ -391,22 +389,22 @@ const AddContract = ({
                         </Typography>
                         <Typography>
                           {propertyData?.Address ||
-                            customersData?.location[0]?.Address ||
+                            customersData?.location?.Address ||
                             "-"}{" "},
                           <br />
                           {propertyData?.City ||
-                            customersData?.location[0]?.City ||
+                            customersData?.location?.City ||
                             "-"}
                           ,{" "}
                           {propertyData?.State ||
-                            customersData?.location[0]?.State ||
+                            customersData?.location?.State ||
                             "-"}{" "},
                           {propertyData?.Zip ||
-                            customersData?.location[0]?.Zip ||
+                            customersData?.location?.Zip ||
                             "-"},
                           <br />
                           {propertyData?.Country ||
-                            customersData?.location[0]?.Country ||
+                            customersData?.location?.Country ||
                             "-"}{" "}
                           <br />
                           <a

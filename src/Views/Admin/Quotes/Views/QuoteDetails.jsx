@@ -303,7 +303,6 @@ const QuotesDetails = ({
                     className="mb-0 text-data text-blue-color"
                     style={{ fontSize: "14px", width: "80%" }}
                   >
-                    {console.log(quotesData, "quotesData")}
                     {quotesData?.customerData?.Address ||
                       "Address not available"}{" "}
                     ,{quotesData?.customerData?.City || "City not available"} ,
