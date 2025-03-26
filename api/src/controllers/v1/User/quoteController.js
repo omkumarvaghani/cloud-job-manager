@@ -77,7 +77,7 @@ exports.checkQuoteNumberExists = async (req, res) => {
     }
 };
 
-// **GET CUSTOMER QUOTES**
+// **GET CUSTOMER ASSIGN QUOTES**
 exports.getCustomerQuotes = async (req, res) => {
     try {
         const { UserId } = req.params;
@@ -228,6 +228,15 @@ exports.getQuotes = async (req, res) => {
                 },
             },
             { $unwind: { path: "$usersDetails", preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: "locations",
+                    localField: "LocationId",
+                    foreignField: "LocationId",
+                    as: "locationDetails",
+                },
+            },
+            { $unwind: { path: "$usersDetails", preserveNullAndEmptyArrays: true } },
 
             {
                 $addFields: {
@@ -236,11 +245,11 @@ exports.getQuotes = async (req, res) => {
                         LastName: "$usersDetails.LastName",
                     },
                     location: {
-                        Address: "$usersDetails.Address",
-                        City: "$usersDetails.City",
-                        State: "$usersDetails.State",
-                        Country: "$usersDetails.Country",
-                        Zip: "$usersDetails.Zip",
+                        Address: "$locationDetails.Address",
+                        City: "$locationDetails.City",
+                        State: "$locationDetails.State",
+                        Country: "$locationDetails.Country",
+                        Zip: "$locationDetails.Zip",
                     },
                     Total: {
                         $toInt: { $round: [{ $toDouble: "$Total" }, 0] },
@@ -299,6 +308,20 @@ exports.getQuotes = async (req, res) => {
                     updatedAt: 1,
                 },
             },
+            {
+                $group: {
+                    _id: "$QuoteId",
+                    QuoteId: { $first: "$QuoteId" },
+                    Title: { $first: "$Title" },
+                    QuoteNumber: { $first: "$QuoteNumber" },
+                    Status: { $first: "$Status" },
+                    customer: { $first: "$customer" },
+                    location: { $first: "$location" },
+                    Total: { $first: "$Total" },
+                    createdAt: { $first: "$createdAt" },
+                    updatedAt: { $first: "$updatedAt" },
+                },
+            },
         ];
 
         const [countResult, quotes] = await Promise.all([
@@ -317,8 +340,6 @@ exports.getQuotes = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in getQuotes:", error.message);
-        await logUserEvent(req.user.UserId, "ERROR", `Error fetching quotes: ${error.message}`, { CompanyId });
-
         return res.status(500).json({ statusCode: 500, message: "Internal Server Error" });
     }
 };
@@ -355,6 +376,20 @@ exports.getQuoteDetails = async (req, res) => {
                 },
             },
             {
+                $lookup: {
+                    from: "locations",
+                    localField: "LocationId",
+                    foreignField: "LocationId",
+                    as: "locationData"
+                },
+            },
+            {
+                $unwind: {
+                    path: "$locationData",
+                    preserveNullAndEmptyArrays: true 
+                },
+            },
+            {
                 $project: {
                     QuoteId: 1,
                     CompanyId: 1,
@@ -376,9 +411,16 @@ exports.getQuoteDetails = async (req, res) => {
                     Signature: 1,
                     ApproveDate: 1,
                     IsDelete: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
                     IsApprovedByCustomer: 1,
                     "customerData.FirstName": 1,
                     "customerData.LastName": 1,
+                    "locationData.Address": 1,
+                    "locationData.City": 1,
+                    "locationData.State": 1,
+                    "locationData.Zip": 1,
+                    "locationData.Country": 1,
                     products: 1,
                 },
             },
@@ -605,6 +647,238 @@ exports.deleteQuoteAndRelatedData = async (req, res) => {
             statusCode: 500,
             message: "Internal Server Error",
             error: error.message,
+        });
+    }
+};
+
+// **CUSTOMER APPROVED QUOTE**
+exports.approveQuote = async (req, res) => {
+    const { QuoteId } = req.params;
+    const { Status } = req.body;
+
+    if (!Status) {
+        return res.status(400).json({
+            statusCode: 400,
+            message: "Status is required",
+        });
+    }
+
+    try {
+        const updatedQuote = await Quote.findOneAndUpdate(
+            { QuoteId },
+            {
+                $set: {
+                    Status,
+                    updatedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
+                },
+            },
+            { new: true }
+        );
+
+        if (!updatedQuote) {
+            return res.status(404).json({
+                statusCode: 404,
+                message: "Quote not found!",
+            });
+        }
+
+        return res.status(200).json({
+            statusCode: 200,
+            message: "Quote status updated successfully",
+            data: updatedQuote,
+        });
+    } catch (error) {
+        console.error("Error updating quote status:", error.message);
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Something went wrong, please try later!",
+        });
+    }
+};
+
+// **SCHEDULE CALENDAR IN COMPANY**
+exports.getScheduleData = async (req, res) => {
+    const { CompanyId } = req.params;
+
+    try {
+        const data = await Quote.aggregate([
+            {
+                $match: {
+                    CompanyId: CompanyId,
+                    IsDelete: false,
+                },
+            },
+            {
+                $lookup: {
+                    from: "user-profiles",
+                    localField: "UserId",
+                    foreignField: "UserId",
+                    as: "customerData",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$customerData",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $lookup: {
+                    from: "locations",
+                    localField: "LocationId",
+                    foreignField: "LocationId",
+                    as: "locationData",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$locationData",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $project: {
+                    Title: 1,
+                    QuoteNumber: 1,
+                    CompanyId: 1,
+                    QuoteId: 1,
+                    UserId: 1,
+                    LocationId: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    FirstName: "$customerData.FirstName",
+                    LastName: "$customerData.LastName",
+                    Address: {
+                        $ifNull: [
+                            { $ifNull: ["$locationData.Address", "$customerData.Address"] },
+                            "N/A"
+                        ],
+                    },
+                    City: { $ifNull: ["$locationData.City", "$customerData.City"] },
+                    State: { $ifNull: ["$locationData.State", "$customerData.State"] },
+                    Zip: { $ifNull: ["$locationData.Zip", "$customerData.Zip"] },
+                    Country: { $ifNull: ["$locationData.Country", "$customerData.Country"] },
+                    sheduleDate: {
+                        $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" },
+                    },
+                },
+            },
+        ]);
+
+        return res.status(200).json({
+            statusCode: 200,
+            data: data,
+            message: "Read All Plans",
+        });
+    } catch (error) {
+        console.error("Error in getScheduleData:", error.message);
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+// **GET QUOTE DETAILS FOR ASSIGN CUSTOMER**
+exports.fetchQuoteDetails = async (req, res) => {
+    const { QuoteId } = req.params;
+    const sortField = req.query.sortField || "updatedAt";
+    const sortOrder = req.query.sortOrder === "desc" ? "desc" : "asc";
+
+    const quotesSearchQuery = { QuoteId, IsDelete: false };
+
+    const sortOptions = {};
+    if (sortField) {
+        sortOptions[sortField] = sortOrder === "desc" ? -1 : 1;
+    }
+
+    try {
+        const quotes = await Quote.aggregate([
+            {
+                $match: quotesSearchQuery,
+            },
+            {
+                $lookup: {
+                    from: "user-profiles",
+                    localField: "UserId",
+                    foreignField: "UserId",
+                    as: "customerDetails",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$customerDetails",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $lookup: {
+                    from: "locations",
+                    let: { quoteLocationId: "$LocationId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$LocationId", "$$quoteLocationId"] },
+                            },
+                        },
+                    ],
+                    as: "propertyDetails",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$propertyDetails",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $lookup: {
+                    from: "quotedetails",
+                    localField: "QuoteId",
+                    foreignField: "QuoteId",
+                    as: "products",
+                },
+            },
+            {
+                $addFields: {
+                    property: "$propertyDetails",
+                    FirstName: "$customerDetails.FirstName",
+                    LastName: "$customerDetails.LastName",
+                    PhoneNumber: "$customerDetails.PhoneNumber",
+                    Address: {
+                        $ifNull: ["$propertyDetails.Address", "$customerDetails.Address"],
+                    },
+                    City: {
+                        $ifNull: ["$propertyDetails.City", "$customerDetails.City"],
+                    },
+                    State: {
+                        $ifNull: ["$propertyDetails.State", "$customerDetails.State"],
+                    },
+                    Zip: {
+                        $ifNull: ["$propertyDetails.Zip", "$customerDetails.Zip"],
+                    },
+                    Country: {
+                        $ifNull: ["$propertyDetails.Country", "$customerDetails.Country"],
+                    },
+                },
+            },
+            {
+                $unset: ["propertyDetails", "customerDetails"],
+            },
+            { $sort: sortOptions },
+        ]);
+
+        return res.status(200).json({
+            statusCode: quotes.length > 0 ? 200 : 204,
+            message:
+                quotes.length > 0 ? "Quotes retrieved successfully" : "No quotes found",
+            data: quotes,
+        });
+    } catch (error) {
+        console.error("Error in fetchQuoteDetails:", error.message);
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Internal Server Error",
         });
     }
 };

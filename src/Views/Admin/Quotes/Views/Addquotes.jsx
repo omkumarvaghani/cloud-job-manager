@@ -154,10 +154,9 @@ const Addquotes = ({
                         fontWeight: "600",
                       }}
                     >
-                      {propertyData?.FirstName
-                        ? `${propertyData?.FirstName} ${propertyData?.LastName}`
-                        : "Customer Name"} 
-    
+                      {customersData?.FirstName
+                        ? `${customersData?.FirstName} ${customersData?.LastName}`
+                        : "Customer Name"}
                     </Typography>
                     {!Object.keys(customersData).length > 0 ? (
                       <Button
