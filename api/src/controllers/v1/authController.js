@@ -136,6 +136,7 @@ exports.login = async (req, res) => {
 
     let response = {
       statusCode: 200,
+      message: "Login Successful",
       token,
       UserId: roleSpecificId,
       data: {

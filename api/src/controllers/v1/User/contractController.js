@@ -378,17 +378,17 @@ exports.getContracts = async (req, res) => {
             },
             { $unwind: { path: "$locationData", preserveNullAndEmptyArrays: true } },
             {
-                $addFields: {
+                $set: {
                     customer: {
                         FirstName: "$customerData.FirstName",
                         LastName: "$customerData.LastName",
                     },
                     location: {
-                        Address: { $ifNull: ["$locationData.Address", "$customerData.Address"] },
-                        City: { $ifNull: ["$locationData.City", "$customerData.City"] },
-                        State: { $ifNull: ["$locationData.State", "$customerData.State"] },
-                        Country: { $ifNull: ["$locationData.Country", "$customerData.Country"] },
-                        Zip: { $ifNull: ["$locationData.Zip", "$customerData.Zip"] },
+                        Address: "$locationData.Address",
+                        City: "$locationData.City",
+                        State: "$locationData.State",
+                        Country: "$locationData.Country",
+                        Zip: "$locationData.Zip",
                     },
                     Total: {
                         $toInt: { $round: [{ $toDouble: "$Total" }, 0] },
@@ -529,11 +529,11 @@ exports.getContractDetails = async (req, res) => {
         {
             $set: {
                 location: {
-                    Address: { $ifNull: ["$locationData.Address", "$customerData.Address"] },
-                    City: { $ifNull: ["$locationData.City", "$customerData.City"] },
-                    State: { $ifNull: ["$locationData.State", "$customerData.State"] },
-                    Country: { $ifNull: ["$locationData.Country", "$customerData.Country"] },
-                    Zip: { $ifNull: ["$locationData.Zip", "$customerData.Zip"] },
+                    Address: "$locationData.Address",
+                    City: "$locationData.City",
+                    State: "$locationData.State",
+                    Country: "$locationData.Country",
+                    Zip: "$locationData.Zip",
                 },
             },
         },
@@ -634,6 +634,7 @@ exports.getContractDetails = async (req, res) => {
         message: "Contract retrieved successfully",
     });
 };
+
 
 // **GET CONTRACT MAX CONTRACT NUMBER**
 exports.getMaxContractNumber = async (req, res) => {

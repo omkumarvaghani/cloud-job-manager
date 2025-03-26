@@ -33,26 +33,30 @@ exports.createUser = async (req, res) => {
         }
 
         let existingUser;
-        if (Role === "Worker" || Role === "Company") {
+        if (Role === "Company") {
             existingUser = await User.findOne({ EmailAddress, IsDelete: false });
-        } else if (Role === "Customer") {
-            existingUser = await User.findOne({ EmailAddress, CompanyId: CompanyId[0], IsDelete: false });
+        } else {
+            existingUser = await User.findOne({
+                EmailAddress,
+                CompanyId: { $in: CompanyId },
+                Role,
+                IsDelete: false
+            });
         }
 
         if (existingUser) {
             return res.status(202).json({ message: "Email Already Exists!" });
         }
 
-        // Generate the same UserId for the new user
         const UserId = uuidv4();
 
         let additionalFields = {};
         if (Role === "Worker" || Role === "Customer") {
-            additionalFields.UserId = UserId; // Ensure UserId is the same for Worker or Customer
+            additionalFields.UserId = UserId;
         }
 
         const newLocation = new Location({
-            UserId: UserId, // Same UserId
+            UserId: UserId,
             CompanyId: CompanyId[0],
             Address,
             City,
@@ -64,7 +68,7 @@ exports.createUser = async (req, res) => {
         await newLocation.save();
 
         const newUser = new User({
-            UserId: UserId, // Same UserId
+            UserId: UserId,
             Role,
             CompanyId,
             EmailAddress,
@@ -73,7 +77,7 @@ exports.createUser = async (req, res) => {
         await newUser.save();
 
         const newUserProfile = new UserProfile({
-            UserId: UserId, // Same UserId
+            UserId: UserId,
             CompanyId: CompanyId[0],
             ...profileDetails,
             LocationId: newLocation.LocationId,
@@ -99,7 +103,6 @@ exports.createUser = async (req, res) => {
         });
     }
 };
-
 
 // **GET USERS API**
 exports.getUserById = async (req, res) => {
