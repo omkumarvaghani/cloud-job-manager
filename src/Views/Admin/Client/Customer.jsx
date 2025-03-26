@@ -187,8 +187,6 @@ const Customer = () => {
     // }
 
     const properties = item?.locationsCount ? [item.locationsData] : [];
-    console.log(item.locationsData, "locationsData");
-    console.log(item,"item")
     let propertyDisplay;
     if (properties.length === 1) {
       const property = properties[0];
@@ -202,8 +200,7 @@ const Customer = () => {
         properties?.length > 1 ? "Properties" : "Property"
       }`;
     }
-    // Display the propertyDisplay
-
+    
     return {
       key: item?.UserId,
       value: [
