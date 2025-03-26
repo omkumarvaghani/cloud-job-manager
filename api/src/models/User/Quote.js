@@ -11,6 +11,10 @@ const QuoteSchema = new Schema(
             type: String,
             trim: true
         },
+        LocationId: {
+            type: String,
+            trim: true
+        },
         QuoteId: {
             type: String,
             unique: true,
@@ -92,5 +96,10 @@ const QuoteSchema = new Schema(
         timestamps: true,
     }
 );
+
+QuoteSchema.index({ CompanyId: 1, UserId: 1 });
+QuoteSchema.index({ Status: 1 });
+QuoteSchema.index({ IsDelete: 1 });
+
 
 module.exports = mongoose.model("Quote", QuoteSchema);

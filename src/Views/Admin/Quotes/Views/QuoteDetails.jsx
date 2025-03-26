@@ -304,13 +304,13 @@ const QuotesDetails = ({
                     style={{ fontSize: "14px", width: "80%" }}
                   >
                     {console.log(quotesData, "quotesData")}
-                    {quotesData?.customerData?.Address ||
+                    {quotesData?.locationData?.Address ||
                       "Address not available"}{" "}
-                    ,{quotesData?.customerData?.City || "City not available"} ,
-                    {quotesData?.customerData?.State || "State not available"} ,
-                    {quotesData?.customerData?.Country ||
+                    ,{quotesData?.locationData?.City || "City not available"} ,
+                    {quotesData?.locationData?.State || "State not available"} ,
+                    {quotesData?.locationData?.Country ||
                       "Country not available"}{" "}
-                    ,{quotesData?.customerData?.Zip || "Zip not available"}
+                    ,{quotesData?.locationData?.Zip || "Zip not available"}
                   </Typography>
                 </Col>
                 <Col className="col-2 " xl={3}>

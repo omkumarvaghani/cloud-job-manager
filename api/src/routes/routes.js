@@ -11,5 +11,9 @@ router.use("/v1/plan", require("../routes/v1/planRoutes"));
 router.use("/v1/permission", require("../routes/v1/permissionRoutes"));
 router.use("/v1/quote", require("../routes/v1/quoteRoutes"));
 router.use("/v1/material", require("../routes/v1/materialRoutes"));
+router.use("/v1/customer", require("../routes/v1/customerRoutes"));
+router.use("/v1/location", require("../routes/v1/locationRoutes"));
+router.use("/v1/contract", require("../routes/v1/contractRoutes"));
+router.use("/v1/visit", require("../routes/v1/visitRoutes"));
 
 module.exports = router;
