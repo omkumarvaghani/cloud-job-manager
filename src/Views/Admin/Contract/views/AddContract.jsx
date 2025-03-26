@@ -197,7 +197,7 @@ const AddContract = ({
                     fontWeight: 600,
                   }}
                 >
-                  Contract for
+                  Contract for 
                   <Typography
                     className="d-flex align-items-center"
                     style={{ cursor: "pointer" }}
@@ -214,6 +214,8 @@ const AddContract = ({
                         fontWeight: "600",
                       }}
                     >
+                      {console.log(customersData?.FirstName,"customersData?.FirstName")}
+                        {console.log(customersData,"customersDatacustomersData")}
                       {customersData?.FirstName
                         ? `${customersData?.FirstName} ${customersData?.LastName}`
                         : "Customer Name"}

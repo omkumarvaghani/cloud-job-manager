@@ -161,10 +161,10 @@ function AddContract() {
 
         let response;
         if (!location.state?.id) {
-          response = await AxiosInstance.post(`/contract`, object);
+          response = await AxiosInstance.post(`/v1/contract`, object);
         } else {
           response = await AxiosInstance.put(
-            `/contract/${location?.state?.id}`,
+            `/v1/contract/${location?.state?.id}`,
             object
           );
         }

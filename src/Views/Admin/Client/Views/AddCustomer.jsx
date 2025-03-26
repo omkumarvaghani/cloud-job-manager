@@ -305,7 +305,7 @@ const AddCustomer = ({
                   <img src={clientcontact} alt="Property Details" />
                 </Grid>
                 <span className="" style={{ fontSize: "16pxx" }}>
-                  Property details
+                  Property details 
                 </span>
               </CardTitle>
               {console.log(formik, "formik")}
