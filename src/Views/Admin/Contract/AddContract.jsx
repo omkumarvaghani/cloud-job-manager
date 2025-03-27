@@ -612,7 +612,7 @@ function AddContract() {
         return;
       }
 
-      const response = await AxiosInstance.get(`/worker/${CompanyId}`);
+      const response = await AxiosInstance.get(`/v1/user/${CompanyId}`); 
 
       if (response?.status === 200) {
         setTeamData(response?.data?.data);
@@ -666,12 +666,13 @@ function AddContract() {
           WorkerId: values?.WorkerId,
           FullName: values?.FullName,
           EmailAddress: values?.EmailAddress,
-          PhoneNumber: values?.MobileNumber,
+          PhoneNumber: values?.PhoneNumber,
           AddedAt: new Date(),
+          Role: "Worker",
         };
-
-        const response = await AxiosInstance.post(`${baseUrl}/worker`, object);
-        if (response?.data?.statusCode === 200) {
+          
+        const response = await AxiosInstance.post(`${baseUrl}/v1/user`, object);
+        if (response?.data?.statusCode == "200") {
           showToast.success(response?.data?.message);
           toggleModal();
           fetchTeamData();
@@ -685,6 +686,8 @@ function AddContract() {
             "Server responded with an error:",
             error?.response?.data
           );
+          console.log(error, "error");
+
           setTimeout(() => {
             showToast.error(
               error?.response?.data?.message || "Something went wrong!"

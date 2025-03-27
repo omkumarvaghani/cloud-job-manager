@@ -55,7 +55,6 @@ const Visit = ({
   setVisitId,
   CustomerId,
 }) => {
- 
   const baseUrl = process.env.REACT_APP_BASE_API;
   const LocationId = contractData.LocationId;
   const [teamData, setTeamData] = useState([]);
@@ -138,7 +137,7 @@ const Visit = ({
           values["CustomerId"] = CustomerId;
           values["LocationId"] = LocationId;
           const response = await AxiosInstance.post(
-            `${baseUrl}/visits`,
+            `${baseUrl}/v1/visits`,
             values
           );
           if (response?.data?.statusCode === 200) {
@@ -152,8 +151,9 @@ const Visit = ({
           if (error?.response?.status === 400) {
             const errorMessages = error?.response?.data?.errors || [];
             errorMessages.forEach((message) => {
-              const fieldName = message.split(" ")[0]; 
-              const userFriendlyFieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1); 
+              const fieldName = message.split(" ")[0];
+              const userFriendlyFieldName =
+                fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
               showToast.warning(`${userFriendlyFieldName}: ${message}`);
               formik.setFieldError(fieldName, message);
             });
@@ -488,8 +488,10 @@ const Visit = ({
                   <TableRow>
                     <TableCell>Customer</TableCell>
                     <TableCell>
-                      {contractData?.customer?.FirstName || "FirstName not available"}{" "}
-                      {contractData?.customer?.LastName || "LastName not available"}{" "}
+                      {contractData?.customer?.FirstName ||
+                        "FirstName not available"}{" "}
+                      {contractData?.customer?.LastName ||
+                        "LastName not available"}{" "}
                     </TableCell>
                   </TableRow>
                   <TableRow>
@@ -499,10 +501,12 @@ const Visit = ({
                   <TableRow>
                     <TableCell>Address</TableCell>
                     <TableCell>
-                      {contractData?.location?.Address || "Address not available"}{" "}
+                      {contractData?.location?.Address ||
+                        "Address not available"}{" "}
                       {contractData?.location?.City || "City not available"}{" "}
                       {contractData?.location?.State || "State not available"}{" "}
-                      {contractData?.location?.Country || "Country not available"}{" "}
+                      {contractData?.location?.Country ||
+                        "Country not available"}{" "}
                       {contractData?.location?.Zip || "Zip not available"}
                     </TableCell>
                   </TableRow>
@@ -845,7 +849,7 @@ const Visit = ({
                                       handleTeamSelect(e, person)
                                     }
                                   />
-     
+
                                   <Grid>
                                     <Label
                                       style={{
@@ -855,7 +859,8 @@ const Visit = ({
                                         marginBottom: 0,
                                       }}
                                     >
-                                      {`${person?.FirstName} ${person?.LastName}` || "Name not available"}
+                                      {`${person?.FirstName} ${person?.LastName}` ||
+                                        "Name not available"}
                                     </Label>
                                     <Label
                                       style={{
@@ -865,7 +870,10 @@ const Visit = ({
                                         marginBottom: 0,
                                       }}
                                     >
-                                      ({person?.EmailAddress || "EmailAddress not available"} )
+                                      (
+                                      {person?.EmailAddress ||
+                                        "EmailAddress not available"}{" "}
+                                      )
                                     </Label>
                                   </Grid>
                                 </FormGroup>
@@ -913,8 +921,11 @@ const Visit = ({
                               padding: "14px 1px 1px 1px",
                             }}
                           >
-                           {`${team?.FirstName} ${team?.LastName}` || "Name not available"}-(
-                            {team?.EmailAddress || "EmailAddress not available"})
+                            {`${team?.FirstName} ${team?.LastName}` ||
+                              "Name not available"}
+                            -(
+                            {team?.EmailAddress || "EmailAddress not available"}
+                            )
                           </Typography>
                           <button
                             className="tag-close"

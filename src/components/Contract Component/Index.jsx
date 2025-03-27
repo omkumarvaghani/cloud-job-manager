@@ -1474,16 +1474,16 @@ const Team = ({ setIds = (assignPersonId) => {}, ids, isAddTeam = true }) => {
   const fetchTeamData = async () => {
     setLoading(true);
     try {
-      const companyId =
-        localStorage.getItem("CompanyId") || tokenDecode?.companyId;
+      const CompanyId =
+        localStorage.getItem("CompanyId") || tokenDecode?.CompanyId;
 
-      if (!companyId) {
+      if (!CompanyId) {
         console.error("CompanyId is not found in localStorage or tokenDecode.");
         return;
       }
 
-      const response = await AxiosInstance.get(`/worker/${companyId}`);
-
+      const response = await AxiosInstance.get(`v1/user/${CompanyId}`);
+              
       if (response?.status === 200) {
         setTeamData(response?.data?.data);
       } else {
@@ -1526,24 +1526,25 @@ const Team = ({ setIds = (assignPersonId) => {}, ids, isAddTeam = true }) => {
     onSubmit: async (values) => {
       try {
         setLoading(true);
-        const companyId =
-          localStorage.getItem("CompanyId") || tokenDecode?.companyId;
+        const CompanyId =
+          localStorage.getItem("CompanyId") || tokenDecode?.CompanyId;
 
-        if (!companyId) {
+        if (!CompanyId) {
           console.error("CompanyId is not found in localStorage");
           return;
         }
         const object = {
           ...values,
-          companyId: companyId,
+          CompanyId: CompanyId,
           WorkerId: values?.WorkerId,
           FullName: values?.FullName,
           EmailAddress: values?.EmailAddress,
           PhoneNumber: values?.MobileNumber,
           AddedAt: new Date(),
+          Role:"Worker"
         };
 
-        const response = await AxiosInstance.post(`/worker`, object);
+        const response = await AxiosInstance.post(`/v1/user`, object);
         if (response?.data?.statusCode === 200) {
           showToast.success(response?.data?.message);
           toggleModal();
