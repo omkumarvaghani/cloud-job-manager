@@ -28,6 +28,7 @@ import { fontSize, padding } from "@mui/system";
 
 const AddCustomer = ({
   formik,
+  userAddress,
   handleChange,
   loader,
   countries,
@@ -305,12 +306,12 @@ const AddCustomer = ({
                   <img src={clientcontact} alt="Property Details" />
                 </Grid>
                 <span className="" style={{ fontSize: "16pxx" }}>
-                  Property details 
+                  Property details
                 </span>
               </CardTitle>
-              {console.log(formik?.values?.length ,"formik?.values?.length ")}
+              {console.log(formik?.values, "location1")}
               {!location?.state?.id ||
-              (location?.state?.id && (formik?.values?.length ?? 0) <= 1) ? (
+              (location?.state?.id && (formik?.locations?.length ?? 0) <= 1) ? (
                 <Grid className="my-4 mb-0 px-0">
                   <Address
                     setSelectedCountry={setSelectedCountry}

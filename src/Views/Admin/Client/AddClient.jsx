@@ -410,12 +410,13 @@ function AddClient() {
             Zip: userAddress?.Zip || "",
             Country: userAddress?.Country || "",
           });
+          console.log(userAddress, "userAddress");
         }
       } catch (error) {
         console.error("Error: ", error?.message);
       }
     };
-
+                      
     if (location?.state?.id) {
       fetchData();
     }
@@ -492,6 +493,7 @@ function AddClient() {
         handleZipChange={handleZipChange}
         addPhoneNumber={addPhoneNumber}
         phoneNumbers={phoneNumbers}
+        // userAddress={userAddress}
       />
     </>
   );

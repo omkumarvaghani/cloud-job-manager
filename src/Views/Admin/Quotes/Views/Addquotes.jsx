@@ -77,6 +77,7 @@ const Addquotes = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  console.log(customersData,"customersDataa0000")
   return (
     <>
       {loader ? (
@@ -154,6 +155,7 @@ const Addquotes = ({
                         fontWeight: "600",
                       }}
                     >
+                      {console.log(customersData,"customersData")}
                       {customersData?.FirstName
                         ? `${customersData?.FirstName} ${customersData?.LastName}`
                         : "Customer Name"}
