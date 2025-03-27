@@ -1,4 +1,8 @@
 const User = require("../../../models/User/User");
+const UserProfile = require("../../../models/User/UserProfile");
+const { sendWelcomeEmail } = require("../../../Helpers/EmailServices");
+const { createResetToken } = require("../../../middleware/authMiddleware");
+const AppUrl = process.env.REACT_APP;
 
 // **GET CUSTOMERS FOR COMPANY API**
 exports.getCustomersByCompanyId = async (req, res) => {
@@ -59,7 +63,7 @@ exports.getCustomersByCompanyId = async (req, res) => {
         }
 
         let sortOptions = {};
-        if (sortField === "Address" || sortField === "City" || sortField === "State" || sortField === "Country" || sortField === "Zip") {
+        if (["Address", "City", "State", "Country", "Zip"].includes(sortField)) {
             sortOptions[`profile.${sortField}`] = sortOrder;
         } else {
             sortOptions[sortField] = sortOrder;
@@ -83,12 +87,7 @@ exports.getCustomersByCompanyId = async (req, res) => {
                     from: "locations",
                     localField: "UserId",
                     foreignField: "UserId",
-                    as: "locationsData",
-                },
-            },
-            {
-                $addFields: {
-                    locationsCount: { $size: "$locationsData" },
+                    as: "location",
                 },
             },
             {
@@ -101,14 +100,7 @@ exports.getCustomersByCompanyId = async (req, res) => {
                     "profile.PhoneNumber": 1,
                     createdAt: 1,
                     updatedAt: 1,
-                    locationsCount: 1,
-                    locationsData: {
-                        $cond: {
-                            if: { $eq: [{ $size: "$locationsData" }, 1] },
-                            then: { $arrayElemAt: ["$locationsData", 0] },
-                            else: "$locationsCount",
-                        },
-                    },
+                    location: 1,
                 },
             },
             { $sort: sortOptions },
@@ -263,7 +255,7 @@ exports.getCustomersWithLocations = async (req, res) => {
                     from: "locations",
                     localField: "UserId",
                     foreignField: "UserId",
-                    as: "location", 
+                    as: "locations",
                 },
             },
             {
@@ -284,7 +276,7 @@ exports.getCustomersWithLocations = async (req, res) => {
                     IsDelete: 1,
                     createdAt: 1,
                     updatedAt: 1,
-                    locations: "$location", 
+                    locations: 1,
                 },
             },
         ]);
@@ -304,6 +296,7 @@ exports.getCustomersWithLocations = async (req, res) => {
         console.error("Error in getCustomersWithLocations:", error.message);
         return res.status(500).json({
             message: "Failed to fetch customers with locations",
+            error: error.message,
         });
     }
 };
@@ -404,3 +397,146 @@ exports.getUserDetailWithInvoices = async (req, res) => {
     }
 };
 
+// **SEND CUSTOMER WELCOME INVITATION**
+exports.sendWelcomeEmailToCustomer = async (req, res) => {
+    try {
+        const { UserId } = req.params;
+
+        const findCustomer = await User.findOne({ UserId, Role: "Customer", IsDelete: false });
+        if (!findCustomer) {
+            return { statusCode: 404, message: "Customer not found" };
+        }
+        console.log(findCustomer, '111111111')
+        const findCustomerMail = await UserProfile.findOne({ UserId, IsDelete: false });
+        if (!findCustomer) {
+            return { statusCode: 404, message: "Customer not found" };
+        }
+        console.log(findCustomerMail, '222222222')
+        const findCompany = await User.findOne({
+            CompanyId: findCustomer.CompanyId,
+            Role: "Company", IsDelete: false
+        });
+        if (!findCompany) {
+            return { statusCode: 404, message: "Company not found" };
+        }
+        const findCompanyMail = await UserProfile.findOne({
+            CompanyId: findCustomer.CompanyId,
+            IsDelete: false
+        });
+        if (!findCompany) {
+            return { statusCode: 404, message: "Company not found" };
+        }
+        console.log(findCompanyMail, '3333333333')
+
+        const resetToken = await createResetToken({
+            EmailAddress: findCustomer.EmailAddress,
+        });
+        console.log(resetToken, '444444444')
+        const url = `${AppUrl}/auth/new-password?token=${resetToken}`;
+
+        const button = `
+        <p>
+          <a href="${url}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #e88c44; border-radius: 8px; background-color: #e88c44; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
+            Set Your Password
+          </a>
+        </p>
+      `;
+
+        const data = [
+            {
+                FirstName: findCustomerMail.FirstName || "",
+                LastName: findCustomerMail.LastName || "",
+                EmailAddress: findCustomer.EmailAddress || "",
+                PhoneNumber: findCustomerMail.PhoneNumber || "",
+                CompanyName: findCompanyMail.CompanyName || "",
+                EmailAddress: findCompany.EmailAddress || "",
+                PhoneNumber: findCompanyMail.PhoneNumber || "",
+                Url: button || "",
+            },
+        ];
+        console.log(data, '5555555555')
+
+        const defaultBody = `
+      <div style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff;">
+        <!-- Outer Wrapper -->
+        <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 20px auto; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border: 1px solid #e88c44;">
+          
+          <!-- Header Section with Logo -->
+          <tr>
+            <td style="padding: 20px 0; text-align: center; background-color: #063164; ">
+              <div style="display: inline-block; padding: 20px; background-color: white; border-radius: 12px;">
+                <img src="https://app.cloudjobmanager.com/cdn/upload/20250213103016_site-logo2.png" alt="CloudJobManager Logo" style="width: 160px; max-width: 100%; display: block; margin: auto;" />
+              </div>
+            </td>
+          </tr>
+    
+          <!-- Main Content Section -->
+          <tr>
+            <td style="padding: 0px 20px; text-align: center; color: #333333; background-color: #ffffff; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+              <h2 style="font-size: 25px; font-weight: 700; color: #063164; margin-bottom: 20px; letter-spacing: 1px;margin-top:20px;">Welcome to ${findCompanyMail.CompanyName}</h2>
+              <p style="font-size: 16px; color: #666666; line-height: 1.6; margin-bottom: 20px; font-weight: 400;">
+                Dear ${findCustomerMail.FirstName} ${findCustomerMail.LastName},<br>
+                We are pleased to provide you with your login credentials for accessing our Contract Management System. Below are your details:
+              </p>
+              <p><strong>Email:</strong> ${findCustomer.EmailAddress}</p>
+    
+              <!-- Set Password Button -->
+              <p>
+                <a href="${url}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #e88c44 ; border-radius: 8px; background-color: #e88c44 ; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
+                  Set Your Password
+                </a>
+              </p>
+              
+              <p style="font-size: 14px; color: #888888; margin-top: 30px; line-height: 1.6;">
+                For security reasons, we recommend changing your password upon first login. If you have any questions or need assistance, please do not hesitate to reach out to our support team at <a href="mailto:${findCompany.EmailAddress}" style="color: #063164; font-weight: 600;">${findCompany.EmailAddress}</a> or ${findCompanyMail.PhoneNumber}.
+              </p>
+    
+              <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">
+                Thank you for choosing ${findCompanyMail.CompanyName}. We are committed to providing you with a seamless and efficient experience.
+              </p>
+    
+              <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">Best regards,<br>The ${findCompanyMail.CompanyName} Team</p>
+            </td>
+          </tr>
+    
+          <!-- Footer Section -->
+          <tr>
+            <td style="padding: 30px 20px; text-align: center; font-size: 12px; color: #888888; background-color: #f4f4f7; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+              ${findCompany.CompanyName}, Inc. | All rights reserved.<br>
+              <a href="#" style="color: #e88c44; text-decoration: none;">Unsubscribe</a> if you no longer wish to receive these emails.
+            </td>
+          </tr>
+        </table>
+      </div>
+    `;
+
+        const emailStatus = await sendWelcomeEmail(
+            "Invitation",
+            findCustomer.CompanyId,
+            data,
+            [],
+            "Welcome to our service",
+            defaultBody,
+            findCustomer.UserId
+        );
+        console.log(emailStatus, '666666666666')
+
+        if (emailStatus) {
+            return res.status(200).json({
+                statusCode: 200,
+                message: `Email was sent to ${findCustomer.EmailAddress}`,
+            });
+        } else {
+            return res.status(203).json({
+                statusCode: 203,
+                message: "Issue sending email",
+            });
+        }
+    } catch (error) {
+        console.error("Error sending welcome email:", error.message);
+        return {
+            statusCode: 500,
+            message: "Something went wrong, please try again later",
+        };
+    }
+};

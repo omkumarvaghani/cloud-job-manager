@@ -14,6 +14,8 @@ exports.createUser = async (req, res) => {
         }
 
         const { Role, EmailAddress, Password, Address, City, State, Zip, Country, ...profileDetails } = req.body;
+        console.log(req.body)
+
 
         if (!["Company", "Worker", "Customer"].includes(Role)) {
             return res.status(400).json({ message: "Invalid Role! Only Company, Worker, or Customer allowed." });
@@ -33,26 +35,30 @@ exports.createUser = async (req, res) => {
         }
 
         let existingUser;
-        if (Role === "Worker" || Role === "Company") {
+        if (Role === "Company") {
             existingUser = await User.findOne({ EmailAddress, IsDelete: false });
-        } else if (Role === "Customer") {
-            existingUser = await User.findOne({ EmailAddress, CompanyId: CompanyId[0], IsDelete: false });
+        } else {
+            existingUser = await User.findOne({
+                EmailAddress,
+                CompanyId: { $in: CompanyId },
+                Role,
+                IsDelete: false
+            });
         }
 
         if (existingUser) {
             return res.status(202).json({ message: "Email Already Exists!" });
         }
 
-        // Generate the same UserId for the new user
         const UserId = uuidv4();
 
         let additionalFields = {};
         if (Role === "Worker" || Role === "Customer") {
-            additionalFields.UserId = UserId; // Ensure UserId is the same for Worker or Customer
+            additionalFields.UserId = UserId;
         }
 
         const newLocation = new Location({
-            UserId: UserId, // Same UserId
+            UserId: UserId,
             CompanyId: CompanyId[0],
             Address,
             City,
@@ -64,7 +70,7 @@ exports.createUser = async (req, res) => {
         await newLocation.save();
 
         const newUser = new User({
-            UserId: UserId, // Same UserId
+            UserId: UserId,
             Role,
             CompanyId,
             EmailAddress,
@@ -73,7 +79,7 @@ exports.createUser = async (req, res) => {
         await newUser.save();
 
         const newUserProfile = new UserProfile({
-            UserId: UserId, // Same UserId
+            UserId: UserId,
             CompanyId: CompanyId[0],
             ...profileDetails,
             LocationId: newLocation.LocationId,
@@ -100,8 +106,7 @@ exports.createUser = async (req, res) => {
     }
 };
 
-
-// **GET USERS API**
+// **GET USER BY ID API**
 exports.getUserById = async (req, res) => {
     try {
         const { UserId } = req.params;
@@ -114,9 +119,16 @@ exports.getUserById = async (req, res) => {
 
         const userProfile = await UserProfile.findOne({ UserId, IsDelete: false });
 
+        const locations = await Location.find({ UserId });
+
         return res.status(200).json({
             message: "User fetched successfully.",
-            data: { user, userProfile },
+            data: {
+                user,
+                userProfile,
+                locations,
+                locationsCount: locations.length, 
+            },
         });
 
     } catch (error) {
@@ -126,6 +138,7 @@ exports.getUserById = async (req, res) => {
         });
     }
 };
+
 
 // **UPDATE USERS API**
 exports.updateUser = async (req, res) => {

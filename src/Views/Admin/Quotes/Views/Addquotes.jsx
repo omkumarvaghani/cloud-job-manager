@@ -198,7 +198,7 @@ const Addquotes = ({
                         }
                         name="Title"
                         id="title"
-                        placeholder="Enter job title"
+                        placeholder="Enter Quote Title"
                         label="Quote Title"
                         type="text"
                         className="text-blue-color w-100"

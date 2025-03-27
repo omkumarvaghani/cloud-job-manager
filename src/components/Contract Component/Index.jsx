@@ -521,29 +521,6 @@ const OneOffContract = ({
                     />
                   </Col>
                 </Grid>
-                <Label htmlFor="Repeats" className="mt-2">
-                  Repeats
-                </Label>
-                <Input
-                  type="select"
-                  name="OneoffJob.Repeats"
-                  className="text-blue-color border-blue-color"
-                  onChange={(e) => {
-                    formik?.handleChange(e);
-                  }}
-                  value={formik?.values?.OneoffJob?.Repeats}
-                  style={{
-                    fontSize: "14px",
-                    border: "1px solid rgba(6, 49, 100, 30%)",
-                    borderRadius: "10px",
-                    fontSize: "12px",
-                    height: "40px",
-                  }}
-                >
-                  <option value="Daily">Daily</option>
-                  <option value="Weekly">Weekly</option>
-                  <option value="Monthly">Monthly</option>
-                </Input>
 
                 <Grid>
                   <FormGroup className="my-3 mb-0 d-flex">

@@ -26,7 +26,6 @@ const QuoteSchema = new Schema(
         },
         QuoteNumber: {
             type: String,
-
             trim: true
         },
         SubTotal: {
