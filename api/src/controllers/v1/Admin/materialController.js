@@ -398,7 +398,6 @@ exports.updateMaterialsAndLabor = async (req, res) => {
     }
 };
 
-
 // **Delete Product and Service (Superadmin)
 exports.deleteMaterialsAndLabor = async (req, res) => {
     const { ProductId } = req.params;

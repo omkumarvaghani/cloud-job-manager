@@ -14,6 +14,8 @@ exports.createUser = async (req, res) => {
         }
 
         const { Role, EmailAddress, Password, Address, City, State, Zip, Country, ...profileDetails } = req.body;
+        console.log(req.body)
+
 
         if (!["Company", "Worker", "Customer"].includes(Role)) {
             return res.status(400).json({ message: "Invalid Role! Only Company, Worker, or Customer allowed." });
@@ -104,7 +106,7 @@ exports.createUser = async (req, res) => {
     }
 };
 
-// **GET USERS API**
+// **GET USER BY ID API**
 exports.getUserById = async (req, res) => {
     try {
         const { UserId } = req.params;
@@ -117,9 +119,16 @@ exports.getUserById = async (req, res) => {
 
         const userProfile = await UserProfile.findOne({ UserId, IsDelete: false });
 
+        const locations = await Location.find({ UserId });
+
         return res.status(200).json({
             message: "User fetched successfully.",
-            data: { user, userProfile },
+            data: {
+                user,
+                userProfile,
+                locations,
+                locationsCount: locations.length, 
+            },
         });
 
     } catch (error) {
@@ -129,6 +138,7 @@ exports.getUserById = async (req, res) => {
         });
     }
 };
+
 
 // **UPDATE USERS API**
 exports.updateUser = async (req, res) => {
