@@ -407,12 +407,12 @@ function AddClient() {
             PhoneNumber: userProfile?.PhoneNumber || "",
             EmailAddress: res?.data?.data?.user?.EmailAddress || "",
             Addresses:
-              userAddresses.map((Address) => ({
-                Address: Address?.Address || "",
-                City: Address?.City || "",
-                State: Address?.State || "",
-                Zip: Address?.Zip || "",
-                Country: Address?.Country || "",
+              userAddresses.map((address) => ({
+                Address: address?.Address || "",
+                City: address?.City || "",
+                State: address?.State || "",
+                Zip: address?.Zip || "",
+                Country: address?.Country || "",
               })) || [],
           });
         }
@@ -420,7 +420,7 @@ function AddClient() {
         console.error("Error: ", error?.message);
       }
     };
-
+ 
     if (location?.state?.id) {
       fetchData();
     }
