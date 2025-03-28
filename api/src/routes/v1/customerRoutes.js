@@ -16,5 +16,4 @@ router.get('/detail/:UserId', protect, getCustomerDetail);
 router.get('/get_customer/:CompanyId', protect, getCustomersWithLocations);
 router.get('/:UserId', protect, getUserDetailWithInvoices);
 
-
 module.exports = router;

@@ -16,5 +16,6 @@ router.use("/v1/location", require("../routes/v1/locationRoutes"));
 router.use("/v1/contract", require("../routes/v1/contractRoutes"));
 router.use("/v1/visit", require("../routes/v1/visitRoutes"));
 router.use("/v1/labour", require("../routes/v1/labourRoutes"));
+router.use("/v1/worker", require("../routes/v1/workerRoutes"));
 
 module.exports = router;

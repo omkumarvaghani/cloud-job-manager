@@ -43,6 +43,7 @@ const AddCustomer = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+
   return (
     <Grid className="justify-content-center align-items-center mb-3 mt-5 client">
       <Grid className="d-flex align-items-center text-white-color">

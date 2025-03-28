@@ -19,10 +19,10 @@ const labourSchema = new Schema(
         Hours: { type: String },
         Minutes: { type: String },
 
-        Notes: { type: String },
         DatePicker: { type: String },
 
         LabourCost: { type: String },
+        TotalCost: { type: String },
         DeleteReason: { type: String },
         IsDelete: { type: Boolean, default: false },
     },

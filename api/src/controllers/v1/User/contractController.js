@@ -5,6 +5,8 @@ const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 const { logUserEvent } = require("../../../middleware/eventMiddleware");
 const User = require("../../../models/User/User");
+const { addNotification } = require("../../../models/User/AddNotification");
+const Notification = require("../../../models/User/Notification");
 
 // **CREATE CONTRACT**
 const createOneoffVisits = async (
@@ -179,8 +181,8 @@ exports.createContract = async (req, res) => {
     const assignPersonIds = Array.isArray(contractData.UserId)
       ? contractData.UserId
       : contractData.UserId
-      ? [contractData.UserId]
-      : [];
+        ? [contractData.UserId]
+        : [];
 
     contractData.WorkerId = assignPersonIds;
 
@@ -281,6 +283,17 @@ exports.createContract = async (req, res) => {
       );
     }
 
+    const notificationData = {
+      CompanyId: contractData.CompanyId,
+      UserId: contractData.UserId,
+      ContractId: contractData.ContractId,
+      LocationId: contractData.LocationId,
+      WorkerId: assignPersonIds,
+      CreatedBy: "Contract creation",
+      AddedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
+    };
+
+    await addNotification(notificationData);
     return res.status(200).json({
       statusCode: 200,
       message: "Contract created successfully",
@@ -647,7 +660,7 @@ exports.getContractDetails = async (req, res) => {
   }
 
   return res.status(200).json({
-    statusCode:200,
+    statusCode: 200,
     data: contracts[0] || {},
     message: "Contract retrieved successfully",
   });
@@ -914,6 +927,18 @@ exports.updateContract = async (req, res) => {
     }
   );
 
+  const notificationData = {
+    CompanyId: contract.CompanyId,
+    UserId: contract.UserId,
+    ContractId: contract.ContractId,
+    LocationId: contract.LocationId,
+    WorkerId: assignPersonIds,
+    CreatedBy: req.user.UserId,
+    AddedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
+  };
+
+  await addNotification(notificationData);
+
   return res.status(200).json({
     statusCode: 200,
     message: "Contract updated successfully.",
@@ -987,6 +1012,10 @@ exports.deleteContract = async (req, res) => {
       DeletedItemsCount: updatedItems.modifiedCount,
     }
   );
+  await Notification.updateMany(
+    { ContractId: ContractId, IsDelete: false },
+    { $set: { IsDelete: true } }
+  );
 
   return res.status(200).json({
     statusCode: 200,
@@ -996,63 +1025,130 @@ exports.deleteContract = async (req, res) => {
 
 // **GET CONTRACT IN INVOICE AFTER SELECT CUSTOMER INVOICE**
 exports.getInvoiceDataByCustomerId = async (req, res) => {
-  const { UserId } = req.params;
+  try {
+    const { UserId } = req.params;
+    if (!UserId) {
+      return res.status(400).json({
+        statusCode: 400,
+        message: "UserId is required",
+      });
+    }
 
-  if (!UserId) {
-    return {
-      statusCode: 400,
-      message: "UserId is required",
-    };
-  }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const isoToday = new Date(today).toISOString();
 
-  const result = await User.aggregate([
-    {
-      $match: {
-        UserId: UserId,
-        IsDelete: false,
+    console.log("isoToday:", isoToday);
+
+    const result = await User.aggregate([
+      {
+        $match: {
+          UserId: UserId,
+          IsDelete: false,
+        },
       },
-    },
-    {
-      $lookup: {
-        from: "contracts",
-        localField: "UserId",
-        foreignField: "UserId",
-        as: "contracts",
-        pipeline: [
-          {
-            $match: {
-              IsDelete: false,
+      {
+        $lookup: {
+          from: "contracts",
+          localField: "UserId",
+          foreignField: "UserId",
+          as: "contracts",
+          pipeline: [
+            {
+              $match: {
+                IsDelete: false,
+              },
             },
-          },
-          {
-            $lookup: {
-              from: "locations",
-              localField: "LocationId",
-              foreignField: "LocationId",
-              as: "locationDetails",
+            {
+              $lookup: {
+                from: "locations",
+                localField: "LocationId",
+                foreignField: "LocationId",
+                as: "locationDetails",
+              },
             },
-          },
-          {
-            $unwind: {
-              path: "$locationDetails",
-              preserveNullAndEmptyArrays: true,
+            {
+              $unwind: {
+                path: "$locationDetails",
+                preserveNullAndEmptyArrays: true,
+              },
             },
-          },
-        ],
+            {
+              $lookup: {
+                from: "visits",
+                localField: "ContractId",
+                foreignField: "ContractId",
+                as: "visits",
+                pipeline: [
+                  {
+                    $match: {
+                      IsDelete: false,
+                      $or: [
+                        {
+                          $and: [
+                            { StartDate: { $lte: new Date(isoToday) } }, // First argument: field, Second: value to compare
+                            { EndDate: { $gte: new Date(isoToday) } },
+                          ],
+                        },
+                        {
+                          StartDate: { $gt: new Date(isoToday) }, // For upcoming visits
+                        },
+                      ],
+                    },
+                  },
+                  { $sort: { StartDate: 1 } },
+                  {
+                    $group: {
+                      _id: "$ContractId",
+                      todayVisit: {
+                        $first: {
+                          $cond: [
+                            {
+                              $and: [
+                                { StartDate: { $lte: new Date(isoToday) } },
+                                { EndDate: { $gte: new Date(isoToday) } },
+                              ],
+                            },
+                            "$$ROOT",
+                            null,
+                          ],
+                        },
+                      },
+                      upcomingVisits: { $push: "$$ROOT" },
+                    },
+                  },
+                  {
+                    $project: {
+                      todayVisit: 1,
+                      upcomingVisits: { $slice: ["$upcomingVisits", 2] },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
       },
-    },
-  ]);
+    ]);
 
-  if (!result || !result.length) {
-    return res.status(404).json({
-      statusCode: 404,
-      message: "Customer not found",
+    if (!result || !result.length) {
+      return res.status(404).json({
+        statusCode: 404,
+        message: "Customer not found",
+      });
+    }
+
+    return res.status(200).json({
+      statusCode: 200,
+      data: result[0],
+      message: "Data fetched successfully",
+    });
+  } catch (error) {
+    console.error("Error fetching invoice data:", error.message);
+    return res.status(500).json({
+      statusCode: 500,
+      message: "Something went wrong, please try later!",
+      error: error.message,
     });
   }
-
-  return res.status(200).json({
-    statusCode: 200,
-    ...result[0],
-    message: "Data fetched successfully",
-  });
 };

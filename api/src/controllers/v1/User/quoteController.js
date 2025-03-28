@@ -3,6 +3,8 @@ const moment = require("moment");
 const Quote = require("../../../models/User/Quote");
 const QuoteDetail = require("../../../models/User/QuoteItem");
 const { logUserEvent } = require("../../../middleware/eventMiddleware");
+const { addNotification } = require("../../../models/User/AddNotification");
+const Notification = require("../../../models/User/Notification");
 
 // **CREATE QUOTE WITH DETAILS**
 exports.createQuoteWithDetails = async (req, res) => {
@@ -12,6 +14,7 @@ exports.createQuoteWithDetails = async (req, res) => {
         const quoteData = req.body;
         quoteData.CompanyId = companyId;
         quoteData.QuoteId = uniqueId;
+        quoteData.CustomerId = quoteData.UserId;
 
         const details = Array.isArray(quoteData.details) ? quoteData.details : [];
 
@@ -23,7 +26,7 @@ exports.createQuoteWithDetails = async (req, res) => {
 
                 detail.QuoteId = uniqueId;
                 detail.QuoteItemId = uniqueDetailId;
-                detail.UserId = quoteData.UserId;
+                detail.CustomerId = quoteData.UserId;
                 detail.CompanyId = companyId;
 
                 return QuoteDetail.create(detail);
@@ -36,6 +39,15 @@ exports.createQuoteWithDetails = async (req, res) => {
             CreatedBy: req.user.EmailAddress,
             QuoteId: uniqueId,
             Role: req.user.Role,
+        });
+
+        await addNotification({
+            CompanyId: quoteData.CompanyId,
+            CustomerId: quoteData.UserId,
+            QuoteId: uniqueId,
+            LocationId: quoteData.LocationId,
+            CreatedBy: "Quote creation",
+            AddedAt: quoteData.AddedAt,
         });
 
         return res.status(200).json({
@@ -386,7 +398,7 @@ exports.getQuoteDetails = async (req, res) => {
             {
                 $unwind: {
                     path: "$locationData",
-                    preserveNullAndEmptyArrays: true 
+                    preserveNullAndEmptyArrays: true
                 },
             },
             {
@@ -563,6 +575,16 @@ exports.updateQuote = async (req, res) => {
             QuoteNumber: updatedQuote.QuoteNumber,
             Title: updatedQuote.Title,
         });
+        const notificationData = {
+            CompanyId: updatedQuote.CompanyId,
+            UserId: updatedQuote.UserId,
+            QuoteId: updatedQuote.QuoteId,
+            LocationId: updatedQuote.LocationId,
+            CreatedBy: "Quote creation",
+            AddedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
+        };
+
+        await addNotification(notificationData);
 
         return res.status(200).json({
             statusCode: 200,
@@ -594,22 +616,18 @@ exports.deleteQuoteAndRelatedData = async (req, res) => {
             { $set: { IsDelete: true, DeleteReason } },
             { new: true }
         );
-
         const updatedQuoteDetails = await QuoteDetail.updateMany(
             { QuoteId, IsDelete: false },
             { $set: { IsDelete: true } }
         );
 
+        // Mark related notifications as deleted (Uncomment if needed)
         // const updatedNotifications = await Notification.updateMany(
-        //     { QuoteId },
+        //     { QuoteId, IsDelete: false },
         //     { $set: { IsDelete: true } }
         // );
 
-        if (
-            updatedQuote ||
-            updatedQuoteDetails.modifiedCount > 0
-            //  ||updatedNotifications.modifiedCount > 0
-        ) {
+        if (updatedQuote || updatedQuoteDetails.modifiedCount > 0) {
             const quoteId = updatedQuote ? updatedQuote.QuoteId : QuoteId;
             const quoteNumber = updatedQuote ? updatedQuote.QuoteNumber : "Unknown";
             const title = updatedQuote ? updatedQuote.Title : "Unknown";
@@ -620,16 +638,16 @@ exports.deleteQuoteAndRelatedData = async (req, res) => {
                 Title: title,
             });
 
+            await Notification.updateMany(
+                { QuoteId: QuoteId, IsDelete: false },
+                { $set: { IsDelete: true } }
+            );
+
             return res.status(200).json({
                 statusCode: 200,
                 message: "Quote deleted successfully!",
             });
         } else {
-            await logUserEvent(req.user.UserId, "ERROR", `Quote with ID ${QuoteId} not found or deletion failed.`, {
-                QuoteId,
-                DeleteReason,
-            });
-
             return res.status(404).json({
                 statusCode: 404,
                 message: "Quote not found or deletion failed.",
@@ -650,6 +668,7 @@ exports.deleteQuoteAndRelatedData = async (req, res) => {
         });
     }
 };
+
 
 // **CUSTOMER APPROVED QUOTE**
 exports.approveQuote = async (req, res) => {
