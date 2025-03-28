@@ -65,6 +65,7 @@ function ContractDetails() {
   const cdnUrl = process.env.REACT_APP_CDN_API;
 
   const [contractData, setContractData] = useState({});
+  console.log(contractData,"contractData")
   const [loader, setLoader] = useState(true);
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState("");
@@ -105,10 +106,12 @@ function ContractDetails() {
       });
       if (res.data.statusCode === 200) {
         const labourRes = await AxiosInstance.get(
-          `/labour/${location?.state?.id}/${
+          `/v1/labour/${location?.state?.id}/${
             localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
           }`
-        );
+          );
+        console.log(labourRes,"labourRes")
+        console.log(labourRes?.data?.data,"labourRes?.data?.data")
         setContractData({
           // ...res?.data?.data,
           laborData: labourRes?.data?.data,
@@ -361,7 +364,7 @@ function ContractDetails() {
       if (deleteReason) {
         try {
           const response = await AxiosInstance.delete(
-            `/labour/${LabourId}/${ContractId}`,
+            `/v1/labour/${LabourId}/${ContractId}`,
             {
               data: { DeleteReason: deleteReason },
             }

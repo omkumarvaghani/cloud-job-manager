@@ -14,24 +14,10 @@ const Address = ({
   formik,
   handleZipChange,
 }) => {
-  console.log(formik, "formik");
-  const addressData =
-    Array.isArray(formik.values.Addresses) && formik.values.Addresses.length > 0
-      ? formik.values.Addresses[0] // Get the first address object
-      : {};
-
-  const address = addressData.Address || "";
-  const city = addressData.City || "";
-  const state = addressData.State || "";
-  const zip = addressData.Zip || ""; 
-  const country = addressData.Country || "";
-  
-
-  // Now you can use address, city, state, zip, and country as needed
   return (
     <Grid className="d-flex flex-column gap-3 ">
       <InputText
-        value={formik?.values?.Address || address} // Use the address variable here
+        value={formik?.values?.Address}
         onChange={handleChange}
         onBlur={formik?.handleBlur}
         error={formik?.touched?.Address && Boolean(formik?.errors?.Address)}
@@ -43,11 +29,10 @@ const Address = ({
         rows={2}
         className="text-blue-color w-100 border-blue-color userInfoAddress"
       />
-
       <Row className="m-0 p-0">
         <Col lg={6} md={12} className="m-0 p-0">
           <InputText
-            value={formik?.values?.City || city}
+            value={formik?.values?.City}
             onChange={(e) => {
               const value = e.target.value;
               if (/^[A-Za-z\s]*$/.test(value)) {
@@ -66,12 +51,12 @@ const Address = ({
         </Col>
         <Col lg={6} md={12} className="m-0 p-0 mt-3 mt-lg-0 ps-lg-2">
           <InputText
-            value={formik?.values?.State || state}
+            value={formik?.values?.State}
             onChange={(e) => {
               const value = e.target.value;
               if (/^[A-Za-z\s]*$/.test(value)) {
                 handleChange(e);
-              }
+              } 
             }}
             onBlur={formik?.handleBlur}
             error={formik?.touched?.State && Boolean(formik?.errors?.State)}
@@ -88,7 +73,7 @@ const Address = ({
       <Row className="m-0 p-0">
         <Col lg={6} md={12} className="m-0 p-0">
           <InputText
-            value={formik.values.Zip || zip}
+            value={formik.values.Zip}
             // onChange={handleChange}
             onChange={(e) => {
               const value = e.target.value;
