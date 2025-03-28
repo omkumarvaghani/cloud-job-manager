@@ -398,8 +398,8 @@ function AddClient() {
         console.log(res, "resresres");
         const userProfile = res?.data?.data?.userProfile;
         const userAddresses = res?.data?.data?.locations; // Assuming this is an array of addresses
-// userAddresses
-console.log(userAddresses,"userAddresses")
+        // userAddresses
+        console.log(userAddresses, "userAddresses");
         if (userProfile) {
           formik.setValues({
             FirstName: userProfile?.FirstName || "",
@@ -407,15 +407,14 @@ console.log(userAddresses,"userAddresses")
             PhoneNumber: userProfile?.PhoneNumber || "",
             EmailAddress: res?.data?.data?.user?.EmailAddress || "",
             Addresses:
-              userAddresses.map((address) => ({
-                Address: address?.Address || "",
-                City: address?.City || "",
-                State: address?.State || "",
-                Zip: address?.Zip || "",
-                Country: address?.Country || "",
+              userAddresses.map((Address) => ({
+                Address: Address?.Address || "",
+                City: Address?.City || "",
+                State: Address?.State || "",
+                Zip: Address?.Zip || "",
+                Country: Address?.Country || "",
               })) || [],
           });
-          console.log(userAddresses, "userAddresses");
         }
       } catch (error) {
         console.error("Error: ", error?.message);
