@@ -47,11 +47,11 @@ exports.getCustomersByCompanyId = async (req, res) => {
                 { "profile.LastName": searchRegex },
                 { EmailAddress: searchRegex },
                 { "profile.PhoneNumber": searchRegex },
-                { "locationsData.Address": searchRegex },
-                { "locationsData.City": searchRegex },
-                { "locationsData.State": searchRegex },
-                { "locationsData.Country": searchRegex },
-                { "locationsData.Zip": searchRegex },
+                { "location.Address": searchRegex },
+                { "location.City": searchRegex },
+                { "location.State": searchRegex },
+                { "location.Country": searchRegex },
+                { "location.Zip": searchRegex },
             ];
 
             customerSearchQuery = {
@@ -76,8 +76,8 @@ exports.getCustomersByCompanyId = async (req, res) => {
             {
                 $lookup: {
                     from: "user-profiles",
-                    localField: "UserId",
-                    foreignField: "UserId",
+                    localField: "UserId",  // Match UserId with user profiles
+                    foreignField: "UserId",  // Match UserId with user profile
                     as: "profile",
                 },
             },
@@ -85,14 +85,21 @@ exports.getCustomersByCompanyId = async (req, res) => {
             {
                 $lookup: {
                     from: "locations",
-                    localField: "UserId",
-                    foreignField: "UserId",
-                    as: "location",
+                    let: { customerId: "$UserId" },  // Match the UserId with CustomerId in the locations collection
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$CustomerId", "$$customerId"] },
+                                IsDelete: false, // Filter locations that are not deleted
+                            },
+                        },
+                    ],
+                    as: "location",  // Returning the location details
                 },
             },
             {
                 $project: {
-                    UserId: 1,
+                    CustomerId: 1,
                     EmailAddress: 1,
                     IsActive: 1,
                     "profile.FirstName": 1,
@@ -100,7 +107,7 @@ exports.getCustomersByCompanyId = async (req, res) => {
                     "profile.PhoneNumber": 1,
                     createdAt: 1,
                     updatedAt: 1,
-                    location: 1,
+                    location: 1,  // Include location data
                 },
             },
             { $sort: sortOptions },
@@ -139,15 +146,16 @@ exports.getCustomersByCompanyId = async (req, res) => {
     }
 };
 
-// **GET CUSTOMERS DETAILS WITH ALL LOCATIONS API**
+
+// **GET CUSTOMER DETAILS WITH ALL LOCATIONS API**
 exports.getCustomerDetail = async (req, res) => {
     try {
-        const { UserId } = req.params;
+        const { CustomerId } = req.params;
         const queryParams = req.query;
         const sortField = queryParams.sortField || "updatedAt";
         const sortOrder = queryParams.sortOrder === "desc" ? -1 : 1;
 
-        let userSearchQuery = { UserId, Role: "Customer", IsDelete: false };
+        let userSearchQuery = { UserId: CustomerId, Role: "Customer", IsDelete: false };
 
         let sortOptions = {};
         if (sortField) {
@@ -175,8 +183,15 @@ exports.getCustomerDetail = async (req, res) => {
             {
                 $lookup: {
                     from: "locations",
-                    localField: "UserId",
-                    foreignField: "UserId",
+                    let: { userId: "$UserId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$CustomerId", "$$userId"] },
+                                IsDelete: false,
+                            },
+                        },
+                    ],
                     as: "locationDetails",
                 },
             },
@@ -191,7 +206,7 @@ exports.getCustomerDetail = async (req, res) => {
                     createdAt: 1,
                     updatedAt: 1,
                     IsDelete: 1,
-                    locationDetails: 1, 
+                    locationDetails: 1,
                 },
             },
             { $sort: sortOptions },
@@ -217,6 +232,7 @@ exports.getCustomerDetail = async (req, res) => {
         });
     }
 };
+
 
 // **GET CUSTOMER WITH LOCATIONS**
 exports.getCustomersWithLocations = async (req, res) => {
@@ -245,8 +261,15 @@ exports.getCustomersWithLocations = async (req, res) => {
             {
                 $lookup: {
                     from: "locations",
-                    localField: "UserId",
-                    foreignField: "UserId",
+                    let: { userId: "$UserId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$CustomerId", "$$userId"] },
+                                CompanyId: CompanyId,
+                            }
+                        },
+                    ],
                     as: "locations",
                 },
             },
@@ -328,7 +351,7 @@ exports.getUserDetailWithInvoices = async (req, res) => {
                             $match: {
                                 $expr: {
                                     $and: [
-                                        { $eq: ["$UserId", "$$customerId"] },
+                                        { $eq: ["$CustomerId", "$$customerId"] },
                                         { $eq: ["$IsDelete", false] },
                                     ],
                                 },

@@ -254,7 +254,7 @@ const Visit = ({
         return;
       }
 
-      const response = await AxiosInstance.get(`/worker/${companyId}`);
+      const response = await AxiosInstance.get(`/v1/worker/get/${companyId}`);
       if (response?.status === 200) {
         if (response?.data && Array.isArray(response?.data?.data)) {
           setTeamData(response?.data?.data);

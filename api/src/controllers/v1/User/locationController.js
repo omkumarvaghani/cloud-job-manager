@@ -32,13 +32,6 @@ exports.addLocation = async (req, res) => {
     } catch (error) {
         console.error(error);
 
-        await logUserEvent(
-            req.user ? req.user.CompanyId : null,
-            "ADD_LOCATION_FAILED",
-            "Failed to add location",
-            { error: error.message }
-        );
-
         return res.status(500).json({
             statusCode: 500,
             message: "Failed to add location.",

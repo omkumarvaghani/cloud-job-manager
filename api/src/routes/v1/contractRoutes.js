@@ -10,8 +10,8 @@ router.post("/check_number/:CompanyId", protect, checkContractNumber);
 router.get("/:CompanyId", protect, getContracts);
 router.get("/contract_details/:ContractId", protect, getContractDetails);
 router.get("/get_number/:CompanyId", protect, getMaxContractNumber);
-router.get("/get_contract_customer/:CompanyId/:UserId", protect, getContractByCustomer);
-router.get("/get_invoice_data/:UserId", protect, getInvoiceDataByCustomerId);
+router.get("/get_contract_customer/:CompanyId/:CustomerId", protect, getContractByCustomer);
+router.get("/get_invoice_data/:CustomerId", protect, getInvoiceDataByCustomerId);
 
 router.put("/:ContractId", protect, updateContract);
 

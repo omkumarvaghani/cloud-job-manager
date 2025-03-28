@@ -88,7 +88,6 @@ const Customer = () => {
           },
         }
       );
-
       if (res?.data) {
         setcustomersData(res?.data?.data || []);
         setCountData(res?.data?.totalCount || 0);
@@ -187,7 +186,7 @@ const Customer = () => {
     // }
 
     const properties = item?.location || [];
-    console.log(item,"itemitem")
+    console.log(item, "itemitem");
     let propertyDisplay;
     if (properties.length === 1) {
       const property = properties[0];
@@ -201,7 +200,7 @@ const Customer = () => {
         properties?.length > 1 ? "Properties" : "Property"
       }`;
     }
-    
+
     return {
       key: item?.UserId,
       value: [

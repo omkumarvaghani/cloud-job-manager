@@ -103,7 +103,7 @@ function ClientDetails() {
     swal().then(async (willDelete) => {
       if (willDelete) {
         try {
-          const res = await AxiosInstance.delete(`//location/${id}`);
+          const res = await AxiosInstance.delete(`/location/${id}`);
           if (res?.data?.statusCode === 200) {
             setTimeout(() => {
               showToast.success(res?.data?.message);

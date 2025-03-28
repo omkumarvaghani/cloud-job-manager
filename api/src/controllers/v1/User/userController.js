@@ -16,8 +16,6 @@ exports.createUser = async (req, res) => {
         }
 
         const { Role, EmailAddress, Password, Address, City, State, Zip, Country, ...profileDetails } = req.body;
-        console.log(req.body)
-
 
         if (!["Company", "Worker", "Customer"].includes(Role)) {
             return res.status(400).json({ message: "Invalid Role! Only Company, Worker, or Customer allowed." });
@@ -60,7 +58,7 @@ exports.createUser = async (req, res) => {
         }
 
         const newLocation = new Location({
-            UserId: UserId,
+            CustomerId: UserId,
             CompanyId: CompanyId[0],
             Address,
             City,
@@ -134,7 +132,7 @@ exports.getUserById = async (req, res) => {
 
         const userProfile = await UserProfile.findOne({ UserId, IsDelete: false });
 
-        const locations = await Location.find({ UserId });
+        const locations = await Location.find({ CustomerId: UserId });
 
         return res.status(200).json({
             message: "User fetched successfully.",
@@ -301,7 +299,7 @@ exports.deleteUser = async (req, res) => {
                 { $set: { IsDelete: true } }
             );
         }
-        
+
         await logUserEvent(req.user.CompanyId || user.CompanyId, "DELETE", "User deleted", {
             DeletedBy: req.user.EmailAddress,
             DeletedUser: user.EmailAddress,

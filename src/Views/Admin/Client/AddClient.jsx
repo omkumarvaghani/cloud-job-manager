@@ -397,30 +397,26 @@ function AddClient() {
         const res = await AxiosInstance.get(`/v1/user/${location?.state?.id}`);
         console.log(res, "resresres");
         const userProfile = res?.data?.data?.userProfile;
-        const userAddresses = res?.data?.data?.locations; // Assuming this is an array of addresses
-        // userAddresses
-        console.log(userAddresses, "userAddresses");
+        const userAddress = res?.data?.data?.locations;
         if (userProfile) {
           formik.setValues({
             FirstName: userProfile?.FirstName || "",
             LastName: userProfile?.LastName || "",
             PhoneNumber: userProfile?.PhoneNumber || "",
             EmailAddress: res?.data?.data?.user?.EmailAddress || "",
-            Addresses:
-              userAddresses.map((Address) => ({
-                Address: Address?.Address || "",
-                City: Address?.City || "",
-                State: Address?.State || "",
-                Zip: Address?.Zip || "",
-                Country: Address?.Country || "",
-              })) || [],
+            Address: userAddress?.Address || "",
+            City: userAddress?.City || "",
+            State: userAddress?.State || "",
+            Zip: userAddress?.Zip || "",
+            Country: userAddress?.Country || "",
           });
+          console.log(userAddress, "userAddress");
         }
       } catch (error) {
         console.error("Error: ", error?.message);
       }
     };
-
+                      
     if (location?.state?.id) {
       fetchData();
     }

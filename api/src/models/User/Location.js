@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 
 const LocationSchema = new Schema(
     {
-        UserId: { type: String },
+        CustomerId: { type: String },
         CompanyId: { type: String },
         LocationId: {
             type: String,
@@ -27,7 +27,7 @@ const LocationSchema = new Schema(
     }
 );
 
-LocationSchema.index({ UserId: 1, CompanyId: 1 });
+LocationSchema.index({ CustomerId: 1, CompanyId: 1 });
 LocationSchema.index({ IsDelete: 1 });
 
 module.exports = mongoose.model("Location", LocationSchema);

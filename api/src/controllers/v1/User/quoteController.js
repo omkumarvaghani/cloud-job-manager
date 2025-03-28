@@ -92,14 +92,14 @@ exports.checkQuoteNumberExists = async (req, res) => {
 // **GET CUSTOMER ASSIGN QUOTES**
 exports.getCustomerQuotes = async (req, res) => {
     try {
-        const { UserId } = req.params;
+        const { CustomerId } = req.params;
 
-        if (!UserId) {
-            return res.status(400).json({ statusCode: 400, message: "UserId is required!" });
+        if (!CustomerId) {
+            return res.status(400).json({ statusCode: 400, message: "CustomerId is required!" });
         }
 
         const quotes = await Quote.aggregate([
-            { $match: { UserId, IsDelete: false } },
+            { $match: { CustomerId, IsDelete: false } },
 
             {
                 $lookup: {
@@ -114,7 +114,7 @@ exports.getCustomerQuotes = async (req, res) => {
             {
                 $lookup: {
                     from: "users",
-                    localField: "UserId",
+                    localField: "CustomerId",
                     foreignField: "UserId",
                     as: "customerData",
                 },
@@ -124,7 +124,7 @@ exports.getCustomerQuotes = async (req, res) => {
             {
                 $lookup: {
                     from: "user-profiles",
-                    localField: "UserId",
+                    localField: "CustomerId",
                     foreignField: "UserId",
                     as: "usersDetails",
                 },
@@ -135,7 +135,7 @@ exports.getCustomerQuotes = async (req, res) => {
                 $project: {
                     _id: 1,
                     CompanyId: 1,
-                    UserId: 1,
+                    CustomerId: 1,
                     QuoteId: 1,
                     Title: 1,
                     SubTotal: 1,
@@ -234,7 +234,7 @@ exports.getQuotes = async (req, res) => {
             {
                 $lookup: {
                     from: "user-profiles",
-                    localField: "UserId",
+                    localField: "CustomerId",
                     foreignField: "UserId",
                     as: "usersDetails",
                 },
@@ -308,7 +308,7 @@ exports.getQuotes = async (req, res) => {
             {
                 $project: {
                     CompanyId: 1,
-                    UserId: 1,
+                    CustomerId: 1,
                     QuoteId: 1,
                     Title: 1,
                     QuoteNumber: 1,
@@ -376,7 +376,7 @@ exports.getQuoteDetails = async (req, res) => {
             {
                 $lookup: {
                     from: "user-profiles",
-                    localField: "UserId",
+                    localField: "CustomerId",
                     foreignField: "UserId",
                     as: "customerData"
                 },
@@ -405,7 +405,7 @@ exports.getQuoteDetails = async (req, res) => {
                 $project: {
                     QuoteId: 1,
                     CompanyId: 1,
-                    UserId: 1,
+                    CustomerId: 1,
                     Title: 1,
                     QuoteNumber: 1,
                     SubTotal: 1,
@@ -577,7 +577,7 @@ exports.updateQuote = async (req, res) => {
         });
         const notificationData = {
             CompanyId: updatedQuote.CompanyId,
-            UserId: updatedQuote.UserId,
+            CustomerId: updatedQuote.CustomerId,
             QuoteId: updatedQuote.QuoteId,
             LocationId: updatedQuote.LocationId,
             CreatedBy: "Quote creation",
@@ -730,7 +730,7 @@ exports.getScheduleData = async (req, res) => {
             {
                 $lookup: {
                     from: "user-profiles",
-                    localField: "UserId",
+                    localField: "CustomerId",
                     foreignField: "UserId",
                     as: "customerData",
                 },
@@ -761,7 +761,7 @@ exports.getScheduleData = async (req, res) => {
                     QuoteNumber: 1,
                     CompanyId: 1,
                     QuoteId: 1,
-                    UserId: 1,
+                    CustomerId: 1,
                     LocationId: 1,
                     createdAt: 1,
                     updatedAt: 1,
@@ -819,7 +819,7 @@ exports.fetchQuoteDetails = async (req, res) => {
             {
                 $lookup: {
                     from: "user-profiles",
-                    localField: "UserId",
+                    localField: "CustomerId",
                     foreignField: "UserId",
                     as: "customerDetails",
                 },
