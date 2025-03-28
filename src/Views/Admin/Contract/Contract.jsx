@@ -34,8 +34,8 @@ const Contract = () => {
       const res = await handleAuth(navigate, location);
       setTokenDecode(res.data);
       setDateDecode(res.themes);
-      if (res?.data?.companyId) {
-        getData(res?.data?.companyId);
+      if (res?.data?.CompanyId) {
+        getData(res?.data?.CompanyId);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -60,10 +60,10 @@ const Contract = () => {
 
   const [sortField, setSortField] = useState("asc");
   const [sortOrder, setSortOrder] = useState("desc");
-  const getData = async (companyId) => {
+  const getData = async (CompanyId) => {
     setLoader(true);
     try {
-      const res = await AxiosInstance.get(`/contract/${companyId}`, {
+      const res = await AxiosInstance.get(`/v1/contract/${CompanyId}`, {
         params: {
           pageSize: rowsPerPage,
           pageNumber: page,
@@ -84,8 +84,8 @@ const Contract = () => {
     }
   };
   useEffect(() => {
-    if (tokenDecode?.companyId) {
-      getData(tokenDecode?.companyId);
+    if (tokenDecode?.CompanyId) {
+      getData(tokenDecode?.CompanyId);
     }
   }, [page, search, sortField, sortOrder]);
 
@@ -111,7 +111,7 @@ const Contract = () => {
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
-          const response = await AxiosInstance.delete(`/contract/${id}`, {
+          const response = await AxiosInstance.delete(`/v1/contract/${id}`, {
             data: { DeleteReason: deleteReason },
           });
           if (response?.data.statusCode === 200) {
@@ -121,7 +121,7 @@ const Contract = () => {
             setTimeout(() => {
               showToast.success(response?.data?.message);
             }, 500);
-            getData(tokenDecode?.companyId);
+            getData(tokenDecode?.CompanyId);
           } else {
             showToast.warning(response?.data?.message);
           }

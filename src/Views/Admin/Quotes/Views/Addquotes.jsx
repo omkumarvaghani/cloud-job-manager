@@ -154,12 +154,10 @@ const Addquotes = ({
                         fontWeight: "600",
                       }}
                     >
-                      {console.log(customersData, "customersData")}
-                      {console.log(propertyData?.FirstName,"propertyData?.FirstName")}
-                      {propertyData?.FirstName
-                        ? `${propertyData?.FirstName} ${propertyData?.LastName}`
-                        : "Customer Name"} 
-    
+                      {customersData?.FirstName
+                        ? `${customersData?.FirstName} ${customersData?.LastName}`
+                        : "Customer Name"}
+                    
                     </Typography>
                     {!Object.keys(customersData).length > 0 ? (
                       <Button
@@ -198,7 +196,7 @@ const Addquotes = ({
                         }
                         name="Title"
                         id="title"
-                        placeholder="Enter job title"
+                        placeholder="Enter Quote Title"
                         label="Quote Title"
                         type="text"
                         className="text-blue-color w-100"
@@ -221,27 +219,42 @@ const Addquotes = ({
                             </Typography>
                           </Typography>
                           <Typography className="text-blue-color">
-                            {console.log(propertyData, "propertyData")}
+                         
                             {propertyData?.Address ||
-                              customersData?.location?.Address ||
+                              (customersData?.location &&
+                              customersData.location.length > 0
+                                ? customersData.location[0].Address
+                                : "-") ||
                               "-"}{" "}
                             ,
                             <br />
                             {propertyData?.City ||
-                              customersData?.location?.City ||
+                              (customersData?.location &&
+                              customersData.location.length > 0
+                                ? customersData.location[0].City
+                                : "-") ||
                               "-"}
                             ,{" "}
                             {propertyData?.State ||
-                              customersData?.location?.State ||
+                              (customersData?.location &&
+                              customersData.location.length > 0
+                                ? customersData.location[0].State
+                                : "-") ||
                               "-"}{" "}
                             ,
                             {propertyData?.Zip ||
-                              customersData?.location?.Zip ||
+                              (customersData?.location &&
+                              customersData.location.length > 0
+                                ? customersData.location[0].Zip
+                                : "-") ||
                               "-"}
                             ,
                             <br />
                             {propertyData?.Country ||
-                              customersData?.location?.Country ||
+                              (customersData?.location &&
+                              customersData.location.length > 0
+                                ? customersData.location[0].Country
+                                : "-") ||
                               "-"}{" "}
                             <br />
                             <a
