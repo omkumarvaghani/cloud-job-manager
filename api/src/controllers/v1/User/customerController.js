@@ -139,7 +139,6 @@ exports.getCustomersByCompanyId = async (req, res) => {
     }
 };
 
-
 // **GET CUSTOMERS DETAILS WITH ALL LOCATIONS API**
 exports.getCustomerDetail = async (req, res) => {
     try {
@@ -300,7 +299,6 @@ exports.getCustomersWithLocations = async (req, res) => {
         });
     }
 };
-
 
 // **GET CUSTOMERS DETAILS WITH ALL LOCATIONS API**
 exports.getUserDetailWithInvoices = async (req, res) => {
