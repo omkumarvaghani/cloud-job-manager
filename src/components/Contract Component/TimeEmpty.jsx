@@ -792,7 +792,7 @@ const TimeEmpty = ({
           values["CompanyId"] = CompanyId;
           values["ContractId"] = ContractId;
           const response = await AxiosInstance.post(
-            `${baseUrl}/labour`,
+            `${baseUrl}/v1/labour`,
             values
           );
           if (response?.data?.statusCode === 200) {

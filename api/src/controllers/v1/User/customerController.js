@@ -172,7 +172,6 @@ exports.getCustomerDetail = async (req, res) => {
                     preserveNullAndEmptyArrays: true,
                 },
             },
-
             {
                 $lookup: {
                     from: "locations",
@@ -188,17 +187,11 @@ exports.getCustomerDetail = async (req, res) => {
                     EmailAddress: 1,
                     FirstName: "$profile.FirstName",
                     LastName: "$profile.LastName",
-                    Address: "$profile.Address",
-                    City: "$profile.City",
-                    State: "$profile.State",
-                    Country: "$profile.Country",
-                    Zip: "$profile.Zip",
                     PhoneNumber: "$profile.PhoneNumber",
                     createdAt: 1,
                     updatedAt: 1,
                     IsDelete: 1,
-
-                    locationDetails: "$locationDetails",
+                    locationDetails: 1, 
                 },
             },
             { $sort: sortOptions },
@@ -208,7 +201,7 @@ exports.getCustomerDetail = async (req, res) => {
             return res.status(200).json({
                 statusCode: 200,
                 message: "Customer retrieved successfully",
-                data: customers[0],
+                data: customers,
             });
         } else {
             return res.status(404).json({

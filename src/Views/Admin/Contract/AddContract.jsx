@@ -282,67 +282,73 @@ function AddContract() {
       setloader(true);
       try {
         const res = await AxiosInstance.get(
-          `/v1/contract/contract_details/${location?.state?.id}`
+          `/v1/contract/contract_details/${location.state.id}`
         );
+
         console.log(res, "resres");
-        console.log(location?.state?.id, "location?.state?.id");
-        if (res.data?.statusCode === 200) {
-          setloader(true);
-          const data = res.data?.data;
+        console.log(location.state.id, "location?.state?.id");
+        console.log(res?.data?.data?.statusCode, "res?.data?.data?.statusCode");
+
+        if (res?.data?.statusCode === 200) {
+          const data = res.data.data;
+
           console.log(data, "datadatadata");
+
+          // Ensure that the keys match the response structure
           formik.setValues({
-            Title: data?.Title,
-            Firstname: data?.customer?.Firstname,
-            LastName: data?.customer?.LastName,
-            ContractNumber: data?.ContractNumber,
-            CompanyId: data.CompanyId,
-            UserId: data?.UserId,
-            LocationId: data?.LocationId,
-            CustomerMessage: data?.CustomerMessage,
-            ContractDisclaimer: data?.ContractDisclaimer,
-            Notes: data?.Notes,
-            Attachment: data?.Attachment,
-            Discount: data?.Discount,
-            Tax: data?.Tax,
-            subTotal: data?.subTotal,
-            Description: data?.Description,
-            OneoffJob: data?.OneoffJob,
-            RecuringJob: data?.RecuringJob,
-            IsOneoffJob: data?.IsOneoffJob,
-            IsRecuringJob: data?.IsRecuringJob,
-            WorkerId: data?.WorkerId[0],
+            Title: data.Title || "", // Default to empty string if undefined
+            Firstname: data.customer?.Firstname || "",
+            LastName: data.customer?.LastName || "",
+            ContractNumber: data.ContractNumber || "",
+            CompanyId: data.CompanyId || "",
+            UserId: data.UserId || "",
+            LocationId: data.LocationId || "",
+            CustomerMessage: data.CustomerMessage || "",
+            ContractDisclaimer: data.ContractDisclaimer || "",
+            Notes: data.Notes || "",
+            Attachment: data.Attachment || [],
+            Discount: data.Discount || "",
+            Tax: data.Tax || "",
+            subTotal: data.subTotal || "",
+            Description: data.Description || "",
+            OneoffJob: data.OneoffJob || false,
+            RecuringJob: data.RecuringJob || false,
+            IsOneoffJob: data.IsOneoffJob || false,
+            IsRecuringJob: data.IsRecuringJob || false,
+            WorkerId: data.WorkerId?.[0] || "", // Default to empty string if undefined
           });
-          console.log(res.data?.data?.Title, "res.data?.data?.Title");
+
+          console.log(data.Title, "res.data?.data?.Title");
           setContractData(data);
-          setActiveTab(data?.IsOneoffJob ? 1 : 2);
+          setActiveTab(data.IsOneoffJob ? 1 : 2);
+
           const members = teamData.filter((item) =>
             data.WorkerId.includes(item.WorkerId)
           );
 
-          if (members && members.length > 0) {
+          if (members.length > 0) {
             setSelectedTeams(
               members.map((member) => ({
-                FirstName: member?.FirstName,
-                LastName: member?.LastName,
-                EmailAddress: member?.EmailAddress,
-                WorkerId: member?.WorkerId,
+                FirstName: member.FirstName,
+                LastName: member.LastName,
+                EmailAddress: member.EmailAddress,
+                WorkerId: member.WorkerId,
               }))
             );
 
             setCheckedState((prevState) => {
               const updatedState = { ...prevState };
-
               members.forEach((member) => {
                 updatedState[member.WorkerId] = true;
               });
-
               return updatedState;
             });
 
-            setAssignPersonId(members.map((member) => member?.WorkerId));
+            setAssignPersonId(members.map((member) => member.WorkerId));
           }
+
           setLineItems(
-            data?.Items || [
+            data.Items || [
               {
                 Description: "",
                 Name: "",
@@ -612,7 +618,7 @@ function AddContract() {
         return;
       }
 
-      const response = await AxiosInstance.get(`/worker/${CompanyId}`);
+      const response = await AxiosInstance.get(`/v1/user/${CompanyId}`);
 
       if (response?.status === 200) {
         setTeamData(response?.data?.data);
@@ -666,12 +672,13 @@ function AddContract() {
           WorkerId: values?.WorkerId,
           FullName: values?.FullName,
           EmailAddress: values?.EmailAddress,
-          PhoneNumber: values?.MobileNumber,
+          PhoneNumber: values?.PhoneNumber,
           AddedAt: new Date(),
+          Role: "Worker",
         };
 
-        const response = await AxiosInstance.post(`${baseUrl}/worker`, object);
-        if (response?.data?.statusCode === 200) {
+        const response = await AxiosInstance.post(`${baseUrl}/v1/user`, object);
+        if (response?.data?.statusCode == "200") {
           showToast.success(response?.data?.message);
           toggleModal();
           fetchTeamData();
@@ -685,6 +692,8 @@ function AddContract() {
             "Server responded with an error:",
             error?.response?.data
           );
+          console.log(error, "error");
+
           setTimeout(() => {
             showToast.error(
               error?.response?.data?.message || "Something went wrong!"

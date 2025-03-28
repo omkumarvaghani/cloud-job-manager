@@ -5,6 +5,8 @@ const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
 const { logUserEvent } = require("../../../middleware/eventMiddleware");
 const Location = require("../../../models/User/Location");
+const { addNotification } = require("../../../models/User/AddNotification");
+const Notification = require("../../../models/User/Notification");
 
 // **CREATE COMPANY BY ADMIN, CUSTOMER & WORKER API**
 exports.createUser = async (req, res) => {
@@ -92,6 +94,19 @@ exports.createUser = async (req, res) => {
             Role,
         });
 
+        if (Role === "Worker" || Role === "Customer") {
+            const notificationData = {
+                CompanyId: CompanyId[0],
+                UserId: newUser.UserId,
+                Is_Worker: Role === "Worker",
+                Is_Customer: Role === "Customer",
+                AddedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
+                CreatedBy: req.user.UserId,
+            };
+
+            await addNotification(notificationData);
+        }
+
         return res.status(200).json({
             statusCode: "200",
             message: `${Role} added successfully.`,
@@ -127,7 +142,7 @@ exports.getUserById = async (req, res) => {
                 user,
                 userProfile,
                 locations,
-                locationsCount: locations.length, 
+                locationsCount: locations.length,
             },
         });
 
@@ -214,6 +229,18 @@ exports.updateUser = async (req, res) => {
             UpdatedUser: user.EmailAddress,
         });
 
+        if (["Worker", "Customer"].includes(user.Role)) {
+            const notificationData = {
+                CompanyId: updatedUser.CompanyId[0],
+                UserId: updatedUser.UserId,
+                Is_Worker: user.Role === "Worker",
+                Is_Customer: user.Role === "Customer",
+                AddedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
+                CreatedBy: req.user.UserId,
+            };
+            await addNotification(notificationData);
+        }
+
         return res.status(200).json({
             statusCode: "200",
             message: "User updated successfully.",
@@ -268,6 +295,13 @@ exports.deleteUser = async (req, res) => {
             return res.status(404).json({ message: "User profile not found!" });
         }
 
+        if (["Worker", "Customer"].includes(user.Role)) {
+            await Notification.updateMany(
+                { UserId, CompanyId: user.CompanyId },
+                { $set: { IsDelete: true } }
+            );
+        }
+        
         await logUserEvent(req.user.CompanyId || user.CompanyId, "DELETE", "User deleted", {
             DeletedBy: req.user.EmailAddress,
             DeletedUser: user.EmailAddress,

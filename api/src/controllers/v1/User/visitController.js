@@ -1,5 +1,6 @@
 const { logUserEvent } = require("../../../middleware/eventMiddleware");
 const Visit = require("../../../models/User/Visit");
+const convertLocalToUTC = require("../../../Utills/DateFunction");
 const moment = require("moment");
 
 //**CREATE VISIT**
@@ -9,6 +10,13 @@ exports.createVisit = async (req, res) => {
     if (!Array.isArray(data.WorkerId)) {
         data.WorkerId = [data.WorkerId];
     }
+    if (data.StartDate) {
+        data.StartDate = convertLocalToUTC(data.StartDate);
+    }
+    if (data.EndDate) {
+        data.EndDate = convertLocalToUTC(data.EndDate);
+    }
+
     try {
         const createdVisit = await Visit.create(data);
 

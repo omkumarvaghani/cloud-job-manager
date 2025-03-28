@@ -18,8 +18,8 @@ const visitsSchema = new Schema(
         ItemName: { type: String },
         Note: { type: String },
 
-        StartDate: { type: String },
-        EndDate: { type: String },
+        StartDate: { type: Date },
+        EndDate: { type: Date },
 
         StartTime: { type: String },
         EndTime: { type: String },

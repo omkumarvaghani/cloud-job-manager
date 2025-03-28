@@ -186,7 +186,8 @@ const Customer = () => {
     //   }`;
     // }
 
-    const properties = item?.locationsCount ? [item.locationsData] : [];
+    const properties = item?.location || [];
+    console.log(item,"itemitem")
     let propertyDisplay;
     if (properties.length === 1) {
       const property = properties[0];

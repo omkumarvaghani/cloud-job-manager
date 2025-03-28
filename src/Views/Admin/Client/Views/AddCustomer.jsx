@@ -28,6 +28,7 @@ import { fontSize, padding } from "@mui/system";
 
 const AddCustomer = ({
   formik,
+  userAddress,
   handleChange,
   loader,
   countries,
@@ -42,6 +43,7 @@ const AddCustomer = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+
   return (
     <Grid className="justify-content-center align-items-center mb-3 mt-5 client">
       <Grid className="d-flex align-items-center text-white-color">
@@ -305,9 +307,10 @@ const AddCustomer = ({
                   <img src={clientcontact} alt="Property Details" />
                 </Grid>
                 <span className="" style={{ fontSize: "16pxx" }}>
-                  Property details 
+                  Property details
                 </span>
               </CardTitle>
+              {console.log(formik?.values, "location1")}
               {!location?.state?.id ||
               (location?.state?.id && (formik?.values?.length ?? 0) <= 1) ? (
                 <Grid className="my-4 mb-0 px-0">

@@ -5,24 +5,36 @@ const User = require("../../../models/User/User");
 
 //**CREATE LABOUR**
 exports.createLabour = async (req, res) => {
-
     try {
         const data = req.body;
+
+        if (!data.CompanyId) {
+            return res.status(400).json({
+                statusCode: 400,
+                message: "CompanyId is required",
+            });
+        }
+
         const userToSave = await Labour.create(data);
-        await logUserEvent(CompanyId, "CREATE", "Labour record created", { LabourId: userToSave.LabourId });
+
+        await logUserEvent(data.CompanyId, "CREATE", "Labour record created", { LabourId: userToSave.LabourId });
+
         return res.status(200).json({
             statusCode: 200,
             message: "Labour Created Successfully",
             data: userToSave,
         });
+
     } catch (error) {
-        return {
+        console.error("Error Creating Labour:", error.message);
+        return res.status(400).json({
             statusCode: 400,
             message: "Failed to create labour.",
             error: error.message,
-        };
+        });
     }
 };
+
 
 //**CREATE LABOUR**
 exports.fetchLabourData = async (req, res) => {

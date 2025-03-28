@@ -380,21 +380,20 @@ const Graph = ({
               <Row className="w-100 px-3 my-1">
                 <Col
                   lg={12}
-                  className="d-flex justify-content-center align-items-center
-                active_deactive-graph"
+                  className="d-flex justify-content-center align-items-center active_deactive-graph"
                 >
                   <Typography
                     style={{ fontFamily: "Poppins", fontSize: "15px" }}
                     className="px-3"
                   >
-                    <i class="fa-solid fa-circle px-1 text-blue-color"></i>
+                    <i className="fa-solid fa-circle px-1 text-blue-color"></i>
                     Invoices
                   </Typography>
                   <Typography
                     style={{ fontFamily: "Poppins", fontSize: "15px" }}
                     className="px-3 inactive-para"
                   >
-                    <i class="fa-solid fa-circle px-1 text-orange-color"></i>
+                    <i className="fa-solid fa-circle px-1 text-orange-color"></i>
                     Appointments
                   </Typography>
                 </Col>
@@ -402,6 +401,7 @@ const Graph = ({
             </Card>
           </Col>
         ) : null}
+
         {respopnse?.contractSummary?.length !== 0 ||
         respopnse?.quoteSummary?.length !== 0 ? (
           <Col xs={12} lg={6} sm={12} md={12} className="pt-3">
@@ -454,20 +454,27 @@ const Graph = ({
                     style={{ fontFamily: "Poppins", fontSize: "15px" }}
                     className="px-3"
                   >
-                    <i class="fa-solid fa-circle px-1 text-orange-color"></i>
+                    <i className="fa-solid fa-circle px-1 text-orange-color"></i>
                     Contracts
                   </Typography>
                   <Typography
                     style={{ fontFamily: "Poppins", fontSize: "15px" }}
                     className="px-3 inactive-para"
                   >
-                    <i class="fa-solid fa-circle px-1 text-blue-color"></i>
+                    <i className="fa-solid fa-circle px-1 text-blue-color"></i>
                     Quotes
                   </Typography>
                 </Col>
               </Row>
             </Card>
           </Col>
+        ) : null}
+
+        {invoiceRespopnse?.appointmentSummary?.length === 0 &&
+        invoiceRespopnse?.invoiceSummary?.length === 0 &&
+        respopnse?.contractSummary?.length === 0 &&
+        respopnse?.quoteSummary?.length === 0 ? (
+          <div>No data found</div>
         ) : null}
       </Grid>
     </>
