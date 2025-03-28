@@ -11,7 +11,7 @@ const ContractItemSchema = new Schema(
         },
         ContractId: { type: String },
         CompanyId: { type: String },
-        UserId: { type: String },
+        CustomerId: { type: String },
         LocationId: { type: String },
 
         Type: { type: String },

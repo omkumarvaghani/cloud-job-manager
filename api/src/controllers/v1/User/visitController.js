@@ -19,7 +19,12 @@ exports.createVisit = async (req, res) => {
 
     try {
         const createdVisit = await Visit.create(data);
-
+        await logUserEvent(
+            req.user.UserId,
+            "CREATE",
+            `Visit created with ID ${createdVisit.VisitId}.`,
+            createdVisit,
+        );
         return res.status(200).json({
             statusCode: 200,
             message: "Visit created successfully.",
@@ -487,7 +492,6 @@ exports.updateVisitData = async (req, res) => {
         });
     }
 };
-
 
 //**DELETE VISIT**
 exports.deleteVisitData = async (req, res) => {

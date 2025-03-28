@@ -11,7 +11,7 @@ const visitsSchema = new Schema(
         },
         ContractId: { type: String },
         CompanyId: { type: String },
-        UserId: { type: String },
+        CustomerId: { type: String },
         LocationId: { type: String },
         WorkerId: { type: [String] },
 

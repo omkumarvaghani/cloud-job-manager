@@ -78,7 +78,7 @@ const createRecuringVisits = async (
       ItemName: title,
       Note: description,
       CompanyId: companyId,
-      UserId: customerId,
+      CustomerId: customerId,
       ContractId: contractId,
       WorkerId: workerId,
       LocationId: locationId,
@@ -176,6 +176,7 @@ exports.createContract = async (req, res) => {
   }
   const uniqueId = uuidv4();
   contractData.ContractId = uniqueId;
+  contractData.CustomerId = contractData.UserId;
 
   try {
     const assignPersonIds = Array.isArray(contractData.UserId)
@@ -223,7 +224,7 @@ exports.createContract = async (req, res) => {
           product.ContractId = uniqueId;
           product.ContractItemId = uniqueItemId;
           product.LocationId = contractData.LocationId;
-          product.UserId = contractData.UserId;
+          product.CustomerId = contractData.CustomerId;
           product.CompanyId = contractData.CompanyId;
           product.createdAt = moment()
             .utcOffset(330)
@@ -250,7 +251,7 @@ exports.createContract = async (req, res) => {
         contractData.Title,
         contractData.Description,
         contractData.CompanyId,
-        contractData.UserId,
+        contractData.CustomerId,
         contractData.ContractId,
         assignPersonIds,
         contractData.LocationId
@@ -269,7 +270,7 @@ exports.createContract = async (req, res) => {
         contractData.Title,
         contractData.Description,
         contractData.CompanyId,
-        contractData.UserId,
+        contractData.CustomerId,
         contractData.ContractId,
         assignPersonIds,
         contractData.LocationId,
@@ -279,13 +280,13 @@ exports.createContract = async (req, res) => {
         contractData.CompanyId,
         "CREATE",
         `Created recurring visits for ContractId: ${contractData.ContractId}`,
-        { ContractId: contractData.ContractId }
+        { createdContract }
       );
     }
 
     const notificationData = {
       CompanyId: contractData.CompanyId,
-      UserId: contractData.UserId,
+      CustomerId: contractData.CustomerId,
       ContractId: contractData.ContractId,
       LocationId: contractData.LocationId,
       WorkerId: assignPersonIds,
@@ -384,7 +385,7 @@ exports.getContracts = async (req, res) => {
       {
         $lookup: {
           from: "user-profiles",
-          localField: "UserId",
+          localField: "CustomerId",
           foreignField: "UserId",
           as: "customerData",
         },
@@ -457,7 +458,7 @@ exports.getContracts = async (req, res) => {
       {
         $project: {
           CompanyId: 1,
-          UserId: 1,
+          CustomerId: 1,
           ContractId: 1,
           LocationId: 1,
           WorkerId: 1,
@@ -521,7 +522,7 @@ exports.getContractDetails = async (req, res) => {
     {
       $lookup: {
         from: "user-profiles",
-        localField: "UserId",
+        localField: "CustomerId",
         foreignField: "UserId",
         as: "customerData",
       },
@@ -530,7 +531,7 @@ exports.getContractDetails = async (req, res) => {
     {
       $lookup: {
         from: "users",
-        localField: "UserId",
+        localField: "CustomerId",
         foreignField: "UserId",
         as: "userData",
       },
@@ -543,7 +544,6 @@ exports.getContractDetails = async (req, res) => {
           LastName: "$customerData.LastName",
           PhoneNumber: "$customerData.PhoneNumber",
           EmailAddress: "$userData.EmailAddress",
-          UserId: "$customerData.UserId",
         },
       },
     },
@@ -620,7 +620,7 @@ exports.getContractDetails = async (req, res) => {
       $project: {
         ContractId: 1,
         CompanyId: 1,
-        UserId: 1,
+        CustomerId: 1,
         LocationId: 1,
         WorkerId: 1,
         Title: 1,
@@ -706,22 +706,22 @@ exports.getMaxContractNumber = async (req, res) => {
 
 // **GET CUSTOMER ASSIGN CONTRACT**
 exports.getContractByCustomer = async (req, res) => {
-  const { CompanyId, UserId } = req.params;
+  const { CompanyId, CustomerId } = req.params;
 
-  if (!CompanyId || !UserId) {
+  if (!CompanyId || !CustomerId) {
     return res
       .status(400)
-      .json({ message: "CompanyId and UserId are required!" });
+      .json({ message: "CompanyId and CustomerId are required!" });
   }
 
   const contracts = await Contract.aggregate([
     {
-      $match: { CompanyId, UserId, IsDelete: false },
+      $match: { CompanyId, CustomerId, IsDelete: false },
     },
     {
       $lookup: {
         from: "user-profiles",
-        localField: "UserId",
+        localField: "CustomerId",
         foreignField: "UserId",
         as: "customerData",
       },
@@ -759,7 +759,7 @@ exports.getContractByCustomer = async (req, res) => {
     {
       $project: {
         CompanyId: 1,
-        UserId: 1,
+        CustomerId: 1,
         ContractId: 1,
         LocationId: 1,
         Title: 1,
@@ -831,7 +831,7 @@ exports.updateContract = async (req, res) => {
       contractData.Title,
       contractData.Description,
       contract.CompanyId,
-      contract.UserId,
+      contract.CustomerId,
       contract.ContractId,
       assignPersonIds,
       contract.LocationId
@@ -850,7 +850,7 @@ exports.updateContract = async (req, res) => {
       contractData.Title,
       contractData.Description,
       contract.CompanyId,
-      contract.UserId,
+      contract.CustomerId,
       contract.ContractId,
       assignPersonIds,
       contract.LocationId,
@@ -929,7 +929,7 @@ exports.updateContract = async (req, res) => {
 
   const notificationData = {
     CompanyId: contract.CompanyId,
-    UserId: contract.UserId,
+    CustomerId: contract.CustomerId,
     ContractId: contract.ContractId,
     LocationId: contract.LocationId,
     WorkerId: assignPersonIds,
@@ -1026,11 +1026,11 @@ exports.deleteContract = async (req, res) => {
 // **GET CONTRACT IN INVOICE AFTER SELECT CUSTOMER INVOICE**
 exports.getInvoiceDataByCustomerId = async (req, res) => {
   try {
-    const { UserId } = req.params;
-    if (!UserId) {
+    const { CustomerId } = req.params;
+    if (!CustomerId) {
       return res.status(400).json({
         statusCode: 400,
-        message: "UserId is required",
+        message: "CustomerId is required",
       });
     }
 
@@ -1043,7 +1043,7 @@ exports.getInvoiceDataByCustomerId = async (req, res) => {
     const result = await User.aggregate([
       {
         $match: {
-          UserId: UserId,
+          UserId: CustomerId,
           IsDelete: false,
         },
       },
@@ -1051,7 +1051,7 @@ exports.getInvoiceDataByCustomerId = async (req, res) => {
         $lookup: {
           from: "contracts",
           localField: "UserId",
-          foreignField: "UserId",
+          foreignField: "CustomerId",
           as: "contracts",
           pipeline: [
             {
@@ -1086,12 +1086,12 @@ exports.getInvoiceDataByCustomerId = async (req, res) => {
                       $or: [
                         {
                           $and: [
-                            { StartDate: { $lte: new Date(isoToday) } }, // First argument: field, Second: value to compare
+                            { StartDate: { $lte: new Date(isoToday) } },
                             { EndDate: { $gte: new Date(isoToday) } },
                           ],
                         },
                         {
-                          StartDate: { $gt: new Date(isoToday) }, // For upcoming visits
+                          StartDate: { $gt: new Date(isoToday) },
                         },
                       ],
                     },
