@@ -155,11 +155,10 @@ const Addquotes = ({
                         fontWeight: "600",
                       }}
                     >
-                      {console.log(customersData,"customersData")}
+                      {console.log(customersData,"customersDatadsdds")} 
                       {customersData?.FirstName
                         ? `${customersData?.FirstName} ${customersData?.LastName}`
                         : "Customer Name"}
-                      {propertyData?.FirstName || "-"}
                       {console.log(propertyData, "propertyData")}
                       {console.log(customersData, "customersData")} 
                     </Typography>

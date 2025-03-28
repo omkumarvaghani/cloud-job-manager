@@ -115,7 +115,6 @@ function ManageTeamTable() {
         setCountData(res?.data?.count);
         setActiveCount(res?.data?.active);
       }
-    
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -175,6 +174,7 @@ function ManageTeamTable() {
         const object = {
           ...values,
           companyId: localStorage?.getItem("CompanyId"),
+          Role: "Worker",
         };
 
         let response;
@@ -183,7 +183,7 @@ function ManageTeamTable() {
             IsActive: false,
           });
         } else {
-          response = await AxiosInstance.post(`/worker`, object);
+          response = await AxiosInstance.post(`/v1/user`, object);
         }
 
         if (response?.data?.statusCode === 200) {
@@ -279,20 +279,24 @@ function ManageTeamTable() {
         //     .join("")}
         // </Grid>,
         <Grid
-        className="bg-blue-color text-white-color"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          borderRadius: "50%",
-          padding: "10px",
-          width: "40px",
-          height: "40px",
-        }}
-      >
-        {`${user?.FirstName?.charAt(0).toUpperCase()}${user?.LastName?.charAt(0).toUpperCase()}`}
-      </Grid>,
-        `${user?.FirstName || "FirstName not available"} ${user?.LastName || "LastName not available"}`,
+          className="bg-blue-color text-white-color"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "50%",
+            padding: "10px",
+            width: "40px",
+            height: "40px",
+          }}
+        >
+          {`${user?.FirstName?.charAt(0).toUpperCase()}${user?.LastName?.charAt(
+            0
+          ).toUpperCase()}`}
+        </Grid>,
+        `${user?.FirstName || "FirstName not available"} ${
+          user?.LastName || "LastName not available"
+        }`,
         user?.EmailAddress || "EmailAddress not available",
         moment(user?.createdAt).format(dateFormat),
         <Grid

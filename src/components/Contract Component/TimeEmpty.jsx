@@ -792,10 +792,12 @@ const TimeEmpty = ({
           values["CompanyId"] = CompanyId;
           values["ContractId"] = ContractId;
           const response = await AxiosInstance.post(
-            `${baseUrl}/labour`,
+            `${baseUrl}/v1/labour`,
             values
-          );
-          if (response?.data?.statusCode === 200) {
+          );  
+          console.log(response,"response")
+          console.log(response?.data?.statusCode,"response?.data?.statusCode")
+          if (response?.data?.statusCode === 200) {     
             showToast.success(response?.data?.message);
             setOpen(false);
             fetchData();

@@ -311,13 +311,14 @@ const AddCustomer = ({
               </CardTitle>
               {console.log(formik?.values, "location1")}
               {!location?.state?.id ||
-              (location?.state?.id && (formik?.locations?.length ?? 0) <= 1) ? (
+              (location?.state?.id &&
+                (formik?.values?.Addresses?.length ?? 0) <= 1) ? (
                 <Grid className="my-4 mb-0 px-0">
                   <Address
                     setSelectedCountry={setSelectedCountry}
                     selectedCountry={selectedCountry}
                     countries={countries}
-                    handleChange={handleChange}
+                    handleChange={formik.handleChange}
                     formik={formik}
                     handleZipChange={handleZipChange}
                   />
@@ -342,9 +343,7 @@ const AddCustomer = ({
                     <Grid style={{ borderLeft: "1px solid rgb(42, 79, 97)" }}>
                       <CardHeader
                         className="border-0 d-flex align-items-center"
-                        style={{
-                          backgroundColor: "rgb(216, 231, 238)",
-                        }}
+                        style={{ backgroundColor: "rgb(216, 231, 238)" }}
                       >
                         This Customer has multiple properties
                       </CardHeader>
@@ -359,8 +358,8 @@ const AddCustomer = ({
                     <Input
                       type="checkbox"
                       name="billing_same_property"
-                      checked={formik?.values?.billing_same_property}
-                      onChange={handleChange}
+                      checked={formik.values.billing_same_property}
+                      onChange={formik.handleChange}
                     />
                     <Label
                       check

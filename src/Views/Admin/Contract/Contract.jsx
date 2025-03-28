@@ -111,7 +111,7 @@ const Contract = () => {
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
-          const response = await AxiosInstance.delete(`/contract/${id}`, {
+          const response = await AxiosInstance.delete(`/v1/contract/${id}`, {
             data: { DeleteReason: deleteReason },
           });
           if (response?.data.statusCode === 200) {
