@@ -737,7 +737,7 @@ const TimeEmpty = ({
         return;
       }
       const labourRes = await AxiosInstance.get(
-        `/labour/labours/${LabourId}/${ContractId}`
+        `/v1/labour/${LabourId}/${ContractId}`
       );
       formik.setValues({
         Notes: labourRes?.data?.data?.Notes,
@@ -792,7 +792,7 @@ const TimeEmpty = ({
           values["CompanyId"] = CompanyId;
           values["ContractId"] = ContractId;
           const response = await AxiosInstance.post(
-            `${baseUrl}/labour`,
+            `${baseUrl}/v1/labour`,
             values
           );
           if (response?.data?.statusCode === 200) {
@@ -826,7 +826,7 @@ const TimeEmpty = ({
           values["ContractId"] = ContractId;
           const labourId = values.LabourId;
           const response = await AxiosInstance.put(
-            `/labour/${LabourId}/${ContractId}`,
+            `/v1/labour/${LabourId}/${ContractId}`,
             values
           );
           if (response?.data?.statusCode === 200) {
@@ -880,7 +880,7 @@ const TimeEmpty = ({
           return;
         }
 
-        const response = await AxiosInstance.get(`/worker/${companyId}`);
+        const response = await AxiosInstance.get(`/v1/worker/get/${companyId}`);
         if (response?.status === 200) {
           setTeamData(response?.data?.data);
         } else {
