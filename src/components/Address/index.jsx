@@ -14,10 +14,11 @@ const Address = ({
   formik,
   handleZipChange,
 }) => {
+  console.log(formik,"formik")
   return (
     <Grid className="d-flex flex-column gap-3 ">
       <InputText
-        value={formik?.values?.Address}
+        value={formik?.values?.Address || formik?.values?.Addresses?.Address}
         onChange={handleChange}
         onBlur={formik?.handleBlur}
         error={formik?.touched?.Address && Boolean(formik?.errors?.Address)}

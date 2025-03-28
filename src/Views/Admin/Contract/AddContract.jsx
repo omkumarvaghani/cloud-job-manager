@@ -384,7 +384,7 @@ function AddContract() {
       try {
         if (!location.state?.id) {
           const res = await AxiosInstance.get(
-            `/contract/get_number/${
+            `/v1/contract/get_number/${
               localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
             }`
           );
@@ -492,7 +492,7 @@ function AddContract() {
 
     try {
       const res = await AxiosInstance.post(
-        `/contract/check_number/${CompanyId}`,
+        `/v1/contract/check_number/${CompanyId}`,
         {
           ContractNumber: enteredContractNumber,
         }

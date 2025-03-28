@@ -794,8 +794,10 @@ const TimeEmpty = ({
           const response = await AxiosInstance.post(
             `${baseUrl}/v1/labour`,
             values
-          );
-          if (response?.data?.statusCode === 200) {
+          );  
+          console.log(response,"response")
+          console.log(response?.data?.statusCode,"response?.data?.statusCode")
+          if (response?.data?.statusCode === 200) {     
             showToast.success(response?.data?.message);
             setOpen(false);
             fetchData();

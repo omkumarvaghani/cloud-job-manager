@@ -7,7 +7,8 @@ const {
     getContractScheduleData,
     confirmVisits,
     confirByWorker,
-    deleteVisitData
+    deleteVisitData,
+    updateVisitData
 } = require("../../controllers/v1/User/visitController");
 const { protect } = require("../../middleware/authMiddleware");
 const router = express.Router();
@@ -21,6 +22,7 @@ router.get("/contract-schedule/:CompanyId", protect, getContractScheduleData);
 
 router.put("/confirm/:VisitId/:ContractId", protect, confirmVisits);
 router.put("/confirm-worker/:VisitId/:ContractId", protect, confirByWorker);
+router.put("/:VisitId/:ContractId", protect, updateVisitData);
 
 router.delete("/:VisitId/:ContractId", protect, deleteVisitData);
 

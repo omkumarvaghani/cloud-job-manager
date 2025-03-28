@@ -32,6 +32,7 @@ function AddQuote() {
   const [dropdown, setDropdown] = useState(false);
   const [modal, setModal] = useState(false);
   const [customersData, setCustomersData] = useState({});
+  console.log(customersData,"customersDatacustomersDatacustomersData")
   const [propertyData, setPropertyData] = useState({});
   const [quotesData, setQuotesData] = useState({});
   const [showTax, setShowTax] = useState(false);

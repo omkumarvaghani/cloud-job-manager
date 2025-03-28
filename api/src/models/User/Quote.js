@@ -7,7 +7,7 @@ const QuoteSchema = new Schema(
             type: String,
             trim: true
         },
-        UserId: {
+        CustomerId: {
             type: String,
             trim: true
         },

@@ -6,6 +6,7 @@ const moment = require("moment");
 const { logUserEvent } = require("../../../middleware/eventMiddleware");
 const User = require("../../../models/User/User");
 const { addNotification } = require("../../../models/User/AddNotification");
+const Notification = require("../../../models/User/Notification");
 
 // **CREATE CONTRACT**
 const createOneoffVisits = async (
@@ -281,14 +282,14 @@ exports.createContract = async (req, res) => {
         { ContractId: contractData.ContractId }
       );
     }
-    console.log(contractData, 'contractData')
+
     const notificationData = {
       CompanyId: contractData.CompanyId,
       UserId: contractData.UserId,
       ContractId: contractData.ContractId,
       LocationId: contractData.LocationId,
       WorkerId: assignPersonIds,
-      CreatedBy: "ContractCreated",
+      CreatedBy: "Contract creation",
       AddedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
     };
 
@@ -926,6 +927,18 @@ exports.updateContract = async (req, res) => {
     }
   );
 
+  const notificationData = {
+    CompanyId: contract.CompanyId,
+    UserId: contract.UserId,
+    ContractId: contract.ContractId,
+    LocationId: contract.LocationId,
+    WorkerId: assignPersonIds,
+    CreatedBy: req.user.UserId,
+    AddedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
+  };
+
+  await addNotification(notificationData);
+
   return res.status(200).json({
     statusCode: 200,
     message: "Contract updated successfully.",
@@ -998,6 +1011,10 @@ exports.deleteContract = async (req, res) => {
       DeleteReason: DeleteReason || "No reason provided",
       DeletedItemsCount: updatedItems.modifiedCount,
     }
+  );
+  await Notification.updateMany(
+    { ContractId: ContractId, IsDelete: false },
+    { $set: { IsDelete: true } }
   );
 
   return res.status(200).json({

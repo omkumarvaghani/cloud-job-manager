@@ -438,6 +438,57 @@ exports.confirByWorker = async (req, res) => {
     }
 };
 
+//**VISIT UPDATE**
+exports.updateVisitData = async (req, res) => {
+    const { VisitId, ContractId } = req.params;
+    const { WorkerId, ...updateData } = req.body;
+
+    try {
+        let assignPersonArray = WorkerId;
+        if (!Array.isArray(assignPersonArray)) {
+            assignPersonArray = [WorkerId];
+        }
+
+        const updatedVisit = await Visit.findOneAndUpdate(
+            { VisitId, ContractId },
+            {
+                $set: {
+                    ...updateData,
+                    WorkerId: assignPersonArray,
+                    updatedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
+                },
+            },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedVisit) {
+            return res.status(404).json({
+                statusCode: 404,
+                message: "Visit not found.",
+            });
+        }
+        await logUserEvent(req.user.UserId, "UPDATE", `Visit with ID ${VisitId} updated.`, {
+            VisitId,
+            ContractId,
+            WorkerId: assignPersonArray,
+            UpdateData: updateData,
+        });
+
+        return res.status(200).json({
+            statusCode: 200,
+            message: "Visit updated successfully.",
+            data: updatedVisit,
+        });
+    } catch (error) {
+        console.error("Error during update:", error);
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Something went wrong, please try later!",
+        });
+    }
+};
+
+
 //**DELETE VISIT**
 exports.deleteVisitData = async (req, res) => {
     try {
