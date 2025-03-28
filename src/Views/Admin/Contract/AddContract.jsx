@@ -203,7 +203,6 @@ function AddContract() {
       }
     },
   });
-  console.log(formik, "formik");
 
   useEffect(() => {
     if (location?.state && location?.state?.id) {
@@ -285,14 +284,10 @@ function AddContract() {
           `/v1/contract/contract_details/${location.state.id}`
         );
 
-        console.log(res, "resres");
-        console.log(location.state.id, "location?.state?.id");
-        console.log(res?.data?.data?.statusCode, "res?.data?.data?.statusCode");
 
         if (res?.data?.statusCode === 200) {
           const data = res.data.data;
 
-          console.log(data, "datadatadata");
 
           // Ensure that the keys match the response structure
           formik.setValues({
@@ -318,7 +313,6 @@ function AddContract() {
             WorkerId: data.WorkerId?.[0] || "", // Default to empty string if undefined
           });
 
-          console.log(data.Title, "res.data?.data?.Title");
           setContractData(data);
           setActiveTab(data.IsOneoffJob ? 1 : 2);
 
@@ -619,7 +613,7 @@ function AddContract() {
       }
 
       const response = await AxiosInstance.get(`/v1/user/${CompanyId}`);
-
+              
       if (response?.status === 200) {
         setTeamData(response?.data?.data);
       } else {

@@ -589,7 +589,6 @@ const ContractDetails = ({
                     label="+ New Time Entry"
                   />
                 </Grid>
-                {console.log(contractData,"contractData12")}
                 {contractData?.laborData &&
                 contractData?.laborData?.length > 0 ? (
                   <Grid

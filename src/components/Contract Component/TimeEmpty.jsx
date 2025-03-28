@@ -739,7 +739,6 @@ const TimeEmpty = ({
       const labourRes = await AxiosInstance.get(
         `/v1/labour/${LabourId}/${ContractId}`
       );
-        console.log(labourRes,"labourReslabourRes")
       formik.setValues({
         Notes: labourRes?.data?.data?.Notes,
         Hours: labourRes?.data?.data?.Hours,
@@ -796,8 +795,6 @@ const TimeEmpty = ({
             `${baseUrl}/v1/labour`,
             values
           );
-          console.log(response, "response");
-          console.log(response?.data?.statusCode, "response?.data?.statusCode");
           if (response?.data?.statusCode === 200) {
             showToast.success(response?.data?.message);
             setOpen(false);
@@ -829,7 +826,7 @@ const TimeEmpty = ({
           values["ContractId"] = ContractId;
           const labourId = values.LabourId;
           const response = await AxiosInstance.put(
-            `/labour/${LabourId}/${ContractId}`,
+            `/v1/labour/${LabourId}/${ContractId}`,
             values
           );
           if (response?.data?.statusCode === 200) {
@@ -883,7 +880,7 @@ const TimeEmpty = ({
           return;
         }
 
-        const response = await AxiosInstance.get(`/worker/${companyId}`);
+        const response = await AxiosInstance.get(`/v1/worker/get/${companyId}`);
         if (response?.status === 200) {
           setTeamData(response?.data?.data);
         } else {

@@ -242,7 +242,6 @@ const Contract = () => {
                     if (item?.Status !== "Canceled") {
                       e.stopPropagation();
                       handleEditClick(item?.ContractId);
-                      console.log(item?.ContractId, "location?.state?.id 1");
                     }
                   }}
                   style={{

@@ -65,7 +65,7 @@ const Visit = ({
         return;
       }
       const visitRes = await AxiosInstance.get(
-        `/visits/visits/${VisitId}/${ContractId}`
+        `/v1/visit/${VisitId}/${ContractId}`
       );
       formik.setValues({
         ItemName: visitRes?.data?.data?.ItemName,
@@ -137,7 +137,7 @@ const Visit = ({
           values["CustomerId"] = CustomerId;
           values["LocationId"] = LocationId;
           const response = await AxiosInstance.post(
-            `${baseUrl}/v1/visits`,
+            `${baseUrl}/v1/visit`,
             values
           );
           if (response?.data?.statusCode === 200) {
@@ -254,7 +254,7 @@ const Visit = ({
         return;
       }
 
-      const response = await AxiosInstance.get(`/worker/${companyId}`);
+      const response = await AxiosInstance.get(`/v1/worker/get/${companyId}`);
       if (response?.status === 200) {
         if (response?.data && Array.isArray(response?.data?.data)) {
           setTeamData(response?.data?.data);

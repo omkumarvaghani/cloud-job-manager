@@ -77,7 +77,6 @@ const Addquotes = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  console.log(customersData,"customersDataa0000")
   return (
     <>
       {loader ? (
@@ -155,12 +154,10 @@ const Addquotes = ({
                         fontWeight: "600",
                       }}
                     >
-                      {console.log(customersData,"customersDatadsdds")} 
                       {customersData?.FirstName
                         ? `${customersData?.FirstName} ${customersData?.LastName}`
                         : "Customer Name"}
-                      {console.log(propertyData, "propertyData")}
-                      {console.log(customersData, "customersData")} 
+                    
                     </Typography>
                     {!Object.keys(customersData).length > 0 ? (
                       <Button
@@ -222,8 +219,7 @@ const Addquotes = ({
                             </Typography>
                           </Typography>
                           <Typography className="text-blue-color">
-                            {console.log(propertyData, "propertyData")}
-                            {console.log(customersData, "propertyData 1")}
+                         
                             {propertyData?.Address ||
                               (customersData?.location &&
                               customersData.location.length > 0

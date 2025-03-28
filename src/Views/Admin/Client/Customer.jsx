@@ -165,26 +165,7 @@ const Customer = () => {
   };
 
   const cellData = customersData?.map((item, index) => {
-    // const properties = item?.location || [];
-    // const properties = item?.locationsData ? [item.locationsData] : [];
-    // console.log(properties, "properties");
-    // console.log(item, "item");
 
-    // let propertyDisplay;
-    // const locationsCount = properties.length; // Count of properties
-
-    // if (locationsCount === 1) {
-    //   const property = properties[0];
-    //   propertyDisplay = `${property?.Address || "Address not available"}, ${
-    //     property?.City || "City not available"
-    //   }, ${property?.State || "State not available"}, ${
-    //     property?.Country || "Country not available"
-    //   }, ${property?.Zip || "Zip not available"}`;
-    // } else {
-    //   propertyDisplay = `${locationsCount} ${
-    //     locationsCount > 1 ? "Properties" : "Property"
-    //   }`;
-    // }
 
     const properties = item?.location || [];
     console.log(item,"itemitem")

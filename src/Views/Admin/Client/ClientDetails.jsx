@@ -65,7 +65,7 @@ function ClientDetails() {
   const location = useLocation();
   const navigate = useNavigate();
   const { CompanyName } = useParams();
-
+  console.log(location,"locationss") 
   const [data, setData] = useState();
   const [open, setOpen] = useState({ isOpen: false, propertyData: null });
   const [loader, setLoader] = useState(true);
@@ -81,12 +81,13 @@ function ClientDetails() {
   const handleNoteChange = (event) => {
     setNote(event.target.value);
   };
-
+    
   const getData = async () => {
     try {
       const res = await AxiosInstance.get(
         `/v1/customer/detail/${location?.state?.id}`
-      );
+      ); 
+      console.log(location?.state,"location?.state")   
       setData(res?.data?.data);
     } catch (error) {
       console.error("Error fetching customer data:", error);
@@ -103,7 +104,7 @@ function ClientDetails() {
     swal().then(async (willDelete) => {
       if (willDelete) {
         try {
-          const res = await AxiosInstance.delete(`//location/${id}`);
+          const res = await AxiosInstance.delete(`/location/${id}`);
           if (res?.data?.statusCode === 200) {
             setTimeout(() => {
               showToast.success(res?.data?.message);
