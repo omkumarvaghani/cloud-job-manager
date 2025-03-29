@@ -76,18 +76,15 @@ const Customer = () => {
     }
 
     try {
-      const res = await AxiosInstance.get(
-        `/v1/customer/customers/${CompanyId}`,
-        {
-          params: {
-            pageSize: rowsPerPage,
-            pageNumber: page,
-            search: search || "",
-            sortField: sortField,
-            sortOrder: sortOrder,
-          },
-        }
-      );
+      const res = await AxiosInstance.get(`/v1/customer/customers`, {
+        params: {
+          pageSize: rowsPerPage,
+          pageNumber: page,
+          search: search || "",
+          sortField: sortField,
+          sortOrder: sortOrder,
+        },
+      });
       if (res?.data) {
         setcustomersData(res?.data?.data || []);
         setCountData(res?.data?.totalCount || 0);
@@ -164,8 +161,6 @@ const Customer = () => {
   };
 
   const cellData = customersData?.map((item, index) => {
-
-
     const properties = item?.location || [];
     console.log(item, "itemitem");
     let propertyDisplay;

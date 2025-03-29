@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto-js");
+const User = require("../models/User/User");
 require("dotenv").config();
 
 var SECRET_KEY =
@@ -31,6 +32,11 @@ const protect = async (req, res, next) => {
       Role: decoded.Role,
       CompanyId: decoded.CompanyId,
     };
+    const companyExists = await User.findOne({ CompanyId: decoded.CompanyId });
+
+    if (!companyExists) {
+      return res.status(401).json({ error: "Not authorized, invalid CompanyId" });
+    }
 
     next();
   } catch (error) {

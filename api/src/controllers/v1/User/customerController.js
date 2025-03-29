@@ -7,7 +7,8 @@ const AppUrl = process.env.REACT_APP;
 // **GET CUSTOMERS FOR COMPANY API**
 exports.getCustomersByCompanyId = async (req, res) => {
     try {
-        const { CompanyId } = req.params;
+        const CompanyId = Array.isArray(req.user.CompanyId) ? req.user.CompanyId[0] : req.user.CompanyId;
+
         const query = req.query;
 
         const pageSize = Math.max(parseInt(query.pageSize) || 10, 1);
@@ -76,8 +77,8 @@ exports.getCustomersByCompanyId = async (req, res) => {
             {
                 $lookup: {
                     from: "user-profiles",
-                    localField: "UserId",  // Match UserId with user profiles
-                    foreignField: "UserId",  // Match UserId with user profile
+                    localField: "UserId",
+                    foreignField: "UserId",
                     as: "profile",
                 },
             },
@@ -85,21 +86,21 @@ exports.getCustomersByCompanyId = async (req, res) => {
             {
                 $lookup: {
                     from: "locations",
-                    let: { customerId: "$UserId" },  // Match the UserId with CustomerId in the locations collection
+                    let: { customerId: "$UserId" },
                     pipeline: [
                         {
                             $match: {
                                 $expr: { $eq: ["$CustomerId", "$$customerId"] },
-                                IsDelete: false, // Filter locations that are not deleted
+                                IsDelete: false,
                             },
                         },
                     ],
-                    as: "location",  // Returning the location details
+                    as: "location",
                 },
             },
             {
                 $project: {
-                    CustomerId: 1,
+                    UserId: 1,
                     EmailAddress: 1,
                     IsActive: 1,
                     "profile.FirstName": 1,
@@ -107,7 +108,7 @@ exports.getCustomersByCompanyId = async (req, res) => {
                     "profile.PhoneNumber": 1,
                     createdAt: 1,
                     updatedAt: 1,
-                    location: 1,  // Include location data
+                    location: 1,
                 },
             },
             { $sort: sortOptions },

@@ -36,9 +36,7 @@ exports.createQuoteWithDetails = async (req, res) => {
         }
 
         await logUserEvent(companyId, "CREATE", `Created a new quote #${quoteData.QuoteNumber} titled "${quoteData.Title}"`, {
-            CreatedBy: req.user.EmailAddress,
-            QuoteId: uniqueId,
-            Role: req.user.Role,
+            newQuote
         });
 
         await addNotification({
@@ -571,9 +569,7 @@ exports.updateQuote = async (req, res) => {
 
         const activityDescription = `Updated a quote #${updatedQuote.QuoteNumber} ${updatedQuote.Title}`;
         await logUserEvent(req.user.UserId, "UPDATE", activityDescription, {
-            QuoteId: updatedQuote.QuoteId,
-            QuoteNumber: updatedQuote.QuoteNumber,
-            Title: updatedQuote.Title,
+            updatedQuote
         });
         const notificationData = {
             CompanyId: updatedQuote.CompanyId,

@@ -29,7 +29,7 @@ const createOneoffVisits = async (
     ItemName: title,
     Note: description,
     CompanyId: companyId,
-    UserId: customerId,
+    CustomerId: customerId,
     ContractId: contractId,
     WorkerId: workerId,
     LocationId: locationId,
@@ -510,7 +510,6 @@ exports.getContracts = async (req, res) => {
 // **GET CONTRACT DETAILS FOR COMPANY**
 exports.getContractDetails = async (req, res) => {
   const { ContractId } = req.params;
-  console.log(ContractId, "ContractId");
   if (!ContractId) {
     return res.status(400).json({ message: "ContractId is required!" });
   }
@@ -1024,6 +1023,106 @@ exports.deleteContract = async (req, res) => {
 };
 
 // **GET CONTRACT IN INVOICE AFTER SELECT CUSTOMER INVOICE**
+// exports.getInvoiceDataByCustomerId = async (req, res) => {
+//   try {
+//     const { CustomerId } = req.params;
+//     if (!CustomerId) {
+//       return res.status(400).json({
+//         statusCode: 400,
+//         message: "CustomerId is required",
+//       });
+//     }
+
+//     const today = new Date();
+//     today.setHours(0, 0, 0, 0); // Remove time part for date comparison
+//     const isoToday = today.toISOString();
+
+//     console.log("isoToday:", isoToday);
+
+//     const result = await User.aggregate([
+//       {
+//         $match: {
+//           UserId: CustomerId,
+//           IsDelete: false,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "contracts",
+//           localField: "UserId",
+//           foreignField: "CustomerId",
+//           as: "contracts",
+//           pipeline: [
+//             {
+//               $match: {
+//                 IsDelete: false,
+//               },
+//             },
+//             {
+//               $lookup: {
+//                 from: "visits",
+//                 localField: "ContractId",
+//                 foreignField: "ContractId",
+//                 as: "visits",
+//                 pipeline: [
+//                   {
+//                     $match: {
+//                       IsDelete: false,
+//                       StartDate: { $gte: new Date(isoToday) },
+//                     },
+//                   },
+//                   { $sort: { StartDate: 1 } },
+//                   {
+//                     $group: {
+//                       _id: "$ContractId",
+//                       todayVisit: {
+//                         $first: {
+//                           $cond: [
+//                             { $eq: ["$StartDate", new Date(isoToday)] },
+//                             "$$ROOT",
+//                             null,
+//                           ],
+//                         },
+//                       },
+//                       upcomingVisit: { $first: "$$ROOT" },
+//                     },
+//                   },
+//                   {
+//                     $project: {
+//                       todayVisit: 1,
+//                       upcomingVisit: 1,
+//                     },
+//                   },
+//                 ],
+//               },
+//             },
+//           ],
+//         },
+//       },
+//     ]);
+
+//     if (!result || result.length === 0) {
+//       return res.status(404).json({
+//         statusCode: 404,
+//         message: "No data found for this customer.",
+//       });
+//     }
+
+//     return res.status(200).json({
+//       statusCode: 200,
+//       data: result[0],
+//       message: "Invoice data fetched successfully",
+//     });
+//   } catch (error) {
+//     console.error("Error fetching invoice data:", error.message);
+//     return res.status(500).json({
+//       statusCode: 500,
+//       message: "Something went wrong, please try later!",
+//       error: error.message,
+//     });
+//   }
+// };
+
 exports.getInvoiceDataByCustomerId = async (req, res) => {
   try {
     const { CustomerId } = req.params;
@@ -1035,8 +1134,8 @@ exports.getInvoiceDataByCustomerId = async (req, res) => {
     }
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const isoToday = new Date(today).toISOString();
+    today.setHours(0, 0, 0, 0); // Remove time part for date comparison
+    const isoToday = today.toISOString();
 
     console.log("isoToday:", isoToday);
 
@@ -1061,20 +1160,6 @@ exports.getInvoiceDataByCustomerId = async (req, res) => {
             },
             {
               $lookup: {
-                from: "locations",
-                localField: "LocationId",
-                foreignField: "LocationId",
-                as: "locationDetails",
-              },
-            },
-            {
-              $unwind: {
-                path: "$locationDetails",
-                preserveNullAndEmptyArrays: true,
-              },
-            },
-            {
-              $lookup: {
                 from: "visits",
                 localField: "ContractId",
                 foreignField: "ContractId",
@@ -1083,17 +1168,12 @@ exports.getInvoiceDataByCustomerId = async (req, res) => {
                   {
                     $match: {
                       IsDelete: false,
-                      $or: [
-                        {
-                          $and: [
-                            { StartDate: { $lte: new Date(isoToday) } },
-                            { EndDate: { $gte: new Date(isoToday) } },
-                          ],
-                        },
-                        {
-                          StartDate: { $gt: new Date(isoToday) },
-                        },
-                      ],
+                      StartDate: {
+                        $exists: true,
+                        $ne: null,
+                        $ne: "",
+                        $gte: new Date(isoToday)
+                      },
                     },
                   },
                   { $sort: { StartDate: 1 } },
@@ -1105,22 +1185,23 @@ exports.getInvoiceDataByCustomerId = async (req, res) => {
                           $cond: [
                             {
                               $and: [
-                                { StartDate: { $lte: new Date(isoToday) } },
-                                { EndDate: { $gte: new Date(isoToday) } },
-                              ],
+                                { $gte: ["$StartDate", new Date(isoToday)] },
+                                { $lt: ["$StartDate", new Date(isoToday).setHours(23, 59, 59, 999)] }
+                              ]
                             },
                             "$$ROOT",
-                            null,
-                          ],
-                        },
+                            null
+                          ]
+                        }
                       },
-                      upcomingVisits: { $push: "$$ROOT" },
+
+                      upcomingVisit: { $first: "$$ROOT" },
                     },
                   },
                   {
                     $project: {
                       todayVisit: 1,
-                      upcomingVisits: { $slice: ["$upcomingVisits", 2] },
+                      upcomingVisit: 1,
                     },
                   },
                 ],
@@ -1131,17 +1212,17 @@ exports.getInvoiceDataByCustomerId = async (req, res) => {
       },
     ]);
 
-    if (!result || !result.length) {
+    if (!result || result.length === 0) {
       return res.status(404).json({
         statusCode: 404,
-        message: "Customer not found",
+        message: "No data found for this customer.",
       });
     }
 
     return res.status(200).json({
       statusCode: 200,
       data: result[0],
-      message: "Data fetched successfully",
+      message: "Invoice data fetched successfully",
     });
   } catch (error) {
     console.error("Error fetching invoice data:", error.message);
