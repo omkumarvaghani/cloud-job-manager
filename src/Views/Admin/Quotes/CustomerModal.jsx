@@ -82,7 +82,8 @@ const CustomerModal = ({
         navigats: [...locations?.state?.navigats, newPath],
       },
     });
-  };  const fetchData = useCallback(async () => {
+  };
+  const fetchData = useCallback(async () => {
     try {
       setLoader(true);
       const res = await AxiosInstance.get(

@@ -99,8 +99,7 @@ function ManageTeamTable() {
   const fetchData = async () => {
     setLoader(true);
     try {
-      const companyId = localStorage?.getItem("CompanyId");
-      const res = await AxiosInstance.get(`/worker/${companyId}`, {
+      const res = await AxiosInstance.get(`/v1/worker/get`, {
         params: {
           pageSize: rowsPerPage,
           pageNumber: page,

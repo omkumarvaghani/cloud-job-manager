@@ -5,7 +5,7 @@ const {
 const { protect } = require("../../middleware/authMiddleware");
 const router = express.Router();
 
-router.get("/get/:CompanyId", protect, getAllWorkers);
+router.get("/get", protect, getAllWorkers);
 
 
 module.exports = router;

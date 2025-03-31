@@ -1,5 +1,6 @@
 const User = require("../../../models/User/User");
 const UserProfile = require("../../../models/User/UserProfile");
+const Company = require("../../../models/User/Company");
 const bcrypt = require("bcrypt");
 const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
@@ -15,7 +16,7 @@ exports.createUser = async (req, res) => {
             return res.status(403).json({ message: "Unauthorized: Role not found in token." });
         }
 
-        const { Role, EmailAddress, Password, Address, City, State, Zip, Country, ...profileDetails } = req.body;
+        const { Role, EmailAddress, Password, Address, City, State, Zip, Country, CompanyName, ...profileDetails } = req.body;
 
         if (!["Company", "Worker", "Customer"].includes(Role)) {
             return res.status(400).json({ message: "Invalid Role! Only Company, Worker, or Customer allowed." });
@@ -52,21 +53,22 @@ exports.createUser = async (req, res) => {
 
         const UserId = uuidv4();
 
-        let additionalFields = {};
-        if (Role === "Worker" || Role === "Customer") {
-            additionalFields.UserId = UserId;
-        }
-
-        const newLocation = new Location({
-            CustomerId: UserId,
+        const locationData = {
             CompanyId: CompanyId[0],
             Address,
             City,
             State,
             Zip,
             Country,
-        });
+        };
 
+        if (Role === "Worker") {
+            locationData.WorkerId = UserId;
+        } else if (Role === "Customer") {
+            locationData.CustomerId = UserId;
+        }
+
+        const newLocation = new Location(locationData);
         await newLocation.save();
 
         const newUser = new User({
@@ -83,14 +85,30 @@ exports.createUser = async (req, res) => {
             CompanyId: CompanyId[0],
             ...profileDetails,
             LocationId: newLocation.LocationId,
-            ...additionalFields,
         });
         await newUserProfile.save();
 
-        await logUserEvent(newUser.CompanyId, "REGISTRATION", "New user registered", {
+        if (Role === "Company") {
+            if (!CompanyName) {
+                return res.status(400).json({ message: "Company Name is required." });
+            }
+
+            const newCompany = new Company({
+                CompanyId: CompanyId[0],
+                CompanyName,
+                IsTrial: true,
+                IsActive: true,
+                IsDeleted: false,
+            });
+
+            await newCompany.save();
+        }
+
+        await logUserEvent(CompanyId[0], "REGISTRATION", "New user registered", {
             EmailAddress,
             Role,
         });
+
 
         if (Role === "Worker" || Role === "Customer") {
             const notificationData = {
@@ -407,7 +425,6 @@ exports.updateCompanyProfile = async (req, res) => {
     try {
         const { CompanyId } = req.params;
         const { UserData, ProfileData } = req.body;
-        console.log(req.body, 'req.body')
         if (UserData) {
             const user = await User.findOne({ CompanyId, IsDelete: false });
 

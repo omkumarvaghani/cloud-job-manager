@@ -8,7 +8,6 @@ const { logUserEvent } = require("../../middleware/eventMiddleware");
 const { verifyToken } = require("../../middleware/authMiddleware");
 
 const generateToken = (user) => {
-  console.log(user, 'userr')
   return jwt.sign(
     { UserId: user.UserId, Role: user.Role, CompanyId: user.CompanyId, EmailAddress: user.EmailAddress, OwnerName: user.OwnerName },
     process.env.JWT_SECRET,

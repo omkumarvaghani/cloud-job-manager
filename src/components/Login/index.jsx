@@ -81,7 +81,7 @@ const Login = () => {
       if (res.data.statusCode == "200") {
         localStorage.setItem("adminToken", res.data.token);
         localStorage.setItem("CompanyId", res.data.data.UserId);
-        showToast.success(res.data.message, {
+        showToast.success("Login Successful!", {
           autoClose: 3000,
         });
         setTimeout(() => {

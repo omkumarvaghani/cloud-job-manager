@@ -3,7 +3,7 @@ const User = require("../../../models/User/User");
 //**GET ALL WORKER FOR COMPANY**
 exports.getAllWorkers = async (req, res) => {
     try {
-        const { CompanyId } = req.params;
+        const { CompanyId } = req.user;
 
         if (!CompanyId) {
             return res.status(400).json({

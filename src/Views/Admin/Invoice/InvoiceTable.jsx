@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, CardBody, Input } from "reactstrap";
+import { Card, CardBody, Input } from "reactstrap";
 import "./style.css";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AxiosInstance from "../../AxiosInstance";
@@ -14,19 +14,17 @@ import { Typography } from "@mui/material";
 const InvoiceTable = () => {
   const [customerData, setCustomerData] = useState([]);
   const [selectedCustomerData, setSelectedCustomerData] = useState();
-  const [loader, setLoader] = useState(true);
+  const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
   const { CompanyName } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_API;
   const location = useLocation();
-  const [customersData, setcustomersData] = useState([]);
-  const [countData, setCountData] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       const CustomerId = location?.state?.CustomerId;
       if (!CustomerId) return;
-
+      setLoader(true);
       try {
         const res = await AxiosInstance.get(
           `${baseUrl}/contract/get_invoice_data/${CustomerId}`
@@ -68,7 +66,6 @@ const InvoiceTable = () => {
               className="mb-2 invoiceAddIcon bg-blue-color"
               style={{
                 borderRadius: "50%",
-                // backgroundColor: "rgba(6, 49, 100, 1)",
                 width: "49px",
                 padding: "10px 2px 12px 15px",
               }}

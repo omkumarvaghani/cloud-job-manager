@@ -179,11 +179,19 @@ exports.createContract = async (req, res) => {
   contractData.CustomerId = contractData.UserId;
 
   try {
-    const assignPersonIds = Array.isArray(contractData.UserId)
-      ? contractData.UserId
-      : contractData.UserId
-        ? [contractData.UserId]
-        : [];
+    const existingContract = await Contract.findOne({
+      ContractNumber: contractData.ContractNumber,
+      CompanyId: contractData.CompanyId,
+    });
+
+    if (existingContract) {
+      return res.status(400).json({
+        statusCode: 400,
+        message: `ContractNumber ${contractData.ContractNumber} is already in use.`,
+      });
+    }
+
+    const assignPersonIds = contractData.selectedTeams.map(team => team.WorkerId);
 
     contractData.WorkerId = assignPersonIds;
 

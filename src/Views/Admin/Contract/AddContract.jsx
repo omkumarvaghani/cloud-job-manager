@@ -53,6 +53,7 @@ function AddContract() {
   const [workerId, setAssignPersonId] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [ids, setIds] = useState([]);
+  console.log(ids, "ids");
   const [isAddTeam, setIsAddTeam] = useState(false);
   const [mail, setMail] = useState(false);
 
@@ -83,7 +84,8 @@ function AddContract() {
       QuoteId: "",
       Description: "",
       ContractNumber: 1,
-      UserId: "",
+      CustomerId: "",
+      WorkerId: [],
       CompanyId: "",
       LocationId: "",
       contract_disclaimer:
@@ -162,6 +164,7 @@ function AddContract() {
         let response;
         if (!location.state?.id) {
           response = await AxiosInstance.post(`/v1/contract`, object);
+          console.log(response, "response");
         } else {
           response = await AxiosInstance.put(
             `/contract/${location?.state?.id}`,
@@ -191,12 +194,15 @@ function AddContract() {
       } catch (error) {
         console.error("Error: ", error);
 
-        if (error?.response?.status === 400) {
-          const errorMessages = error?.response?.data?.errors || [];
-          const message = errorMessages.join(", ");
-          showToast.warning(`Validation Error: ${message}`);
+        if (error?.response?.data?.statusCode) {
+          const statusCode = error.response.data.statusCode;
+          const message = error.response.data.message || "An error occurred.";
+
+          showToast.warning(`${message}`);
         } else {
-          showToast.error("An error occurred while submitting the form.");
+          showToast.error(
+            "An unexpected error occurred while submitting the form."
+          );
         }
       } finally {
         setLoading(false);
@@ -283,17 +289,21 @@ function AddContract() {
         const res = await AxiosInstance.get(
           `/v1/contract/contract_details/${location.state.id}`
         );
-
-
         if (res?.data?.statusCode === 200) {
           const data = res.data.data;
-
-
-          // Ensure that the keys match the response structure
+          const locationData = data?.location || {};
+          const customerData = data?.customer || {};
           formik.setValues({
-            Title: data.Title || "", // Default to empty string if undefined
-            Firstname: data.customer?.Firstname || "",
-            LastName: data.customer?.LastName || "",
+            Title: data.Title || "",
+            FirstName: customerData?.FirstName || "",
+            LastName: customerData?.LastName || "",
+            PhoneNumber: customerData?.PhoneNumber || "",
+            Address: locationData?.Address || "",
+            City: locationData?.City || "",
+            State: locationData?.State || "",
+            Zip: locationData?.Zip || "",
+            Country: locationData?.Country || "",
+
             ContractNumber: data.ContractNumber || "",
             CompanyId: data.CompanyId || "",
             UserId: data.UserId || "",
@@ -310,30 +320,33 @@ function AddContract() {
             RecuringJob: data.RecuringJob || false,
             IsOneoffJob: data.IsOneoffJob || false,
             IsRecuringJob: data.IsRecuringJob || false,
-            WorkerId: data.WorkerId?.[0] || "", // Default to empty string if undefined
+            WorkerId: data.WorkerId?.[0] || "",
           });
 
           setContractData(data);
+          setCustomersData({
+            ...data?.customer,
+            location: data?.location || {},
+          });
           setActiveTab(data.IsOneoffJob ? 1 : 2);
 
           const members = teamData.filter((item) =>
-            data.WorkerId.includes(item.WorkerId)
+            data.WorkerId.includes(item.UserId)
           );
-
           if (members.length > 0) {
             setSelectedTeams(
               members.map((member) => ({
                 FirstName: member.FirstName,
                 LastName: member.LastName,
                 EmailAddress: member.EmailAddress,
-                WorkerId: member.WorkerId,
+                WorkerId: member.UserId,
               }))
             );
 
             setCheckedState((prevState) => {
               const updatedState = { ...prevState };
               members.forEach((member) => {
-                updatedState[member.WorkerId] = true;
+                updatedState[member.UserId] = true;
               });
               return updatedState;
             });
@@ -383,7 +396,7 @@ function AddContract() {
             }`
           );
           if (res.data?.statusCode === 200) {
-            const nextContractNumber = res?.data?.contractNumber + 1;
+            const nextContractNumber = res?.data?.contractNumber;
             formik.setValues((values) => {
               return {
                 ...values,
@@ -541,6 +554,7 @@ function AddContract() {
   };
 
   const handleRemoveTeam = (team) => {
+    console.log(team, "team");
     setSelectedTeams((prevTeams) =>
       prevTeams.filter(
         (selectedTeam) => selectedTeam?.WorkerId !== team?.WorkerId
@@ -568,30 +582,30 @@ function AddContract() {
           FirstName: team?.FirstName,
           LastName: team?.LastName,
           EmailAddress: team?.EmailAddress,
-          WorkerId: team?.WorkerId,
+          WorkerId: team?.UserId,
         },
       ]);
 
       setCheckedState((prevState) => ({
         ...prevState,
-        [team?.WorkerId]: true,
+        [team?.UserId]: true,
       }));
 
-      setIds((prevIds) => [...prevIds, team?.WorkerId]);
+      setIds((prevIds) => [...prevIds, team?.UserId]);
       setAssignPersonId((prevIds) => [...prevIds, team?.WorkerId]);
     } else {
       setSelectedTeams((prevTeams) =>
         prevTeams.filter(
-          (selectedTeam) => selectedTeam?.WorkerId !== team?.WorkerId
+          (selectedTeam) => selectedTeam?.WorkerId !== team?.UserId
         )
       );
 
       setCheckedState((prevState) => ({
         ...prevState,
-        [team?.WorkerId]: false,
+        [team?.UserId]: false,
       }));
 
-      setIds((prevIds) => prevIds.filter((id) => id !== team?.WorkerId));
+      setIds((prevIds) => prevIds.filter((id) => id !== team?.UserId));
       setAssignPersonId((prevIds) =>
         prevIds.filter((id) => id !== team?.WorkerId)
       );
@@ -612,8 +626,8 @@ function AddContract() {
         return;
       }
 
-      const response = await AxiosInstance.get(`/v1/user/${CompanyId}`);
-              
+      const response = await AxiosInstance.get(`/v1/worker/get`);
+
       if (response?.status === 200) {
         setTeamData(response?.data?.data);
       } else {
@@ -639,7 +653,8 @@ function AddContract() {
       WorkerId: "",
     },
     validationSchema: Yup.object({
-      // FullName: Yup.string().required("Full Name is required"),
+      FirstName: Yup.string().required("First name is required"),
+      LastName: Yup.string().required("Last name is required"),
       EmailAddress: Yup.string()
         .email("Invalid email address")
         .required("Email is required"),
@@ -660,11 +675,12 @@ function AddContract() {
           console.error("CompanyId is not found in localStorage");
           return;
         }
+        console.log(values, "values");
         const object = {
           ...values,
           CompanyId: CompanyId,
-          WorkerId: values?.WorkerId,
-          FullName: values?.FullName,
+          FirstName: values?.FirstName,
+          LastName: values?.LastName,
           EmailAddress: values?.EmailAddress,
           PhoneNumber: values?.PhoneNumber,
           AddedAt: new Date(),
@@ -686,7 +702,6 @@ function AddContract() {
             "Server responded with an error:",
             error?.response?.data
           );
-          console.log(error, "error");
 
           setTimeout(() => {
             showToast.error(

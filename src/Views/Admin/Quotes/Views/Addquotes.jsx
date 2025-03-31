@@ -154,10 +154,12 @@ const Addquotes = ({
                         fontWeight: "600",
                       }}
                     >
-                      {customersData?.FirstName
+                      {customersData?.customer?.FirstName &&
+                      customersData?.customer?.LastName
+                        ? `${customersData?.customer?.FirstName} ${customersData?.customer?.LastName}`
+                        : customersData?.FirstName && customersData?.LastName
                         ? `${customersData?.FirstName} ${customersData?.LastName}`
                         : "Customer Name"}
-                    
                     </Typography>
                     {!Object.keys(customersData).length > 0 ? (
                       <Button
@@ -202,7 +204,7 @@ const Addquotes = ({
                         className="text-blue-color w-100"
                       />
                     </Grid>
-                    {customersData?.FirstName && (
+                    {customersData?.customerData?.FirstName && (
                       <Grid
                         className="d-flex mt-5 gap-3 quoteProperty_detail"
                         style={{ color: "rgba(6, 49, 100, 1)" }}
@@ -219,42 +221,26 @@ const Addquotes = ({
                             </Typography>
                           </Typography>
                           <Typography className="text-blue-color">
-                         
                             {propertyData?.Address ||
-                              (customersData?.location &&
-                              customersData.location.length > 0
-                                ? customersData.location[0].Address
-                                : "-") ||
+                              customersData?.locations?.Address ||
                               "-"}{" "}
                             ,
                             <br />
                             {propertyData?.City ||
-                              (customersData?.location &&
-                              customersData.location.length > 0
-                                ? customersData.location[0].City
-                                : "-") ||
+                              customersData?.locations?.City ||
                               "-"}
                             ,{" "}
                             {propertyData?.State ||
-                              (customersData?.location &&
-                              customersData.location.length > 0
-                                ? customersData.location[0].State
-                                : "-") ||
+                              customersData?.locations?.State ||
                               "-"}{" "}
                             ,
                             {propertyData?.Zip ||
-                              (customersData?.location &&
-                              customersData.location.length > 0
-                                ? customersData.location[0].Zip
-                                : "-") ||
+                              customersData?.locations?.Zip ||
                               "-"}
                             ,
                             <br />
                             {propertyData?.Country ||
-                              (customersData?.location &&
-                              customersData.location.length > 0
-                                ? customersData.location[0].Country
-                                : "-") ||
+                              customersData?.locations?.Country ||
                               "-"}{" "}
                             <br />
                             <a

@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 const LocationSchema = new Schema(
     {
         CustomerId: { type: String },
+        WorkerId: { type: String },
         CompanyId: { type: String },
         LocationId: {
             type: String,
