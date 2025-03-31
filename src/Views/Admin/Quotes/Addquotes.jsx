@@ -347,18 +347,16 @@ function AddQuote() {
           );
           if (res.data?.statusCode === 200) {
             const data = res?.data?.data;
-            const locationData = data?.locations || {};
-            const customerData = data?.customer || {};
             formik.setValues({
               Title: data?.Title,
-              FirstName: customerData?.FirstName || "",
-              LastName: customerData?.LastName || "",
-              PhoneNumber: customerData?.PhoneNumber || "",
-              Address: locationData?.Address || "",
-              City: locationData?.City || "",
-              State: locationData?.State || "",
-              Zip: locationData?.Zip || "",
-              Country: locationData?.Country || "",
+              FirstName: data.customerData?.FirstName || "",
+              LastName: data.customerData?.LastName || "",
+              PhoneNumber: data.customerData?.PhoneNumber || "",
+              Address: data.locationData?.Address || "",
+              City: data.locationData?.City || "",
+              State: data.locationData?.State || "",
+              Zip: data.locationData?.Zip || "",
+              Country: data.locationData?.Country || "",
               QuoteNumber: data?.QuoteNumber,
               CustomerId: data?.CustomerId,
               CompanyId: data.CompanyId,
@@ -373,8 +371,8 @@ function AddQuote() {
 
             setQuotesData(data);
             setCustomersData({
-              ...data?.customer,
-              location: data?.location || {},
+              ...data?.customerData,
+              location: data?.locationData || {},
             });
             setLineItems(
               data?.products || [

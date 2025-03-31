@@ -239,21 +239,10 @@ const OneOffContract = ({
           <Col sm="12" className="d-flex">
             <Card className="mx-0 border-blue-color" style={{ width: "100%" }}>
               <CardHeader
-                className="d-flex justify-content-between calenderHead_HideBtn"
-                style={{
-                  width: "100%",
-                  alignItems: "center",
-                  padding: "0 10px 0 10px",
-                  borderBottom: "none",
-                }}
+                style={{ display: "flex", justifyContent: "space-between" }}
+                className="recurringSchedule_hideCalender"
               >
-                <Typography
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: 600,
-                  }}
-                  className="my-3 text-blue-color calender_head recurringScheTitle"
-                >
+                <Typography className="calender_head heading-five text-blue-color">
                   One off Contract Schedule
                 </Typography>
                 <Typography className="btngotoright">
@@ -1460,7 +1449,7 @@ const Team = ({ setIds = (assignPersonId) => {}, ids, isAddTeam = true }) => {
       }
 
       const response = await AxiosInstance.get(`v1/user/${CompanyId}`);
-              
+
       if (response?.status === 200) {
         setTeamData(response?.data?.data);
       } else {
@@ -1518,7 +1507,7 @@ const Team = ({ setIds = (assignPersonId) => {}, ids, isAddTeam = true }) => {
           EmailAddress: values?.EmailAddress,
           PhoneNumber: values?.MobileNumber,
           AddedAt: new Date(),
-          Role:"Worker"
+          Role: "Worker",
         };
 
         const response = await AxiosInstance.post(`/v1/user`, object);

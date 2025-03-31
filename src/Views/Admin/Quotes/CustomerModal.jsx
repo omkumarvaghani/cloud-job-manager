@@ -128,7 +128,7 @@ const CustomerModal = ({
       if (!customer) return;
 
       setFieldValue("UserId", customer.UserId);
-      setCustomersData(customer); // This should now properly update the parent component
+      setCustomersData(customer); 
 
       if (customer?.locations?.length === 1) {
         const property = customer.locations[0];

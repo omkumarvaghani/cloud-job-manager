@@ -154,10 +154,7 @@ const Addquotes = ({
                         fontWeight: "600",
                       }}
                     >
-                      {customersData?.customer?.FirstName &&
-                      customersData?.customer?.LastName
-                        ? `${customersData?.customer?.FirstName} ${customersData?.customer?.LastName}`
-                        : customersData?.FirstName && customersData?.LastName
+                      {customersData?.FirstName
                         ? `${customersData?.FirstName} ${customersData?.LastName}`
                         : "Customer Name"}
                     </Typography>
@@ -222,25 +219,25 @@ const Addquotes = ({
                           </Typography>
                           <Typography className="text-blue-color">
                             {propertyData?.Address ||
-                              customersData?.locations?.Address ||
+                              customersData?.location?.Address ||
                               "-"}{" "}
                             ,
                             <br />
                             {propertyData?.City ||
-                              customersData?.locations?.City ||
+                              customersData?.location?.City ||
                               "-"}
                             ,{" "}
                             {propertyData?.State ||
-                              customersData?.locations?.State ||
+                              customersData?.location?.State ||
                               "-"}{" "}
                             ,
                             {propertyData?.Zip ||
-                              customersData?.locations?.Zip ||
+                              customersData?.location?.Zip ||
                               "-"}
                             ,
                             <br />
                             {propertyData?.Country ||
-                              customersData?.locations?.Country ||
+                              customersData?.location?.Country ||
                               "-"}{" "}
                             <br />
                             <a
