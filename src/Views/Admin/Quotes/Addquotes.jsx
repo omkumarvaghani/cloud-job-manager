@@ -32,8 +32,10 @@ function AddQuote() {
   const [dropdown, setDropdown] = useState(false);
   const [modal, setModal] = useState(false);
   const [customersData, setCustomersData] = useState({});
+  console.log(customersData,"janak")
   const [propertyData, setPropertyData] = useState({});
   const [quotesData, setQuotesData] = useState({});
+  console.log(quotesData,"quotesData bharat")
   const [showTax, setShowTax] = useState(false);
   const [lineItems, setLineItems] = useState([
     {
@@ -343,6 +345,7 @@ function AddQuote() {
           const res = await AxiosInstance.get(
             `/v1/quote/quote_details/${location?.state?.id}`
           );
+          console.log(res,"kp")
           if (res.data?.statusCode === 200) {
             const data = res?.data?.data;
 
@@ -363,6 +366,7 @@ function AddQuote() {
             });
 
             setQuotesData(data);
+            setCustomersData(data);
             setLineItems(
               data?.products || [
                 {

@@ -21,7 +21,7 @@ const Invoice = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [loader, setLoader] = useState(true);
+  const [loader, setLoader] = useState(false);
   const [isCustomer, setIsCustomer] = useState(false);
   const [source, setModalSource] = useState(false);
   const [countData, setCountData] = useState(0);

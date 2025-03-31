@@ -77,7 +77,7 @@ const Customer = () => {
 
     try {
       const res = await AxiosInstance.get(
-        `/v1/customer/customers/${CompanyId}`,
+        `/v1/customer/customers`,
         {
           params: {
             pageSize: rowsPerPage,
@@ -164,8 +164,6 @@ const Customer = () => {
   };
 
   const cellData = customersData?.map((item, index) => {
-
-
     const properties = item?.location || [];
     console.log(item, "itemitem");
     let propertyDisplay;

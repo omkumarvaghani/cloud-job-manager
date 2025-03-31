@@ -154,10 +154,9 @@ const Addquotes = ({
                         fontWeight: "600",
                       }}
                     >
-                      {customersData?.FirstName
-                        ? `${customersData?.FirstName} ${customersData?.LastName}`
+                      {customersData?.customerData?.FirstName
+                        ? `${customersData?.customerData?.FirstName} ${customersData?.customerData?.LastName}`
                         : "Customer Name"}
-                    
                     </Typography>
                     {!Object.keys(customersData).length > 0 ? (
                       <Button
@@ -202,7 +201,7 @@ const Addquotes = ({
                         className="text-blue-color w-100"
                       />
                     </Grid>
-                    {customersData?.FirstName && (
+                    {customersData?.customerData?.FirstName && (
                       <Grid
                         className="d-flex mt-5 gap-3 quoteProperty_detail"
                         style={{ color: "rgba(6, 49, 100, 1)" }}
@@ -219,41 +218,43 @@ const Addquotes = ({
                             </Typography>
                           </Typography>
                           <Typography className="text-blue-color">
-                         
-                            {propertyData?.Address ||
-                              (customersData?.location &&
-                              customersData.location.length > 0
-                                ? customersData.location[0].Address
+                            {customersData?.locationData?.Address ||
+                              (customersData?.locationData?.location &&
+                              customersData?.locationData.location.length > 0
+                                ? customersData?.locationData.location[0]
+                                    .Address
                                 : "-") ||
                               "-"}{" "}
                             ,
                             <br />
-                            {propertyData?.City ||
-                              (customersData?.location &&
-                              customersData.location.length > 0
-                                ? customersData.location[0].City
+                            {console.log(customersData.locationData,"mit")}
+                            {customersData?.locationData?.City ||
+                              (customersData?.locationData?.location &&
+                              customersData?.locationData.location.length > 0
+                                ? customersData?.locationData.location[0].City
                                 : "-") ||
                               "-"}
                             ,{" "}
-                            {propertyData?.State ||
-                              (customersData?.location &&
-                              customersData.location.length > 0
-                                ? customersData.location[0].State
+                            {customersData?.locationData?.State ||
+                              (customersData?.locationData?.location &&
+                              customersData?.locationData.location.length > 0
+                                ? customersData?.locationData.location[0].State
                                 : "-") ||
                               "-"}{" "}
                             ,
-                            {propertyData?.Zip ||
-                              (customersData?.location &&
-                              customersData.location.length > 0
-                                ? customersData.location[0].Zip
+                            {customersData?.locationData?.Zip ||
+                              (customersData?.locationData?.location &&
+                              customersData?.locationData.location.length > 0
+                                ? customersData?.locationData.location[0].Zip
                                 : "-") ||
                               "-"}
                             ,
                             <br />
-                            {propertyData?.Country ||
-                              (customersData?.location &&
-                              customersData.location.length > 0
-                                ? customersData.location[0].Country
+                            {customersData?.locationData?.Country ||
+                              (customersData?.locationData?.location &&
+                              customersData?.locationData.location.length > 0
+                                ? customersData?.locationData.location[0]
+                                    .Country
                                 : "-") ||
                               "-"}{" "}
                             <br />
