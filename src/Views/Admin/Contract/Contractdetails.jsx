@@ -108,7 +108,7 @@ function ContractDetails() {
           `/v1/labour/${location?.state?.id}/${
             localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
           }`
-          );
+        );
         setContractData({
           // ...res?.data?.data,
           laborData: labourRes?.data?.data,
@@ -116,7 +116,7 @@ function ContractDetails() {
           // visitsData: visitsRes?.data?.data,
         });
         const expenseRes = await AxiosInstance.get(
-          `/expenses/${location?.state?.id}/${
+          `/v1/expense/${location?.state?.id}/${
             localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
           }`
         );
@@ -127,7 +127,7 @@ function ContractDetails() {
           // visitsData: visitsRes?.data?.data,
         });
         const visitsRes = await AxiosInstance.get(
-          `/visits/${location?.state?.id}/${
+          `/v1/visit/${location?.state?.id}/${
             localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
           }`
         );

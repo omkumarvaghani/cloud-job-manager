@@ -11,7 +11,7 @@ const ChargeSchema = new mongoose.Schema({
     RecurringChargeId: { type: String },
     CompanyId: { type: String },
     CustomerId: { type: String },
-    LocationId: { type: Array },
+    LocationId: { type: String },
     ChargeAmount: { type: Number, required: true }, 
     PaymentAmount: { type: Number, default: 0 }, 
     Description: { type: String },
