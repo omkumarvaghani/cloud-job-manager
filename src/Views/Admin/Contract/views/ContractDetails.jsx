@@ -589,6 +589,7 @@ const ContractDetails = ({
                     label="+ New Time Entry"
                   />
                 </Grid>
+                {console.log(contractData,"contractData")} 
                 {contractData?.laborData &&
                 contractData?.laborData?.length > 0 ? (
                   <Grid
@@ -642,10 +643,11 @@ const ContractDetails = ({
                           {contractData?.laborData.map((item, index) => (
                             <Row className="row py-2 text-left" key={index}>
                               <Col className="col text-blue-color contractDataTableSub tableCOlor">
+                              {console.log(item,"item")}
                                 {/* {item?.WorkerId?.FullName ||
                                   "FullName not available"} */}
                                 {item?.WorkerId
-                                  ? `${item?.WorkerId?.FirstName} ${item?.WorkerId?.LastName}`
+                                  ? `${item?.FirstName} ${item?.LastName}`
                                   : "Name not available"}
                               </Col>
 
@@ -1389,6 +1391,7 @@ const ContractDetails = ({
         CompanyId={CompanyId}
         LabourId={LabourId}
         setLabourId={setLabourId}
+        
       />
       <Expances
         open={isExpanseModalOpen}

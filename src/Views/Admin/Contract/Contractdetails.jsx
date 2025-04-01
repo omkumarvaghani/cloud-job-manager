@@ -97,53 +97,45 @@ function ContractDetails() {
       const res = await AxiosInstance.get(
         `/v1/contract/contract_details/${location?.state?.id}`
       );
-      setContractData({
-        ...res?.data?.data,
-        // laborData: labourRes?.data?.data,
-        // expenseData: expenseRes?.data?.result,
-        // visitsData: visitsRes?.data?.data,
-      });
+      // Set contract data with the initial contract details
+      setContractData((prevState) => ({
+        ...prevState,
+        ...res?.data?.data, // contract details
+      }));
+  
       if (res.data.statusCode === 200) {
         const labourRes = await AxiosInstance.get(
-          `/v1/labour/${location?.state?.id}/${
-            localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
-          }`
+          `/v1/labour/${location?.state?.id}/${localStorage.getItem("CompanyId") || tokenDecode?.CompanyId}`
         );
-        setContractData({
-          // ...res?.data?.data,
-          laborData: labourRes?.data?.data,
-          // expenseData: expenseRes?.data?.result,
-          // visitsData: visitsRes?.data?.data,
-        });
+        console.log(labourRes,"labourRes")
+        setContractData((prevState) => ({
+          ...prevState,
+          laborData: labourRes?.data?.data, // labor data
+        }));
+  
         const expenseRes = await AxiosInstance.get(
-          `/v1/expense/${location?.state?.id}/${
-            localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
-          }`
+          `/v1/expense/${location?.state?.id}/${localStorage.getItem("CompanyId") || tokenDecode?.CompanyId}`
         );
-        setContractData({
-          // ...res?.data?.data,
-          // laborData: labourRes?.data?.data,
-          expenseData: expenseRes?.data?.result,
-          // visitsData: visitsRes?.data?.data,
-        });
+        setContractData((prevState) => ({
+          ...prevState,
+          expenseData: expenseRes?.data?.result, // expense data
+        }));
+  
         const visitsRes = await AxiosInstance.get(
-          `/v1/visit/${location?.state?.id}/${
-            localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
-          }`
+          `/v1/visit/${location?.state?.id}/${localStorage.getItem("CompanyId") || tokenDecode?.CompanyId}`
         );
-        setContractData({
-          // ...res?.data?.data,
-          // laborData: labourRes?.data?.data,
-          // expenseData: expenseRes?.data?.result,
-          visitsData: visitsRes?.data?.data,
-        });
+        setContractData((prevState) => ({
+          ...prevState,
+          visitsData: visitsRes?.data?.data, // visit data
+        }));
       }
     } catch (error) {
-      console.error("Error: ", error?.messae);
+      console.error("Error: ", error?.message);
     } finally {
       setLoader(false);
     }
   };
+  
 
   useEffect(() => {
     fetchData();

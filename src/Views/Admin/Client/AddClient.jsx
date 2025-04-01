@@ -246,27 +246,32 @@ function AddClient() {
         const country = Country.getAllCountries().find(
           (item) => item?.name === formik?.values?.Country
         );
-        return country;     
-      }); 
+        return country;
+      });
     }
   }, [formik]);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await AxiosInstance.get(`/v1/user/${location?.state?.id}`);
+        console.log(res, "res");
         const userProfile = res?.data?.data?.userProfile;
-        setUserAddress(res?.data?.data?.locations);
-        if (userProfile) {
+        const userLocations = res?.data?.data?.locations;
+
+        setUserAddress(userLocations); // Make sure userAddress is updated here
+
+        if (userProfile && userLocations?.length) {
           formik.setValues({
             FirstName: userProfile?.FirstName || "",
             LastName: userProfile?.LastName || "",
             PhoneNumber: userProfile?.PhoneNumber || "",
             EmailAddress: res?.data?.data?.user?.EmailAddress || "",
-            Address: userAddress?.Address || "",
-            City: userAddress?.City || "",
-            State: userAddress?.State || "",
-            Zip: userAddress?.Zip || "",
-            Country: userAddress?.Country || "",
+            // Use the first address if available
+            Address: userLocations[0]?.Address || "",
+            City: userLocations[0]?.City || "",
+            State: userLocations[0]?.State || "",
+            Zip: userLocations[0]?.Zip || "",
+            Country: userLocations[0]?.Country || "",
           });
         }
       } catch (error) {
@@ -297,7 +302,6 @@ function AddClient() {
       formik.setFieldValue(name, value);
     }
   };
-
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -633,7 +637,6 @@ function AddClient() {
               />
             ) : (
               <Grid className="gap-3 d-flex  ">
-
                 <BlueButton
                   className=""
                   onClick={async () => {
