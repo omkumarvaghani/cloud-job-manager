@@ -7,7 +7,7 @@ const User = require("../../../models/User/User");
 exports.createLabour = async (req, res) => {
     try {
         const data = req.body;
-
+        console.log(data, 'data')
         if (!data.CompanyId) {
             return res.status(400).json({
                 statusCode: 400,
@@ -40,42 +40,95 @@ exports.fetchLabourData = async (req, res) => {
     try {
         const { ContractId, CompanyId } = req.params;
 
-        const result = await Labour.find({
-            ContractId,
-            CompanyId,
-            IsDelete: false,
-        });
+        const result = await Labour.aggregate([
+            {
+                $match: {
+                    ContractId: ContractId,
+                    CompanyId: CompanyId,
+                    IsDelete: false
+                }
+            },
+            {
+                $lookup: {
+                    from: "user-profiles",
+                    localField: "WorkerId",
+                    foreignField: "UserId",
+                    as: "WorkerDetails"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$WorkerDetails",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $addFields: {
+                    Worker: {
+                        FirstName: "$WorkerDetails.FirstName",
+                        LastName: "$WorkerDetails.LastName"
+                    }
+                }
+            },
+            {
+                $project: {
+                    WorkerDetails: 0
+                }
+            }
+        ]);
 
         if (!result || result.length === 0) {
-            return {
+            return res.status(204).json({
                 statusCode: 204,
-                message: `No data found for ContractId and CompanyId.`,
-            };
-        }
-
-        const object = [];
-        for (const item of result) {
-            const data = await User.findOne({
-                WorkerId: item.UserId,
-                Role: "Worker",
-                IsDelete: false,
+                message: `No data found for ContractId: ${ContractId} and CompanyId: ${CompanyId}`
             });
-            object.push({ ...item.toObject(), WorkerId: data });
         }
 
         return res.status(200).json({
             statusCode: 200,
-            message: `Data fetched successfully`,
-            data: object,
+            message: "Labour data fetched successfully",
+            data: result
         });
     } catch (error) {
-        return res.status(200).json({
-            statusCode: 400,
-            message: "Failed to fetch data.",
-            error: error.message,
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Failed to fetch labour data.",
+            error: error.message
         });
     }
 };
+
+
+exports.getLabourData = async (req, res) => {
+    const { LabourId, ContractId } = req.params;
+
+    if (!LabourId || !ContractId) {
+        return res.status(400).json({
+            statusCode: 400,
+            message: "LabourId and ContractId are required!",
+        });
+    }
+
+    const labourData = await Labour.findOne({
+        LabourId,
+        ContractId,
+        IsDelete: false,
+    });
+
+    if (labourData) {
+        return res.status(200).json({
+            statusCode: 200,
+            data: labourData,
+            message: "Data retrieved successfully.",
+        });
+    } else {
+        return res.status(404).json({
+            statusCode: 404,
+            message: "No data found for the given LabourId and ContractId.",
+        });
+    }
+};
+
 
 //**UPDATE LABOUR**
 exports.updateLabour = async (req, res) => {

@@ -52,7 +52,10 @@ function CustomerDetails() {
 
   const getData = async () => {
     try {
-      const res = await AxiosInstance.get(`/customer/${location?.state?.id}`);
+      const res = await AxiosInstance.get(
+        `/v1/customer/detail/${location?.state?.id}`
+      );
+      console.log(res, "res");
       setData(res?.data?.data);
     } catch (error) {
     } finally {
@@ -75,10 +78,12 @@ function CustomerDetails() {
       if (data && data?.CustomerId) {
         try {
           const response = await AxiosInstance.get(
-            `/quote/get_quotes_customer/${
+            `/v1/quote/get_quotes_customer/${
               localStorage.getItem("CompanyId") || tokenDecode?.companyId
             }/${data?.CustomerId}`
           );
+          console.log(response, "response");
+
           if (response?.data?.statusCode === 200) {
             setQuotes(response?.data?.data);
           }
@@ -96,10 +101,11 @@ function CustomerDetails() {
       if (data && data?.CustomerId) {
         try {
           const response = await AxiosInstance.get(
-            `/contract/get_contract_customer/${
+            `/v1/contract/get_contract_customer/${
               localStorage.getItem("CompanyId") || tokenDecode?.companyId
             }/${data?.CustomerId}`
           );
+          console.log(response, "response");
           setContract(response?.data?.data);
         } catch (err) {
           console.error("Error to fetching contract data: ", err.message);

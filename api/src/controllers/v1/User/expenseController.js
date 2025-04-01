@@ -37,22 +37,85 @@ exports.getExpenseData = async (req, res) => {
         };
     }
 
-    const labourData = await Expense.findOne({
+    const expenseData = await Expense.findOne({
         ExpenseId,
         ContractId,
         IsDelete: false,
     });
 
-    if (labourData) {
+    if (expenseData) {
         return res.status(200).json({
             statusCode: 200,
-            data: labourData,
+            data: expenseData,
             message: "Data retrieved successfully.",
         });
     } else {
         return res.status(404).json({
             statusCode: 404,
             message: "No data found for the given ExpenseId and ContractId.",
+        });
+    }
+};
+
+//**GET EXPENSE IN CONTRACT**
+exports.fetchExpenseData = async (req, res) => {
+    try {
+        const { ContractId, CompanyId } = req.params;
+
+        const result = await Expense.aggregate([
+            {
+                $match: {
+                    ContractId,
+                    CompanyId,
+                    IsDelete: false,
+                }
+            },
+            {
+                $lookup: {
+                    from: "user-profiles",
+                    localField: "WorkerId",
+                    foreignField: "UserId",
+                    as: "WorkerDetails"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$WorkerDetails",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $addFields: {
+                    "Worker": {
+                        FirstName: "$WorkerDetails.FirstName",
+                        LastName: "$WorkerDetails.LastName"
+                    }
+                }
+            },
+            {
+                $project: {
+                    WorkerDetails: 0
+                }
+            }
+        ]);
+
+        if (!result || result.length === 0) {
+            return res.status(204).json({
+                statusCode: 204,
+                message: `No data found for ContractId: ${ContractId} and CompanyId: ${CompanyId}`,
+            });
+        }
+
+        return res.status(200).json({
+            statusCode: 200,
+            message: "Data fetched successfully",
+            result
+        });
+    } catch (error) {
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Failed to fetch data.",
+            error: error.message
         });
     }
 };

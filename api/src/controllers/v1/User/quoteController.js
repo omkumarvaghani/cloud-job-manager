@@ -897,3 +897,75 @@ exports.fetchQuoteDetails = async (req, res) => {
         });
     }
 };
+
+
+// **GET QUOTE IN CUSTOMER DETAILS OVERVIEW** 
+exports.getQuotesByCustomer = async (req, res) => {
+    const { CompanyId, CustomerId } = req.params;
+
+    const quoteSearchQuery = {
+        CompanyId,
+        CustomerId,
+        IsDelete: false,
+    };
+
+    const quotes = await Quote.aggregate([
+        {
+            $lookup: {
+                from: "user-profiles",
+                localField: "UserId",
+                foreignField: "CustomerId",
+                as: "customerData",
+            },
+        },
+        { $unwind: "$customerData" },
+        {
+            $lookup: {
+                from: "locations",
+                localField: "LocationId",
+                foreignField: "LocationId",
+                as: "locationData",
+            },
+        },
+        { $unwind: "$locationData" },
+        {
+            $addFields: {
+                customer: {
+                    FirstName: "$customerData.FirstName",
+                    LastName: "$customerData.LastName",
+                },
+                location: {
+                    Address: "$locationData.Address",
+                    City: "$locationData.City",
+                    State: "$locationData.State",
+                    Country: "$locationData.Country",
+                    Zip: "$locationData.Zip",
+                },
+            },
+        },
+        { $match: quoteSearchQuery },
+        { $sort: { updatedAt: -1 } },
+        {
+            $project: {
+                CompanyId: 1,
+                CustomerId: 1,
+                QuoteId: 1,
+                LocationId: 1,
+                Title: 1,
+                QuoteNumber: 1,
+                Status: 1,
+                customer: 1,
+                location: 1,
+                Total: 1,
+                createdAt: 1,
+                updatedAt: 1,
+            },
+        },
+    ]);
+
+    return res.status(200).json({
+        statusCode: quotes.length > 0 ? 200 : 204,
+        data: quotes.length > 0 ? quotes : null,
+        message: quotes.length > 0 ? null : "No quotes found",
+    });
+};

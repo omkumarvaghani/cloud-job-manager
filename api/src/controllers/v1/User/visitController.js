@@ -62,6 +62,37 @@ exports.getVisits = async (req, res) => {
     });
 };
 
+//**GET SPECIFIC VISIT DATA**
+exports.getVisitsData = async (req, res) => {
+    const { VisitId, ContractId } = req.params;
+
+    if (!VisitId || !ContractId) {
+        return res.status(400).json({
+            statusCode: 400,
+            message: "VisitId and ContractId are required!",
+        });
+    }
+
+    const visitData = await Visit.findOne({
+        VisitId,
+        ContractId,
+        IsDelete: false,
+    });
+
+    if (!visitData) {
+        return res.status(404).json({
+            statusCode: 404,
+            message: "No data found for the given VisitId and ContractId.",
+        });
+    }
+
+    return res.status(200).json({
+        statusCode: 200,
+        data: visitData,
+        message: "Data retrieved successfully.",
+    });
+};
+
 //**GET VISIT FOR SCHEDULE**
 exports.getVisitSchedule = async (req, res) => {
     try {
