@@ -37,6 +37,7 @@ const Expances = ({
   setOpen,
   data,
   ContractId,
+  WorkerId,
   fetchData,
   CompanyId,
   ExpenseId,
@@ -54,8 +55,11 @@ const Expances = ({
         return;
       }
       const expenseRes = await AxiosInstance.get(
-        `/expenses/expenses/${ExpenseId}/${ContractId}`
+        `/v1/expense/details/${ExpenseId}/${ContractId}`
       );
+      console.log(expenseRes, "expenseResexpenseRes123");
+      console.log(ContractId, "ContractId  ");
+      console.log(ExpenseId, "expenseRes12345");
       formik.setValues({
         ItemName: expenseRes?.data?.data?.ItemName,
         Description: expenseRes?.data?.data?.Description,
@@ -67,8 +71,9 @@ const Expances = ({
       });
       const person = teamData.find(
         (teamMember) =>
-          teamMember?.WorkerId === expenseRes?.data?.data?.WorkerId
+          teamMember?.UserId === expenseRes?.data?.data?.WorkerId
       );
+      console.log(expenseRes,"teamMember")
       setselectedPerson(person || null);
       if (expenseRes?.data?.data?.Attachment) {
         setFile(expenseRes?.data?.data?.Attachment);
@@ -94,6 +99,7 @@ const Expances = ({
       Total: "",
       Attachment: "",
       ReimburseTo: "",
+      UserId:""
     },
     validationSchema: Yup.object({
       ItemName: Yup.string().required("Item Name is required"),
@@ -113,7 +119,7 @@ const Expances = ({
         values["id"] = ExpenseId;
 
         const response = await AxiosInstance[values?.id ? "put" : "post"](
-          `${baseUrl}/expenses${
+          `${baseUrl}/v1/expense${
             values?.id ? `/${values?.id}/${values?.ContractId}` : ""
           }`,
           values
@@ -205,7 +211,7 @@ const Expances = ({
           return;
         }
 
-        const response = await AxiosInstance.get(`/v1/worker/get/${companyId}`);
+        const response = await AxiosInstance.get(`/v1/worker/get`);
         if (response?.status === 200) {
           setTeamData(response?.data?.data);
         } else {
@@ -224,22 +230,6 @@ const Expances = ({
   const [file, setFile] = useState();
   const [error, setError] = useState("");
   const [imageLoader, setImageLoader] = useState(false);
-
-  // const allowedFileTypes = ["image/jpeg", "image/png", "application/pdf"];
-
-  // const handleFileChange = (event) => {
-  //   const selectedFile = event.target.files[0];
-  //   if (selectedFile) {
-  //     if (allowedFileTypes.includes(selectedFile.type)) {
-  //       uploadImage(selectedFile);
-  //     } else {
-  //       setError(
-  //         "Unsupported file type. Please upload a JPEG, PNG, or PDF file."
-  //       );
-  //       setFile(null);
-  //     }
-  //   }
-  // };
 
   const uploadImage = async (file) => {
     setImageLoader(true);
@@ -499,45 +489,13 @@ const Expances = ({
             </Grid>
           </Grid>
           <Grid className="col-12 text-blue-color">
-            {/* <FormControl fullWidth>
-              <InputDropdown
-                onChange={(_, newValue) => {
-                  const selectedPersonId = newValue ? newValue?.WorkerId : "";
-                  formik.setFieldValue("WorkerId", selectedPersonId);
-                  setselectedPerson(newValue);
-                }}
-                textFieldProps={formik?.getFieldProps("WorkerId")}
-                options={teamData}
-                value={selectedPerson || null}
-                inputValue={selectedPerson ? selectedPerson?.FullName : ""}
-                onTextFieldChange={formik?.handleChange}
-                onBlur={formik?.handleBlur}
-                getOptionLabel={(option) => option?.FullName || ""}
-                error={
-                  formik?.touched?.WorkerId && Boolean(formik?.errors?.WorkerId)
-                }
-                helperText={
-                  formik?.touched?.WorkerId && formik?.errors?.WorkerId
-                }
-                filterOptions={(options, state) => {
-                  return options?.filter((option) =>
-                    option?.FullName?.toLowerCase()?.includes(
-                      state?.inputValue?.toLowerCase() || ""
-                    )
-                  );
-                }}
-                name="WorkerId"
-                label="Employee"
-                type="text"
-              />
-            </FormControl> */}
             <FormControl fullWidth>
               <InputDropdown
                 onChange={(_, newValue) => {
-                  const selectedPersonId = newValue ? newValue?.WorkerId : "";
+                  const selectedPersonId = newValue ? newValue?.UserId : "";
                   formik.setFieldValue("WorkerId", selectedPersonId);
                   setselectedPerson(newValue);
-                }}
+                }} 
                 textFieldProps={formik?.getFieldProps("WorkerId")}
                 options={teamData}
                 value={selectedPerson || null}

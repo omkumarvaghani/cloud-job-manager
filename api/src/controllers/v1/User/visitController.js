@@ -277,10 +277,10 @@ exports.getVisitDetails = async (req, res) => {
         const sortedVisits = [...Today, ...Upcoming, ...Past];
 
         if (!result || result.length === 0) {
-            return {
+            return res.status(204).json( {
                 statusCode: 204,
                 message: "No data found for ContractId and CompanyId.",
-            };
+            });
         }
 
         return res.status(200).json({
