@@ -112,18 +112,21 @@ function ContractDetails() {
           ...prevState,
           laborData: labourRes?.data?.data, // labor data
         }));
-  
+        
         const expenseRes = await AxiosInstance.get(
           `/v1/expense/${location?.state?.id}/${localStorage.getItem("CompanyId") || tokenDecode?.CompanyId}`
-        );
+        );    
+        console.log(location?.state?.id,"location?.state?.id")
+        console.log(expenseRes,"expenseResexpenseRes")
+        console.log(expenseRes?.data?.result,"expenseRes?.data?.result")
         setContractData((prevState) => ({
           ...prevState,
           expenseData: expenseRes?.data?.result, // expense data
         }));
-  
         const visitsRes = await AxiosInstance.get(
           `/v1/visit/${location?.state?.id}/${localStorage.getItem("CompanyId") || tokenDecode?.CompanyId}`
         );
+        console.log(visitsRes,'visitsRes')
         setContractData((prevState) => ({
           ...prevState,
           visitsData: visitsRes?.data?.data, // visit data
@@ -358,6 +361,7 @@ function ContractDetails() {
               data: { DeleteReason: deleteReason },
             }
           );
+          console.log(response,"response12345678987654")
           if (response?.data?.statusCode === 200) {
             setTimeout(() => {
               showToast.success(response?.data?.message);
@@ -431,7 +435,7 @@ function ContractDetails() {
       if (deleteReason) {
         try {
           const response = await AxiosInstance.delete(
-            `/expenses/${ExpenseId}/${ContractId}`,
+            `/v1/expense/${ExpenseId}/${ContractId}`,
             {
               data: { DeleteReason: deleteReason },
             }
@@ -475,7 +479,7 @@ function ContractDetails() {
       if (deleteReason) {
         try {
           const response = await AxiosInstance.delete(
-            `/visits/${VisitId}/${ContractId}`,
+            `/v1/visit/${VisitId}/${ContractId}`,
             {
               data: { DeleteReason: deleteReason },
             }
