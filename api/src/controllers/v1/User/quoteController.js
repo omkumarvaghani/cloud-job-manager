@@ -3,6 +3,8 @@ const moment = require("moment");
 const Quote = require("../../../models/User/Quote");
 const QuoteDetail = require("../../../models/User/QuoteItem");
 const { logUserEvent } = require("../../../middleware/eventMiddleware");
+const { addNotification } = require("../../../models/User/AddNotification");
+const Notification = require("../../../models/User/Notification");
 
 // **CREATE QUOTE WITH DETAILS**
 exports.createQuoteWithDetails = async (req, res) => {
@@ -12,6 +14,7 @@ exports.createQuoteWithDetails = async (req, res) => {
         const quoteData = req.body;
         quoteData.CompanyId = companyId;
         quoteData.QuoteId = uniqueId;
+        quoteData.CustomerId = quoteData.UserId;
 
         const details = Array.isArray(quoteData.details) ? quoteData.details : [];
 
@@ -23,7 +26,7 @@ exports.createQuoteWithDetails = async (req, res) => {
 
                 detail.QuoteId = uniqueId;
                 detail.QuoteItemId = uniqueDetailId;
-                detail.UserId = quoteData.UserId;
+                detail.CustomerId = quoteData.UserId;
                 detail.CompanyId = companyId;
 
                 return QuoteDetail.create(detail);
@@ -33,9 +36,16 @@ exports.createQuoteWithDetails = async (req, res) => {
         }
 
         await logUserEvent(companyId, "CREATE", `Created a new quote #${quoteData.QuoteNumber} titled "${quoteData.Title}"`, {
-            CreatedBy: req.user.EmailAddress,
+            newQuote
+        });
+
+        await addNotification({
+            CompanyId: quoteData.CompanyId,
+            CustomerId: quoteData.UserId,
             QuoteId: uniqueId,
-            Role: req.user.Role,
+            LocationId: quoteData.LocationId,
+            CreatedBy: "Quote creation",
+            AddedAt: quoteData.AddedAt,
         });
 
         return res.status(200).json({
@@ -77,17 +87,17 @@ exports.checkQuoteNumberExists = async (req, res) => {
     }
 };
 
-// **GET CUSTOMER QUOTES**
+// **GET CUSTOMER ASSIGN QUOTES**
 exports.getCustomerQuotes = async (req, res) => {
     try {
-        const { UserId } = req.params;
+        const { CustomerId } = req.params;
 
-        if (!UserId) {
-            return res.status(400).json({ statusCode: 400, message: "UserId is required!" });
+        if (!CustomerId) {
+            return res.status(400).json({ statusCode: 400, message: "CustomerId is required!" });
         }
 
         const quotes = await Quote.aggregate([
-            { $match: { UserId, IsDelete: false } },
+            { $match: { CustomerId, IsDelete: false } },
 
             {
                 $lookup: {
@@ -102,7 +112,7 @@ exports.getCustomerQuotes = async (req, res) => {
             {
                 $lookup: {
                     from: "users",
-                    localField: "UserId",
+                    localField: "CustomerId",
                     foreignField: "UserId",
                     as: "customerData",
                 },
@@ -112,7 +122,7 @@ exports.getCustomerQuotes = async (req, res) => {
             {
                 $lookup: {
                     from: "user-profiles",
-                    localField: "UserId",
+                    localField: "CustomerId",
                     foreignField: "UserId",
                     as: "usersDetails",
                 },
@@ -123,7 +133,7 @@ exports.getCustomerQuotes = async (req, res) => {
                 $project: {
                     _id: 1,
                     CompanyId: 1,
-                    UserId: 1,
+                    CustomerId: 1,
                     QuoteId: 1,
                     Title: 1,
                     SubTotal: 1,
@@ -222,9 +232,18 @@ exports.getQuotes = async (req, res) => {
             {
                 $lookup: {
                     from: "user-profiles",
-                    localField: "UserId",
+                    localField: "CustomerId",
                     foreignField: "UserId",
                     as: "usersDetails",
+                },
+            },
+            { $unwind: { path: "$usersDetails", preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: "locations",
+                    localField: "LocationId",
+                    foreignField: "LocationId",
+                    as: "locationDetails",
                 },
             },
             { $unwind: { path: "$usersDetails", preserveNullAndEmptyArrays: true } },
@@ -236,11 +255,11 @@ exports.getQuotes = async (req, res) => {
                         LastName: "$usersDetails.LastName",
                     },
                     location: {
-                        Address: "$usersDetails.Address",
-                        City: "$usersDetails.City",
-                        State: "$usersDetails.State",
-                        Country: "$usersDetails.Country",
-                        Zip: "$usersDetails.Zip",
+                        Address: "$locationDetails.Address",
+                        City: "$locationDetails.City",
+                        State: "$locationDetails.State",
+                        Country: "$locationDetails.Country",
+                        Zip: "$locationDetails.Zip",
                     },
                     Total: {
                         $toInt: { $round: [{ $toDouble: "$Total" }, 0] },
@@ -287,7 +306,7 @@ exports.getQuotes = async (req, res) => {
             {
                 $project: {
                     CompanyId: 1,
-                    UserId: 1,
+                    CustomerId: 1,
                     QuoteId: 1,
                     Title: 1,
                     QuoteNumber: 1,
@@ -297,6 +316,20 @@ exports.getQuotes = async (req, res) => {
                     Total: 1,
                     createdAt: 1,
                     updatedAt: 1,
+                },
+            },
+            {
+                $group: {
+                    _id: "$QuoteId",
+                    QuoteId: { $first: "$QuoteId" },
+                    Title: { $first: "$Title" },
+                    QuoteNumber: { $first: "$QuoteNumber" },
+                    Status: { $first: "$Status" },
+                    customer: { $first: "$customer" },
+                    location: { $first: "$location" },
+                    Total: { $first: "$Total" },
+                    createdAt: { $first: "$createdAt" },
+                    updatedAt: { $first: "$updatedAt" },
                 },
             },
         ];
@@ -317,8 +350,6 @@ exports.getQuotes = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in getQuotes:", error.message);
-        await logUserEvent(req.user.UserId, "ERROR", `Error fetching quotes: ${error.message}`, { CompanyId });
-
         return res.status(500).json({ statusCode: 500, message: "Internal Server Error" });
     }
 };
@@ -343,7 +374,7 @@ exports.getQuoteDetails = async (req, res) => {
             {
                 $lookup: {
                     from: "user-profiles",
-                    localField: "UserId",
+                    localField: "CustomerId",
                     foreignField: "UserId",
                     as: "customerData"
                 },
@@ -355,10 +386,24 @@ exports.getQuoteDetails = async (req, res) => {
                 },
             },
             {
+                $lookup: {
+                    from: "locations",
+                    localField: "LocationId",
+                    foreignField: "LocationId",
+                    as: "locationData"
+                },
+            },
+            {
+                $unwind: {
+                    path: "$locationData",
+                    preserveNullAndEmptyArrays: true
+                },
+            },
+            {
                 $project: {
                     QuoteId: 1,
                     CompanyId: 1,
-                    UserId: 1,
+                    CustomerId: 1,
                     Title: 1,
                     QuoteNumber: 1,
                     SubTotal: 1,
@@ -376,9 +421,16 @@ exports.getQuoteDetails = async (req, res) => {
                     Signature: 1,
                     ApproveDate: 1,
                     IsDelete: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
                     IsApprovedByCustomer: 1,
                     "customerData.FirstName": 1,
                     "customerData.LastName": 1,
+                    "locationData.Address": 1,
+                    "locationData.City": 1,
+                    "locationData.State": 1,
+                    "locationData.Zip": 1,
+                    "locationData.Country": 1,
                     products: 1,
                 },
             },
@@ -517,10 +569,18 @@ exports.updateQuote = async (req, res) => {
 
         const activityDescription = `Updated a quote #${updatedQuote.QuoteNumber} ${updatedQuote.Title}`;
         await logUserEvent(req.user.UserId, "UPDATE", activityDescription, {
-            QuoteId: updatedQuote.QuoteId,
-            QuoteNumber: updatedQuote.QuoteNumber,
-            Title: updatedQuote.Title,
+            updatedQuote
         });
+        const notificationData = {
+            CompanyId: updatedQuote.CompanyId,
+            CustomerId: updatedQuote.CustomerId,
+            QuoteId: updatedQuote.QuoteId,
+            LocationId: updatedQuote.LocationId,
+            CreatedBy: "Quote creation",
+            AddedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
+        };
+
+        await addNotification(notificationData);
 
         return res.status(200).json({
             statusCode: 200,
@@ -552,22 +612,18 @@ exports.deleteQuoteAndRelatedData = async (req, res) => {
             { $set: { IsDelete: true, DeleteReason } },
             { new: true }
         );
-
         const updatedQuoteDetails = await QuoteDetail.updateMany(
             { QuoteId, IsDelete: false },
             { $set: { IsDelete: true } }
         );
 
+        // Mark related notifications as deleted (Uncomment if needed)
         // const updatedNotifications = await Notification.updateMany(
-        //     { QuoteId },
+        //     { QuoteId, IsDelete: false },
         //     { $set: { IsDelete: true } }
         // );
 
-        if (
-            updatedQuote ||
-            updatedQuoteDetails.modifiedCount > 0
-            //  ||updatedNotifications.modifiedCount > 0
-        ) {
+        if (updatedQuote || updatedQuoteDetails.modifiedCount > 0) {
             const quoteId = updatedQuote ? updatedQuote.QuoteId : QuoteId;
             const quoteNumber = updatedQuote ? updatedQuote.QuoteNumber : "Unknown";
             const title = updatedQuote ? updatedQuote.Title : "Unknown";
@@ -578,16 +634,16 @@ exports.deleteQuoteAndRelatedData = async (req, res) => {
                 Title: title,
             });
 
+            await Notification.updateMany(
+                { QuoteId: QuoteId, IsDelete: false },
+                { $set: { IsDelete: true } }
+            );
+
             return res.status(200).json({
                 statusCode: 200,
                 message: "Quote deleted successfully!",
             });
         } else {
-            await logUserEvent(req.user.UserId, "ERROR", `Quote with ID ${QuoteId} not found or deletion failed.`, {
-                QuoteId,
-                DeleteReason,
-            });
-
             return res.status(404).json({
                 statusCode: 404,
                 message: "Quote not found or deletion failed.",
@@ -607,4 +663,309 @@ exports.deleteQuoteAndRelatedData = async (req, res) => {
             error: error.message,
         });
     }
+};
+
+
+// **CUSTOMER APPROVED QUOTE**
+exports.approveQuote = async (req, res) => {
+    const { QuoteId } = req.params;
+    const { Status } = req.body;
+
+    if (!Status) {
+        return res.status(400).json({
+            statusCode: 400,
+            message: "Status is required",
+        });
+    }
+
+    try {
+        const updatedQuote = await Quote.findOneAndUpdate(
+            { QuoteId },
+            {
+                $set: {
+                    Status,
+                    updatedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
+                },
+            },
+            { new: true }
+        );
+
+        if (!updatedQuote) {
+            return res.status(404).json({
+                statusCode: 404,
+                message: "Quote not found!",
+            });
+        }
+
+        return res.status(200).json({
+            statusCode: 200,
+            message: "Quote status updated successfully",
+            data: updatedQuote,
+        });
+    } catch (error) {
+        console.error("Error updating quote status:", error.message);
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Something went wrong, please try later!",
+        });
+    }
+};
+
+// **SCHEDULE CALENDAR IN COMPANY**
+exports.getScheduleData = async (req, res) => {
+    const { CompanyId } = req.params;
+
+    try {
+        const data = await Quote.aggregate([
+            {
+                $match: {
+                    CompanyId: CompanyId,
+                    IsDelete: false,
+                },
+            },
+            {
+                $lookup: {
+                    from: "user-profiles",
+                    localField: "CustomerId",
+                    foreignField: "UserId",
+                    as: "customerData",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$customerData",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $lookup: {
+                    from: "locations",
+                    localField: "LocationId",
+                    foreignField: "LocationId",
+                    as: "locationData",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$locationData",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $project: {
+                    Title: 1,
+                    QuoteNumber: 1,
+                    CompanyId: 1,
+                    QuoteId: 1,
+                    CustomerId: 1,
+                    LocationId: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    FirstName: "$customerData.FirstName",
+                    LastName: "$customerData.LastName",
+                    Address: {
+                        $ifNull: [
+                            { $ifNull: ["$locationData.Address", "$customerData.Address"] },
+                            "N/A"
+                        ],
+                    },
+                    City: { $ifNull: ["$locationData.City", "$customerData.City"] },
+                    State: { $ifNull: ["$locationData.State", "$customerData.State"] },
+                    Zip: { $ifNull: ["$locationData.Zip", "$customerData.Zip"] },
+                    Country: { $ifNull: ["$locationData.Country", "$customerData.Country"] },
+                    sheduleDate: {
+                        $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" },
+                    },
+                },
+            },
+        ]);
+
+        return res.status(200).json({
+            statusCode: 200,
+            data: data,
+            message: "Read All Plans",
+        });
+    } catch (error) {
+        console.error("Error in getScheduleData:", error.message);
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+// **GET QUOTE DETAILS FOR ASSIGN CUSTOMER**
+exports.fetchQuoteDetails = async (req, res) => {
+    const { QuoteId } = req.params;
+    const sortField = req.query.sortField || "updatedAt";
+    const sortOrder = req.query.sortOrder === "desc" ? "desc" : "asc";
+
+    const quotesSearchQuery = { QuoteId, IsDelete: false };
+
+    const sortOptions = {};
+    if (sortField) {
+        sortOptions[sortField] = sortOrder === "desc" ? -1 : 1;
+    }
+
+    try {
+        const quotes = await Quote.aggregate([
+            {
+                $match: quotesSearchQuery,
+            },
+            {
+                $lookup: {
+                    from: "user-profiles",
+                    localField: "CustomerId",
+                    foreignField: "UserId",
+                    as: "customerDetails",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$customerDetails",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $lookup: {
+                    from: "locations",
+                    let: { quoteLocationId: "$LocationId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$LocationId", "$$quoteLocationId"] },
+                            },
+                        },
+                    ],
+                    as: "propertyDetails",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$propertyDetails",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $lookup: {
+                    from: "quotedetails",
+                    localField: "QuoteId",
+                    foreignField: "QuoteId",
+                    as: "products",
+                },
+            },
+            {
+                $addFields: {
+                    property: "$propertyDetails",
+                    FirstName: "$customerDetails.FirstName",
+                    LastName: "$customerDetails.LastName",
+                    PhoneNumber: "$customerDetails.PhoneNumber",
+                    Address: {
+                        $ifNull: ["$propertyDetails.Address", "$customerDetails.Address"],
+                    },
+                    City: {
+                        $ifNull: ["$propertyDetails.City", "$customerDetails.City"],
+                    },
+                    State: {
+                        $ifNull: ["$propertyDetails.State", "$customerDetails.State"],
+                    },
+                    Zip: {
+                        $ifNull: ["$propertyDetails.Zip", "$customerDetails.Zip"],
+                    },
+                    Country: {
+                        $ifNull: ["$propertyDetails.Country", "$customerDetails.Country"],
+                    },
+                },
+            },
+            {
+                $unset: ["propertyDetails", "customerDetails"],
+            },
+            { $sort: sortOptions },
+        ]);
+
+        return res.status(200).json({
+            statusCode: quotes.length > 0 ? 200 : 204,
+            message:
+                quotes.length > 0 ? "Quotes retrieved successfully" : "No quotes found",
+            data: quotes,
+        });
+    } catch (error) {
+        console.error("Error in fetchQuoteDetails:", error.message);
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+
+// **GET QUOTE IN CUSTOMER DETAILS OVERVIEW** 
+exports.getQuotesByCustomer = async (req, res) => {
+    const { CompanyId, CustomerId } = req.params;
+
+    const quoteSearchQuery = {
+        CompanyId,
+        CustomerId,
+        IsDelete: false,
+    };
+
+    const quotes = await Quote.aggregate([
+        {
+            $lookup: {
+                from: "user-profiles",
+                localField: "UserId",
+                foreignField: "CustomerId",
+                as: "customerData",
+            },
+        },
+        { $unwind: "$customerData" },
+        {
+            $lookup: {
+                from: "locations",
+                localField: "LocationId",
+                foreignField: "LocationId",
+                as: "locationData",
+            },
+        },
+        { $unwind: "$locationData" },
+        {
+            $addFields: {
+                customer: {
+                    FirstName: "$customerData.FirstName",
+                    LastName: "$customerData.LastName",
+                },
+                location: {
+                    Address: "$locationData.Address",
+                    City: "$locationData.City",
+                    State: "$locationData.State",
+                    Country: "$locationData.Country",
+                    Zip: "$locationData.Zip",
+                },
+            },
+        },
+        { $match: quoteSearchQuery },
+        { $sort: { updatedAt: -1 } },
+        {
+            $project: {
+                CompanyId: 1,
+                CustomerId: 1,
+                QuoteId: 1,
+                LocationId: 1,
+                Title: 1,
+                QuoteNumber: 1,
+                Status: 1,
+                customer: 1,
+                location: 1,
+                Total: 1,
+                createdAt: 1,
+                updatedAt: 1,
+            },
+        },
+    ]);
+
+    return res.status(200).json({
+        statusCode: quotes.length > 0 ? 200 : 204,
+        data: quotes.length > 0 ? quotes : null,
+        message: quotes.length > 0 ? null : "No quotes found",
+    });
 };

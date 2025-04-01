@@ -214,10 +214,14 @@ const AddContract = ({
                         fontWeight: "600",
                       }}
                     >
-                      {customersData?.FirstName
+                      {customersData?.customer?.FirstName &&
+                      customersData?.customer?.LastName
+                        ? `${customersData?.customer?.FirstName} ${customersData?.customer?.LastName}`
+                        : customersData?.FirstName && customersData?.LastName
                         ? `${customersData?.FirstName} ${customersData?.LastName}`
                         : "Customer Name"}
                     </Typography>
+
                     {!customersData?.FirstName && (
                       <Button
                         className="mx-3 bg-button-blue-color text-white-color "
@@ -389,22 +393,25 @@ const AddContract = ({
                         </Typography>
                         <Typography>
                           {propertyData?.Address ||
-                            customersData?.location[0]?.Address ||
-                            "-"}{" "},
+                            customersData?.location?.Address ||
+                            "-"}{" "}
+                          ,
                           <br />
                           {propertyData?.City ||
-                            customersData?.location[0]?.City ||
+                            customersData?.location?.City ||
                             "-"}
                           ,{" "}
                           {propertyData?.State ||
-                            customersData?.location[0]?.State ||
-                            "-"}{" "},
+                            customersData?.location?.State ||
+                            "-"}{" "}
+                          ,
                           {propertyData?.Zip ||
-                            customersData?.location[0]?.Zip ||
-                            "-"},
+                            customersData?.location?.Zip ||
+                            "-"}
+                          ,
                           <br />
                           {propertyData?.Country ||
-                            customersData?.location[0]?.Country ||
+                            customersData?.location?.Country ||
                             "-"}{" "}
                           <br />
                           <a
@@ -635,9 +642,7 @@ const AddContract = ({
                                                 type="checkbox"
                                                 checked={
                                                   checkedState &&
-                                                  !!checkedState[
-                                                    person?.WorkerId
-                                                  ]
+                                                  !!checkedState[person?.UserId]
                                                 }
                                                 onChange={(e) =>
                                                   handleTeamSelect(e, person)

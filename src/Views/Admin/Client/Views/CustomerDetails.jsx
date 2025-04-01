@@ -164,6 +164,7 @@ const CustomerDetails = ({
                   </Grid>
                   {data?.FirstName ? data?.FirstName : "-"}&nbsp;
                   {data?.LastName ? data?.LastName : "-"}
+                  {console.log(data,"datadata")}
                 </Grid>
                 <Grid className="customer-detail-sec">
                   <Typography className="mb-2 ">

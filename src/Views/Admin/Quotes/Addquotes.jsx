@@ -32,8 +32,9 @@ function AddQuote() {
   const [dropdown, setDropdown] = useState(false);
   const [modal, setModal] = useState(false);
   const [customersData, setCustomersData] = useState({});
-  console.log(customersData,"customersData098")
+  console.log(customersData, "customersData");
   const [propertyData, setPropertyData] = useState({});
+  console.log(propertyData, "propertyData");
   const [quotesData, setQuotesData] = useState({});
   const [showTax, setShowTax] = useState(false);
   const [lineItems, setLineItems] = useState([
@@ -160,7 +161,7 @@ function AddQuote() {
       Discount: "",
       Tax: "",
       Status: "",
-    },        
+    },
     validationSchema: Yup.object({
       Title: Yup.string().required("Title Required"),
     }),
@@ -346,11 +347,16 @@ function AddQuote() {
           );
           if (res.data?.statusCode === 200) {
             const data = res?.data?.data;
-
             formik.setValues({
               Title: data?.Title,
-              Firstname: data?.customer?.Firstname,
-              LastName: data?.customer?.LastName,
+              FirstName: data.customerData?.FirstName || "",
+              LastName: data.customerData?.LastName || "",
+              PhoneNumber: data.customerData?.PhoneNumber || "",
+              Address: data.locationData?.Address || "",
+              City: data.locationData?.City || "",
+              State: data.locationData?.State || "",
+              Zip: data.locationData?.Zip || "",
+              Country: data.locationData?.Country || "",
               QuoteNumber: data?.QuoteNumber,
               CustomerId: data?.CustomerId,
               CompanyId: data.CompanyId,
@@ -364,6 +370,10 @@ function AddQuote() {
             });
 
             setQuotesData(data);
+            setCustomersData({
+              ...data?.customerData,
+              location: data?.locationData || {},
+            });
             setLineItems(
               data?.products || [
                 {
@@ -402,7 +412,7 @@ function AddQuote() {
           }`
         );
         if (res.data?.statusCode === 200) {
-          const nextQuoteNumber = Number(res.data?.quoteNumber) + 1;
+          const nextQuoteNumber = Number(res.data?.quoteNumber);
           formik.setValues({
             ...formik.values,
             QuoteNumber: nextQuoteNumber,

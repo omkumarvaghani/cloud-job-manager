@@ -21,13 +21,14 @@ const Invoice = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [loader, setLoader] = useState(true);
+  const [loader, setLoader] = useState(false);
   const [isCustomer, setIsCustomer] = useState(false);
   const [source, setModalSource] = useState(false);
   const [countData, setCountData] = useState(0);
   const [isProperty, setIsProperty] = useState(false);
   const [propertyData, setPropertyData] = useState({});
   const [customersData, setCustomersData] = useState({});
+  console.log(customersData,"customersData")
   const [loading, setLoading] = useState(false);
   const { staffData } = useStaffContext();
 
