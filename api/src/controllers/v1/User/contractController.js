@@ -1142,7 +1142,7 @@ exports.getInvoiceDataByCustomerId = async (req, res) => {
     }
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Remove time part for date comparison
+    today.setHours(0, 0, 0, 0);
     const isoToday = today.toISOString();
 
     console.log("isoToday:", isoToday);
@@ -1189,18 +1189,19 @@ exports.getInvoiceDataByCustomerId = async (req, res) => {
                     $group: {
                       _id: "$ContractId",
                       todayVisit: {
-                        $first: {
-                          $cond: [
-                            {
-                              $and: [
-                                { $gte: ["$StartDate", new Date(isoToday)] },
-                                { $lt: ["$StartDate", new Date(isoToday).setHours(23, 59, 59, 999)] }
-                              ]
-                            },
-                            "$$ROOT",
-                            null
-                          ]
-                        }
+                        // $first: {
+                        //   $cond: [
+                        //     {
+                        //       $and: [
+                        //         { $gte: ["$StartDate", new Date(isoToday)] },
+                        //         { $lt: ["$StartDate", new Date(isoToday).setHours(23, 59, 59, 999)] }
+                        //       ]
+                        //     },
+                        //     "$$ROOT",
+                        //     null
+                        //   ]
+                        // }
+                        $first: "$$ROOT"
                       },
 
                       upcomingVisit: { $first: "$$ROOT" },

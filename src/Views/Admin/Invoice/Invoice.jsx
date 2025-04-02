@@ -28,6 +28,7 @@ const Invoice = () => {
   const [isProperty, setIsProperty] = useState(false);
   const [propertyData, setPropertyData] = useState({});
   const [customersData, setCustomersData] = useState({});
+  console.log(customersData,"customersData")
   const [loading, setLoading] = useState(false);
   const { staffData } = useStaffContext();
 

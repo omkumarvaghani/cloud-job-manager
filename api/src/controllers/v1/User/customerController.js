@@ -555,3 +555,4 @@ exports.sendWelcomeEmailToCustomer = async (req, res) => {
         };
     }
 };
+

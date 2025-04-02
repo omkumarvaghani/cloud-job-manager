@@ -19,16 +19,19 @@ const InvoiceTable = () => {
   const { CompanyName } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_API;
   const location = useLocation();
-
+  console.log(location, "locationlocation");
   useEffect(() => {
     const fetchData = async () => {
-      const CustomerId = location?.state?.CustomerId;
+      const CustomerId = location?.state?.UserId;
+      console.log(location?.state?.UserId, "Location State");
+      console.log(CustomerId, "CustomerId");
       if (!CustomerId) return;
       setLoader(true);
       try {
         const res = await AxiosInstance.get(
-          `${baseUrl}/contract/get_invoice_data/${CustomerId}`
+          `${baseUrl}/v1/contract/get_invoice_data/${CustomerId}`
         );
+        console.log(res, "resresres");
         const data = res?.data?.data;
         setCustomerData(data);
       } catch (error) {
