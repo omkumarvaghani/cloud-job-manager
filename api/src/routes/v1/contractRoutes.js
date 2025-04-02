@@ -1,6 +1,6 @@
 const express = require("express");
 const { protect } = require("../../middleware/authMiddleware");
-const { createContract, checkContractNumber, getContracts, getContractDetails, getMaxContractNumber, getContractByCustomer, updateContract, deleteContract, getInvoiceDataByCustomerId, } = require("../../controllers/v1/User/contractController");
+const { createContract, checkContractNumber, getContracts, getContractDetails, getMaxContractNumber, getContractByCustomer, updateContract, deleteContract, getInvoiceDataByCustomerId, getContractCustomerProperty, } = require("../../controllers/v1/User/contractController");
 
 const router = express.Router();
 
@@ -12,6 +12,7 @@ router.get("/contract_details/:ContractId", protect, getContractDetails);
 router.get("/get_number/:CompanyId", protect, getMaxContractNumber);
 router.get("/get_contract_customer/:CompanyId/:CustomerId", protect, getContractByCustomer);
 router.get("/get_invoice_data/:CustomerId", protect, getInvoiceDataByCustomerId);
+router.get("/get_contract_customer_property/:CustomerId/:LocationId", protect, getContractCustomerProperty);
 
 router.put("/:ContractId", protect, updateContract);
 

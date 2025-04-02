@@ -19,5 +19,10 @@ router.use("/v1/labour", require("../routes/v1/labourRoutes"));
 router.use("/v1/worker", require("../routes/v1/workerRoutes"));
 router.use("/v1/expense", require("../routes/v1/expenseRoutes"));
 router.use("/v1/invoice", require("../routes/v1/invoiceRoutes"));
+router.use("/v1/template", require("../routes/v1/templateRoutes"));
+router.use("/v1/mail-configuration", require("../routes/v1/mailConfigRoutes"));
+router.use("/v1/mail-preference", require("../routes/v1/mail-PreferenceRoutes"));
+router.use("/v1/company-mail", require("../routes/v1/companyMailRoutes"));
+router.use("/v1/email-logs", require("../routes/v1/emailLogRoutes"));
 
 module.exports = router;

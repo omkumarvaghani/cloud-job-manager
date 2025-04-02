@@ -387,6 +387,20 @@ exports.getQuoteDetails = async (req, res) => {
             },
             {
                 $lookup: {
+                    from: "users",
+                    localField: "CustomerId",
+                    foreignField: "UserId",
+                    as: "userData"
+                },
+            },
+            {
+                $unwind: {
+                    path: "$userData",
+                    preserveNullAndEmptyArrays: true
+                },
+            },
+            {
+                $lookup: {
                     from: "locations",
                     localField: "LocationId",
                     foreignField: "LocationId",
@@ -398,6 +412,11 @@ exports.getQuoteDetails = async (req, res) => {
                     path: "$locationData",
                     preserveNullAndEmptyArrays: true
                 },
+            },
+            {
+                $addFields: {
+                    "customerData.EmailAddress": "$userData.EmailAddress"
+                }
             },
             {
                 $project: {
@@ -426,6 +445,8 @@ exports.getQuoteDetails = async (req, res) => {
                     IsApprovedByCustomer: 1,
                     "customerData.FirstName": 1,
                     "customerData.LastName": 1,
+                    "customerData.PhoneNumber": 1,
+                    "customerData.EmailAddress": 1,
                     "locationData.Address": 1,
                     "locationData.City": 1,
                     "locationData.State": 1,
@@ -435,6 +456,7 @@ exports.getQuoteDetails = async (req, res) => {
                 },
             },
         ]);
+
 
         if (quotes.length === 0) {
             return res.status(404).json({
@@ -898,74 +920,229 @@ exports.fetchQuoteDetails = async (req, res) => {
     }
 };
 
-
-// **GET QUOTE IN CUSTOMER DETAILS OVERVIEW** 
+// **GET QUOTE IN CUSTOMER DETAILS OVERVIEW**
 exports.getQuotesByCustomer = async (req, res) => {
-    const { CompanyId, CustomerId } = req.params;
+    try {
+        const { CompanyId, CustomerId } = req.params;
 
-    const quoteSearchQuery = {
-        CompanyId,
-        CustomerId,
-        IsDelete: false,
-    };
+        const quoteSearchQuery = {
+            CompanyId,
+            CustomerId,
+            IsDelete: false,
+        };
 
-    const quotes = await Quote.aggregate([
-        {
-            $lookup: {
-                from: "user-profiles",
-                localField: "UserId",
-                foreignField: "CustomerId",
-                as: "customerData",
-            },
-        },
-        { $unwind: "$customerData" },
-        {
-            $lookup: {
-                from: "locations",
-                localField: "LocationId",
-                foreignField: "LocationId",
-                as: "locationData",
-            },
-        },
-        { $unwind: "$locationData" },
-        {
-            $addFields: {
-                customer: {
-                    FirstName: "$customerData.FirstName",
-                    LastName: "$customerData.LastName",
-                },
-                location: {
-                    Address: "$locationData.Address",
-                    City: "$locationData.City",
-                    State: "$locationData.State",
-                    Country: "$locationData.Country",
-                    Zip: "$locationData.Zip",
+        const quotes = await Quote.aggregate([
+            {
+                $lookup: {
+                    from: "user-profiles",
+                    localField: "UserId",
+                    foreignField: "CustomerId",
+                    as: "customerData",
                 },
             },
-        },
-        { $match: quoteSearchQuery },
-        { $sort: { updatedAt: -1 } },
-        {
-            $project: {
-                CompanyId: 1,
-                CustomerId: 1,
-                QuoteId: 1,
-                LocationId: 1,
-                Title: 1,
-                QuoteNumber: 1,
-                Status: 1,
-                customer: 1,
-                location: 1,
-                Total: 1,
-                createdAt: 1,
-                updatedAt: 1,
+            {
+                $lookup: {
+                    from: "locations",
+                    localField: "LocationId",
+                    foreignField: "LocationId",
+                    as: "locationData",
+                },
             },
-        },
-    ]);
+            {
+                $addFields: {
+                    customer: {
+                        FirstName: { $arrayElemAt: ["$customerData.FirstName", 0] },
+                        LastName: { $arrayElemAt: ["$customerData.LastName", 0] },
+                    },
+                    location: {
+                        Address: { $arrayElemAt: ["$locationData.Address", 0] },
+                        City: { $arrayElemAt: ["$locationData.City", 0] },
+                        State: { $arrayElemAt: ["$locationData.State", 0] },
+                        Country: { $arrayElemAt: ["$locationData.Country", 0] },
+                        Zip: { $arrayElemAt: ["$locationData.Zip", 0] },
+                    },
+                },
+            },
+            { $match: quoteSearchQuery },
+            { $sort: { updatedAt: -1 } },
 
-    return res.status(200).json({
-        statusCode: quotes.length > 0 ? 200 : 204,
-        data: quotes.length > 0 ? quotes : null,
-        message: quotes.length > 0 ? null : "No quotes found",
-    });
+            // **Group to remove duplicates**
+            {
+                $group: {
+                    _id: "$QuoteId", // Ensures uniqueness
+                    CompanyId: { $first: "$CompanyId" },
+                    CustomerId: { $first: "$CustomerId" },
+                    QuoteId: { $first: "$QuoteId" },
+                    LocationId: { $first: "$LocationId" },
+                    Title: { $first: "$Title" },
+                    QuoteNumber: { $first: "$QuoteNumber" },
+                    Status: { $first: "$Status" },
+                    customer: { $first: "$customer" },
+                    location: { $first: "$location" },
+                    Total: { $first: "$Total" },
+                    createdAt: { $first: "$createdAt" },
+                    updatedAt: { $first: "$updatedAt" },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    CompanyId: 1,
+                    CustomerId: 1,
+                    QuoteId: 1,
+                    LocationId: 1,
+                    Title: 1,
+                    QuoteNumber: 1,
+                    Status: 1,
+                    customer: 1,
+                    location: 1,
+                    Total: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                },
+            },
+        ]);
+
+        return res.status(200).json({
+            statusCode: quotes.length > 0 ? 200 : 204,
+            data: quotes.length > 0 ? quotes : null,
+            message: quotes.length > 0 ? null : "No quotes found",
+        });
+    } catch (error) {
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Something went wrong, please try again later.",
+            error: error.message,
+        });
+    }
 };
+
+// **GET QUOTE IN CUSTOMER LOCATION WISE**
+exports.getQuotesByCustomerAndLocation = async (req, res) => {
+    try {
+        const { CustomerId, LocationId } = req.params;
+        const CompanyId = Array.isArray(req.user.CompanyId) ? req.user.CompanyId : [req.user.CompanyId];
+
+        if (!CompanyId) {
+            return res.status(400).json({ message: "Unauthorized: CompanyId missing in user data" });
+        }
+
+        const query = req.query;
+        const pageSize = parseInt(query.pageSize) || 10;
+        const pageNumber = parseInt(query.pageNumber) || 0;
+        const search = query.search?.trim();
+        const sortOrder = query.sortOrder?.toLowerCase() === "desc" ? -1 : 1;
+
+        const quoteSearchQuery = {
+            CompanyId: String(CompanyId),
+            CustomerId: String(CustomerId),
+            LocationId: String(LocationId),
+            IsDelete: false,
+        };
+
+
+        const sortOptions = { updatedAt: sortOrder };
+
+        const basePipeline = [
+            { $match: quoteSearchQuery },
+            {
+                $lookup: {
+                    from: "user-profiles",
+                    localField: "CustomerId",
+                    foreignField: "UserId",
+                    as: "customerData",
+                },
+            },
+            { $unwind: { path: "$customerData", preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: "locations",
+                    localField: "LocationId",
+                    foreignField: "LocationId",
+                    as: "locationData",
+                },
+            },
+            { $unwind: { path: "$locationData", preserveNullAndEmptyArrays: true } },
+            {
+                $set: {
+                    customer: {
+                        FirstName: "$customerData.FirstName",
+                        LastName: "$customerData.LastName",
+                    },
+                    location: {
+                        Address: "$locationData.Address",
+                        City: "$locationData.City",
+                        State: "$locationData.State",
+                        Country: "$locationData.Country",
+                        Zip: "$locationData.Zip",
+                    },
+                },
+            },
+        ];
+
+        if (search) {
+            const searchParts = search.split(" ").filter(Boolean);
+            const searchConditions = searchParts.map((part) => ({
+                $or: [
+                    { "customer.FirstName": { $regex: new RegExp(part, "i") } },
+                    { "customer.LastName": { $regex: new RegExp(part, "i") } },
+                    { "location.Address": { $regex: new RegExp(part, "i") } },
+                    { "location.City": { $regex: new RegExp(part, "i") } },
+                    { "location.State": { $regex: new RegExp(part, "i") } },
+                    { "location.Country": { $regex: new RegExp(part, "i") } },
+                    { "location.Zip": { $regex: new RegExp(part, "i") } },
+                    { Title: { $regex: new RegExp(part, "i") } },
+                    { QuoteNumber: { $regex: new RegExp(part, "i") } },
+                ],
+            }));
+
+            basePipeline.push({ $match: { $and: searchConditions } });
+        }
+
+        const countPipeline = [...basePipeline, { $count: "totalCount" }];
+        const mainPipeline = [
+            ...basePipeline,
+            {
+                $project: {
+                    CompanyId: 1,
+                    CustomerId: 1,
+                    QuoteId: 1,
+                    LocationId: 1,
+                    Title: 1,
+                    QuoteNumber: 1,
+                    Status: 1,
+                    customer: 1,
+                    location: 1,
+                    Total: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                },
+            },
+            { $sort: sortOptions },
+            { $skip: pageNumber * pageSize },
+            { $limit: pageSize },
+        ];
+
+        const [countResult, quotes] = await Promise.all([
+            Quote.aggregate(countPipeline),
+            Quote.aggregate(mainPipeline).collation({ locale: "en", strength: 2 }),
+        ]);
+
+        const totalCount = countResult.length > 0 ? countResult[0].totalCount : 0;
+
+        return res.status(200).json({
+            statusCode: "200",
+            data: quotes,
+            totalCount,
+            totalPages: Math.ceil(totalCount / pageSize),
+            currentPage: pageNumber,
+            message: quotes.length > 0 ? "Quotes retrieved successfully" : "No quotes found",
+        });
+    } catch (error) {
+        console.error("Error fetching quotes:", error);
+        return res
+            .status(500)
+            .json({ message: "Internal server error", error: error.message });
+    }
+};
+
