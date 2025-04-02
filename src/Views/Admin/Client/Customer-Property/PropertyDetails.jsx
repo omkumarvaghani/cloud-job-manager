@@ -88,37 +88,32 @@ const PropertyDetails = () => {
   };
 
   const [quotes, setQuotes] = useState([]);
-  useEffect(() => {
-    const fetchQuote = async () => {
-      if (data && data?.CustomerId && data?.LocationId) {
-        try {
-          const response = await AxiosInstance.get(
-            `${baseUrl}/quote/get_quotes_customer_property/${
-              localStorage.getItem("CompanyId") || tokenDecode?.companyId
-            }/${data?.CustomerId}/${data?.LocationId}`
-          );
-          if (response?.data?.statusCode === 200) {
-            setQuotes(response?.data?.data);
-          }
-        } catch (err) {
-          console.error("Error: ", err.message);
-        }
-      }
-    };
-
-    fetchQuote();
-  }, [data, tokenDecode]);
-
-  const [contract, setContract] = useState([]);
+  console.log(quotes, "quotes");
 
   useEffect(() => {
     const fetchContract = async () => {
       if (data && data?.CustomerId && data?.LocationId) {
         try {
           const response = await AxiosInstance.get(
-            `${baseUrl}/contract/get_contract_customer_property/${
-              localStorage.getItem("CompanyId") || tokenDecode?.companyId
-            }/${data?.CustomerId}/${data?.LocationId}`
+            `${baseUrl}/v1/quote/get_quotes_customer_property/${data?.CustomerId}/${data?.LocationId}`
+          );
+          setQuotes(response?.data?.data);
+        } catch (err) {
+          console.error("Error: ", err.message);
+        }
+      }
+    };
+    fetchContract();
+  }, [data, tokenDecode]);
+
+  const [contract, setContract] = useState([]);
+  console.log(contract, "contract");
+  useEffect(() => {
+    const fetchContract = async () => {
+      if (data && data?.CustomerId && data?.LocationId) {
+        try {
+          const response = await AxiosInstance.get(
+            `${baseUrl}/v1/contract/get_contract_customer_property/${data?.CustomerId}/${data?.LocationId}`
           );
           setContract(response?.data?.data);
         } catch (err) {
@@ -464,9 +459,9 @@ const PropertyDetails = () => {
                                               <Typography
                                                 style={{
                                                   color:
-                                                    data?.status === "Approved"
+                                                    data?.Status === "Approved"
                                                       ? "rgb(88, 204, 88)"
-                                                      : data?.status ===
+                                                      : data?.Status ===
                                                         "Awaiting Response"
                                                       ? "orange"
                                                       : "#063164",
@@ -478,8 +473,8 @@ const PropertyDetails = () => {
                                                     fontSize: "13px",
                                                   }}
                                                 >
-                                                  {data?.status ||
-                                                    "status not available"}
+                                                  {data?.Status ||
+                                                    "Status not available"}
                                                 </Typography>
                                               </Typography>
                                             </Col>
@@ -774,9 +769,9 @@ const PropertyDetails = () => {
                                               <Typography
                                                 style={{
                                                   color:
-                                                    data?.status === "Approved"
+                                                    data?.Status === "Approved"
                                                       ? "rgb(88, 204, 88)"
-                                                      : data?.status ===
+                                                      : data?.Status ===
                                                         "Awaiting Response"
                                                       ? "orange"
                                                       : "#063164",
@@ -966,9 +961,9 @@ const PropertyDetails = () => {
                                           <Typography
                                             style={{
                                               color:
-                                                data?.status === "Approved"
+                                                data?.Status === "Approved"
                                                   ? "rgb(88, 204, 88)"
-                                                  : data?.status ===
+                                                  : data?.Status ===
                                                     "Awaiting Response"
                                                   ? "orange"
                                                   : "#063164",
@@ -981,8 +976,8 @@ const PropertyDetails = () => {
                                                 fontSize: "13px",
                                               }}
                                             >
-                                              {data?.status ||
-                                                "status not available"}
+                                              {data?.Status ||
+                                                "Status not available"}
                                             </Typography>
                                           </Typography>
                                         </Col>
@@ -1347,9 +1342,9 @@ const PropertyDetails = () => {
                                           <Typography
                                             style={{
                                               color:
-                                                data?.status === "Approved"
+                                                data?.Status === "Approved"
                                                   ? "rgb(88, 204, 88)"
-                                                  : data?.status ===
+                                                  : data?.Status ===
                                                     "Awaiting Response"
                                                   ? "orange"
                                                   : "#063164",

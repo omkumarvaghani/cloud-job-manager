@@ -57,9 +57,7 @@ const Expances = ({
       const expenseRes = await AxiosInstance.get(
         `/v1/expense/details/${ExpenseId}/${ContractId}`
       );
-      console.log(expenseRes, "expenseResexpenseRes123");
-      console.log(ContractId, "ContractId  ");
-      console.log(ExpenseId, "expenseRes12345");
+      
       formik.setValues({
         ItemName: expenseRes?.data?.data?.ItemName,
         Description: expenseRes?.data?.data?.Description,
@@ -73,7 +71,6 @@ const Expances = ({
         (teamMember) =>
           teamMember?.UserId === expenseRes?.data?.data?.WorkerId
       );    
-      console.log(teamData,"teamDatateamData")   
       setselectedPerson(person || null);
       if (expenseRes?.data?.data?.Attachment) {
         setFile(expenseRes?.data?.data?.Attachment);

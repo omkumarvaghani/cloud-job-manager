@@ -57,12 +57,12 @@ const Templates = () => {
   const getData = async (companyId) => {
     setLoader(true);
     try {
-      if (!companyId) {
-        console.error("Company ID is not available.");
-        return;
-      }
+      // if (!companyId) {
+      //   console.error("Company ID is not available.");
+      //   return;
+      // }
 
-      const res = await AxiosInstance.get(`/template/${companyId}`, {
+      const res = await AxiosInstance.get(`/v1/template`, {
         params: {
           pageSize: rowsPerPage,
           pageNumber: page,
@@ -71,6 +71,7 @@ const Templates = () => {
           sortOrder: sortOrder,
         },
       });
+      console.log(res, "resres");
       if (res?.data) {
         setcustomersData(res.data.data || []);
         setCountData(res.data.totalCount || 0);
@@ -110,10 +111,10 @@ const Templates = () => {
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
-          const response = await AxiosInstance.delete(`/template/${id}`, {
+          const response = await AxiosInstance.delete(`/v1/template/${id}`, {
             data: { DeleteReason: deleteReason },
           });
-
+          
           if (response?.data?.statusCode === 200) {
             showToast.success(response?.data?.message);
 

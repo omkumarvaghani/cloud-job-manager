@@ -65,7 +65,6 @@ function ClientDetails() {
   const location = useLocation();
   const navigate = useNavigate();
   const { CompanyName } = useParams();
-  console.log(location,"locationss") 
   const [data, setData] = useState();
   const [open, setOpen] = useState({ isOpen: false, propertyData: null });
   const [loader, setLoader] = useState(true);
@@ -87,7 +86,6 @@ function ClientDetails() {
       const res = await AxiosInstance.get(
         `/v1/customer/detail/${location?.state?.id}`
       ); 
-      console.log(location?.state,"location?.state")   
       setData(res?.data?.data);
     } catch (error) {
       console.error("Error fetching customer data:", error);

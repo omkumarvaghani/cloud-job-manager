@@ -589,7 +589,6 @@ const ContractDetails = ({
                     label="+ New Time Entry"
                   />
                 </Grid>
-                {console.log(contractData, "contractData")}
                 {contractData?.laborData &&
                 contractData?.laborData?.length > 0 ? (
                   <Grid
@@ -643,7 +642,6 @@ const ContractDetails = ({
                           {contractData?.laborData.map((item, index) => (
                             <Row className="row py-2 text-left" key={index}>
                               <Col className="col text-blue-color contractDataTableSub tableCOlor">
-                                {console.log(item, "item0987")}
                                 {/* {item?.WorkerId?.FullName ||
                                   "FullName not available"} */}
                                 {item?.WorkerId
@@ -668,7 +666,6 @@ const ContractDetails = ({
                               </Col>
                               <Col className="col text-right">
                                 <>
-                                  {console.log(item, "item1234543")}
                                   <EditIcon
                                     className="contractEditDeleteImg"
                                     onClick={() => {
@@ -688,7 +685,6 @@ const ContractDetails = ({
                                       )
                                     }
                                   />
-                                  {console.log(item?.LabourId,"item?.LabourId")}
                                 </>
                               </Col>
                             </Row>
@@ -754,10 +750,7 @@ const ContractDetails = ({
                     label="+ New Expense"
                   />
                 </Grid>
-                {console.log(
-                  contractData?.expenseData,
-                  "contractData?.expenseData"
-                )}
+       
                 {contractData?.expenseData &&
                 contractData?.expenseData.length > 0 ? (
                   <Grid className="w-100">
@@ -815,8 +808,7 @@ const ContractDetails = ({
                         <TableBody>
                           {contractData?.expenseData.map((item, index) => (
                             <TableRow key={index}>
-                              {console.log(item, "item123412345433")}
-                              {console.log(contractData?.expenseData,"contractData?.expenseData")}
+                             
                               <TableCell
                                 className="text-blue-color contractDataTableSub"
                                 style={{ fontSize: "16px", fontWeight: 600 }}

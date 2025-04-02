@@ -49,7 +49,6 @@ const AdminDashboard = () => {
         const res = await AxiosInstance.post(`${baseUrl}/v1/auth/token_data`, {
           token,
         });
-        console.log(res, "res");
 
         setData(res.data.data);
       } catch (error) {

@@ -76,7 +76,6 @@ const AddUser = () => {
         const response = await AxiosInstance.get(
           `${baseUrl}/v1/worker/get/${location?.state?.id}`
         );
-        console.log(response, "response");
         const fetchedData = response?.data?.data;
         formik.setValues(fetchedData);
         const data = fetchedData.permissions;
@@ -165,7 +164,6 @@ const AddUser = () => {
         } else {
           response = await AxiosInstance.post(`${baseUrl}/v1/user`, object);
         }
-        console.log(response, "response");
 
         if (response?.data.statusCode === "200") {
           showToast.success(response?.data.message);

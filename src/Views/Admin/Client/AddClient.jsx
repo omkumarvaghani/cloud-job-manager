@@ -254,7 +254,6 @@ function AddClient() {
     const fetchData = async () => {
       try {
         const res = await AxiosInstance.get(`/v1/user/${location?.state?.id}`);
-        console.log(res, "res");
         const userProfile = res?.data?.data?.userProfile;
         const userLocations = res?.data?.data?.locations;
 
