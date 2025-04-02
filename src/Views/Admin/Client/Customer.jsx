@@ -165,7 +165,6 @@ const Customer = () => {
 
   const cellData = customersData?.map((item, index) => {
     const properties = item?.location || [];
-    console.log(item, "itemitem");
     let propertyDisplay;
     if (properties.length === 1) {
       const property = properties[0];

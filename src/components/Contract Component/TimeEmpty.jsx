@@ -45,9 +45,7 @@ const TimeEmpty = ({
 }) => {
   const baseUrl = process.env.REACT_APP_BASE_API;
   const [selectedPerson, setSelectedPerson] = useState(null);
-  console.log(selectedPerson, "selectedPerson");
   const [teamData, setTeamData] = useState([]);
-  console.log(teamData, "teamData");
   const [loading, setLoading] = useState(false);
   const [tokenDecode, setTokenDecode] = useState({});
   const location = useLocation();
@@ -85,12 +83,11 @@ const TimeEmpty = ({
       const person = teamData.find(
         (teamMember) => teamMember?.UserId === labourRes?.data?.data?.WorkerId
       );
-      console.log(labourRes,"personperson")
       setSelectedPerson(person || null);
     } catch (error) {
       console.error("Error: ", error?.messae);
     }
-  };
+  }; 
   useEffect(() => {
     fetchLabourData();
   }, [LabourId]);
@@ -114,7 +111,7 @@ const TimeEmpty = ({
       LabourCost: "",
       TotalCost: "0.00",
       UserId: "",
-    },
+    }, 
     validationSchema: Yup.object({
       StartTime: Yup.string().required("StartTime required"),
       EndTime: Yup.string().required("EndTime required"),
@@ -128,13 +125,11 @@ const TimeEmpty = ({
           setLoading(true);
           values["CompanyId"] = CompanyId;
           values["ContractId"] = ContractId;
-          // values["WorkerId"] = WorkerId;
           const response = await AxiosInstance.post(
             `${baseUrl}/v1/labour`,
             values
           );
-          console.log(WorkerId, "WorkerId12");
-          console.log(response, "response1234");
+      
 
           if (response?.data?.statusCode === 200) {
             showToast.success(response?.data?.message);
@@ -223,9 +218,7 @@ const TimeEmpty = ({
 
         const response = await AxiosInstance.get(`/v1/worker/get`);
         if (response?.status === 200) {
-          console.log(response?.data?.data, "yashj")
           setTeamData(response?.data?.data);
-          console.log(response?.status, "response?.status");
         } else {
           console.error("Error fetching team data:", response);
         }

@@ -102,6 +102,7 @@ const AddContract = ({
   toggleModal,
   isModalOpen,
   handlePhoneChange,
+  emailData,
   loader,
 }) => {
   const navigate = useNavigate();
@@ -397,6 +398,7 @@ const AddContract = ({
                             "-"}{" "}
                           ,
                           <br />
+                        
                           {propertyData?.City ||
                             customersData?.location?.City ||
                             "-"}
@@ -435,9 +437,11 @@ const AddContract = ({
                           Contact details
                         </Typography>
                         <Typography>
-                          {customersData?.PhoneNumber || "-"}
+                        {console.log(customersData,"customersData1234321")}
+                          {customersData?.PhoneNumber || "-"}     
                           <br />
-                          {customersData?.EmailAddress || "-"}
+                          {customersData?.EmailAddress || "-"}    
+                          {console.log(emailData?.EmailAddress,"customersData?.EmailAddress")}        
                         </Typography>
                       </Col>
                     </Col>

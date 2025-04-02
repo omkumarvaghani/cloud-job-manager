@@ -17,10 +17,12 @@ function CustomerDetails() {
   const navigate = useNavigate();
   const { CompanyName } = useParams();
   const [data, setData] = useState();
+  console.log(data, "data123456");
   const [loader, setLoader] = useState(true);
   const [tokenDecode, setTokenDecode] = useState({});
   const [contract, setContract] = useState([]);
   const [quotes, setQuotes] = useState([]);
+  console.log(quotes, "quotes");
   const [invoice, setInvoice] = useState([]);
   const [DateDecode, setDateDecode] = useState({});
 
@@ -55,7 +57,7 @@ function CustomerDetails() {
       const res = await AxiosInstance.get(
         `/v1/customer/detail/${location?.state?.id}`
       );
-      console.log(res, "res");
+      // console.log(res, "res");
       setData(res?.data?.data);
     } catch (error) {
     } finally {
@@ -75,20 +77,24 @@ function CustomerDetails() {
 
   useEffect(() => {
     const fetchQuote = async () => {
-      if (data && data?.CustomerId) {
+      if (data && data.UserId) {
         try {
+          const companyId =
+            localStorage.getItem("CompanyId") || tokenDecode?.CompanyId;
           const response = await AxiosInstance.get(
-            `/v1/quote/get_quotes_customer/${
-              localStorage.getItem("CompanyId") || tokenDecode?.companyId
-            }/${data?.CustomerId}`
+            `/v1/quote/get_quotes_customer/${companyId}/${data.UserId}`
           );
-          console.log(response, "response");
 
+          console.log(response, "response123");
+          console.log(tokenDecode, "tokenDecode");
+          console.log(data, "datadata");
+          console.log(data.UserId, "data.UserId");
+          console.log(response?.data?.statusCode, "response?.data?.statusCode");
           if (response?.data?.statusCode === 200) {
             setQuotes(response?.data?.data);
           }
         } catch (err) {
-          console.error("Error to fetching quote data: ", err.message);
+          console.error("Error fetching quote data: ", err.message);
         }
       }
     };
@@ -96,14 +102,16 @@ function CustomerDetails() {
     fetchQuote();
   }, [data, tokenDecode]);
 
+  console.log(data?.UserId, "data?.UserId");
+
   useEffect(() => {
     const fetchContract = async () => {
-      if (data && data?.CustomerId) {
+      if (data && data?.UserId) {
         try {
           const response = await AxiosInstance.get(
             `/v1/contract/get_contract_customer/${
-              localStorage.getItem("CompanyId") || tokenDecode?.companyId
-            }/${data?.CustomerId}`
+              localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
+            }/${data?.UserId}`
           );
           console.log(response, "response");
           setContract(response?.data?.data);
@@ -114,15 +122,15 @@ function CustomerDetails() {
     };
     fetchContract();
   }, [data, tokenDecode]);
-
+    
   useEffect(() => {
     const fetchInvoice = async () => {
-      if (data && data.CustomerId) {
+      if (data && data?.UserId) {
         try {
           const response = await AxiosInstance.get(
             `/invoice/get_invoice_customer/${
-              localStorage.getItem("CompanyId") || tokenDecode?.companyId
-            }/${data?.CustomerId}`
+              localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
+            }/${data?.UserId}`
           );
           if (response?.data?.statusCode === 200) {
             setInvoice(response?.data?.data);

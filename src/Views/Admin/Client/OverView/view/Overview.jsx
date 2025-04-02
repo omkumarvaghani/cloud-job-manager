@@ -808,12 +808,12 @@ const CustomerDetails = ({
                                       <Typography
                                         style={{
                                           color:
-                                            data?.status === "Approved"
+                                            data?.Status === "Approved"
                                               ? "rgb(88, 204, 88)"
-                                              : data?.status ===
+                                              : data?.Status ===
                                                 "Awaiting Response"
                                               ? "orange"
-                                              : data?.status ===
+                                              : data?.Status ===
                                                 "Request changed"
                                               ? "#FF33C6"
                                               : "#063164",
@@ -825,8 +825,8 @@ const CustomerDetails = ({
                                             fontSize: "12px",
                                           }}
                                         >
-                                          {data?.status ||
-                                            "status not available"}
+                                          {data?.Status ||
+                                            "Status not available"}
                                         </Typography>
                                       </Typography>
                                     </Col>

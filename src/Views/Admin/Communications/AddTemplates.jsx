@@ -62,14 +62,14 @@ const AddTemplates = () => {
       try {
         setLoader(true);
         if (!location?.state?.id) {
-          var response = await AxiosInstance.post("/template", {
+          var response = await AxiosInstance.post("/v1/template", {
             ...values,
             CompanyId: CompanyId,
           });
         } else {
           response = await AxiosInstance.put(
-            `/template/${location?.state?.id}`,
-            {
+            `/v1/template/${location?.state?.id}`,
+            { 
               ...values,
               CompanyId: CompanyId,
             }
@@ -102,7 +102,7 @@ const AddTemplates = () => {
     if (location?.state?.id) {
       try {
         const response = await AxiosInstance.get(
-          `/template/get/${location?.state?.id}`
+          `/v1/template/get/${location?.state?.id}`
         );
 
         if (response?.data.statusCode === 200) {
@@ -185,7 +185,7 @@ const AddTemplates = () => {
                 "You have unsaved changes. Are you sure you want to leave?"
               );
               if (!confirmLeave) {
-                return; 
+                return;
               }
             }
             navigate(

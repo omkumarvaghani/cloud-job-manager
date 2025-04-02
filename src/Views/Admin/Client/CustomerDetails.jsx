@@ -23,7 +23,6 @@ function CustomerDetails() {
   const navigate = useNavigate();
   const { CompanyName } = useParams();
   const [data, setData] = useState();
-  console.log(data, "data");
   const [open, setOpen] = useState({ isOpen: false, propertyData: null });
   const [loader, setLoader] = useState(true);
   const [modelOpen, setModelOpen] = useState(false);
@@ -66,10 +65,8 @@ function CustomerDetails() {
       const res = await AxiosInstance.get(
         `/v1/customer/${location?.state?.id}`
       );                                                      
-      console.log(res, "resresres");
-      console.log(location, "location?.state?.id");
+     
       setData(res?.data?.data);
-      console.log(res?.data?.data, "res?.data?.data");
       setCustomersDetails([res?.data?.data]);
     } catch (error) {
     } finally {  
