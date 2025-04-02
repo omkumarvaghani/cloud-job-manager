@@ -90,7 +90,7 @@ const TimeEmpty = ({
     } catch (error) {
       console.error("Error: ", error?.messae);
     }
-  };
+  }; 
   useEffect(() => {
     fetchLabourData();
   }, [LabourId]);
@@ -114,7 +114,7 @@ const TimeEmpty = ({
       LabourCost: "",
       TotalCost: "0.00",
       UserId: "",
-    },
+    }, 
     validationSchema: Yup.object({
       StartTime: Yup.string().required("StartTime required"),
       EndTime: Yup.string().required("EndTime required"),
@@ -128,7 +128,6 @@ const TimeEmpty = ({
           setLoading(true);
           values["CompanyId"] = CompanyId;
           values["ContractId"] = ContractId;
-          // values["WorkerId"] = WorkerId;
           const response = await AxiosInstance.post(
             `${baseUrl}/v1/labour`,
             values

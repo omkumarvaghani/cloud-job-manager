@@ -816,7 +816,7 @@ const ContractDetails = ({
                           {contractData?.expenseData.map((item, index) => (
                             <TableRow key={index}>
                               {console.log(item, "item123412345433")}
-                              {/* {console.lo(contractData?.expenseData,"contractData?.expenseData")} */}
+                              {console.log(contractData?.expenseData,"contractData?.expenseData")}
                               <TableCell
                                 className="text-blue-color contractDataTableSub"
                                 style={{ fontSize: "16px", fontWeight: 600 }}
@@ -824,7 +824,7 @@ const ContractDetails = ({
                                 {/* {item?.WorkerId?.FullName ||
                                   "FullName not available"} */}
                                 {item?.WorkerId
-                                  ? `${item?.WorkerId?.FirstName} ${item?.WorkerId?.LastName}`
+                                  ? `${item?.Worker?.FirstName} ${item?.Worker?.LastName}`
                                   : "Name not available"}
                               </TableCell>
                               <TableCell

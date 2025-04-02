@@ -72,8 +72,8 @@ const Expances = ({
       const person = teamData.find(
         (teamMember) =>
           teamMember?.UserId === expenseRes?.data?.data?.WorkerId
-      );
-      console.log(expenseRes,"teamMember")
+      );    
+      console.log(teamData,"teamDatateamData")   
       setselectedPerson(person || null);
       if (expenseRes?.data?.data?.Attachment) {
         setFile(expenseRes?.data?.data?.Attachment);
