@@ -16,17 +16,6 @@ const options = { year: "numeric", month: "short", day: "numeric" };
 
 function ContractDetails() {
   const [tokenDecode, setTokenDecode] = useState({});
-  // const fetchDatas = async () => {
-  //   try {
-  //     const res = await handleAuth(navigate, location);
-  //     setTokenDecode(res.data);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   fetchDatas();
-  // }, []);
   const [DateDecode, setDateDecode] = useState({});
   const fetchDatas = async () => {
     try {
@@ -107,23 +96,23 @@ function ContractDetails() {
         const labourRes = await AxiosInstance.get(
           `/v1/labour/${location?.state?.id}/${localStorage.getItem("CompanyId") || tokenDecode?.CompanyId}`
         );
-        console.log(labourRes,"labourRes")
         setContractData((prevState) => ({
           ...prevState,
           laborData: labourRes?.data?.data, // labor data
         }));
-  
+        
         const expenseRes = await AxiosInstance.get(
           `/v1/expense/${location?.state?.id}/${localStorage.getItem("CompanyId") || tokenDecode?.CompanyId}`
-        );
+        );    
+
         setContractData((prevState) => ({
           ...prevState,
           expenseData: expenseRes?.data?.result, // expense data
         }));
-  
         const visitsRes = await AxiosInstance.get(
           `/v1/visit/${location?.state?.id}/${localStorage.getItem("CompanyId") || tokenDecode?.CompanyId}`
         );
+        console.log(visitsRes,"visitsResvisitsRes")
         setContractData((prevState) => ({
           ...prevState,
           visitsData: visitsRes?.data?.data, // visit data
@@ -431,7 +420,7 @@ function ContractDetails() {
       if (deleteReason) {
         try {
           const response = await AxiosInstance.delete(
-            `/expenses/${ExpenseId}/${ContractId}`,
+            `/v1/expense/${ExpenseId}/${ContractId}`,
             {
               data: { DeleteReason: deleteReason },
             }
@@ -475,7 +464,7 @@ function ContractDetails() {
       if (deleteReason) {
         try {
           const response = await AxiosInstance.delete(
-            `/visits/${VisitId}/${ContractId}`,
+            `/v1/visit/${VisitId}/${ContractId}`,
             {
               data: { DeleteReason: deleteReason },
             }

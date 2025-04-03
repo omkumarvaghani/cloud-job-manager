@@ -30,12 +30,13 @@ import { WhiteLoaderComponent } from "../Icon/Index";
 import { handleAuth } from "../Login/Auth";
 import { Navigate, useLocation } from "react-router-dom";
 import DollerInput from "../InputFields/Doller";
+
 const TimeEmpty = ({
   open,
   setOpen,
   data,
   ContractId,
-  WorkerId,
+  WorkerId, 
   fetchData,
   CompanyId,
   LabourId,
@@ -43,9 +44,7 @@ const TimeEmpty = ({
 }) => {
   const baseUrl = process.env.REACT_APP_BASE_API;
   const [selectedPerson, setSelectedPerson] = useState(null);
-  console.log(selectedPerson, "selectedPerson");
   const [teamData, setTeamData] = useState([]);
-  console.log(teamData, "teamData");
   const [loading, setLoading] = useState(false);
   const [tokenDecode, setTokenDecode] = useState({});
   const location = useLocation();
@@ -68,7 +67,7 @@ const TimeEmpty = ({
         return;
       }
       const labourRes = await AxiosInstance.get(
-        `/v1/labour/${LabourId}/${ContractId}`
+        `/v1/labour/labours/${LabourId}/${ContractId}`
       );
       formik.setValues({
         Notes: labourRes?.data?.data?.Notes,
@@ -79,16 +78,15 @@ const TimeEmpty = ({
         DatePicker: labourRes?.data?.data?.DatePicker,
         WorkerId: labourRes?.data?.data?.WorkerId,
       });
-      console.log(labourRes, "labourRes");
+
       const person = teamData.find(
-        (teamMember) => teamMember?.WorkerId === labourRes?.data?.data?.WorkerId
+        (teamMember) => teamMember?.UserId === labourRes?.data?.data?.WorkerId
       );
-      console.log(person, "person");
       setSelectedPerson(person || null);
     } catch (error) {
       console.error("Error: ", error?.messae);
     }
-  };
+  }; 
   useEffect(() => {
     fetchLabourData();
   }, [LabourId]);
@@ -112,7 +110,7 @@ const TimeEmpty = ({
       LabourCost: "",
       TotalCost: "0.00",
       UserId: "",
-    },
+    }, 
     validationSchema: Yup.object({
       StartTime: Yup.string().required("StartTime required"),
       EndTime: Yup.string().required("EndTime required"),
@@ -126,14 +124,11 @@ const TimeEmpty = ({
           setLoading(true);
           values["CompanyId"] = CompanyId;
           values["ContractId"] = ContractId;
-          values["WorkerId"] = selectedPerson?.WorkerId || WorkerId; // Add this line
-          // values["WorkerId"] = WorkerId;
           const response = await AxiosInstance.post(
             `${baseUrl}/v1/labour`,
             values
           );
-          console.log(response, "response1234");
-          console.log(WorkerId, "WorkerId");
+      
 
           if (response?.data?.statusCode === 200) {
             showToast.success(response?.data?.message);
@@ -223,7 +218,6 @@ const TimeEmpty = ({
         const response = await AxiosInstance.get(`/v1/worker/get`);
         if (response?.status === 200) {
           setTeamData(response?.data?.data);
-          console.log(response?.status, "response?.status");
         } else {
           console.error("Error fetching team data:", response);
         }
@@ -570,7 +564,7 @@ const TimeEmpty = ({
               <FormControl fullWidth>
                 <InputDropdown
                   onChange={(_, newValue) => {
-                    const selectedPersonId = newValue ? newValue.WorkerId : "";
+                    const selectedPersonId = newValue ? newValue.UserId : "";
                     formik.setFieldValue("WorkerId", selectedPersonId);
                     setSelectedPerson(newValue);
                   }}
@@ -588,12 +582,9 @@ const TimeEmpty = ({
                     `${option?.FirstName} ${option?.LastName}`.trim()
                   }
                   error={
-                    formik?.touched?.WorkerId &&
-                    Boolean(formik?.errors?.WorkerId)
+                    formik?.touched?.WorkerId && Boolean(formik?.errors?.WorkerId)
                   }
-                  helperText={
-                    formik?.touched?.WorkerId && formik?.errors?.WorkerId
-                  }
+                  helperText={formik?.touched?.WorkerId && formik?.errors?.WorkerId}
                   filterOptions={(options, state) => {
                     return options?.filter((option) =>
                       `${option?.FirstName} ${option?.LastName}`

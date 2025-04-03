@@ -2,6 +2,7 @@ const User = require("../../../models/User/User");
 const UserProfile = require("../../../models/User/UserProfile");
 const { sendWelcomeEmail } = require("../../../Helpers/EmailServices");
 const { createResetToken } = require("../../../middleware/authMiddleware");
+const { handleTemplate } = require("./templateController");
 const AppUrl = process.env.REACT_APP;
 
 // **GET CUSTOMERS FOR COMPANY API**
@@ -147,7 +148,6 @@ exports.getCustomersByCompanyId = async (req, res) => {
     }
 };
 
-
 // **GET CUSTOMER DETAILS WITH ALL LOCATIONS API**
 exports.getCustomerDetail = async (req, res) => {
     try {
@@ -217,7 +217,7 @@ exports.getCustomerDetail = async (req, res) => {
             return res.status(200).json({
                 statusCode: 200,
                 message: "Customer retrieved successfully",
-                data: customers,
+                data: customers[0],
             });
         } else {
             return res.status(404).json({
@@ -421,12 +421,10 @@ exports.sendWelcomeEmailToCustomer = async (req, res) => {
         if (!findCustomer) {
             return { statusCode: 404, message: "Customer not found" };
         }
-        console.log(findCustomer, '111111111')
         const findCustomerMail = await UserProfile.findOne({ UserId, IsDelete: false });
         if (!findCustomer) {
             return { statusCode: 404, message: "Customer not found" };
         }
-        console.log(findCustomerMail, '222222222')
         const findCompany = await User.findOne({
             CompanyId: findCustomer.CompanyId,
             Role: "Company", IsDelete: false
@@ -441,12 +439,10 @@ exports.sendWelcomeEmailToCustomer = async (req, res) => {
         if (!findCompany) {
             return { statusCode: 404, message: "Company not found" };
         }
-        console.log(findCompanyMail, '3333333333')
 
         const resetToken = await createResetToken({
             EmailAddress: findCustomer.EmailAddress,
         });
-        console.log(resetToken, '444444444')
         const url = `${AppUrl}/auth/new-password?token=${resetToken}`;
 
         const button = `
@@ -469,7 +465,6 @@ exports.sendWelcomeEmailToCustomer = async (req, res) => {
                 Url: button || "",
             },
         ];
-        console.log(data, '5555555555')
 
         const defaultBody = `
       <div style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff;">
@@ -525,16 +520,15 @@ exports.sendWelcomeEmailToCustomer = async (req, res) => {
       </div>
     `;
 
-        const emailStatus = await sendWelcomeEmail(
+        const emailStatus = await handleTemplate(
             "Invitation",
             findCustomer.CompanyId,
             data,
             [],
             "Welcome to our service",
             defaultBody,
-            findCustomer.UserId
+            findCustomer.CustomerId
         );
-        console.log(emailStatus, '666666666666')
 
         if (emailStatus) {
             return res.status(200).json({
@@ -555,3 +549,4 @@ exports.sendWelcomeEmailToCustomer = async (req, res) => {
         };
     }
 };
+

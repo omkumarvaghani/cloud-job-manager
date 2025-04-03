@@ -53,7 +53,6 @@ function AddContract() {
   const [workerId, setAssignPersonId] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [ids, setIds] = useState([]);
-  console.log(ids, "ids");
   const [isAddTeam, setIsAddTeam] = useState(false);
   const [mail, setMail] = useState(false);
 
@@ -164,7 +163,6 @@ function AddContract() {
         let response;
         if (!location.state?.id) {
           response = await AxiosInstance.post(`/v1/contract`, object);
-          console.log(response, "response");
         } else {
           response = await AxiosInstance.put(
             `/contract/${location?.state?.id}`,
@@ -291,6 +289,7 @@ function AddContract() {
         );
         if (res?.data?.statusCode === 200) {
           const data = res.data.data;
+          console.log(data,"datadatadatadatadata")
           const locationData = data?.location || {};
           const customerData = data?.customer || {};
           formik.setValues({
@@ -554,7 +553,6 @@ function AddContract() {
   };
 
   const handleRemoveTeam = (team) => {
-    console.log(team, "team");
     setSelectedTeams((prevTeams) =>
       prevTeams.filter(
         (selectedTeam) => selectedTeam?.WorkerId !== team?.WorkerId
@@ -675,7 +673,6 @@ function AddContract() {
           console.error("CompanyId is not found in localStorage");
           return;
         }
-        console.log(values, "values");
         const object = {
           ...values,
           CompanyId: CompanyId,

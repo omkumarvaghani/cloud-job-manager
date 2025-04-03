@@ -13,24 +13,28 @@ import { Typography } from "@mui/material";
 
 const InvoiceTable = () => {
   const [customerData, setCustomerData] = useState([]);
+  console.log(customerData, "customerData");
   const [selectedCustomerData, setSelectedCustomerData] = useState();
   const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
   const { CompanyName } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_API;
   const location = useLocation();
-
+  console.log(location, "locationlocation");
   useEffect(() => {
     const fetchData = async () => {
-      const CustomerId = location?.state?.CustomerId;
+      const CustomerId = location?.state?.UserId;
+      console.log(location?.state?.UserId, "Location State");
+      console.log(CustomerId, "CustomerId");
       if (!CustomerId) return;
       setLoader(true);
       try {
         const res = await AxiosInstance.get(
-          `${baseUrl}/contract/get_invoice_data/${CustomerId}`
+          `${baseUrl}/v1/contract/get_invoice_data/${CustomerId}`
         );
+        console.log(res, "resresres");
         const data = res?.data?.data;
-        setCustomerData(data);
+        setCustomerData(data.contracts || data.locations);
       } catch (error) {
         console.error("Error: ", error?.message);
       } finally {
@@ -152,6 +156,7 @@ const InvoiceTable = () => {
                         whiteSpace: "nowrap",
                       }}
                     >
+                      {console.log(item, "itemitem")}
                       <TableCell
                         component="th"
                         scope="row"
@@ -180,8 +185,7 @@ const InvoiceTable = () => {
                         }}
                       >
                         #
-                        {item?.contract?.ContractNumber ||
-                          "ContractNumber not available"}
+                        {item?.ContractNumber || "ContractNumber not available"}
                       </TableCell>
                       <TableCell
                         className=" text-blue-color"
@@ -192,27 +196,26 @@ const InvoiceTable = () => {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {item?.contract?.Title}
+                        {item?.Title}
                       </TableCell>
                       <TableCell
                         style={{
                           padding: "20px",
                           color:
-                            item?.contract?.Status === "Unscheduled"
+                            item?.Status === "Unscheduled"
                               ? "#E88C44"
-                              : item?.contract?.Status === "Today"
+                              : item?.Status === "Today"
                               ? "#089F57"
-                              : item?.contract?.Status === "Upcoming"
+                              : item?.Status === "Upcoming"
                               ? "#089F57"
-                              : item?.contract?.Status === "Scheduled"
+                              : item?.Status === "Scheduled"
                               ? "#C8CC00"
                               : "",
                           fontSize: "17px",
                         }}
                       >
-                        {item?.contract?.Status || "Status not available"}
+                        {item?.Status || "Status not available"}
                       </TableCell>
-
                       <TableCell
                         className="text-blue-color"
                         style={{
@@ -220,11 +223,13 @@ const InvoiceTable = () => {
                           fontSize: "17px",
                         }}
                       >
-                        {" "}
-                        {item?.location?.address || "address not available"}
-                        {item?.location?.city} {""}
-                        {item?.location?.country} {""}
+                        {item?.locations?.[0]?.Address ||
+                          "Address not available"}
+                        ,{item?.locations?.[0]?.City || ""},
+                        {item?.locations?.[0]?.State || ""},
+                        {item?.locations?.[0]?.Country || ""}
                       </TableCell>
+
                       <TableCell
                         className="text-blue-color"
                         style={{
@@ -235,7 +240,7 @@ const InvoiceTable = () => {
                           fontWeight: "600",
                         }}
                       >
-                        ${item?.contract?.Total || "Total not available"}
+                        ${item?.Total || "Total not available"}
                       </TableCell>
                     </TableRow>
                   ))}

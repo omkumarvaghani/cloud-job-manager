@@ -149,35 +149,35 @@ const CustomerDetails = ({
                     </DropdownItem>
                     <DropdownItem
                       className="dropdown-items text-blue-color"
-                        onClick={() => {
-                            if (CompanyName) {
-                              navigate(`/${CompanyName}/invoicetable`, {
-                                state: {
-                                  Customer: data,
-                                  CustomerId: data?.CustomerId,
-                                  navigats: [
-                                    ...location?.state?.navigats,
-                                    "/invoicetable",
-                                  ],
-                                },
-                              });
-                            } else {
-                              navigate(`/staff-member/invoicetable`, {
-                                state: {
-                                  Customer: data,
-                                  CustomerId: data?.CustomerId,
-                                  navigats: [
-                                    ...location?.state?.navigats,
-                                    "/invoicetable",
-                                  ],
-                                },
-                              });
-                            }
-                          }}
+                      onClick={() => {
+                        if (CompanyName) {
+                          navigate(`/${CompanyName}/invoicetable`, {
+                            state: {
+                              Customer: data,
+                              CustomerId: data?.CustomerId,
+                              navigats: [
+                                ...location?.state?.navigats,
+                                "/invoicetable",
+                              ],
+                            },
+                          });
+                        } else {
+                          navigate(`/staff-member/invoicetable`, {
+                            state: {
+                              Customer: data,
+                              CustomerId: data?.CustomerId,
+                              navigats: [
+                                ...location?.state?.navigats,
+                                "/invoicetable",
+                              ],
+                            },
+                          });
+                        }
+                      }}
                       // onClick={() => {
                       //   if (CompanyName && data?.CustomerId) {
                       //     if (data?.location?.length > 1) {
-                      //       setIsCustomer(true); 
+                      //       setIsCustomer(true);
                       //     } else {
                       //       navigate(`/${CompanyName}/invoicetable`, {
                       //         state: {
@@ -358,7 +358,8 @@ const CustomerDetails = ({
                                               fontSize: "12px",
                                             }}
                                           >
-                                            {data?.status || "status not available"}
+                                            {data?.status ||
+                                              "status not available"}
                                           </Typography>
                                         </Typography>
                                       </Col>
@@ -475,7 +476,8 @@ const CustomerDetails = ({
                                             }}
                                           >
                                             Contract #
-                                            {data?.ContractNumber || "ContractNumber not available"}
+                                            {data?.ContractNumber ||
+                                              "ContractNumber not available"}
                                           </Typography>
                                         </Typography>
                                         <Typography
@@ -498,7 +500,8 @@ const CustomerDetails = ({
                                               fontSize: "12px",
                                             }}
                                           >
-                                            {data?.Status || "Status not available"}
+                                            {data?.Status ||
+                                              "Status not available"}
                                           </Typography>
                                         </Typography>
                                       </Col>
@@ -635,7 +638,8 @@ const CustomerDetails = ({
                                               fontSize: "12px",
                                             }}
                                           >
-                                            {data?.Status || "Status not available"}
+                                            {data?.Status ||
+                                              "Status not available"}
                                           </Typography>
                                         </Typography>
                                       </Col>
@@ -658,7 +662,8 @@ const CustomerDetails = ({
                                             fontWeight: "500",
                                           }}
                                         >
-                                          {data?.Subject || "Subject not available"}
+                                          {data?.Subject ||
+                                            "Subject not available"}
                                         </Typography>
                                       </Col>
                                       <Col className="col text-center">
@@ -795,18 +800,20 @@ const CustomerDetails = ({
                                             fontSize: "12px",
                                           }}
                                         >
-                                          Quote #{data?.QuoteNumber || "QuoteNumber not available"}
+                                          Quote #
+                                          {data?.QuoteNumber ||
+                                            "QuoteNumber not available"}
                                         </Typography>
                                       </Typography>
                                       <Typography
                                         style={{
                                           color:
-                                            data?.status === "Approved"
+                                            data?.Status === "Approved"
                                               ? "rgb(88, 204, 88)"
-                                              : data?.status ===
+                                              : data?.Status ===
                                                 "Awaiting Response"
                                               ? "orange"
-                                              : data?.status ===
+                                              : data?.Status ===
                                                 "Request changed"
                                               ? "#FF33C6"
                                               : "#063164",
@@ -818,7 +825,8 @@ const CustomerDetails = ({
                                             fontSize: "12px",
                                           }}
                                         >
-                                          {data?.status || "status not available"}
+                                          {data?.Status ||
+                                            "Status not available"}
                                         </Typography>
                                       </Typography>
                                     </Col>
@@ -1162,7 +1170,8 @@ const CustomerDetails = ({
                                           }}
                                         >
                                           Invoice #
-                                          {data?.InvoiceNumber || "InvoiceNumber not available"}
+                                          {data?.InvoiceNumber ||
+                                            "InvoiceNumber not available"}
                                         </Typography>
                                       </Typography>
                                       <Typography
@@ -1185,7 +1194,8 @@ const CustomerDetails = ({
                                             fontSize: "12px",
                                           }}
                                         >
-                                          {data?.Status || "Status not available"}
+                                          {data?.Status ||
+                                            "Status not available"}
                                         </Typography>
                                       </Typography>
                                     </Col>
@@ -1208,7 +1218,8 @@ const CustomerDetails = ({
                                           fontWeight: "500",
                                         }}
                                       >
-                                        {data?.Subject || "Subject not available"}
+                                        {data?.Subject ||
+                                          "Subject not available"}
                                       </Typography>
                                     </Col>
                                     <Col className="col text-center">

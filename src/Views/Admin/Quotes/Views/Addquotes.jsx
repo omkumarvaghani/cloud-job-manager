@@ -201,19 +201,12 @@ const Addquotes = ({
                         className="text-blue-color w-100"
                       />
                     </Grid>
-                    {console.log(
-                      customersData?.location?.Address,
-                      "customersData?.location?.Address"
-                    )}
-                    {console.log(
-                      customersData?.location?.City,
-                      "customersData?.location?.City"
-                    )}
+                 
                     {customersData?.FirstName && (
                       <Grid
                         className="d-flex mt-5 gap-3 quoteProperty_detail"
                         style={{ color: "rgba(6, 49, 100, 1)" }}
-                      >
+                      >  
                         <Col
                           className="col-6 text-left quoteAddress quoteDetauils "
                           xl={6}
@@ -231,11 +224,14 @@ const Addquotes = ({
                               "Address not available"}
                             ,
                             <br />
-                            {customersData?.location?.City || "-"},{" "}
+                            {console.log(propertyData,"propertyData")}
+                            {propertyData?.City ||
+                              customersData?.location?.City ||
+                              "-"}{" "}
                             {propertyData?.State ||
                               customersData?.location?.State ||
                               "-"}{" "}
-                            ,
+                            , 
                             {propertyData?.Zip ||
                               customersData?.location?.Zip ||
                               "-"}
@@ -261,8 +257,8 @@ const Addquotes = ({
                           <Typography className=" fw-medium text-blue-color">
                             Contact details
                           </Typography>
-                          {console.log(customersData?.PhoneNumber,"customersData?.PhoneNumber")}
                           <Typography className="text-blue-color">
+                            {console.log(customersData,"customersData")}
                             {customersData?.PhoneNumber || "-"}
                             <br />
                             {customersData?.EmailAddress || "-"}

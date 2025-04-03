@@ -359,7 +359,7 @@ exports.getContracts = async (req, res) => {
     const query = req.query;
     const pageSize = parseInt(query.pageSize) || 10;
     const pageNumber = parseInt(query.pageNumber) || 0;
-    const search = query.search;
+    const search = query.search?.trim();
     const sortOrder = query.sortOrder?.toLowerCase() === "desc" ? -1 : 1;
     const statusFilter = query.statusFilter;
 
@@ -401,6 +401,15 @@ exports.getContracts = async (req, res) => {
       { $unwind: { path: "$customerData", preserveNullAndEmptyArrays: true } },
       {
         $lookup: {
+          from: "users",
+          localField: "CustomerId",
+          foreignField: "UserId",
+          as: "userData",
+        },
+      },
+      { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
           from: "locations",
           localField: "LocationId",
           foreignField: "LocationId",
@@ -413,6 +422,7 @@ exports.getContracts = async (req, res) => {
           customer: {
             FirstName: "$customerData.FirstName",
             LastName: "$customerData.LastName",
+            EmailAddress: "$userData.EmailAddress",
           },
           location: {
             Address: "$locationData.Address",
@@ -421,46 +431,32 @@ exports.getContracts = async (req, res) => {
             Country: "$locationData.Country",
             Zip: "$locationData.Zip",
           },
-          Total: {
-            $toInt: { $round: [{ $toDouble: "$Total" }, 0] },
-          },
+          Total: { $toInt: { $round: [{ $toDouble: "$Total" }, 0] } },
         },
       },
     ];
 
     if (search) {
       const searchParts = search.split(" ").filter(Boolean);
-      const searchConditions = searchParts.map((part) => {
-        const searchRegex = new RegExp(part, "i");
-        return {
-          $or: [
-            { "customer.FirstName": { $regex: searchRegex } },
-            { "customer.LastName": { $regex: searchRegex } },
-            { "location.Address": { $regex: searchRegex } },
-            { "location.City": { $regex: searchRegex } },
-            { "location.State": { $regex: searchRegex } },
-            { "location.Country": { $regex: searchRegex } },
-            { "location.Zip": { $regex: searchRegex } },
-            { Title: { $regex: searchRegex } },
-            { ContractNumber: { $regex: searchRegex } },
-          ],
-        };
-      });
+      const searchConditions = searchParts.map((part) => ({
+        $or: [
+          { "customer.FirstName": { $regex: new RegExp(part, "i") } },
+          { "customer.LastName": { $regex: new RegExp(part, "i") } },
+          { "customer.EmailAddress": { $regex: new RegExp(part, "i") } },
+          { "location.Address": { $regex: new RegExp(part, "i") } },
+          { "location.City": { $regex: new RegExp(part, "i") } },
+          { "location.State": { $regex: new RegExp(part, "i") } },
+          { "location.Country": { $regex: new RegExp(part, "i") } },
+          { "location.Zip": { $regex: new RegExp(part, "i") } },
+          { Title: { $regex: new RegExp(part, "i") } },
+          { ContractNumber: { $regex: new RegExp(part, "i") } },
+        ],
+      }));
 
-      basePipeline.push({
-        $match: {
-          $and: [contractSearchQuery, { $and: searchConditions }],
-        },
-      });
+      basePipeline.push({ $match: { $and: searchConditions } });
     }
 
-    const countPipeline = [
-      { $match: contractSearchQuery },
-      { $count: "totalCount" },
-    ];
-
-    const collation = { locale: "en", strength: 2 };
-
+    const countPipeline = [...basePipeline, { $count: "totalCount" }];
     const mainPipeline = [
       ...basePipeline,
       {
@@ -492,7 +488,7 @@ exports.getContracts = async (req, res) => {
 
     const [countResult, contractData] = await Promise.all([
       Contract.aggregate(countPipeline),
-      Contract.aggregate(mainPipeline).collation(collation),
+      Contract.aggregate(mainPipeline).collation({ locale: "en", strength: 2 }),
     ]);
 
     const totalCount = countResult.length > 0 ? countResult[0].totalCount : 0;
@@ -1031,213 +1027,238 @@ exports.deleteContract = async (req, res) => {
 };
 
 // **GET CONTRACT IN INVOICE AFTER SELECT CUSTOMER INVOICE**
-// exports.getInvoiceDataByCustomerId = async (req, res) => {
-//   try {
-//     const { CustomerId } = req.params;
-//     if (!CustomerId) {
-//       return res.status(400).json({
-//         statusCode: 400,
-//         message: "CustomerId is required",
-//       });
-//     }
-
-//     const today = new Date();
-//     today.setHours(0, 0, 0, 0); // Remove time part for date comparison
-//     const isoToday = today.toISOString();
-
-//     console.log("isoToday:", isoToday);
-
-//     const result = await User.aggregate([
-//       {
-//         $match: {
-//           UserId: CustomerId,
-//           IsDelete: false,
-//         },
-//       },
-//       {
-//         $lookup: {
-//           from: "contracts",
-//           localField: "UserId",
-//           foreignField: "CustomerId",
-//           as: "contracts",
-//           pipeline: [
-//             {
-//               $match: {
-//                 IsDelete: false,
-//               },
-//             },
-//             {
-//               $lookup: {
-//                 from: "visits",
-//                 localField: "ContractId",
-//                 foreignField: "ContractId",
-//                 as: "visits",
-//                 pipeline: [
-//                   {
-//                     $match: {
-//                       IsDelete: false,
-//                       StartDate: { $gte: new Date(isoToday) },
-//                     },
-//                   },
-//                   { $sort: { StartDate: 1 } },
-//                   {
-//                     $group: {
-//                       _id: "$ContractId",
-//                       todayVisit: {
-//                         $first: {
-//                           $cond: [
-//                             { $eq: ["$StartDate", new Date(isoToday)] },
-//                             "$$ROOT",
-//                             null,
-//                           ],
-//                         },
-//                       },
-//                       upcomingVisit: { $first: "$$ROOT" },
-//                     },
-//                   },
-//                   {
-//                     $project: {
-//                       todayVisit: 1,
-//                       upcomingVisit: 1,
-//                     },
-//                   },
-//                 ],
-//               },
-//             },
-//           ],
-//         },
-//       },
-//     ]);
-
-//     if (!result || result.length === 0) {
-//       return res.status(404).json({
-//         statusCode: 404,
-//         message: "No data found for this customer.",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       statusCode: 200,
-//       data: result[0],
-//       message: "Invoice data fetched successfully",
-//     });
-//   } catch (error) {
-//     console.error("Error fetching invoice data:", error.message);
-//     return res.status(500).json({
-//       statusCode: 500,
-//       message: "Something went wrong, please try later!",
-//       error: error.message,
-//     });
-//   }
-// };
-
 exports.getInvoiceDataByCustomerId = async (req, res) => {
-  try {
-    const { CustomerId } = req.params;
-    if (!CustomerId) {
-      return res.status(400).json({
-        statusCode: 400,
-        message: "CustomerId is required",
-      });
-    }
+  const { CustomerId } = req.params;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Remove time part for date comparison
-    const isoToday = today.toISOString();
+  if (!CustomerId) {
+    return {
+      statusCode: 400,
+      message: "CustomerId is required",
+    };
+  }
 
-    console.log("isoToday:", isoToday);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const isoToday = today.toISOString();
 
-    const result = await User.aggregate([
-      {
-        $match: {
-          UserId: CustomerId,
-          IsDelete: false,
+  const result = await User.aggregate([
+    {
+      $match: {
+        UserId: CustomerId,
+        IsDelete: false,
+      },
+    },
+    {
+      $lookup: {
+        from: "user-profiles",
+        localField: "UserId",
+        foreignField: "UserId",
+        as: "profile",
+      },
+    },
+    {
+      $unwind: {
+        path: "$profile",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "locations",
+        localField: "UserId",
+        foreignField: "CustomerId",
+        as: "locations",
+      },
+    },
+    {
+      $unwind: {
+        path: "$locations",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "contracts",
+        localField: "locations.LocationId",
+        foreignField: "LocationId",
+        as: "contracts",
+        pipeline: [
+          {
+            $match: { IsDelete: false },
+          },
+          {
+            $lookup: {
+              from: "visits",
+              localField: "ContractId",
+              foreignField: "ContractId",
+              as: "visits",
+              pipeline: [
+                {
+                  $match: {
+                    IsDelete: false,
+                    StartDate: { $exists: true, $ne: null, $ne: "" },
+                  },
+                },
+                { $sort: { StartDate: 1 } },
+                {
+                  $group: {
+                    _id: "$ContractId",
+                    todayVisit: {
+                      // $first: {
+                      //   $cond: [
+                      //     { $gte: ["$StartDate", new Date(isoToday)] },
+                      //     "$$ROOT",
+                      //     null,
+                      //   ],
+                      // },
+                      $first: "$$ROOT"
+                    },
+                    upcomingVisit: { $first: "$$ROOT" },
+                  },
+                },
+                {
+                  $project: {
+                    todayVisit: 1,
+                    upcomingVisit: 1,
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      $group: {
+        _id: "$UserId",
+        customer: {
+          $first: {
+            UserId: "$UserId",
+            FirstName: "$profile.FirstName",
+            LastName: "$profile.LastName",
+          },
+        },
+        data: {
+          $push: {
+            location: {
+              LocationId: "$locations.LocationId",
+              address: "$locations.Address",
+              city: "$locations.City",
+              state: "$locations.State",
+              zip: "$locations.Zip",
+              country: "$locations.Country",
+            },
+            contracts: "$contracts",
+          },
         },
       },
+    },
+    {
+      $project: {
+        _id: 0,
+        customer: 1,
+        data: 1,
+      },
+    },
+  ]);
+
+  if (!result || !result.length) {
+    return res.status(404).json({
+      statusCode: 404,
+      message: "Customer not found",
+    });
+  }
+
+  return res.status(200).json({
+    statusCode: 200,
+    ...result[0],
+    message: "Data fetched successfully",
+  });
+};
+
+// **GET CONTRACT IN CUSTOMER LOCATION WISE**
+exports.getContractCustomerProperty = async (req, res) => {
+  try {
+    const { CustomerId, LocationId } = req.params;
+    const CompanyId = Array.isArray(req.user.CompanyId) ? req.user.CompanyId : [req.user.CompanyId];
+
+    if (!CompanyId || !CustomerId || !LocationId) {
+      return res.status(400).json({ message: "CompanyId, CustomerId, and LocationId are required!" });
+    }
+
+    const contractSearchQuery = {
+      CompanyId: String(CompanyId),
+      CustomerId: String(CustomerId),
+      LocationId: String(LocationId),
+      IsDelete: false,
+    };
+
+    const contracts = await Contract.aggregate([
+      { $match: contractSearchQuery },
       {
         $lookup: {
-          from: "contracts",
-          localField: "UserId",
-          foreignField: "CustomerId",
-          as: "contracts",
-          pipeline: [
-            {
-              $match: {
-                IsDelete: false,
-              },
-            },
-            {
-              $lookup: {
-                from: "visits",
-                localField: "ContractId",
-                foreignField: "ContractId",
-                as: "visits",
-                pipeline: [
-                  {
-                    $match: {
-                      IsDelete: false,
-                      StartDate: {
-                        $exists: true,
-                        $ne: null,
-                        $ne: "",
-                        $gte: new Date(isoToday)
-                      },
-                    },
-                  },
-                  { $sort: { StartDate: 1 } },
-                  {
-                    $group: {
-                      _id: "$ContractId",
-                      todayVisit: {
-                        $first: {
-                          $cond: [
-                            {
-                              $and: [
-                                { $gte: ["$StartDate", new Date(isoToday)] },
-                                { $lt: ["$StartDate", new Date(isoToday).setHours(23, 59, 59, 999)] }
-                              ]
-                            },
-                            "$$ROOT",
-                            null
-                          ]
-                        }
-                      },
-
-                      upcomingVisit: { $first: "$$ROOT" },
-                    },
-                  },
-                  {
-                    $project: {
-                      todayVisit: 1,
-                      upcomingVisit: 1,
-                    },
-                  },
-                ],
-              },
-            },
-          ],
+          from: "user-profiles",
+          localField: "CustomerId",
+          foreignField: "UserId",
+          as: "customerData",
+        },
+      },
+      { $unwind: { path: "$customerData", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "locations",
+          localField: "LocationId",
+          foreignField: "LocationId",
+          as: "locationData",
+        },
+      },
+      { $unwind: { path: "$locationData", preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          customer: {
+            FirstName: "$customerData.FirstName",
+            LastName: "$customerData.LastName",
+          },
+          location: {
+            Address: "$locationData.Address",
+            City: "$locationData.City",
+            State: "$locationData.State",
+            Country: "$locationData.Country",
+            Zip: "$locationData.Zip",
+          },
+        },
+      },
+      { $sort: { updatedAt: -1 } },
+      {
+        $project: {
+          CompanyId: 1,
+          CustomerId: 1,
+          ContractId: 1,
+          LocationId: 1,
+          Title: 1,
+          ContractNumber: 1,
+          Status: 1,
+          IsOneoffJob: 1,
+          IsRecuringJob: 1,
+          OneoffJob: 1,
+          RecuringJob: 1,
+          StartDate: 1,
+          customer: 1,
+          location: 1,
+          Total: 1,
+          createdAt: 1,
+          updatedAt: 1,
         },
       },
     ]);
 
-    if (!result || result.length === 0) {
-      return res.status(404).json({
-        statusCode: 404,
-        message: "No data found for this customer.",
-      });
-    }
-
     return res.status(200).json({
-      statusCode: 200,
-      data: result[0],
-      message: "Invoice data fetched successfully",
+      data: contracts,
+      totalCount: contracts.length,
+      message: contracts.length > 0 ? "Contracts retrieved successfully" : "No contract found",
     });
   } catch (error) {
-    console.error("Error fetching invoice data:", error.message);
-    return res.status(500).json({
-      statusCode: 500,
-      message: "Something went wrong, please try later!",
-      error: error.message,
-    });
+    console.error("Error fetching contracts:", error);
+    return res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
