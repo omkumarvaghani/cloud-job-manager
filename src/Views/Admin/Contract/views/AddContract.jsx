@@ -394,25 +394,43 @@ const AddContract = ({
                         </Typography>
                         <Typography>
                           {propertyData?.Address ||
+                            (Array.isArray(customersData?.location) &&
+                            customersData.location.length > 0
+                              ? customersData.location[0]?.Address
+                              : undefined) ||
                             customersData?.location?.Address ||
-                            "-"}{" "}
+                            "Address not available"}
                           ,
                           <br />
-                        
                           {propertyData?.City ||
+                            (Array.isArray(customersData?.location) &&
+                            customersData.location.length > 0
+                              ? customersData.location[0]?.City
+                              : undefined) ||
                             customersData?.location?.City ||
-                            "-"}
-                          ,{" "}
+                            "-"}{" "}
                           {propertyData?.State ||
+                            (Array.isArray(customersData?.location) &&
+                            customersData.location.length > 0
+                              ? customersData.location[0]?.State
+                              : undefined) ||
                             customersData?.location?.State ||
                             "-"}{" "}
                           ,
                           {propertyData?.Zip ||
+                            (Array.isArray(customersData?.location) &&
+                            customersData.location.length > 0
+                              ? customersData.location[0]?.Zip
+                              : undefined) ||
                             customersData?.location?.Zip ||
                             "-"}
                           ,
                           <br />
                           {propertyData?.Country ||
+                            (Array.isArray(customersData?.location) &&
+                            customersData.location.length > 0
+                              ? customersData.location[0]?.Country
+                              : undefined) ||
                             customersData?.location?.Country ||
                             "-"}{" "}
                           <br />
@@ -437,11 +455,14 @@ const AddContract = ({
                           Contact details
                         </Typography>
                         <Typography>
-                        {console.log(customersData,"customersData1234321")}
-                          {customersData?.PhoneNumber || "-"}     
+                          {console.log(customersData, "customersData1234321")}
+                          {customersData?.PhoneNumber || "-"}
                           <br />
-                          {customersData?.EmailAddress || "-"}    
-                          {console.log(emailData?.EmailAddress,"customersData?.EmailAddress")}        
+                          {customersData?.EmailAddress || "-"}
+                          {console.log(
+                            emailData?.EmailAddress,
+                            "customersData?.EmailAddress"
+                          )}
                         </Typography>
                       </Col>
                     </Col>
