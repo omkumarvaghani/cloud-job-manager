@@ -65,6 +65,18 @@ const InvoiceTable = () => {
     setSelectedCustomerData(item); // Update the selected customer data
   };
 
+  const [checkedVisits, setCheckedVisits] = useState({});
+  const handleCheckboxvisitChange = (key, visitIndex) => {
+    setCheckedVisits((prev) => {
+      const updatedState = {
+        ...prev,
+        [`${key}-${visitIndex}`]: !prev[`${key}-${visitIndex}`],
+      };
+      console.log("Checkbox State Updated:", updatedState); // Debug log
+      return updatedState;
+    });
+  };
+
   return (
     <Grid>
       <Card className="my-2" style={{ borderRadius: "15px" }}>
@@ -238,103 +250,169 @@ const InvoiceTable = () => {
                           ).toLocaleDateString() || "Start Date not available"}
                         </TableCell>
                       </TableRow>
-
                       {selectedCustomerData === item &&
                         item.visits?.map((visit, visitIndex) => (
-                          <TableRow
-                            className="invoice-table"
-                            key={visitIndex}
-                            style={{
-                              borderBottom:
-                                visitIndex !== item.visits.length - 1
-                                  ? "1px solid rgba(6, 49, 100, 0.3)"
-                                  : "none",
-                              cursor: "pointer",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            {console.log(item.visits,"item.visits")}
-                            <TableCell
-                              component="th"
-                              scope="row"
-                              style={{
-                                borderTopLeftRadius: "20px",
-                                borderBottomLeftRadius: "20px",
-                                padding: "20px",
-                                fontSize: "17px",
-                              }}
-                            >
-                              <Input
-                                style={{ marginLeft: "12px" }}
-                                type="checkbox" // Changed to checkbox
-                                name="customerCheckbox"
-                                id={`checkbox-${index}`} // Updated ID for checkbox
-                                checked={selectedCustomerData === item}
-                                onChange={() => handleCheckboxChange(item)} // Update state on change
-                              />
-                            </TableCell>
-                            <TableCell
-                              className="text-blue-color"
-                              style={{
-                                padding: "20px",
-                                fontSize: "17px",
-                                fontWeight: "600",
-                                whiteSpace: "nowrap",
-                              }}
-                            >
-                              #
-                              {item?.ContractNumber ||
-                                "ContractNumber not available"}
-                            </TableCell>
-                            <TableCell
-                              className="text-blue-color"
-                              style={{
-                                padding: "20px",
-                                fontSize: "17px",
-                                fontWeight: "600",
-                                whiteSpace: "nowrap",
-                              }}
-                            >
-                              {item?.Title}
-                            </TableCell>
-                            <TableCell
-                              style={{
-                                padding: "20px",
-                                fontSize: "17px",
-                                color: item?.visits?.some(
-                                  (visit) => visit?.IsComplete
-                                )
-                                  ? "#089F57"
-                                  : "#E88C44",
-                              }}
-                            >
-                              {item?.visits?.some((visit) => visit?.IsComplete)
-                                ? "Completed"
-                                : "Pending"}
-                            </TableCell>
-                            <TableCell
-                              className="text-blue-color"
-                              style={{ padding: "20px", fontSize: "17px" }}
-                            >
-                              {item?.visits?.[0]?.ItemName ||
-                                "Item not available"}
-                            </TableCell>
-                            <TableCell
-                              className="text-blue-color"
-                              style={{
-                                borderTopRightRadius: "20px",
-                                borderBottomRightRadius: "20px",
-                                padding: "20px",
-                                fontSize: "17px",
-                                fontWeight: "600",
-                              }}
-                            >
-                              {new Date(
-                                item?.visits?.[0]?.StartDate
-                              ).toLocaleDateString() ||
-                                "Start Date not available"}
-                            </TableCell>
-                          </TableRow>
+                          <>
+                            {console.log(
+                              selectedCustomerData,
+                              "selectedCustomerData"
+                            )}
+                            {console.log(item.visits, "item.visitsitem.visits")}
+                            {Object.keys(visit).map((key) => {
+                              if (
+                                key === "todayVisit" ||
+                                key === "upcomingVisit"
+                              ) {
+                                const visitData = visit[key];
+                                return (
+                                  <React.Fragment key={`${visitIndex}-${key}`}>
+                                    {" "}
+                                    {key === "todayVisit" &&
+                                      visitIndex === 0 && (
+                                        <TableRow>
+                                          <TableCell
+                                            colSpan={6}
+                                            style={{
+                                              fontWeight: "bold",
+                                              fontSize: "20px",
+                                              backgroundColor: "#e0f7fa",
+                                              textAlign: "start",
+                                              padding: "15px",
+                                            }}
+                                          >
+                                            Today's Visits
+                                          </TableCell>
+                                        </TableRow>
+                                      )}
+                                    {key === "upcomingVisit" &&
+                                      visitIndex === 0 && (
+                                        <TableRow>
+                                          <TableCell
+                                            colSpan={6}
+                                            style={{
+                                              fontWeight: "bold",
+                                              fontSize: "20px",
+                                              backgroundColor: "#ffecb3",
+                                              textAlign: "start",
+                                              padding: "15px",
+                                            }}
+                                          >
+                                            Upcoming Visits
+                                          </TableCell>
+                                        </TableRow>
+                                      )}
+                                    <TableRow
+                                      className="invoice-table"
+                                      key={`${visitIndex}-${key}-row`}
+                                      style={{
+                                        borderBottom:
+                                          "1px solid rgba(6, 49, 100, 0.3)",
+                                        cursor: "pointer",
+                                        whiteSpace: "nowrap",
+                                      }}
+                                    >
+                                      <TableCell
+                                        component="th"
+                                        scope="row"
+                                        style={{
+                                          borderTopLeftRadius: "20px",
+                                          borderBottomLeftRadius: "20px",
+                                          padding: "20px",
+                                          fontSize: "17px",
+                                        }}
+                                      >
+                                        <Input
+                                          style={{ marginLeft: "12px" }}
+                                          type="checkbox"
+                                          name="customerCheckbox"
+                                          id={`checkbox-${index}-${visitIndex}-${key}`} // Unique ID for each visit
+                                          checked={
+                                            !!checkedVisits[
+                                              `${key}-${visitIndex}`
+                                            ]
+                                          } // Controlled checkbox
+                                          onChange={() =>
+                                            handleCheckboxvisitChange(
+                                              key,
+                                              visitIndex
+                                            )
+                                          }
+                                        />
+                                      </TableCell>
+
+                                      <TableCell
+                                        className="text-blue-color"
+                                        style={{
+                                          padding: "20px",
+                                          fontSize: "17px",
+                                          fontWeight: "600",
+                                          whiteSpace: "nowrap",
+                                        }}
+                                      >
+                                        #{" "}
+                                        {item?.ContractNumber ||
+                                          "ContractNumber not available"}
+                                      </TableCell>
+
+                                      <TableCell
+                                        className="text-blue-color"
+                                        style={{
+                                          padding: "20px",
+                                          fontSize: "17px",
+                                          fontWeight: "600",
+                                          whiteSpace: "nowrap",
+                                        }}
+                                      >
+                                        {item?.Title}
+                                      </TableCell>
+
+                                      <TableCell
+                                        style={{
+                                          padding: "20px",
+                                          fontSize: "17px",
+                                          color: visitData?.IsComplete
+                                            ? "#089F57"
+                                            : "#E88C44",
+                                        }}
+                                      >
+                                        {visitData?.IsComplete
+                                          ? "Completed"
+                                          : "Pending"}
+                                      </TableCell>
+
+                                      <TableCell
+                                        className="text-blue-color"
+                                        style={{
+                                          padding: "20px",
+                                          fontSize: "17px",
+                                        }}
+                                      >
+                                        {visitData?.ItemName ||
+                                          "Item not available"}
+                                      </TableCell>
+
+                                      <TableCell
+                                        className="text-blue-color"
+                                        style={{
+                                          borderTopRightRadius: "20px",
+                                          borderBottomRightRadius: "20px",
+                                          padding: "20px",
+                                          fontSize: "17px",
+                                          fontWeight: "600",
+                                        }}
+                                      >
+                                        {new Date(
+                                          visitData?.StartDate
+                                        ).toLocaleDateString() ||
+                                          "Start Date not available"}
+                                      </TableCell>
+                                    </TableRow>
+                                  </React.Fragment>
+                                );
+                              }
+                              return null;
+                            })}
+                          </>
                         ))}
                     </React.Fragment>
                   ))}
