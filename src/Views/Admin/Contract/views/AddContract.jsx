@@ -107,6 +107,7 @@ const AddContract = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+
   return (
     <>
       {loader ? (
@@ -215,11 +216,22 @@ const AddContract = ({
                         fontWeight: "600",
                       }}
                     >
+                      {console.log(
+                        location?.state?.formData,
+                        "location?.state?.formData"
+                      )}
+                      {console.log(
+                        customersData,
+                        "customersData12334423454345"
+                      )}
                       {customersData?.customer?.FirstName &&
                       customersData?.customer?.LastName
                         ? `${customersData?.customer?.FirstName} ${customersData?.customer?.LastName}`
                         : customersData?.FirstName && customersData?.LastName
                         ? `${customersData?.FirstName} ${customersData?.LastName}`
+                        : location?.state?.formData?.customerData?.FirstName &&
+                          location?.state?.formData?.customerData?.LastName
+                        ? `${location.state.formData.customerData.FirstName} ${location.state.formData.customerData.LastName}`
                         : "Customer Name"}
                     </Typography>
 
@@ -373,100 +385,88 @@ const AddContract = ({
                     </Col>
                   </Col>
 
-                  {customersData?.FirstName && (
-                    <Col
-                      lg={6}
-                      md={12}
-                      sm={12}
-                      xl={6}
-                      className="d-flex mt-5 gap-3 contractaddressDetailss"
-                      style={{ color: "rgba(6, 49, 100, 1)" }}
-                    >
-                      <Col
-                        className="text-left widthOfdetailFull"
-                        md={6}
-                        xl={6}
-                      >
-                        <Typography>
-                          <Typography className=" fw-medium">
-                            Property address
-                          </Typography>
-                        </Typography>
-                        <Typography>
-                          {propertyData?.Address ||
-                            (Array.isArray(customersData?.location) &&
-                            customersData.location.length > 0
-                              ? customersData.location[0]?.Address
-                              : undefined) ||
-                            customersData?.location?.Address ||
-                            "Address not available"}
-                          ,
-                          <br />
-                          {propertyData?.City ||
-                            (Array.isArray(customersData?.location) &&
-                            customersData.location.length > 0
-                              ? customersData.location[0]?.City
-                              : undefined) ||
-                            customersData?.location?.City ||
-                            "-"}{" "}
-                          {propertyData?.State ||
-                            (Array.isArray(customersData?.location) &&
-                            customersData.location.length > 0
-                              ? customersData.location[0]?.State
-                              : undefined) ||
-                            customersData?.location?.State ||
-                            "-"}{" "}
-                          ,
-                          {propertyData?.Zip ||
-                            (Array.isArray(customersData?.location) &&
-                            customersData.location.length > 0
-                              ? customersData.location[0]?.Zip
-                              : undefined) ||
-                            customersData?.location?.Zip ||
-                            "-"}
-                          ,
-                          <br />
-                          {propertyData?.Country ||
-                            (Array.isArray(customersData?.location) &&
-                            customersData.location.length > 0
-                              ? customersData.location[0]?.Country
-                              : undefined) ||
-                            customersData?.location?.Country ||
-                            "-"}{" "}
-                          <br />
-                          <a
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setIsCustomer(true);
-                            }}
-                            style={{ color: "green", cursor: "pointer" }}
-                            href="#customer-section"
-                          >
-                            Change
-                          </a>
-                        </Typography>
-                      </Col>
-                      <Col
-                        className=" text-left widthOfdetailFull"
-                        md={6}
-                        xl={6}
-                      >
+                  {/* {customersData?.FirstName && ( */}
+                  <Col
+                    lg={6}
+                    md={12}
+                    sm={12}
+                    xl={6}
+                    className="d-flex mt-5 gap-3 contractaddressDetailss"
+                    style={{ color: "rgba(6, 49, 100, 1)" }}
+                  >
+                    {console.log(
+                      location?.state?.formData?.locationData,
+                      "location?.state?.formData?.locationData"
+                    )}
+                    <Col className="text-left widthOfdetailFull" md={6} xl={6}>
+                      <Typography>
                         <Typography className=" fw-medium">
-                          Contact details
+                          Property address
                         </Typography>
-                        <Typography>
-                          {console.log(customersData, "customersData1234321")}
-                          {customersData?.PhoneNumber || "-"}
-                          <br />
-                          {customersData?.EmailAddress || "-"}
-                          {console.log(
-                            emailData?.EmailAddress,
-                            "customersData?.EmailAddress"
-                          )}
-                        </Typography>
-                      </Col>
+                      </Typography>
+                      <Typography>
+                        {propertyData?.Address ||
+                          customersData?.location?.[0]?.Address ||
+                          customersData?.location?.Address ||
+                          location?.state?.formData?.locationData?.Address ||
+                          "Address not available"}
+                        ,
+                        <br />
+                        {propertyData?.City ||
+                          customersData?.location?.[0]?.City ||
+                          customersData?.location?.City ||
+                          location?.state?.formData?.locationData?.City ||
+                          "-"}{" "}
+                        {propertyData?.State ||
+                          customersData?.location?.[0]?.State ||
+                          customersData?.location?.State ||
+                          location?.state?.formData?.locationData?.State ||
+                          "-"}{" "}
+                        ,
+                        {propertyData?.Zip ||
+                          customersData?.location?.[0]?.Zip ||
+                          customersData?.location?.Zip ||
+                          location?.state?.formData?.locationData?.Zip ||
+                          "-"}
+                        ,
+                        <br />
+                        {propertyData?.Country ||
+                          customersData?.location?.[0]?.Country ||
+                          customersData?.location?.Country ||
+                          location?.state?.formData?.locationData?.Country ||
+                          "-"}{" "}
+                        <br />
+                        <a
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setIsCustomer(true);
+                          }}
+                          style={{ color: "green", cursor: "pointer" }}
+                          href="#customer-section"
+                        >
+                          Change
+                        </a>
+                      </Typography>
                     </Col>
-                  )}
+                    <Col className=" text-left widthOfdetailFull" md={6} xl={6}>
+                      <Typography className=" fw-medium">
+                        Contact details
+                      </Typography>
+                      <Typography>
+                        {console.log(customersData, "customersData1234321")}
+                        {customersData?.PhoneNumber ||
+                          location?.state?.formData?.customerData
+                            ?.EmailAddress ||
+                          "-"}
+                        <br />
+                        {customersData?.EmailAddress ||
+                          location?.state?.formData?.customerData
+                            ?.PhoneNumber ||
+                          "-"}
+                      </Typography>
+                    </Col>
+                  </Col>
+                  {/* // )} */}
                 </Row>
                 <Row className="schedule-section-main my-3">
                   <Col lg={6} md={12} xl={6} className="schedule-section-left">

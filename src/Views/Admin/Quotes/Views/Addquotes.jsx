@@ -225,7 +225,7 @@ const Addquotes = ({
                               customersData.location.length > 0
                                 ? customersData.location[0]?.Address
                                 : undefined) ||
-                              customersData?.location?.Address ||
+                              customersData?.location?.Address ||  customersData?.locationDetails?.Address ||
                               "Address not available"}
                             ,
                             <br />

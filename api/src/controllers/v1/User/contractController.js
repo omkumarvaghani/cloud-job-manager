@@ -191,7 +191,9 @@ exports.createContract = async (req, res) => {
       });
     }
 
-    const assignPersonIds = contractData.selectedTeams.map(team => team.WorkerId);
+    const assignPersonIds = contractData.selectedTeams.map(
+      (team) => team.WorkerId
+    );
 
     contractData.WorkerId = assignPersonIds;
 
@@ -815,7 +817,8 @@ exports.updateContract = async (req, res) => {
       message: "Contract not found!",
     };
   }
-
+  console.log(contractData, "contractData");
+  console.log(contract, "contract");
   Object.assign(contract, contractData);
   contract.updatedAt = moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss");
   await contract.save();
@@ -825,8 +828,8 @@ exports.updateContract = async (req, res) => {
     contractData.OneoffJob.StartDate !== "" &&
     contractData.OneoffJob.EndDate !== ""
   ) {
-    const assignPersonIds = Array.isArray(contract.UserId)
-      ? contract.UserId
+    const assignPersonIds = Array.isArray(contractData.WorkerId)
+      ? contractData.WorkerId
       : [];
 
     await createOneoffVisits(
@@ -844,8 +847,8 @@ exports.updateContract = async (req, res) => {
   await Visit.updateMany({ ContractId, IsRecurring: true }, { IsDelete: true });
 
   if (contractData.RecuringJob && contractData.RecuringJob.StartDate !== "") {
-    const assignPersonIds = Array.isArray(contract.UserId)
-      ? contract.UserId
+    const assignPersonIds = Array.isArray(contractData.WorkerId)
+      ? contractData.WorkerId
       : [];
 
     await createRecuringVisits(
@@ -935,7 +938,7 @@ exports.updateContract = async (req, res) => {
     CustomerId: contract.CustomerId,
     ContractId: contract.ContractId,
     LocationId: contract.LocationId,
-    WorkerId: assignPersonIds,
+    // WorkerId: assignPersonIds,
     CreatedBy: req.user.UserId,
     AddedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
   };
@@ -1111,7 +1114,7 @@ exports.getInvoiceDataByCustomerId = async (req, res) => {
                       //     null,
                       //   ],
                       // },
-                      $first: "$$ROOT"
+                      $first: "$$ROOT",
                     },
                     upcomingVisit: { $first: "$$ROOT" },
                   },
@@ -1180,10 +1183,14 @@ exports.getInvoiceDataByCustomerId = async (req, res) => {
 exports.getContractCustomerProperty = async (req, res) => {
   try {
     const { CustomerId, LocationId } = req.params;
-    const CompanyId = Array.isArray(req.user.CompanyId) ? req.user.CompanyId : [req.user.CompanyId];
+    const CompanyId = Array.isArray(req.user.CompanyId)
+      ? req.user.CompanyId
+      : [req.user.CompanyId];
 
     if (!CompanyId || !CustomerId || !LocationId) {
-      return res.status(400).json({ message: "CompanyId, CustomerId, and LocationId are required!" });
+      return res.status(400).json({
+        message: "CompanyId, CustomerId, and LocationId are required!",
+      });
     }
 
     const contractSearchQuery = {
@@ -1255,10 +1262,15 @@ exports.getContractCustomerProperty = async (req, res) => {
     return res.status(200).json({
       data: contracts,
       totalCount: contracts.length,
-      message: contracts.length > 0 ? "Contracts retrieved successfully" : "No contract found",
+      message:
+        contracts.length > 0
+          ? "Contracts retrieved successfully"
+          : "No contract found",
     });
   } catch (error) {
     console.error("Error fetching contracts:", error);
-    return res.status(500).json({ message: "Internal server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };

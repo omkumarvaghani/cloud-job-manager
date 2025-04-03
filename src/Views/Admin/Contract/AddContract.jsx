@@ -292,11 +292,12 @@ function AddContract() {
           console.log(data,"datadatadatadatadata")
           const locationData = data?.location || {};
           const customerData = data?.customer || {};
+          console.log(customerData,"customerData")
           formik.setValues({
             Title: data.Title || "",
             FirstName: customerData?.FirstName || "",
             LastName: customerData?.LastName || "",
-            PhoneNumber: customerData?.PhoneNumber || "",
+            PhoneNumber: customerData?.PhoneNumber || "", 
             Address: locationData?.Address || "",
             City: locationData?.City || "",
             State: locationData?.State || "",
@@ -446,6 +447,7 @@ function AddContract() {
       } else if (location?.state?.id) {
         await fetchData();
       } else if (location?.state?.formData) {
+        console.log(location?.state?.formData, "yashj")
         formik.setValues(location?.state?.formData);
         setLineItems(location?.state?.products);
       }
@@ -479,6 +481,10 @@ function AddContract() {
       ]);
     };
   }, [tokenDecode]);
+
+  useEffect(() => {
+    console.log(formik?.values, "yashjs")
+  }, [formik?.values]);
 
   const calculateSubTotal = () => {
     const Total = lineItems?.reduce(
