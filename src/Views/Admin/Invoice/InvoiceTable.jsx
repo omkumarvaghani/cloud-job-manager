@@ -253,7 +253,14 @@ const InvoiceTable = () => {
                               whiteSpace: "nowrap",
                             }}
                           >
-                            {console.log(item.visits,"item.visits")}
+                            {/* <TableCell
+                              style={{
+                                padding: "20px",
+                                fontSize: "17px",
+                              }}
+                            >
+                              {visit?.IsComplete ? "Completed" : "Pending"}
+                            </TableCell> */}
                             <TableCell
                               component="th"
                               scope="row"
@@ -275,65 +282,21 @@ const InvoiceTable = () => {
                             </TableCell>
                             <TableCell
                               className="text-blue-color"
-                              style={{
-                                padding: "20px",
-                                fontSize: "17px",
-                                fontWeight: "600",
-                                whiteSpace: "nowrap",
-                              }}
-                            >
-                              #
-                              {item?.ContractNumber ||
-                                "ContractNumber not available"}
-                            </TableCell>
-                            <TableCell
-                              className="text-blue-color"
-                              style={{
-                                padding: "20px",
-                                fontSize: "17px",
-                                fontWeight: "600",
-                                whiteSpace: "nowrap",
-                              }}
-                            >
-                              {item?.Title}
-                            </TableCell>
-                            <TableCell
-                              style={{
-                                padding: "20px",
-                                fontSize: "17px",
-                                color: item?.visits?.some(
-                                  (visit) => visit?.IsComplete
-                                )
-                                  ? "#089F57"
-                                  : "#E88C44",
-                              }}
-                            >
-                              {item?.visits?.some((visit) => visit?.IsComplete)
-                                ? "Completed"
-                                : "Pending"}
-                            </TableCell>
-                            <TableCell
-                              className="text-blue-color"
                               style={{ padding: "20px", fontSize: "17px" }}
                             >
-                              {item?.visits?.[0]?.ItemName ||
-                                "Item not available"}
+                              {visit?.ItemName || "Item not available"}
                             </TableCell>
                             <TableCell
                               className="text-blue-color"
                               style={{
-                                borderTopRightRadius: "20px",
-                                borderBottomRightRadius: "20px",
                                 padding: "20px",
                                 fontSize: "17px",
                                 fontWeight: "600",
                               }}
                             >
-                              {new Date(
-                                item?.visits?.[0]?.StartDate
-                              ).toLocaleDateString() ||
+                              {new Date(visit.StartDate).toLocaleDateString() ||
                                 "Start Date not available"}
-                            </TableCell>
+                            </TableCell>    
                           </TableRow>
                         ))}
                     </React.Fragment>

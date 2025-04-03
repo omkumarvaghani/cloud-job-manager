@@ -276,8 +276,8 @@ const Profile = () => {
       const allCountries = Country?.getAllCountries();
       setCountries(allCountries);
 
-      const res = await AxiosInstance.get(`/company/profile/${CompanyId}`);
-
+      const res = await AxiosInstance.get(`/v1/company/profile/${CompanyId}`);
+      console.log(res,"res098")
       if (res?.data?.statusCode === 200) {
         const data = res?.data?.data;
         setOldData(data);

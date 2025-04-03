@@ -1309,6 +1309,7 @@ exports.generateQuotePdf = async (req, res) => {
 // **SEND QUOTE MAIL**
 exports.sendEmailWithConfig = async (req, res) => {
     try {
+
         const { IsSendpdf, ...data } = req.body;
         const { CustomerId, QuoteId } = data;
 
@@ -1318,7 +1319,7 @@ exports.sendEmailWithConfig = async (req, res) => {
         const findCustomerProfile = await UserProfile.findOne({ CustomerId });
         const findCompany = await User.findOne({ CompanyId });
         const findCompanyProfile = await UserProfile.findOne({ CompanyId, Role: "Company" });
-
+        
         console.log(findCustomerProfile, 'findCustomerProfile')
         console.log(findCustomer, 'findCustomer')
         if (!findCustomer || !findCustomerProfile) {

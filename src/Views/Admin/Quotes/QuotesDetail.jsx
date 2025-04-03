@@ -232,16 +232,16 @@ function QuotesDetail() {
       // convrt to contarct is comment but the in live got error so that temporarily this is comment
       label: "Convert to contract",
       // UCOMMENT FOR THE CONVERT TO CONTRACT
-      // onClick: () => {
-      //   navigate(`/${CompanyName}/add-contract`, {
-      //     state: {
-      //       navigats: [...location?.state?.navigats, "/add-contract"],
-      //       QuoteId: location?.state?.id,
-      //       formData: quotesData,
-      //       products: quotesData?.products,
-      //     },
-      //   });
-      // },
+      onClick: () => {
+        navigate(`/${CompanyName}/add-contract`, {
+          state: {
+            navigats: [...location?.state?.navigats, "/add-contract"],
+            QuoteId: location?.state?.id,
+            formData: quotesData,
+            products: quotesData?.products,
+          },
+        });
+      },       
       onClick: () => {
         if (CompanyName) {
           navigate(`/${CompanyName}/add-contract`, {
