@@ -13,7 +13,6 @@ import {
 import { Col } from "reactstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-// import "../../components/Contract Component/style.scss";
 import AxiosInstance from "../../Views/AxiosInstance";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -44,7 +43,7 @@ const TimeEmpty = ({
 }) => {
   const baseUrl = process.env.REACT_APP_BASE_API;
   const [selectedPerson, setSelectedPerson] = useState(null);
-  console.log(selectedPerson,"selectedPerson")
+  console.log(selectedPerson, "selectedPerson");
   const [teamData, setTeamData] = useState([]);
   console.log(teamData, "teamData");
   const [loading, setLoading] = useState(false);
@@ -84,7 +83,7 @@ const TimeEmpty = ({
       const person = teamData.find(
         (teamMember) => teamMember?.WorkerId === labourRes?.data?.data?.WorkerId
       );
-      console.log(person,"person")
+      console.log(person, "person");
       setSelectedPerson(person || null);
     } catch (error) {
       console.error("Error: ", error?.messae);
@@ -95,7 +94,6 @@ const TimeEmpty = ({
   }, [LabourId]);
 
   const formik = useFormik({
-    
     initialValues: {
       CompanyId: "",
       Address: "",
@@ -114,8 +112,6 @@ const TimeEmpty = ({
       LabourCost: "",
       TotalCost: "0.00",
       UserId: "",
-     
-
     },
     validationSchema: Yup.object({
       StartTime: Yup.string().required("StartTime required"),
@@ -130,7 +126,8 @@ const TimeEmpty = ({
           setLoading(true);
           values["CompanyId"] = CompanyId;
           values["ContractId"] = ContractId;
-          // values["WorkerId"] = WorkerId; 
+          values["WorkerId"] = selectedPerson?.WorkerId || WorkerId; // Add this line
+          // values["WorkerId"] = WorkerId;
           const response = await AxiosInstance.post(
             `${baseUrl}/v1/labour`,
             values
