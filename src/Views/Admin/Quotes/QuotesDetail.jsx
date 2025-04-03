@@ -38,7 +38,6 @@ function QuotesDetail() {
       const res = await AxiosInstance.get(
         `/v1/quote/quote_details/${location?.state?.id}`
       );
-      console.log(res,"resresresres")
       setQuotesData(res?.data?.data);
     } catch (error) {
       console.error("Error: ", error?.messae);
@@ -160,11 +159,12 @@ function QuotesDetail() {
   const downloadPdf = async () => {
     try {
       const res = await AxiosInstance.post(
-        `/quote/quotepdf/${location?.state?.id}`
+        `/v1/quote/quotepdf/${location?.state?.id}`
       );
+      console.log(res, "res");
       if (res.data.statusCode === 200) {
         const url = `${cdnUrl}/upload/${res?.data?.fileName}`;
-
+        console.log(url, "urlurl");
         fetch(url)
           .then((response) => {
             if (!response?.ok) throw new Error("Network response was not ok");
@@ -232,16 +232,16 @@ function QuotesDetail() {
       // convrt to contarct is comment but the in live got error so that temporarily this is comment
       label: "Convert to contract",
       // UCOMMENT FOR THE CONVERT TO CONTRACT
-      // onClick: () => {
-      //   navigate(`/${CompanyName}/add-contract`, {
-      //     state: {
-      //       navigats: [...location?.state?.navigats, "/add-contract"],
-      //       QuoteId: location?.state?.id,
-      //       formData: quotesData,
-      //       products: quotesData?.products,
-      //     },
-      //   });
-      // },
+      onClick: () => {
+        navigate(`/${CompanyName}/add-contract`, {
+          state: {
+            navigats: [...location?.state?.navigats, "/add-contract"],
+            QuoteId: location?.state?.id,
+            formData: quotesData,
+            products: quotesData?.products,
+          },
+        });
+      },       
       onClick: () => {
         if (CompanyName) {
           navigate(`/${CompanyName}/add-contract`, {

@@ -16,7 +16,7 @@ const QuoteDetailsSchema = new Schema(
             type: String,
             trim: true
         },
-        UserId: {
+        CustomerId: {
             type: String,
             trim: true
         },
@@ -73,5 +73,10 @@ const QuoteDetailsSchema = new Schema(
         timestamps: true,
     }
 );
+
+QuoteDetailsSchema.index({ QuoteId: 1, CompanyId: 1 });
+QuoteDetailsSchema.index({ UserId: 1 });
+QuoteDetailsSchema.index({ IsDelete: 1 });
+
 
 module.exports = mongoose.model("Quote-Items", QuoteDetailsSchema);

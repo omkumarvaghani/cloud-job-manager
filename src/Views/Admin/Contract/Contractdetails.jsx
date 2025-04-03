@@ -16,17 +16,6 @@ const options = { year: "numeric", month: "short", day: "numeric" };
 
 function ContractDetails() {
   const [tokenDecode, setTokenDecode] = useState({});
-  // const fetchDatas = async () => {
-  //   try {
-  //     const res = await handleAuth(navigate, location);
-  //     setTokenDecode(res.data);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   fetchDatas();
-  // }, []);
   const [DateDecode, setDateDecode] = useState({});
   const fetchDatas = async () => {
     try {
@@ -89,43 +78,53 @@ function ContractDetails() {
     }, 200);
   };
 
-  const CompanyId = localStorage.getItem("CompanyId") || tokenDecode?.companyId;
+  const CompanyId = localStorage.getItem("CompanyId") || tokenDecode?.CompanyId;
   const CustomerId = contractData?.CustomerId;
 
   let fetchData = async () => {
     try {
       const res = await AxiosInstance.get(
-        `/contract/contract_details/${location?.state?.id}`
+        `/v1/contract/contract_details/${location?.state?.id}`
       );
+      // Set contract data with the initial contract details
+      setContractData((prevState) => ({
+        ...prevState,
+        ...res?.data?.data, // contract details
+      }));
+  
       if (res.data.statusCode === 200) {
         const labourRes = await AxiosInstance.get(
-          `/labour/${location?.state?.id}/${
-            localStorage.getItem("CompanyId") || tokenDecode?.companyId
-          }`
+          `/v1/labour/${location?.state?.id}/${localStorage.getItem("CompanyId") || tokenDecode?.CompanyId}`
         );
+        setContractData((prevState) => ({
+          ...prevState,
+          laborData: labourRes?.data?.data, // labor data
+        }));
+        
         const expenseRes = await AxiosInstance.get(
-          `/expenses/${location?.state?.id}/${
-            localStorage.getItem("CompanyId") || tokenDecode?.companyId
-          }`
-        );
+          `/v1/expense/${location?.state?.id}/${localStorage.getItem("CompanyId") || tokenDecode?.CompanyId}`
+        );    
+        
+        setContractData((prevState) => ({
+          ...prevState,
+          expenseData: expenseRes?.data?.result, // expense data
+        }));
         const visitsRes = await AxiosInstance.get(
-          `/visits/${location?.state?.id}/${
-            localStorage.getItem("CompanyId") || tokenDecode?.companyId
-          }`
+          `/v1/visit/${location?.state?.id}/${localStorage.getItem("CompanyId") || tokenDecode?.CompanyId}`
         );
-        setContractData({
-          ...res?.data?.data,
-          laborData: labourRes?.data?.data,
-          expenseData: expenseRes?.data?.result,
-          visitsData: visitsRes?.data?.data,
-        });
+        console.log(visitsRes,"visitsResvisitsRes")
+        setContractData((prevState) => ({
+          ...prevState,
+          visitsData: visitsRes?.data?.data, // visit data
+        }));
       }
     } catch (error) {
-      console.error("Error: ", error?.messae);
+      console.error("Error: ", error?.message);
     } finally {
       setLoader(false);
     }
   };
+  
 
   useEffect(() => {
     fetchData();
@@ -269,7 +268,7 @@ function ContractDetails() {
   const downloadPdf = async () => {
     try {
       const res = await AxiosInstance.post(
-        `/contract/contractpdf/${location?.state?.id}`
+        `/v1/contract/contractpdf/${location?.state?.id}`
       );
       if (res.data.statusCode === 200) {
         const url = `${cdnUrl}/upload/${res.data.fileName}`;
@@ -343,7 +342,7 @@ function ContractDetails() {
       if (deleteReason) {
         try {
           const response = await AxiosInstance.delete(
-            `/labour/${LabourId}/${ContractId}`,
+            `/v1/labour/${LabourId}/${ContractId}`,
             {
               data: { DeleteReason: deleteReason },
             }
@@ -421,7 +420,7 @@ function ContractDetails() {
       if (deleteReason) {
         try {
           const response = await AxiosInstance.delete(
-            `/expenses/${ExpenseId}/${ContractId}`,
+            `/v1/expense/${ExpenseId}/${ContractId}`,
             {
               data: { DeleteReason: deleteReason },
             }
@@ -465,7 +464,7 @@ function ContractDetails() {
       if (deleteReason) {
         try {
           const response = await AxiosInstance.delete(
-            `/visits/${VisitId}/${ContractId}`,
+            `/v1/visit/${VisitId}/${ContractId}`,
             {
               data: { DeleteReason: deleteReason },
             }

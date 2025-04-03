@@ -21,7 +21,7 @@ const AdminDashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { CompanyName } = useParams();
-const currentHour = new Date().getHours();
+  const currentHour = new Date().getHours();
 
   let welcomeMessage;
   if (currentHour < 12) {
@@ -198,7 +198,7 @@ const currentHour = new Date().getHours();
       let res;
       // const res = await AxiosInstance.get(`/admingraph/graphss/${companyId}`);
       setInvoiceReponse(res.data.data);
-    
+
       if (res.data.statusCode === 200) {
         const months = [
           "Jan",
@@ -342,8 +342,8 @@ const currentHour = new Date().getHours();
               lineHeight: "28.8px ",
             }}
           >
-            {data?.full_name
-              ? welcomeMessage + ", " + data?.full_name
+            {data?.OwnerName
+              ? welcomeMessage + ", " + data?.OwnerName
               : welcomeMessage}
           </h4>
           <Grid className="grid-container py-3 pb-5">

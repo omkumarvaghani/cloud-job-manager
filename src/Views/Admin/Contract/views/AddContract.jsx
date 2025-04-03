@@ -102,10 +102,12 @@ const AddContract = ({
   toggleModal,
   isModalOpen,
   handlePhoneChange,
+  emailData,
   loader,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+
   return (
     <>
       {loader ? (
@@ -214,10 +216,25 @@ const AddContract = ({
                         fontWeight: "600",
                       }}
                     >
-                      {customersData?.FirstName
+                      {console.log(
+                        location?.state?.formData,
+                        "location?.state?.formData"
+                      )}
+                      {console.log(
+                        customersData,
+                        "customersData12334423454345"
+                      )}
+                      {customersData?.customer?.FirstName &&
+                      customersData?.customer?.LastName
+                        ? `${customersData?.customer?.FirstName} ${customersData?.customer?.LastName}`
+                        : customersData?.FirstName && customersData?.LastName
                         ? `${customersData?.FirstName} ${customersData?.LastName}`
+                        : location?.state?.formData?.customerData?.FirstName &&
+                          location?.state?.formData?.customerData?.LastName
+                        ? `${location.state.formData.customerData.FirstName} ${location.state.formData.customerData.LastName}`
                         : "Customer Name"}
                     </Typography>
+
                     {!customersData?.FirstName && (
                       <Button
                         className="mx-3 bg-button-blue-color text-white-color "
@@ -368,73 +385,88 @@ const AddContract = ({
                     </Col>
                   </Col>
 
-                  {customersData?.FirstName && (
-                    <Col
-                      lg={6}
-                      md={12}
-                      sm={12}
-                      xl={6}
-                      className="d-flex mt-5 gap-3 contractaddressDetailss"
-                      style={{ color: "rgba(6, 49, 100, 1)" }}
-                    >
-                      <Col
-                        className="text-left widthOfdetailFull"
-                        md={6}
-                        xl={6}
-                      >
-                        <Typography>
-                          <Typography className=" fw-medium">
-                            Property address
-                          </Typography>
-                        </Typography>
-                        <Typography>
-                          {propertyData?.Address ||
-                            customersData?.location[0]?.Address ||
-                            "-"}{" "},
-                          <br />
-                          {propertyData?.City ||
-                            customersData?.location[0]?.City ||
-                            "-"}
-                          ,{" "}
-                          {propertyData?.State ||
-                            customersData?.location[0]?.State ||
-                            "-"}{" "},
-                          {propertyData?.Zip ||
-                            customersData?.location[0]?.Zip ||
-                            "-"},
-                          <br />
-                          {propertyData?.Country ||
-                            customersData?.location[0]?.Country ||
-                            "-"}{" "}
-                          <br />
-                          <a
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setIsCustomer(true);
-                            }}
-                            style={{ color: "green", cursor: "pointer" }}
-                            href="#customer-section"
-                          >
-                            Change
-                          </a>
-                        </Typography>
-                      </Col>
-                      <Col
-                        className=" text-left widthOfdetailFull"
-                        md={6}
-                        xl={6}
-                      >
+                  {/* {customersData?.FirstName && ( */}
+                  <Col
+                    lg={6}
+                    md={12}
+                    sm={12}
+                    xl={6}
+                    className="d-flex mt-5 gap-3 contractaddressDetailss"
+                    style={{ color: "rgba(6, 49, 100, 1)" }}
+                  >
+                    {console.log(
+                      location?.state?.formData?.locationData,
+                      "location?.state?.formData?.locationData"
+                    )}
+                    <Col className="text-left widthOfdetailFull" md={6} xl={6}>
+                      <Typography>
                         <Typography className=" fw-medium">
-                          Contact details
+                          Property address
                         </Typography>
-                        <Typography>
-                          {customersData?.PhoneNumber || "-"}
-                          <br />
-                          {customersData?.EmailAddress || "-"}
-                        </Typography>
-                      </Col>
+                      </Typography>
+                      <Typography>
+                        {propertyData?.Address ||
+                          customersData?.location?.[0]?.Address ||
+                          customersData?.location?.Address ||
+                          location?.state?.formData?.locationData?.Address ||
+                          "Address not available"}
+                        ,
+                        <br />
+                        {propertyData?.City ||
+                          customersData?.location?.[0]?.City ||
+                          customersData?.location?.City ||
+                          location?.state?.formData?.locationData?.City ||
+                          "-"}{" "}
+                        {propertyData?.State ||
+                          customersData?.location?.[0]?.State ||
+                          customersData?.location?.State ||
+                          location?.state?.formData?.locationData?.State ||
+                          "-"}{" "}
+                        ,
+                        {propertyData?.Zip ||
+                          customersData?.location?.[0]?.Zip ||
+                          customersData?.location?.Zip ||
+                          location?.state?.formData?.locationData?.Zip ||
+                          "-"}
+                        ,
+                        <br />
+                        {propertyData?.Country ||
+                          customersData?.location?.[0]?.Country ||
+                          customersData?.location?.Country ||
+                          location?.state?.formData?.locationData?.Country ||
+                          "-"}{" "}
+                        <br />
+                        <a
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setIsCustomer(true);
+                          }}
+                          style={{ color: "green", cursor: "pointer" }}
+                          href="#customer-section"
+                        >
+                          Change
+                        </a>
+                      </Typography>
                     </Col>
-                  )}
+                    <Col className=" text-left widthOfdetailFull" md={6} xl={6}>
+                      <Typography className=" fw-medium">
+                        Contact details
+                      </Typography>
+                      <Typography>
+                        {console.log(customersData, "customersData1234321")}
+                        {customersData?.PhoneNumber ||
+                          location?.state?.formData?.customerData
+                            ?.EmailAddress ||
+                          "-"}
+                        <br />
+                        {customersData?.EmailAddress ||
+                          location?.state?.formData?.customerData
+                            ?.PhoneNumber ||
+                          "-"}
+                      </Typography>
+                    </Col>
+                  </Col>
+                  {/* // )} */}
                 </Row>
                 <Row className="schedule-section-main my-3">
                   <Col lg={6} md={12} xl={6} className="schedule-section-left">
@@ -635,9 +667,7 @@ const AddContract = ({
                                                 type="checkbox"
                                                 checked={
                                                   checkedState &&
-                                                  !!checkedState[
-                                                    person?.WorkerId
-                                                  ]
+                                                  !!checkedState[person?.UserId]
                                                 }
                                                 onChange={(e) =>
                                                   handleTeamSelect(e, person)

@@ -81,11 +81,16 @@ const Login = () => {
       if (res.data.statusCode == "200") {
         localStorage.setItem("adminToken", res.data.token);
         localStorage.setItem("CompanyId", res.data.data.UserId);
-        showToast.success(res.data.message, {
+        showToast.success("Login Successful!", {
           autoClose: 3000,
         });
         setTimeout(() => {
-          navigate(`/${res.data.data.CompanyName}/index`, {
+          // Convert CompanyName to lowercase
+          showToast.success(res.data.message, {
+            autoClose: 3000,
+          });
+          const CompanyName = res.data.data.CompanyName.toLowerCase();
+          navigate(`/${CompanyName}/index`, {
             state: { navigats: ["/index"] },
           });
         }, 1000);
@@ -143,8 +148,8 @@ const Login = () => {
             token,
           });
           if (res.data.statusCode !== "200") {
-            // localStorage.clear();
-            // navigate("/auth/login");
+            localStorage.clear();
+            navigate("/auth/login");
           } else {
             if (
               res.data.data.Role == "Superadmin" &&
@@ -230,6 +235,7 @@ const Login = () => {
               paddingLeft: "0px",
               paddingTop: "20px",
               paddingBottom: "0px",
+              cursor: "pointer  ",
             }}
           >
             <img src={AppLogo} alt="logo" />

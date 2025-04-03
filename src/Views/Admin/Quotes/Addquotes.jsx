@@ -32,7 +32,7 @@ function AddQuote() {
   const [dropdown, setDropdown] = useState(false);
   const [modal, setModal] = useState(false);
   const [customersData, setCustomersData] = useState({});
-  console.log(customersData,"customersData098")
+  const [emailData, setEmailData] = useState({});
   const [propertyData, setPropertyData] = useState({});
   const [quotesData, setQuotesData] = useState({});
   const [showTax, setShowTax] = useState(false);
@@ -160,7 +160,7 @@ function AddQuote() {
       Discount: "",
       Tax: "",
       Status: "",
-    },        
+    },
     validationSchema: Yup.object({
       Title: Yup.string().required("Title Required"),
     }),
@@ -346,11 +346,18 @@ function AddQuote() {
           );
           if (res.data?.statusCode === 200) {
             const data = res?.data?.data;
-
+            console.log(res?.data?.data.userData?.EmailAddress, "datadatadata");
             formik.setValues({
               Title: data?.Title,
-              Firstname: data?.customer?.Firstname,
-              LastName: data?.customer?.LastName,
+              FirstName: data.customerData?.FirstName || "",
+              LastName: data.customerData?.LastName || "",
+              PhoneNumber: data.customerData?.PhoneNumber || "",
+              EmailAddress: res?.data?.data.userData?.EmailAddress || "",
+              Address: data.locationData?.Address || "",
+              City: data.locationData?.City || "",
+              State: data.locationData?.State || "",  
+              Zip: data.locationData?.Zip || "",
+              Country: data.locationData?.Country || "",
               QuoteNumber: data?.QuoteNumber,
               CustomerId: data?.CustomerId,
               CompanyId: data.CompanyId,
@@ -364,6 +371,11 @@ function AddQuote() {
             });
 
             setQuotesData(data);
+            setCustomersData({
+              ...data?.customerData,
+              location: data?.locationData || {},
+            });
+            setEmailData({...data?.userData,})
             setLineItems(
               data?.products || [
                 {
@@ -402,7 +414,7 @@ function AddQuote() {
           }`
         );
         if (res.data?.statusCode === 200) {
-          const nextQuoteNumber = Number(res.data?.quoteNumber) + 1;
+          const nextQuoteNumber = Number(res.data?.quoteNumber);
           formik.setValues({
             ...formik.values,
             QuoteNumber: nextQuoteNumber,
@@ -618,6 +630,7 @@ function AddQuote() {
         setIsProperty={setIsProperty}
         setPropertyData={setPropertyData}
         setCustomersData={setCustomersData}
+        emailData={emailData}
         CompanyName={CompanyName}
       />
     </>
