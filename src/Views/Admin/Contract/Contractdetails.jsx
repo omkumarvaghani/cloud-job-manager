@@ -104,7 +104,7 @@ function ContractDetails() {
         const expenseRes = await AxiosInstance.get(
           `/v1/expense/${location?.state?.id}/${localStorage.getItem("CompanyId") || tokenDecode?.CompanyId}`
         );    
-
+        
         setContractData((prevState) => ({
           ...prevState,
           expenseData: expenseRes?.data?.result, // expense data
@@ -112,6 +112,7 @@ function ContractDetails() {
         const visitsRes = await AxiosInstance.get(
           `/v1/visit/${location?.state?.id}/${localStorage.getItem("CompanyId") || tokenDecode?.CompanyId}`
         );
+        console.log(visitsRes,"visitsResvisitsRes")
         setContractData((prevState) => ({
           ...prevState,
           visitsData: visitsRes?.data?.data, // visit data

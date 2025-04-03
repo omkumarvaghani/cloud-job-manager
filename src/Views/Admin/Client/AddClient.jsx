@@ -256,7 +256,7 @@ function AddClient() {
         const res = await AxiosInstance.get(`/v1/user/${location?.state?.id}`);
         const userProfile = res?.data?.data?.userProfile;
         const userLocations = res?.data?.data?.locations;
-
+        console.log(res,"resres")
         setUserAddress(userLocations); // Make sure userAddress is updated here
 
         if (userProfile && userLocations?.length) {
@@ -277,7 +277,7 @@ function AddClient() {
         console.error("Error: ", error?.message);
       }
     };
-
+          
     if (location?.state?.id) {
       fetchData();
     }

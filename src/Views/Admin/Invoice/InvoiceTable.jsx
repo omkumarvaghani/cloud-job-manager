@@ -34,7 +34,8 @@ const InvoiceTable = () => {
         );
         console.log(res, "resresres");
         const data = res?.data?.data;
-        setCustomerData(data.contracts || data.locations);
+        console.log(res?.data?.data.contracts, "data.contracts");
+        setCustomerData(data[0]?.contracts);
       } catch (error) {
         console.error("Error: ", error?.message);
       } finally {
@@ -56,6 +57,12 @@ const InvoiceTable = () => {
   const handleCheckboxClick = (event, item) => {
     event.stopPropagation();
     handleCheckboxChange(item);
+  };
+
+  // const [selectedCustomerData, setSelectedCustomerData] = useState(null);
+
+  const handleRadioChange = (item) => {
+    setSelectedCustomerData(item); // Update the selected customer data
   };
 
   return (
@@ -99,7 +106,7 @@ const InvoiceTable = () => {
             <Grid className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
               <LoaderComponent loader={loader} height="50" width="50" />
             </Grid>
-          ) : customerData.length === 0 ? (
+          ) : customerData?.length === 0 ? (
             <Grid className="d-flex justify-content-center align-items-center my-5 text-blue-color">
               <Typography>No Contracts Available</Typography>
             </Grid>
@@ -143,106 +150,193 @@ const InvoiceTable = () => {
                 </TableCell>
                 <TableBody>
                   {customerData?.map((item, index) => (
-                    <TableRow
-                      className="invoice-table"
-                      key={index}
-                      onClick={() => handleRowClick(index)}
-                      style={{
-                        borderBottom:
-                          index !== customerData?.length - 1
-                            ? "1px solid rgba(6, 49, 100, 0.3)"
-                            : "none",
-                        cursor: "pointer",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {console.log(item, "itemitem")}
-                      <TableCell
-                        component="th"
-                        scope="row"
+                    <React.Fragment key={index}>
+                      <TableRow
+                        className="invoice-table"
                         style={{
-                          borderTopLeftRadius: "20px",
-                          borderBottomLeftRadius: "20px",
-                          padding: "20px",
-                          fontSize: "17px",
-                        }}
-                      >
-                        <Input
-                          style={{ marginLeft: "12px" }}
-                          type="checkbox"
-                          id={`checkbox-${index}`}
-                          checked={selectedCustomerData === item || false}
-                          onClick={(event) => handleCheckboxClick(event, item)}
-                        />
-                      </TableCell>
-                      <TableCell
-                        className=" text-blue-color"
-                        style={{
-                          padding: "20px",
-                          fontSize: "17px",
-                          fontWeight: "600",
+                          cursor: "pointer",
                           whiteSpace: "nowrap",
                         }}
+                        onClick={() => handleRowClick(item)} // Handle row click to toggle expansion
                       >
-                        #
-                        {item?.ContractNumber || "ContractNumber not available"}
-                      </TableCell>
-                      <TableCell
-                        className=" text-blue-color"
-                        style={{
-                          padding: "20px",
-                          fontSize: "17px",
-                          fontWeight: "600",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {item?.Title}
-                      </TableCell>
-                      <TableCell
-                        style={{
-                          padding: "20px",
-                          color:
-                            item?.Status === "Unscheduled"
-                              ? "#E88C44"
-                              : item?.Status === "Today"
+                        <TableCell
+                          component="th"
+                          scope="row"
+                          style={{
+                            borderTopLeftRadius: "20px",
+                            borderBottomLeftRadius: "20px",
+                            padding: "20px",
+                            fontSize: "17px",
+                          }}
+                        >
+                          <Input
+                            style={{ marginLeft: "12px" }}
+                            type="checkbox" // Changed to checkbox
+                            name="customerCheckbox"
+                            id={`checkbox-${index}`} // Updated ID for checkbox
+                            checked={selectedCustomerData === item}
+                            onChange={() => handleCheckboxChange(item)} // Update state on change
+                          />
+                        </TableCell>
+                        <TableCell
+                          className="text-blue-color"
+                          style={{
+                            padding: "20px",
+                            fontSize: "17px",
+                            fontWeight: "600",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          #
+                          {item?.ContractNumber ||
+                            "ContractNumber not available"}
+                        </TableCell>
+                        <TableCell
+                          className="text-blue-color"
+                          style={{
+                            padding: "20px",
+                            fontSize: "17px",
+                            fontWeight: "600",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {item?.Title}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            padding: "20px",
+                            fontSize: "17px",
+                            color: item?.visits?.some(
+                              (visit) => visit?.IsComplete
+                            )
                               ? "#089F57"
-                              : item?.Status === "Upcoming"
-                              ? "#089F57"
-                              : item?.Status === "Scheduled"
-                              ? "#C8CC00"
-                              : "",
-                          fontSize: "17px",
-                        }}
-                      >
-                        {item?.Status || "Status not available"}
-                      </TableCell>
-                      <TableCell
-                        className="text-blue-color"
-                        style={{
-                          padding: "20px",
-                          fontSize: "17px",
-                        }}
-                      >
-                        {item?.locations?.[0]?.Address ||
-                          "Address not available"}
-                        ,{item?.locations?.[0]?.City || ""},
-                        {item?.locations?.[0]?.State || ""},
-                        {item?.locations?.[0]?.Country || ""}
-                      </TableCell>
+                              : "#E88C44",
+                          }}
+                        >
+                          {item?.visits?.some((visit) => visit?.IsComplete)
+                            ? "Completed"
+                            : "Pending"}
+                        </TableCell>
+                        <TableCell
+                          className="text-blue-color"
+                          style={{ padding: "20px", fontSize: "17px" }}
+                        >
+                          {item?.visits?.[0]?.ItemName || "Item not available"}
+                        </TableCell>
+                        <TableCell
+                          className="text-blue-color"
+                          style={{
+                            borderTopRightRadius: "20px",
+                            borderBottomRightRadius: "20px",
+                            padding: "20px",
+                            fontSize: "17px",
+                            fontWeight: "600",
+                          }}
+                        >
+                          {new Date(
+                            item?.visits?.[0]?.StartDate
+                          ).toLocaleDateString() || "Start Date not available"}
+                        </TableCell>
+                      </TableRow>
 
-                      <TableCell
-                        className="text-blue-color"
-                        style={{
-                          borderTopRightRadius: "20px",
-                          borderBottomRightRadius: "20px",
-                          padding: "20px",
-                          fontSize: "17px",
-                          fontWeight: "600",
-                        }}
-                      >
-                        ${item?.Total || "Total not available"}
-                      </TableCell>
-                    </TableRow>
+                      {selectedCustomerData === item &&
+                        item.visits?.map((visit, visitIndex) => (
+                          <TableRow
+                            className="invoice-table"
+                            key={visitIndex}
+                            style={{
+                              borderBottom:
+                                visitIndex !== item.visits.length - 1
+                                  ? "1px solid rgba(6, 49, 100, 0.3)"
+                                  : "none",
+                              cursor: "pointer",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {console.log(item.visits,"item.visits")}
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              style={{
+                                borderTopLeftRadius: "20px",
+                                borderBottomLeftRadius: "20px",
+                                padding: "20px",
+                                fontSize: "17px",
+                              }}
+                            >
+                              <Input
+                                style={{ marginLeft: "12px" }}
+                                type="checkbox" // Changed to checkbox
+                                name="customerCheckbox"
+                                id={`checkbox-${index}`} // Updated ID for checkbox
+                                checked={selectedCustomerData === item}
+                                onChange={() => handleCheckboxChange(item)} // Update state on change
+                              />
+                            </TableCell>
+                            <TableCell
+                              className="text-blue-color"
+                              style={{
+                                padding: "20px",
+                                fontSize: "17px",
+                                fontWeight: "600",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              #
+                              {item?.ContractNumber ||
+                                "ContractNumber not available"}
+                            </TableCell>
+                            <TableCell
+                              className="text-blue-color"
+                              style={{
+                                padding: "20px",
+                                fontSize: "17px",
+                                fontWeight: "600",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {item?.Title}
+                            </TableCell>
+                            <TableCell
+                              style={{
+                                padding: "20px",
+                                fontSize: "17px",
+                                color: item?.visits?.some(
+                                  (visit) => visit?.IsComplete
+                                )
+                                  ? "#089F57"
+                                  : "#E88C44",
+                              }}
+                            >
+                              {item?.visits?.some((visit) => visit?.IsComplete)
+                                ? "Completed"
+                                : "Pending"}
+                            </TableCell>
+                            <TableCell
+                              className="text-blue-color"
+                              style={{ padding: "20px", fontSize: "17px" }}
+                            >
+                              {item?.visits?.[0]?.ItemName ||
+                                "Item not available"}
+                            </TableCell>
+                            <TableCell
+                              className="text-blue-color"
+                              style={{
+                                borderTopRightRadius: "20px",
+                                borderBottomRightRadius: "20px",
+                                padding: "20px",
+                                fontSize: "17px",
+                                fontWeight: "600",
+                              }}
+                            >
+                              {new Date(
+                                item?.visits?.[0]?.StartDate
+                              ).toLocaleDateString() ||
+                                "Start Date not available"}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </React.Fragment>
                   ))}
                 </TableBody>
               </Table>

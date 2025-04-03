@@ -9,6 +9,8 @@ const { addNotification } = require("../../../models/User/AddNotification");
 const Notification = require("../../../models/User/Notification");
 const { contractPdf } = require("../../../HtmlFormates/ContractFunction");
 const { generateAndSavePdf } = require("../../../DocumentGenerator/generateDocuments");
+const UserProfile = require("../../../models/User/UserProfile");
+const { handleTemplate } = require("./templateController");
 
 // **CREATE CONTRACT**
 const createOneoffVisits = async (
@@ -514,10 +516,9 @@ exports.getContracts = async (req, res) => {
 };
 
 // **GET CONTRACT DETAILS FOR COMPANY**
-exports.getContractDetails = async (req, res) => {
-  const { ContractId } = req.params;
+const getContractData = async (ContractId) => {
   if (!ContractId) {
-    return res.status(400).json({ message: "ContractId is required!" });
+    throw new Error("ContractId is required!");
   }
 
   const contracts = await Contract.aggregate([
@@ -657,19 +658,31 @@ exports.getContractDetails = async (req, res) => {
     },
   ]);
 
-  if (contracts.length === 0) {
-    return res.status(204).json({
-      message: "Contract not found!",
-      data: {},
-    });
-  }
-
-  return res.status(200).json({
-    statusCode: 200,
-    data: contracts[0] || {},
-    message: "Contract retrieved successfully",
-  });
+  return contracts.length > 0 ? contracts[0] : null;
 };
+exports.getContractDetails = async (req, res) => {
+  try {
+    const { ContractId } = req.params;
+    const contractData = await getContractData(ContractId);
+
+    if (!contractData) {
+      return res.status(204).json({
+        message: "Contract not found!",
+        data: {},
+      });
+    }
+
+    return res.status(200).json({
+      statusCode: 200,
+      data: contractData,
+      message: "Contract retrieved successfully",
+    });
+  } catch (error) {
+    console.error("Error fetching contract details:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 // **GET CONTRACT MAX CONTRACT NUMBER**
 exports.getMaxContractNumber = async (req, res) => {
@@ -1440,4 +1453,147 @@ exports.generateContractPdf = async (req, res) => {
   }
 };
 
+// **SEND CONTRACT MAIL**
+exports.sendContractEmail = async (req, res) => {
+  try {
+    const { IsSendpdf, ...data } = req.body;
+    const { CustomerId, ContractId } = data;
 
+    const CompanyId = Array.isArray(req.user.CompanyId) ? req.user.CompanyId : [req.user.CompanyId];
+
+    const findCustomer = await User.findOne({ CustomerId });
+    const findCustomerProfile = await UserProfile.findOne({ CustomerId });
+    const findCompany = await User.findOne({ CompanyId });
+    const findCompanyProfile = await UserProfile.findOne({ CompanyId, Role: "Company" });
+
+    console.log(findCustomerProfile, 'findCustomerProfile')
+    console.log(findCustomer, 'findCustomer')
+    if (!findCustomer || !findCustomerProfile) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+    if (!findCompany || !findCompanyProfile) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+    let fileName = null;
+
+    if (IsSendpdf) {
+      try {
+        const response = await getContractData(ContractId);
+        if (!response || !response.data) {
+          return { statusCode: 404, message: "Contract not found" };
+        }
+
+        const html = await contractPdf(response.data);
+        fileName = await generateAndSavePdf(html);
+      } catch (error) {
+        console.error("Error generating PDF:", error);
+        return { statusCode: 500, message: "Failed to generate PDF" };
+      }
+    }
+
+    const defaultSubject = "Your Custom Contract from Cloud Job Manager";
+    const defaultBody = `
+         
+         <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 20px auto; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); border: 1px solid #e88c44;">
+        <!-- Header Section (Logo at the Top) -->
+        <tr>
+          <td style="padding: 30px 0; text-align: center; background-color: #063164; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+            <div style="display: inline-block; padding: 15px; background-color: white; border-radius: 8px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);">
+              <img src="https://app.cloudjobmanager.com/cdn/upload/20250213103016_site-logo2.png" alt="CloudJobManager Logo" style="width: 180px; max-width: 100%; display: block; margin: auto;" />
+            </div>
+          </td>
+        </tr>
+        
+        <!-- Content Section -->
+        <tr>
+          <td style="padding: 40px;font-family: 'Arial', sans-serif; color: #555;text-align:center;">
+            <h2 style="font-size: 24px; color: #003366; text-align: center;  font-weight: 700;">Your Custom Contract is Ready!</h2>
+            <p style="font-size: 18px; color: #555; line-height: 1.7; text-align: center; font-weight: 400;">Dear <strong style="color: #003366;">${findCustomerProfile.FirstName
+      } ${findCustomerProfile.LastName}</strong>,</p>
+            <p style="font-size: 16px; color: #555; line-height: 1.6;">Thank you for the opportunity to provide a Contract for <strong style="color: #003366;">${data.Title
+      }</strong> with a total amount of <strong>$${data.Total
+      }</strong>.</p>
+            <p style="font-size: 16px; color: #555; line-height: 1.6;">We are excited to present this custom Contract tailored just for you.</p>
+      
+            <!-- Quote Details Section -->
+            <div style=" padding: 15px; text-align: center;  ">
+              <h3 style="font-size: 21px; color: #e88c44; font-weight: 700;">Total Amount: <strong style="font-size: 21px; color: #003366;">$${data.Total
+      }</strong></h3>
+              <p style="font-size: 16px; color: #718096; font-weight: 400;">Contract Date: <strong>${moment(
+        data.createdAt
+      ).format("DD-MM-YYYY")}</strong></p>
+            </div>
+
+      
+            <p style="font-size: 16px; color: #555; line-height: 1.7; text-align: center;">If you have any questions or would like to proceed with this Contract, please reach out to us at <a href="mailto:${findCompany.EmailAddress
+      }" style="color: #003366; text-decoration: none; font-weight: 600;">${findCompany.EmailAddress
+      }</a>.</p>
+            <p style="font-size: 16px; color: #555; line-height: 1.7; text-align: center;">We look forward to working with you!</p>
+      
+            <div style="text-align: end; margin-top: 40px;">
+              <p style="font-size: 16px; color: #555;">Best regards,<br />
+                <strong style="color: #003366; font-weight: 700;">${findCompanyProfile.CompanyName
+      }</strong><br />
+                <span style="font-size: 14px; color: #718096;">${findCompany.EmailAddress
+      }</span>
+              </p>
+            </div>
+          </td>
+        </tr>
+      
+        <!-- Footer Section -->
+        <tr>
+          <td style="padding: 20px; text-align: center; font-size: 12px; color: #888888; background-color: #f4f4f7; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; font-family: 'Arial', sans-serif;">
+            CloudJobManager, Inc. | All rights reserved.<br>
+            <a href="#" style="color: #e88c44; text-decoration: none; font-weight: 600;">Unsubscribe</a> if you no longer wish to receive these emails.
+          </td>
+        </tr>
+      </table>`;
+
+    const ContractData = [
+      {
+        FirstName: findCustomerProfile.FirstName || "",
+        LastName: findCustomerProfile.LastName || "",
+        EmailAddress: findCustomer.EmailAddress || "",
+        PhoneNumber: findCustomerProfile.PhoneNumber || "",
+        companyName: findCompanyProfile.CompanyName || "",
+        EmailAddress: findCompany.EmailAddress || "",
+        companyPhoneNumber: findCompanyProfile.PhoneNumber || "",
+        Title: data.Title || "",
+        ContractNumber: data.ContractNumber || "",
+        SubTotal: data.SubTotal || "",
+        Discount: data.Discount || "",
+        Tax: data.Tax || "",
+        Total: data.Total || "",
+      },
+    ];
+
+    const emailStatus = await handleTemplate(
+      "Contract",
+      CompanyId,
+      ContractData,
+      [fileName],
+      defaultSubject,
+      defaultBody,
+      findCustomer.CustomerId
+    );
+
+    if (emailStatus) {
+      return res.status(200).json({
+        statusCode: 200,
+        message: `Email was sent to ${findCustomer.EmailAddress}`,
+      });
+    } else {
+      return res.status(203).json({
+        statusCode: 203,
+        message: "Issue sending email",
+      });
+    }
+  } catch (error) {
+    console.error("Error sending email:", error.message);
+    return res.status(500).json({
+      statusCode: 500,
+      message: "Something went wrong, please try again later",
+    });
+  }
+};

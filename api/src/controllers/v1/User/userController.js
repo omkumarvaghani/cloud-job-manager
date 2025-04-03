@@ -79,14 +79,16 @@ exports.createUser = async (req, res) => {
             Password,
         });
         await newUser.save();
-
+        console.log(newUser, 'newUser')
         const newUserProfile = new UserProfile({
             UserId: UserId,
+            Role,
             CompanyId: CompanyId[0],
             ...profileDetails,
             LocationId: newLocation.LocationId,
         });
         await newUserProfile.save();
+        console.log(newUserProfile, 'newUserProfile')
 
         if (Role === "Company") {
             if (!CompanyName) {
@@ -150,7 +152,7 @@ exports.getUserById = async (req, res) => {
 
         const userProfile = await UserProfile.findOne({ UserId, IsDelete: false });
 
-        const locations = await Location.find({ CustomerId: UserId });
+        const locations = await Location.findOne({ CustomerId: UserId });
 
         return res.status(200).json({
             message: "User fetched successfully.",
@@ -158,7 +160,6 @@ exports.getUserById = async (req, res) => {
                 user,
                 userProfile,
                 locations,
-                locationsCount: locations.length,
             },
         });
 

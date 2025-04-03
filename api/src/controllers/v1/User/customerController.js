@@ -416,7 +416,7 @@ exports.getUserDetailWithInvoices = async (req, res) => {
 exports.sendWelcomeEmailToCustomer = async (req, res) => {
     try {
         const { UserId } = req.params;
-
+ 
         const findCustomer = await User.findOne({ UserId, Role: "Customer", IsDelete: false });
         if (!findCustomer) {
             return { statusCode: 404, message: "Customer not found" };
