@@ -186,6 +186,7 @@ exports.getVisitSchedule = async (req, res) => {
 exports.getVisitDetails = async (req, res) => {
     try {
         const { ContractId, CompanyId } = req.params;
+        console.log("ContractId:", ContractId, "CompanyId:", CompanyId);
 
         const result = await Visit.aggregate([
             {
@@ -277,7 +278,7 @@ exports.getVisitDetails = async (req, res) => {
         const sortedVisits = [...Today, ...Upcoming, ...Past];
 
         if (!result || result.length === 0) {
-            return res.status(204).json( {
+            return res.status(204).json({
                 statusCode: 204,
                 message: "No data found for ContractId and CompanyId.",
             });

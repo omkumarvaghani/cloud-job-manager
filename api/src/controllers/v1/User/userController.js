@@ -238,7 +238,25 @@ exports.updateUser = async (req, res) => {
         if (!updatedUserProfile) {
             return res.status(404).json({ message: "User profile not found!" });
         }
-
+        const { Address, City, State, Zip, Country } = updateData;
+        if (Address || City || State || Zip || Country) {
+            const userProfile = await UserProfile.findOne({ UserId });
+            if (userProfile && userProfile.LocationId) {
+                await Location.findOneAndUpdate(
+                    { LocationId: userProfile.LocationId },
+                    {
+                        $set: {
+                            ...(Address && { Address }),
+                            ...(City && { City }),
+                            ...(State && { State }),
+                            ...(Zip && { Zip }),
+                            ...(Country && { Country }),
+                        },
+                    },
+                    { new: true }
+                );
+            }
+        }
         const companyIdForLog = req.user.CompanyId || user.CompanyId;
         await logUserEvent(companyIdForLog, "UPDATE", "User details updated", {
             UpdatedBy: req.user.EmailAddress,

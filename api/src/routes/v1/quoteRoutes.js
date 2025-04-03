@@ -1,10 +1,11 @@
 const express = require("express");
 const { protect } = require("../../middleware/authMiddleware");
-const { createQuoteWithDetails, checkQuoteNumberExists, getCustomerQuotes, getQuotes, getQuoteDetails, getMaxQuoteNumber, updateQuote, deleteQuoteAndRelatedData, approveQuote, getScheduleData, fetchQuoteDetails, getQuotesByCustomer, getQuotesByCustomerAndLocation } = require("../../controllers/v1/User/quoteController");
+const { createQuoteWithDetails, checkQuoteNumberExists, getCustomerQuotes, getQuotes, getQuoteDetails, getMaxQuoteNumber, updateQuote, deleteQuoteAndRelatedData, approveQuote, getScheduleData, fetchQuoteDetails, getQuotesByCustomer, getQuotesByCustomerAndLocation, generateQuotePdf } = require("../../controllers/v1/User/quoteController");
 const router = express.Router();
 
 router.post("/", protect, createQuoteWithDetails);
 router.post("/check_number/:CompanyId", protect, checkQuoteNumberExists);
+router.post("/quotepdf/:QuoteId", protect, generateQuotePdf);
 
 router.get("/get_number/:CompanyId", protect, getMaxQuoteNumber);
 router.get("/quotes/:CustomerId", protect, getCustomerQuotes);

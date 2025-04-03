@@ -49,6 +49,7 @@ exports.register = async (req, res) => {
     const newUserProfile = new UserProfile({
       UserId: newUser.UserId,
       CompanyId,
+      Role,
       ...profileDetails,
     });
 

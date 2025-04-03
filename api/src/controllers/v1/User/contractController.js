@@ -7,6 +7,8 @@ const { logUserEvent } = require("../../../middleware/eventMiddleware");
 const User = require("../../../models/User/User");
 const { addNotification } = require("../../../models/User/AddNotification");
 const Notification = require("../../../models/User/Notification");
+const { contractPdf } = require("../../../HtmlFormates/ContractFunction");
+const { generateAndSavePdf } = require("../../../DocumentGenerator/generateDocuments");
 
 // **CREATE CONTRACT**
 const createOneoffVisits = async (
@@ -844,8 +846,8 @@ exports.updateContract = async (req, res) => {
   await Visit.updateMany({ ContractId, IsRecurring: true }, { IsDelete: true });
 
   if (contractData.RecuringJob && contractData.RecuringJob.StartDate !== "") {
-    const assignPersonIds = Array.isArray(contract.UserId)
-      ? contract.UserId
+    const assignPersonIds = Array.isArray(contract.WorkerId)
+      ? contract.WorkerId
       : [];
 
     await createRecuringVisits(
@@ -1262,3 +1264,180 @@ exports.getContractCustomerProperty = async (req, res) => {
     return res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
+// **GENERATE CONTRACT PDF**
+exports.generateContractPdf = async (req, res) => {
+  try {
+    const { ContractId } = req.params;
+
+    if (!ContractId) {
+      return res.status(400).json({
+        statusCode: 400,
+        message: "ContractId is required",
+      });
+    }
+
+    const contracts = await Contract.aggregate([
+      {
+        $match: { ContractId, IsDelete: false }
+      },
+      {
+        $lookup: {
+          from: "contract-items",
+          localField: "ContractId",
+          foreignField: "ContractId",
+          as: "items"
+        },
+      },
+      {
+        $lookup: {
+          from: "user-profiles",
+          localField: "CustomerId",
+          foreignField: "UserId",
+          as: "customerData"
+        },
+      },
+      { $unwind: { path: "$customerData", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "CustomerId",
+          foreignField: "UserId",
+          as: "userData"
+        },
+      },
+      { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "locations",
+          localField: "LocationId",
+          foreignField: "LocationId",
+          as: "locationData"
+        },
+      },
+      { $unwind: { path: "$locationData", preserveNullAndEmptyArrays: true } },
+
+      {
+        $lookup: {
+          from: "users",
+          let: { companyId: "$CompanyId" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $in: ["$$companyId", "$CompanyId"] },
+                    { $eq: ["$Role", "Company"] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "companyUserData"
+        }
+      },
+      { $unwind: { path: "$companyUserData", preserveNullAndEmptyArrays: true } },
+
+      {
+        $lookup: {
+          from: "user-profiles",
+          let: { companyId: "$CompanyId" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$CompanyId", "$$companyId"] },
+                    { $eq: ["$Role", "Company"] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "companyProfileData"
+        }
+      },
+      { $unwind: { path: "$companyProfileData", preserveNullAndEmptyArrays: true } },
+
+      {
+        $addFields: {
+          companyData: {
+            EmailAddress: "$companyUserData.EmailAddress",
+            Address: "$companyProfileData.Address",
+            City: "$companyProfileData.City",
+            State: "$companyProfileData.State",
+            Zip: "$companyProfileData.Zip",
+            Country: "$companyProfileData.Country",
+            PhoneNumber: "$companyProfileData.PhoneNumber",
+            CompanyName: "$companyProfileData.CompanyName"
+          },
+          "customerData.EmailAddress": "$userData.EmailAddress"
+        }
+      },
+
+      {
+        $project: {
+          ContractId: 1,
+          CompanyId: 1,
+          CustomerId: 1,
+          Title: 1,
+          ContractNumber: 1,
+          SubTotal: 1,
+          Discount: 1,
+          Tax: 1,
+          Total: 1,
+          CustomerMessage: 1,
+          ContractDisclaimer: 1,
+          Notes: 1,
+          Attachment: 1,
+          Status: 1,
+          DeleteReason: 1,
+          ChangeRequest: 1,
+          SignatureType: 1,
+          Signature: 1,
+          ApproveDate: 1,
+          IsDelete: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          IsApprovedByCustomer: 1,
+          "customerData.FirstName": 1,
+          "customerData.LastName": 1,
+          "customerData.PhoneNumber": 1,
+          "customerData.EmailAddress": 1,
+          "locationData.Address": 1,
+          "locationData.City": 1,
+          "locationData.State": 1,
+          "locationData.Zip": 1,
+          "locationData.Country": 1,
+          items: 1,
+          companyData: 1,
+        },
+      },
+    ]);
+
+    if (contracts.length === 0) {
+      return res.status(404).json({
+        statusCode: 404,
+        message: "Contract not found",
+      });
+    }
+
+    const contractData = contracts[0];
+
+    const html = await contractPdf(contractData);
+    const fileName = await generateAndSavePdf(html);
+
+    return res.status(200).json({
+      statusCode: 200,
+      fileName,
+    });
+  } catch (error) {
+    console.error("Error generating contract PDF:", error);
+    res.status(500).json({
+      statusCode: 500,
+      message: "Something went wrong, please try again later.",
+    });
+  }
+};
+
+

@@ -5,6 +5,8 @@ const QuoteDetail = require("../../../models/User/QuoteItem");
 const { logUserEvent } = require("../../../middleware/eventMiddleware");
 const { addNotification } = require("../../../models/User/AddNotification");
 const Notification = require("../../../models/User/Notification");
+const { quotePdf } = require("../../../HtmlFormates/QuoteFunction");
+const { generateAndSavePdf } = require("../../../DocumentGenerator/generateDocuments");
 
 // **CREATE QUOTE WITH DETAILS**
 exports.createQuoteWithDetails = async (req, res) => {
@@ -1146,3 +1148,179 @@ exports.getQuotesByCustomerAndLocation = async (req, res) => {
     }
 };
 
+// **GENERATE QUOTE PDF**
+exports.generateQuotePdf = async (req, res) => {
+    try {
+        const { QuoteId } = req.params;
+
+        if (!QuoteId) {
+            return res.status(400).json({
+                statusCode: 400,
+                message: "QuoteId is required",
+            });
+        }
+
+        const quotes = await Quote.aggregate([
+            {
+                $match: { QuoteId, IsDelete: false }
+            },
+            {
+                $lookup: {
+                    from: "quote-items",
+                    localField: "QuoteId",
+                    foreignField: "QuoteId",
+                    as: "products"
+                },
+            },
+            {
+                $lookup: {
+                    from: "user-profiles",
+                    localField: "CustomerId",
+                    foreignField: "UserId",
+                    as: "customerData"
+                },
+            },
+            { $unwind: { path: "$customerData", preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "CustomerId",
+                    foreignField: "UserId",
+                    as: "userData"
+                },
+            },
+            { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: "locations",
+                    localField: "LocationId",
+                    foreignField: "LocationId",
+                    as: "locationData"
+                },
+            },
+            { $unwind: { path: "$locationData", preserveNullAndEmptyArrays: true } },
+
+            {
+                $lookup: {
+                    from: "users",
+                    let: { companyId: "$CompanyId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $in: ["$$companyId", "$CompanyId"] },
+                                        { $eq: ["$Role", "Company"] }
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    as: "companyUserData"
+                }
+            },
+            { $unwind: { path: "$companyUserData", preserveNullAndEmptyArrays: true } },
+
+
+            {
+                $lookup: {
+                    from: "user-profiles",
+                    let: { companyId: "$CompanyId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$CompanyId", "$$companyId"] },
+                                        { $eq: ["$Role", "Company"] }
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    as: "companyProfileData"
+                }
+            },
+            { $unwind: { path: "$companyProfileData", preserveNullAndEmptyArrays: true } },
+
+            {
+                $addFields: {
+                    companyData: {
+                        EmailAddress: "$companyUserData.EmailAddress",
+                        Address: "$companyProfileData.Address",
+                        City: "$companyProfileData.City",
+                        State: "$companyProfileData.State",
+                        Zip: "$companyProfileData.Zip",
+                        Country: "$companyProfileData.Country",
+                        PhoneNumber: "$companyProfileData.PhoneNumber",
+                        CompanyName: "$companyProfileData.CompanyName"
+                    },
+                    "customerData.EmailAddress": "$userData.EmailAddress"
+                }
+            },
+
+            {
+                $project: {
+                    QuoteId: 1,
+                    CompanyId: 1,
+                    CustomerId: 1,
+                    Title: 1,
+                    QuoteNumber: 1,
+                    SubTotal: 1,
+                    Discount: 1,
+                    Tax: 1,
+                    Total: 1,
+                    CustomerMessage: 1,
+                    ContractDisclaimer: 1,
+                    Notes: 1,
+                    Attachment: 1,
+                    Status: 1,
+                    DeleteReason: 1,
+                    ChangeRequest: 1,
+                    SignatureType: 1,
+                    Signature: 1,
+                    ApproveDate: 1,
+                    IsDelete: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    IsApprovedByCustomer: 1,
+                    "customerData.FirstName": 1,
+                    "customerData.LastName": 1,
+                    "customerData.PhoneNumber": 1,
+                    "customerData.EmailAddress": 1,
+                    "locationData.Address": 1,
+                    "locationData.City": 1,
+                    "locationData.State": 1,
+                    "locationData.Zip": 1,
+                    "locationData.Country": 1,
+                    products: 1,
+                    companyData: 1,
+                },
+            },
+        ]);
+
+        if (quotes.length === 0) {
+            return res.status(404).json({
+                statusCode: 404,
+                message: "Quote not found",
+            });
+        }
+
+        const quoteData = quotes[0];
+
+        const html = await quotePdf(quoteData);
+
+        const fileName = await generateAndSavePdf(html);
+
+        return res.status(200).json({
+            statusCode: 200,
+            fileName,
+        });
+    } catch (error) {
+        console.error("Error generating quote PDF:", error);
+        res.status(500).json({
+            statusCode: 500,
+            message: "Something went wrong, please try again later.",
+        });
+    }
+};
