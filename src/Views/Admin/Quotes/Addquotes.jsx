@@ -346,6 +346,7 @@ function AddQuote() {
           );
           if (res.data?.statusCode === 200) {
             const data = res?.data?.data;
+            console.log(res?.data?.data.userData?.EmailAddress, "datadatadata");
             formik.setValues({
               Title: data?.Title,
               FirstName: data.customerData?.FirstName || "",
@@ -354,7 +355,7 @@ function AddQuote() {
               EmailAddress: res?.data?.data.userData?.EmailAddress || "",
               Address: data.locationData?.Address || "",
               City: data.locationData?.City || "",
-              State: data.locationData?.State || "",
+              State: data.locationData?.State || "",  
               Zip: data.locationData?.Zip || "",
               Country: data.locationData?.Country || "",
               QuoteNumber: data?.QuoteNumber,
@@ -374,7 +375,7 @@ function AddQuote() {
               ...data?.customerData,
               location: data?.locationData || {},
             });
-            setEmailData({ ...data?.userData });
+            setEmailData({...data?.userData,})
             setLineItems(
               data?.products || [
                 {
