@@ -369,8 +369,6 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-// **GET USER BY ID API**
-
 // *GET USER BY ID API*
 exports.getCompanyData = async (req, res) => {
     try {
