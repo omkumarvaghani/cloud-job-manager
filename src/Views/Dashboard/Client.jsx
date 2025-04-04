@@ -20,15 +20,17 @@ const ClientDashboard = () => {
 
   const [data, setData] = useState({});
   const [loader, setLoader] = useState(true);
-
+  
   const [tokenDecode, setTokenDecode] = useState({});
   const CompanyId = tokenDecode.CompanyId;
   const CustomerId = tokenDecode.CustomerId;
-
+  console.log(tokenDecode, "tokenDecode");
   const fetchData = async () => {
     try {
       const res = await handleAuth(navigate, location);
+      console.log(res, "resresresres");
       setTokenDecode(res.data);
+      console.log(res.data, "res.data");
     } catch (error) {
       console.error("Error fetching token decode data:", error);
     }
@@ -258,7 +260,7 @@ const ClientDashboard = () => {
             textAlign: "center",
             alignItems: "center",
             marginTop: "25%",
-            height:"70vh"
+            height: "70vh",
           }}
         >
           <LoaderComponent height="50" width="50" loader={loader} />
@@ -276,7 +278,8 @@ const ClientDashboard = () => {
                 color: "#063164 ",
               }}
             >
-              {welcomeMessage}, {tokenDecode?.full_name}
+              {welcomeMessage}, {tokenDecode?.FirstName} {tokenDecode?.LastName}
+              {console.log(tokenDecode, "tokenDecode123")}
             </Typography>
           </Grid>
 

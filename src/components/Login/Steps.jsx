@@ -125,7 +125,7 @@ const Steps = ({ EmailAddress, Password }) => {
   // const formik = useFormik({
   //   initialValues: {
   //     OwnerName: "",
-  //     phoneNumber: "",
+  //     PhoneNumber: "",
   //     EmailAddress: "",
   //     industry: {
   //       label: "Select industry type here...",
@@ -145,7 +145,7 @@ const Steps = ({ EmailAddress, Password }) => {
   //     currentStep === 1
   //       ? Yup.object({
   //           OwnerName: Yup.string().required("OwnerName Required"),
-  //           phoneNumber: Yup.string()
+  //           PhoneNumber: Yup.string()
   //             .required("Phone number required")
   //             .matches(
   //               /^\(\d{3}\) \d{3}-\d{4}$/,
@@ -181,7 +181,7 @@ const Steps = ({ EmailAddress, Password }) => {
   const formik = useFormik({
     initialValues: {
       OwnerName: "",
-      phoneNumber: "",
+      PhoneNumber: "",
       EmailAddress: "",
       Industry: {
         label: "Select industry type here...",
@@ -201,7 +201,7 @@ const Steps = ({ EmailAddress, Password }) => {
       currentStep === 1
         ? Yup.object({
             OwnerName: Yup.string().required("OwnerName Required"),
-            phoneNumber: Yup.string()
+            PhoneNumber: Yup.string()
               .required("Phone number required")
               .matches(
                 /^\(\d{3}\) \d{3}-\d{4}$/,
@@ -257,11 +257,11 @@ const Steps = ({ EmailAddress, Password }) => {
     return limitedPhoneNumber;
   };
   const handlePhoneChange = (e) => {
-    if (formik.values.phoneNumber?.length > e.target.value?.length) {
-      formik.setFieldValue("phoneNumber", e.target.value);
+    if (formik.values.PhoneNumber?.length > e.target.value?.length) {
+      formik.setFieldValue("PhoneNumber", e.target.value);
     } else {
       const formattedValue = formatPhoneNumber(e.target.value);
-      formik.setFieldValue("phoneNumber", formattedValue);
+      formik.setFieldValue("PhoneNumber", formattedValue);
     }
   };
 
@@ -433,18 +433,18 @@ const Steps = ({ EmailAddress, Password }) => {
                         className="fullnemae phonenumber-signup"
                       >
                         <InputText
-                          value={formik.values?.phoneNumber}
+                          value={formik.values?.PhoneNumber}
                           onChange={handlePhoneChange}
                           onBlur={formik.handleBlur}
                           error={
-                            formik.touched.phoneNumber &&
-                            Boolean(formik.errors.phoneNumber)
+                            formik.touched.PhoneNumber &&
+                            Boolean(formik.errors.PhoneNumber)
                           }
                           helperText={
-                            formik.touched.phoneNumber &&
-                            formik.errors.phoneNumber
+                            formik.touched.PhoneNumber &&
+                            formik.errors.PhoneNumber
                           }
-                          name="phoneNumber"
+                          name="PhoneNumber"
                           placeholder="(555) 555-1234"
                           label="Phone Number"
                           type="text"

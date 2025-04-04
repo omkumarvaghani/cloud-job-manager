@@ -1123,8 +1123,9 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             className="bold-text"
                             style={{ fontSize: "12px" }}
                           >
-                            {data?.full_name || 
+                            {data?.OwnerName ||
                               data?.FirstName + " " + data?.LastName}
+                            {console.log(data, "data")}
                           </Typography>
                         </Typography>
                         <Typography

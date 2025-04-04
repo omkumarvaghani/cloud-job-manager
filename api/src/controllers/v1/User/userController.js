@@ -370,25 +370,61 @@ exports.getAllUsers = async (req, res) => {
 };
 
 // **GET USER BY ID API**
-exports.getUserByCompanyId = async (req, res) => {
+
+// *GET USER BY ID API*
+exports.getCompanyData = async (req, res) => {
     try {
         const { CompanyId } = req.params;
 
-        const user = await User.findOne({ CompanyId, IsDelete: false }).select("-Password");
-        if (!user) {
-            return res.status(404).json({ message: "User not found!" });
+        if (!CompanyId) {
+            return res.status(400).json({
+                success: false,
+                message: "Unauthorized or missing information.",
+            });
         }
 
-        const userProfile = await UserProfile.findOne({ CompanyId });
+        const user = await User.findOne({
+            CompanyId: { $in: [CompanyId] },
 
-        return res.status(200).json({
-            statusCode: "200",
-            message: "User fetched successfully.",
-            data: { user, userProfile }
+            Role: "Company",
+            IsDelete: false,
         });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found for the provided CompanyId.",
+            });
+        }
+
+        const userProfile = await UserProfile.findOne({
+            CompanyId,
+            Role: "Company",
+            IsDelete: false,
+        });
+
+        if (!userProfile) {
+            return res.status(404).json({
+                success: false,
+                message: "Company profile not found.",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Company data fetched successfully.",
+            data: {
+                user,
+                userProfile,
+            },
+        });
+
     } catch (error) {
-        console.error("Error in getUserById:", error);
-        return res.status(500).json({ message: "Something went wrong, please try later!" });
+        console.error("Error fetching company data:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
     }
 };
 
