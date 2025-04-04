@@ -47,7 +47,7 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
           state.navigats = ["/index"];
         }
         break;
-      case "customer":
+      case "Customer":
         if (!window.location.pathname.includes("/customer")) {
           localStorage.setItem("CustomerId", CustomerId);
           state.redirect = "/customers/index";

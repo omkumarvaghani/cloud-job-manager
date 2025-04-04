@@ -125,10 +125,10 @@ const Profile = () => {
           setPostLoader(true);
           const updatedProfile = { ...values };
           const res = await AxiosInstance.put(
-            `/company/profile/${CompanyId}`,
+            `/v1/user/${CompanyId}`,
             updatedProfile
           );
-
+          console.log(res, "res");
           if (res?.data?.statusCode === 200) {
             showToast.success(res?.data?.message);
             // swal(

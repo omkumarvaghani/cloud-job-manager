@@ -261,7 +261,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" })
     }
 
-    const userProfile = await UserProfile.findOne({ UserId: user.UserId })
+    const userProfile = await UserProfile.findOne({ UserId: user.UserId, Role: "Company" })
 
     const tokenData = {
       UserId: user.UserId,
@@ -269,7 +269,7 @@ exports.login = async (req, res) => {
       Role: user.Role,
       ProfileImage: userProfile?.ProfileImage || null,
       CompanyId: user.CompanyId,
-      CompanyName: userProfile?.CompanyName || "",
+      CompanyName: userProfile?.CompanyName || "Unknown Company",
       OwnerName: userProfile?.OwnerName || "",
     }
 
@@ -282,7 +282,7 @@ exports.login = async (req, res) => {
     );
 
     const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
-      expiresIn: "24h",
+      expiresIn: "4h",
     });
 
     let statusCode, message, roleSpecificId;

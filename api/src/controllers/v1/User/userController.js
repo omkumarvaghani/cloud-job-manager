@@ -371,9 +371,7 @@ exports.getAllUsers = async (req, res) => {
 };
 
 // **GET USER BY ID API**
-
 exports.getCompanyData = async (req, res) => {
-    console.log(req, 'req')
     try {
         const { CompanyId } = req.params;
 
@@ -384,7 +382,6 @@ exports.getCompanyData = async (req, res) => {
             });
         }
 
-        // Fetch User
         const user = await User.findOne({
             CompanyId: { $in: [CompanyId] },
 
@@ -479,9 +476,12 @@ exports.getCompanyDropdown = async (req, res) => {
 
 // **PUT COMPANY PROFILE API**
 exports.updateCompanyProfile = async (req, res) => {
+    console.log("Request Body:", req.body);
     try {
         const { CompanyId } = req.params;
         const { UserData, ProfileData } = req.body;
+
+
         if (UserData) {
             const user = await User.findOne({ CompanyId, IsDelete: false });
 
@@ -497,24 +497,35 @@ exports.updateCompanyProfile = async (req, res) => {
                 UserData.Password = await bcrypt.hash(UserData.Password, salt);
             }
 
-            await User.updateOne({ CompanyId }, { $set: UserData });
+            await User.updateOne(
+                { CompanyId, IsDelete: false },
+                { $set: UserData }
+            );
         }
 
         if (ProfileData) {
-            ProfileData.updatedAt = moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss");
+            const existingProfile = await UserProfile.findOne({
+                CompanyId,
+                IsDelete: false,
+            });
 
-            const updatedProfile = await UserProfile.findOneAndUpdate(
-                { CompanyId, IsDelete: false },
-                { $set: ProfileData },
-                { new: true }
-            );
-
-            if (!updatedProfile) {
+            if (!existingProfile) {
                 return res.status(404).json({
                     statusCode: 404,
                     message: "Company profile not found!",
                 });
             }
+
+            const mergedProfile = {
+                ...existingProfile.toObject(),
+                ...ProfileData,
+                updatedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
+            };
+
+            await UserProfile.updateOne(
+                { CompanyId, IsDelete: false },
+                { $set: mergedProfile }
+            );
         }
 
         return res.status(200).json({
@@ -522,13 +533,12 @@ exports.updateCompanyProfile = async (req, res) => {
             message: "User and Company profile updated successfully",
         });
     } catch (error) {
-        console.error("Error in updateCompanyProfile:", error.message);
+        console.error("Error in updateCompanyProfile:", error);
         return res.status(500).json({
             statusCode: 500,
             message: "Something went wrong, please try later!",
         });
     }
 };
-
 
 

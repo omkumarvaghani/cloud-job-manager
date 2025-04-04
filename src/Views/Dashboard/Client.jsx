@@ -22,6 +22,7 @@ const ClientDashboard = () => {
   const [loader, setLoader] = useState(true);
 
   const [tokenDecode, setTokenDecode] = useState({});
+  console.log(tokenDecode, "tokenDecode");
   const CompanyId = tokenDecode.CompanyId;
   const CustomerId = tokenDecode.CustomerId;
 
@@ -258,7 +259,7 @@ const ClientDashboard = () => {
             textAlign: "center",
             alignItems: "center",
             marginTop: "25%",
-            height:"70vh"
+            height: "70vh",
           }}
         >
           <LoaderComponent height="50" width="50" loader={loader} />
