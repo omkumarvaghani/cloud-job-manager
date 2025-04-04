@@ -166,45 +166,56 @@ exports.register = async (req, res) => {
 //   }
 // };
 
-
 exports.checkEmail = async (req, res) => {
   try {
-    const { EmailAddress } = req.body
+    const { EmailAddress } = req.body;
 
-    // Find all users with this email across different companies
-    const users = await User.find({ EmailAddress, IsDelete: false })
+    const users = await User.find({ EmailAddress, IsDelete: false });
 
     if (!users || users.length === 0) {
       return res.status(404).json({
         statusCode: "404",
         message: "Email not found",
-      })
+      });
     }
 
-    // If only one company, return simple response
-    if (users.length === 1) {
+    const companiesData = [];
+
+    for (const user of users) {
+      let companyIds = [];
+
+      if (Array.isArray(user.CompanyId)) {
+        companyIds = user.CompanyId;
+      } else {
+        companyIds = [user.CompanyId];
+      }
+
+      for (const companyId of companyIds) {
+        const userProfile = await UserProfile.findOne({
+          CompanyId: companyId, Role: "Company",
+        });
+        companiesData.push({
+          CompanyId: companyId,
+          CompanyName: userProfile?.CompanyName || "Unknown Company",
+          Role: "Company",
+        });
+      }
+    }
+
+    const uniqueCompanies = companiesData.length;
+
+    if (uniqueCompanies === 1) {
       return res.status(200).json({
         statusCode: "200",
         message: "Email found",
         multipleCompanies: false,
         data: {
           EmailAddress,
+          CompanyId: companiesData[0].CompanyId,
+          Role: companiesData[0].Role,
+          CompanyName: companiesData[0].CompanyName,
         },
-      })
-    }
-
-    // Get company details for each user
-    const companiesData = []
-    for (const user of users) {
-      // Get company details
-      const userProfile = await UserProfile.findOne({ UserId: user.UserId })
-      const company = await Company.findOne({ CompanyId: user.CompanyId })
-
-      companiesData.push({
-        CompanyId: user.CompanyId,
-        CompanyName: company?.CompanyName || userProfile?.CompanyName || "Unknown Company",
-        Role: user.Role,
-      })
+      });
     }
 
     return res.status(200).json({
@@ -215,18 +226,18 @@ exports.checkEmail = async (req, res) => {
         EmailAddress,
         companies: companiesData,
       },
-    })
+    });
   } catch (error) {
-    console.error("Check Email Error:", error)
-    res.status(500).json({ message: "Something went wrong, please try later!" })
+    console.error("Check Email Error:", error);
+    res.status(500).json({ message: "Something went wrong, please try later!" });
   }
-}
+};
+
 
 exports.login = async (req, res) => {
   try {
     const { EmailAddress, Password, CompanyId } = req.body
 
-    // Find user query - add CompanyId if provided
     const query = { EmailAddress, IsDelete: false }
     if (CompanyId) {
       query.CompanyId = CompanyId

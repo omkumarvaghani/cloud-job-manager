@@ -17,12 +17,12 @@ router.post("/", protect, createUser);
 router.get("/:UserId", protect, getUserById);
 router.put("/:UserId", protect, updateUser);
 router.delete("/:UserId", protect, deleteUser);
+
 router.get("/company-profile", protect, getUserByCompanyId);
-
 router.get("/", protect, getAllUsers);
-
 router.get("/profile/:CompanyId", protect, companyProfile);
 router.get("/dropdown", protect, getCompanyDropdown);
+
 router.put("/update-profile/:CompanyId", protect, updateCompanyProfile);
 
 

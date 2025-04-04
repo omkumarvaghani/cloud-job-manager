@@ -372,20 +372,31 @@ exports.getAllUsers = async (req, res) => {
 
 // **GET USER BY ID API**
 exports.getUserByCompanyId = async (req, res) => {
+    console.log(req, 'req')
     try {
-        const CompanyId = req.user.CompanyId;
-
-        if (!CompanyId) {
-            return res.status(400).json({ message: "CompanyId is required!" });
+        const { CompanyId, Role } = req.user;
+        console.log(req.user, 'req.user')
+        if (!CompanyId || Role !== "Company") {
+            return res.status(403).json({ message: "Unauthorized or CompanyId missing!" });
         }
 
-        const users = await User.find({ CompanyId, Role: "Company", IsDelete: false }).select("-Password");
+        // Get active users with same CompanyId and Role = 'Company'
+        const users = await User.find({
+            CompanyId,
+            Role: "Company",
+            IsDelete: false
+        }).select("-Password");
 
         if (!users || users.length === 0) {
             return res.status(404).json({ message: "Users not found for this company!" });
         }
 
-        const userProfiles = await UserProfile.find({ CompanyId });
+        // Get corresponding user profiles
+        const userIds = users.map(user => user._id);
+        const userProfiles = await UserProfile.find({
+            UserId: { $in: userIds },
+            CompanyId
+        });
 
         return res.status(200).json({
             statusCode: "200",
