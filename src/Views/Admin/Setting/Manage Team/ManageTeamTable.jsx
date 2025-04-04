@@ -339,7 +339,7 @@ function ManageTeamTable() {
                   padding: "5px 10px",
                 }}
                 onClick={() => {
-                  sendMail(user?.WorkerId);
+                  sendMail(user?.UserId);
                 }}
                 className="text-blue-color"
               >

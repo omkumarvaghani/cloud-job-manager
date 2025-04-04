@@ -414,136 +414,129 @@ exports.getUserDetailWithInvoices = async (req, res) => {
   }
 };
 
-// **SEND CUSTOMER WELCOME INVITATION**
+// **GET DATA FOR WELCOME EMAIL TEMPLATE**
+exports.getCustomerWelcomeData = async (UserId) => {
+  if (!UserId) throw new Error("UserId is required");
+
+  const customer = await User.findOne({
+    UserId,
+    Role: "Customer",
+    IsDelete: false,
+  });
+  if (!customer) throw new Error("Customer not found");
+
+  const customerProfile = await UserProfile.findOne({
+    UserId,
+    IsDelete: false,
+  });
+  if (!customerProfile) throw new Error("Customer profile not found");
+
+  const company = await User.findOne({
+    CompanyId: customer.CompanyId,
+    Role: "Company",
+    IsDelete: false,
+  });
+  if (!company) throw new Error("Company not found");
+
+  const companyProfile = await UserProfile.findOne({
+    CompanyId: customer.CompanyId,
+    IsDelete: false,
+  });
+  if (!companyProfile) throw new Error("Company profile not found");
+
+  const resetToken = await createResetToken({
+    EmailAddress: customer.EmailAddress,
+  });
+  const resetUrl = `${AppUrl}/auth/new-password?token=${resetToken}`;
+
+  const buttonHtml = `
+    <p>
+      <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #e88c44; border-radius: 8px; background-color: #e88c44; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
+        Set Your Password
+      </a>
+    </p>
+  `;
+
+  const data = [
+    {
+      FirstName: customerProfile.FirstName || "",
+      LastName: customerProfile.LastName || "",
+      EmailAddress: customer.EmailAddress || "",
+      PhoneNumber: customerProfile.PhoneNumber || "",
+      CompanyName: companyProfile.CompanyName || "",
+      companyEmailAddress: company.EmailAddress || "",
+      PhoneNumber: companyProfile.PhoneNumber || "",
+      Url: buttonHtml || "",
+    },
+  ];
+
+  const emailBody = `
+    <div style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff;">
+      <table align="center" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 20px auto; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border: 1px solid #e88c44;">
+        <tr>
+          <td style="padding: 20px 0; text-align: center; background-color: #063164;">
+            <div style="display: inline-block; padding: 20px; background-color: white; border-radius: 12px;">
+              <img src="https://app.cloudjobmanager.com/cdn/upload/20250213103016_site-logo2.png" alt="CloudJobManager Logo" style="width: 160px; max-width: 100%; display: block; margin: auto;" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 0px 20px; text-align: center; color: #333333; background-color: #ffffff; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+            <h2 style="font-size: 25px; font-weight: 700; color: #063164; margin-bottom: 20px; letter-spacing: 1px;margin-top:20px;">Welcome to ${companyProfile.CompanyName}</h2>
+            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin-bottom: 20px; font-weight: 400;">
+              Dear ${customerProfile.FirstName} ${customerProfile.LastName},<br>
+              We are pleased to provide you with your login credentials for accessing our Contract Management System. Below are your details:
+            </p>
+            <p><strong>Email:</strong> ${customer.EmailAddress}</p>
+            ${buttonHtml}
+            <p style="font-size: 14px; color: #888888; margin-top: 30px; line-height: 1.6;">
+              For security reasons, we recommend changing your password upon first login. If you have any questions, contact our support team at <a href="mailto:${company.EmailAddress}" style="color: #063164; font-weight: 600;">${company.EmailAddress}</a> or ${companyProfile.PhoneNumber}.
+            </p>
+            <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">
+              Thank you for choosing ${companyProfile.CompanyName}. We are committed to providing you with a seamless and efficient experience.
+            </p>
+            <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">Best regards,<br>The ${companyProfile.CompanyName} Team</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 30px 20px; text-align: center; font-size: 12px; color: #888888; background-color: #f4f4f7; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+            ${companyProfile.CompanyName}, Inc. | All rights reserved.<br>
+            <a href="#" style="color: #e88c44; text-decoration: none;">Unsubscribe</a> if you no longer wish to receive these emails.
+          </td>
+        </tr>
+      </table>
+    </div>
+  `;
+  console.log("Customer Email:", customer.EmailAddress);
+  console.log("Customer CompanyId:", customer.CompanyId);
+  console.log("Data:", data);
+
+  return { data, emailBody, customer };
+};
+
+// **SEND CUSTOMER WELCOME EMAIL**
 exports.sendWelcomeEmailToCustomer = async (req, res) => {
   try {
     const { UserId } = req.params;
 
-    const findCustomer = await User.findOne({
-      UserId,
-      Role: "Customer",
-      IsDelete: false,
-    });
-    if (!findCustomer) {
-      return { statusCode: 404, message: "Customer not found" };
-    }
-    const findCustomerMail = await UserProfile.findOne({
-      UserId,
-      IsDelete: false,
-    });
-    if (!findCustomer) {
-      return { statusCode: 404, message: "Customer not found" };
-    }
-    const findCompany = await User.findOne({
-      CompanyId: findCustomer.CompanyId,
-      Role: "Company",
-      IsDelete: false,
-    });
-    if (!findCompany) {
-      return { statusCode: 404, message: "Company not found" };
-    }
-    const findCompanyMail = await UserProfile.findOne({
-      CompanyId: findCustomer.CompanyId,
-      IsDelete: false,
-    });
-    if (!findCompany) {
-      return { statusCode: 404, message: "Company not found" };
-    }
-
-    const resetToken = await createResetToken({
-      EmailAddress: findCustomer.EmailAddress,
-    });
-    const url = `${AppUrl}/auth/new-password?token=${resetToken}`;
-
-    const button = `
-        <p>
-          <a href="${url}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #e88c44; border-radius: 8px; background-color: #e88c44; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
-            Set Your Password
-          </a>
-        </p>
-      `;
-
-    const data = [
-      {
-        FirstName: findCustomerMail.FirstName || "",
-        LastName: findCustomerMail.LastName || "",
-        EmailAddress: findCustomer.EmailAddress || "",
-        PhoneNumber: findCustomerMail.PhoneNumber || "",
-        CompanyName: findCompanyMail.CompanyName || "",
-        EmailAddress: findCompany.EmailAddress || "",
-        PhoneNumber: findCompanyMail.PhoneNumber || "",
-        Url: button || "",
-      },
-    ];
-
-    const defaultBody = `
-      <div style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff;">
-        <!-- Outer Wrapper -->
-        <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 20px auto; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border: 1px solid #e88c44;">
-          
-          <!-- Header Section with Logo -->
-          <tr>
-            <td style="padding: 20px 0; text-align: center; background-color: #063164; ">
-              <div style="display: inline-block; padding: 20px; background-color: white; border-radius: 12px;">
-                <img src="https://app.cloudjobmanager.com/cdn/upload/20250213103016_site-logo2.png" alt="CloudJobManager Logo" style="width: 160px; max-width: 100%; display: block; margin: auto;" />
-              </div>
-            </td>
-          </tr>
-    
-          <!-- Main Content Section -->
-          <tr>
-            <td style="padding: 0px 20px; text-align: center; color: #333333; background-color: #ffffff; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-              <h2 style="font-size: 25px; font-weight: 700; color: #063164; margin-bottom: 20px; letter-spacing: 1px;margin-top:20px;">Welcome to ${findCompanyMail.CompanyName}</h2>
-              <p style="font-size: 16px; color: #666666; line-height: 1.6; margin-bottom: 20px; font-weight: 400;">
-                Dear ${findCustomerMail.FirstName} ${findCustomerMail.LastName},<br>
-                We are pleased to provide you with your login credentials for accessing our Contract Management System. Below are your details:
-              </p>
-              <p><strong>Email:</strong> ${findCustomer.EmailAddress}</p>
-    
-              <!-- Set Password Button -->
-              <p>
-                <a href="${url}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #e88c44 ; border-radius: 8px; background-color: #e88c44 ; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
-                  Set Your Password
-                </a>
-              </p>
-              
-              <p style="font-size: 14px; color: #888888; margin-top: 30px; line-height: 1.6;">
-                For security reasons, we recommend changing your password upon first login. If you have any questions or need assistance, please do not hesitate to reach out to our support team at <a href="mailto:${findCompany.EmailAddress}" style="color: #063164; font-weight: 600;">${findCompany.EmailAddress}</a> or ${findCompanyMail.PhoneNumber}.
-              </p>
-    
-              <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">
-                Thank you for choosing ${findCompanyMail.CompanyName}. We are committed to providing you with a seamless and efficient experience.
-              </p>
-    
-              <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">Best regards,<br>The ${findCompanyMail.CompanyName} Team</p>
-            </td>
-          </tr>
-    
-          <!-- Footer Section -->
-          <tr>
-            <td style="padding: 30px 20px; text-align: center; font-size: 12px; color: #888888; background-color: #f4f4f7; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-              ${findCompany.CompanyName}, Inc. | All rights reserved.<br>
-              <a href="#" style="color: #e88c44; text-decoration: none;">Unsubscribe</a> if you no longer wish to receive these emails.
-            </td>
-          </tr>
-        </table>
-      </div>
-    `;
-
-    const emailStatus = await handleTemplate(
+    const { data, emailBody, customer } = await exports.getCustomerWelcomeData(
+      UserId
+    );
+    console.log(customer, "customer");
+    const status = await handleTemplate(
       "Invitation",
-      findCustomer.CompanyId,
+      customer.CompanyId,
       data,
       [],
       "Welcome to our service",
-      defaultBody,
-      findCustomer.CustomerId
+      emailBody,
+      customer.CustomerId
     );
 
-    if (emailStatus) {
+    if (status) {
       return res.status(200).json({
         statusCode: 200,
-        message: `Email was sent to ${findCustomer.EmailAddress}`,
+        message: `Email was sent to ${customer.EmailAddress}`,
       });
     } else {
       return res.status(203).json({
@@ -552,11 +545,11 @@ exports.sendWelcomeEmailToCustomer = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("Error sending welcome email:", error.message);
-    return {
+    console.error("Error sending welcome email:", error);
+    return res.status(500).json({
       statusCode: 500,
       message: "Something went wrong, please try again later",
-    };
+    });
   }
 };
 
