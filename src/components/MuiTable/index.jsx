@@ -1126,11 +1126,13 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             {/* {data?.OwnerName ||
                               data?.FirstName + " " + data?.LastName ||
                               data?.FullName}  */}
-                           {data?.OwnerName ||
-  (data?.FirstName && (data?.LastName || data?.FullName)
-    ? `${data.FirstName} ${data.LastName || data.FullName}`
-    : data?.FirstName || data?.FullName || '')}
-
+                            {data?.OwnerName ||
+                              (data?.FirstName &&
+                              (data?.LastName || data?.FullName)
+                                ? `${data.FirstName} ${
+                                    data.LastName || data.FullName
+                                  }`
+                                : data?.FirstName || data?.FullName || "")}
 
                             {console.log(data, "datadata")}
                           </Typography>

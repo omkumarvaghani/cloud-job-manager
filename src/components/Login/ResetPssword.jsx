@@ -73,7 +73,7 @@ const ResetPassword = () => {
         setLoader(true);
 
         const response = await AxiosInstance.put(
-          `/resetpassword/reset_passwords/${email}`,
+          `/v1/forget-pass/reset_passwords/${email}`, 
           {
             Password: values.password,
           },
