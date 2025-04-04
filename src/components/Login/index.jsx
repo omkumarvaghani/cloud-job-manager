@@ -526,6 +526,11 @@ const Login = () => {
       } else {
         handleSubmit(values);
       }
+      if (!emailChecked) {
+        checkEmail(values.EmailAddress);
+      } else {
+        handleSubmit(values);
+      }
     },
   });
 
@@ -535,7 +540,7 @@ const Login = () => {
       const res = await AxiosInstance.post(`${baseUrl}/v1/auth/check-email`, {
         EmailAddress: email,
       });
-      console.log(res,"res 12")
+      console.log(res, "res 12");
       if (res.data.statusCode === "200") {
         if (res.data.multipleCompanies) {
           setMultipleCompanies(true);
@@ -545,7 +550,7 @@ const Login = () => {
           setEmailChecked(true);
           formik.setFieldValue("CompanyId", "");
         }
-      }     
+      }
     } catch (error) {
       if (error.response) {
         sendToast(error.response?.data.message || "Email not found");
@@ -588,13 +593,13 @@ const Login = () => {
         `${baseUrl}/v1/auth/login`,
         loginData
       );
-      console.log(res,"res 123")
+      console.log(res, "res 123");
       if (res.data.statusCode == "200") {
         localStorage.setItem("adminToken", res.data.token);
         localStorage.setItem("CompanyId", res.data.data.UserId);
-        showToast.success("Login Successful!", {
-          autoClose: 3000,
-        });
+        // showToast.success("Login Successful!", {
+        //   autoClose: 3000,
+        // });
         setTimeout(() => {
           // Convert CompanyName to lowercase
           showToast.success(res.data.message, {
@@ -862,7 +867,7 @@ const Login = () => {
                                 : "inherit",
                           }}
                         >
-                          {company.CompanyName} ({company.Role}) 
+                          {company.CompanyName} ({company.Role})
                         </label>
                       </div>
                     ))}

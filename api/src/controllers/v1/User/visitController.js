@@ -186,7 +186,6 @@ exports.getVisitSchedule = async (req, res) => {
 exports.getVisitDetails = async (req, res) => {
     try {
         const { ContractId, CompanyId } = req.params;
-        console.log("ContractId:", ContractId, "CompanyId:", CompanyId);
 
         const result = await Visit.aggregate([
             {

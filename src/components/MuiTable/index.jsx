@@ -1085,9 +1085,9 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                           ?.map((part) => part.charAt(0).toUpperCase())
                           ?.join("")} */}
                       <>
-                        {data?.profileImage ? (
+                        {data?.ProfileImage ? (
                           <img
-                            src={`${cdnUrl}/upload/${data?.profileImage}`}
+                            src={`${cdnUrl}/upload/${data?.ProfileImage}`}
                             alt="Profile"
                             style={{
                               // borderRadius: "50%",
@@ -1132,7 +1132,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                           className="mb-0 e-mail"
                           style={{ fontSize: "10px" }}
                         >
-                          {data?.EmailAddress || data?.EmailAddress}
+                          {data?.EmailAddress}
                         </Typography>
                       </Grid>
                     </DropdownItem>

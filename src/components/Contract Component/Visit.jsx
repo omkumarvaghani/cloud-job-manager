@@ -827,8 +827,17 @@ const Visit = ({
                           }}
                         >
                           <Grid onClick={handleOutsideClick}>
-                            {teamData && teamData?.length > 0 ? (
-                              teamData?.map((person) => (
+                            {/* const [checkedState, setCheckedState] = useState({}); */}
+
+                            {/* const handleTeamSelect = (e, person) => {
+  setCheckedState((prev) => ({
+    ...prev,
+    [person?.WorkerId]: e.target.checked,
+  }));
+}; */}
+
+                            {teamData && teamData.length > 0 ? (
+                              teamData.map((person) => (
                                 <FormGroup
                                   check
                                   className="my-3 mb-0"
@@ -841,10 +850,7 @@ const Visit = ({
                                 >
                                   <Input
                                     type="checkbox"
-                                    checked={
-                                      checkedState &&
-                                      !!checkedState[person?.WorkerId]
-                                    }
+                                    checked={!!checkedState[person?.WorkerId]}
                                     onChange={(e) =>
                                       handleTeamSelect(e, person)
                                     }
@@ -872,7 +878,7 @@ const Visit = ({
                                     >
                                       (
                                       {person?.EmailAddress ||
-                                        "EmailAddress not available"}{" "}
+                                        "EmailAddress not available"}
                                       )
                                     </Label>
                                   </Grid>

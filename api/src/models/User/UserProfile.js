@@ -20,7 +20,7 @@ const userProfileSchema = new mongoose.Schema(
     },
     LocationId: {
       type: String,
-      ref: "Location", 
+      ref: "Location",
     },
     /*** COMMON FIELDS ***/
     FirstName: { type: String, trim: true },
@@ -32,6 +32,7 @@ const userProfileSchema = new mongoose.Schema(
     Country: { type: String, trim: true },
     Zip: { type: String, trim: true },
     ProfileImage: { type: String },
+    Role: { type: String },
 
     /*** COMPANY-SPECIFIC FIELDS ***/
     CompanyName: { type: String, trim: true },

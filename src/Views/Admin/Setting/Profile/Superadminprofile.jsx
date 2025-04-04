@@ -61,7 +61,7 @@ const Superadmin = () => {
       State: "",
       Zip: "",
       Country: "",
-      profileImage: "",
+      ProfileImage: "",
     },
     validationSchema: Yup.object({
       fullName: Yup.string().required("Full Name required"),
@@ -131,7 +131,7 @@ const Superadmin = () => {
       if (res?.data?.statusCode === 200) {
         const data = res?.data?.data;
         setInitialData(data);
-        setUploadedImageUrl(data?.profileImage);
+        setUploadedImageUrl(data?.ProfileImage);
 
         profileFormik.setValues({
           ...data,
@@ -312,12 +312,12 @@ const Superadmin = () => {
       const image = result?.data?.files[0]?.filename;
       if (image) {
         const res = await AxiosInstance.put("/superadmin/profile", {
-          profileImage: image,
+          ProfileImage: image,
         });
         if (res.data.statusCode === 200) {
           showToast.success("Profile image updated successfully.");
           setUploadedImageUrl(image);
-          profileFormik.setFieldValue("profileImage", image);
+          profileFormik.setFieldValue("ProfileImage", image);
           await getData();
         } else {
           sendToast(

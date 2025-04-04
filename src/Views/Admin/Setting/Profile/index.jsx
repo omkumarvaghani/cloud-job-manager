@@ -88,7 +88,7 @@ const Profile = () => {
       Zip: "",
       Country: "",
       // Password: "",
-      profileImage: "",
+      ProfileImage: "",
       // confirmpassword: "",
     },
     validationSchema: Yup.object({
@@ -125,10 +125,10 @@ const Profile = () => {
           setPostLoader(true);
           const updatedProfile = { ...values };
           const res = await AxiosInstance.put(
-            `/company/profile/${CompanyId}`,
+            `/v1/user/update-profile/${CompanyId}`,
             updatedProfile
           );
-          
+
           if (res?.data?.statusCode === 200) {
             showToast.success(res?.data?.message);
             // swal(
@@ -277,7 +277,7 @@ const Profile = () => {
 
       const res = await AxiosInstance.get(
         `/v1/user/company-profile/${CompanyId}`
-      ); 
+      );
       console.log(res, "res 123543");
 
       if (res?.data?.success) {
@@ -294,11 +294,11 @@ const Profile = () => {
           State: profileData?.State || "",
           Zip: profileData?.Zip || "",
           Country: profileData?.Country || "",
-          profileImage: profileData?.profileImage || "",
+          ProfileImage: profileData?.ProfileImage || "",
         };
 
         setOldData(combinedData);
-        setUploadedImageUrl(profileData?.profileImage || "");
+        setUploadedImageUrl(profileData?.ProfileImage || "");
         profileFormik.setValues(combinedData);
 
         if (profileData?.Country) {
@@ -357,13 +357,13 @@ const Profile = () => {
 
       const image = result?.data?.files[0]?.filename;
       if (image) {
-        const res = await AxiosInstance.put(`/company/profile/${CompanyId}`, {
-          profileImage: image,
+        const res = await AxiosInstance.put(`/v1/user/update-profile/${CompanyId}`, {
+          ProfileImage: image,
         });
         if (res?.data?.statusCode === 200) {
           showToast.success("Profile image updated successfully.");
           setUploadedImageUrl(image);
-          profileFormik.setFieldValue("profileImage", image);
+          profileFormik.setFieldValue("ProfileImage", image);
           await getData();
         } else {
           sendToast(

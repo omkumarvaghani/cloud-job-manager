@@ -234,11 +234,22 @@ const AddContract = ({
                         fontWeight: "600",
                       }}
                     >
+                      {console.log(
+                        location?.state?.formData,
+                        "location?.state?.formData"
+                      )}
+                      {console.log(
+                        customersData,
+                        "customersData12334423454345"
+                      )}
                       {customersData?.customer?.FirstName &&
                       customersData?.customer?.LastName
                         ? `${customersData?.customer?.FirstName} ${customersData?.customer?.LastName}`
                         : customersData?.FirstName && customersData?.LastName
                         ? `${customersData?.FirstName} ${customersData?.LastName}`
+                        : location?.state?.formData?.customerData?.FirstName &&
+                          location?.state?.formData?.customerData?.LastName
+                        ? `${location.state.formData.customerData.FirstName} ${location.state.formData.customerData.LastName}`
                         : "Customer Name"}
                     </Typography>
 

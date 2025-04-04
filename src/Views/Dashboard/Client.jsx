@@ -22,6 +22,7 @@ const ClientDashboard = () => {
   const [loader, setLoader] = useState(true);
   
   const [tokenDecode, setTokenDecode] = useState({});
+  console.log(tokenDecode, "tokenDecode");
   const CompanyId = tokenDecode.CompanyId;
   const CustomerId = tokenDecode.CustomerId;
   console.log(tokenDecode, "tokenDecode");

@@ -82,7 +82,7 @@ const CustomerProfile = () => {
       Zip: "",
       // Password: "",
       Country: "",
-      profileImage: "",
+      ProfileImage: "",
       FirstName: "",
       LastName: "",
       // confirmpassword: "",
@@ -277,7 +277,7 @@ const CustomerProfile = () => {
       if (res?.data?.statusCode === 200) {
         const data = res?.data?.data;
         setOldData(data);
-        setUploadedImageUrl(data?.profileImage);
+        setUploadedImageUrl(data?.ProfileImage);
 
         profileFormik.setValues({
           ...data,
@@ -346,12 +346,12 @@ const CustomerProfile = () => {
       const image = result?.data?.files[0]?.filename;
       if (image) {
         const res = await AxiosInstance.put(`/worker/profile/${WorkerId}`, {
-          profileImage: image,
+          ProfileImage: image,
         });
         if (res?.data?.statusCode === 200) {
           showToast.success("Profile image updated successfully.");
           setUploadedImageUrl(image);
-          profileFormik.setFieldValue("profileImage", image);
+          profileFormik.setFieldValue("ProfileImage", image);
           await getData();
         } else {
           sendToast(

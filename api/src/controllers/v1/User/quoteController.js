@@ -7,6 +7,9 @@ const { addNotification } = require("../../../models/User/AddNotification");
 const Notification = require("../../../models/User/Notification");
 const { quotePdf } = require("../../../HtmlFormates/QuoteFunction");
 const { generateAndSavePdf } = require("../../../DocumentGenerator/generateDocuments");
+const User = require("../../../models/User/User");
+const UserProfile = require("../../../models/User/UserProfile");
+const { handleTemplate } = require("./templateController");
 
 // **CREATE QUOTE WITH DETAILS**
 exports.createQuoteWithDetails = async (req, res) => {
@@ -84,7 +87,6 @@ exports.checkQuoteNumberExists = async (req, res) => {
 
         return res.status(200).json({ statusCode: 200, message: "Quote number is available" });
     } catch (error) {
-        await logUserEvent(req.user.CompanyId, `Error checking quote number: ${error.message}`, "error");
         return res.status(500).json({ statusCode: 500, message: "Internal Server Error" });
     }
 };
@@ -357,20 +359,16 @@ exports.getQuotes = async (req, res) => {
 };
 
 // **GET QUOTES DETAILS PAGE**
-exports.getQuoteDetails = async (req, res) => {
+const fetchQuoteDetails = async (QuoteId) => {
     try {
-        const { QuoteId } = req.params;
-
         const quotes = await Quote.aggregate([
-            {
-                $match: { QuoteId, IsDelete: false }
-            },
+            { $match: { QuoteId, IsDelete: false } },
             {
                 $lookup: {
                     from: "quote-items",
                     localField: "QuoteId",
                     foreignField: "QuoteId",
-                    as: "products"
+                    as: "products",
                 },
             },
             {
@@ -378,47 +376,32 @@ exports.getQuoteDetails = async (req, res) => {
                     from: "user-profiles",
                     localField: "CustomerId",
                     foreignField: "UserId",
-                    as: "customerData"
+                    as: "customerData",
                 },
             },
-            {
-                $unwind: {
-                    path: "$customerData",
-                    preserveNullAndEmptyArrays: true
-                },
-            },
+            { $unwind: { path: "$customerData", preserveNullAndEmptyArrays: true } },
             {
                 $lookup: {
                     from: "users",
                     localField: "CustomerId",
                     foreignField: "UserId",
-                    as: "userData"
+                    as: "userData",
                 },
             },
-            {
-                $unwind: {
-                    path: "$userData",
-                    preserveNullAndEmptyArrays: true
-                },
-            },
+            { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
             {
                 $lookup: {
                     from: "locations",
                     localField: "LocationId",
                     foreignField: "LocationId",
-                    as: "locationData"
+                    as: "locationData",
                 },
             },
-            {
-                $unwind: {
-                    path: "$locationData",
-                    preserveNullAndEmptyArrays: true
-                },
-            },
+            { $unwind: { path: "$locationData", preserveNullAndEmptyArrays: true } },
             {
                 $addFields: {
-                    "customerData.EmailAddress": "$userData.EmailAddress"
-                }
+                    "customerData.EmailAddress": "$userData.EmailAddress",
+                },
             },
             {
                 $project: {
@@ -459,29 +442,27 @@ exports.getQuoteDetails = async (req, res) => {
             },
         ]);
 
-
         if (quotes.length === 0) {
-            return res.status(404).json({
-                statusCode: 404,
-                data: {},
-                message: "Quote not found!",
-            });
+            return { success: false, message: "Quote not found", data: null };
         }
 
-        return res.status(200).json({
-            statusCode: 200,
-            data: quotes[0],
-            message: "Quote retrieved successfully",
-        });
-
+        return { success: true, message: "Quote retrieved successfully", data: quotes[0] };
     } catch (error) {
-        console.error("Error in getQuoteDetails:", error.message);
-        return res.status(500).json({
-            statusCode: 500,
-            data: {},
-            message: "Internal Server Error",
-        });
+        console.error("Error in fetchQuoteDetails:", error);
+        return { success: false, message: "Internal Server Error", data: null };
     }
+};
+
+exports.getQuoteDetails = async (req, res) => {
+    const { QuoteId } = req.params;
+
+    const response = await fetchQuoteDetails(QuoteId);
+
+    if (!response.success) {
+        return res.status(404).json({ statusCode: 404, message: response.message, data: {} });
+    }
+
+    return res.status(200).json({ statusCode: 200, message: response.message, data: response.data });
 };
 
 // **GET QUOTES MAX QUOTE-NUMBER**
@@ -1321,6 +1302,137 @@ exports.generateQuotePdf = async (req, res) => {
         res.status(500).json({
             statusCode: 500,
             message: "Something went wrong, please try again later.",
+        });
+    }
+};
+
+// **SEND QUOTE MAIL**
+exports.sendEmailWithConfig = async (req, res) => {
+    try {
+
+        const { IsSendpdf, ...data } = req.body;
+        const { CustomerId, QuoteId } = data;
+
+        const CompanyId = Array.isArray(req.user.CompanyId) ? req.user.CompanyId : [req.user.CompanyId];
+
+        const findCustomer = await User.findOne({ CustomerId });
+        const findCustomerProfile = await UserProfile.findOne({ CustomerId });
+        const findCompany = await User.findOne({ CompanyId });
+        const findCompanyProfile = await UserProfile.findOne({ CompanyId, Role: "Company" });
+        
+        console.log(findCustomerProfile, 'findCustomerProfile')
+        console.log(findCustomer, 'findCustomer')
+        if (!findCustomer || !findCustomerProfile) {
+            return res.status(404).json({ message: "Customer not found" });
+        }
+        if (!findCompany || !findCompanyProfile) {
+            return res.status(404).json({ message: "Company not found" });
+        }
+
+        let fileName = null;
+
+        if (IsSendpdf) {
+            try {
+                const response = await fetchQuoteDetails(QuoteId);
+                if (!response || !response.data) {
+                    return { statusCode: 404, message: "Quote not found" };
+                }
+
+                const html = await quotePdf(response.data);
+                fileName = await generateAndSavePdf(html);
+                // return { statusCode: 200, message: "generate PDF", fileName };
+            } catch (error) {
+                console.error("Error generating PDF:", error);
+                return { statusCode: 500, message: "Failed to generate PDF" };
+            }
+        }
+
+        const defaultSubject = "Your Custom Quote from Cloud Job Manager";
+        const defaultBody = `
+      <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 20px auto; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); border: 1px solid #e88c44;">
+        <tr>
+          <td style="padding: 30px 0; text-align: center; background-color: #063164; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+            <div style="display: inline-block; padding: 15px; background-color: white; border-radius: 8px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);">
+              <img src="https://app.cloudjobmanager.com/cdn/upload/20250213103016_site-logo2.png" alt="CloudJobManager Logo" style="width: 180px; max-width: 100%; display: block; margin: auto;" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 40px;font-family: 'Arial', sans-serif; color: #555;text-align:center;">
+            <h2 style="font-size: 24px; color: #003366; text-align: center; font-weight: 700;">Your Custom Quote is Ready!</h2>
+            <p style="font-size: 18px; color: #555; line-height: 1.7; text-align: center; font-weight: 400;">Dear <strong style="color: #003366;">${findCustomerProfile.FirstName
+            } ${findCustomerProfile.LastName}</strong>,</p>
+            <p style="font-size: 16px; color: #555; line-height: 1.6;">Thank you for the opportunity to receive a quote for <strong style="color: #003366;">${data.Title
+            }</strong> with a total amount of <strong>$${data.Total}</strong>.</p>
+  
+            <div style="padding: 15px; text-align: center;">
+              <h3 style="font-size: 21px; color: #e88c44; font-weight: 700;">Total Amount: <strong style="font-size: 21px; color: #003366;">$${data.Total
+            }</strong></h3>
+              <p style="font-size: 16px; color: #718096; font-weight: 400;">Quote Date: <strong>${moment(
+                data.createdAt
+            ).format("DD-MM-YYYY")}</strong></p>
+            </div>
+  
+           
+  
+            <p style="font-size: 16px; color: #555;">If you have any questions, please reach out to <a href="mailto:${findCompany.EmailAddress
+            }" style="color: #003366; text-decoration: none; font-weight: 600;">${findCompany.EmailAddress
+            }</a>.</p>
+  
+            <p style="font-size: 16px; color: #555;">Best regards,<br />
+              <strong style="color: #003366; font-weight: 700;">${findCompanyProfile.CompanyName
+            }</strong><br />
+              <span style="font-size: 14px; color: #718096;">${findCompany.EmailAddress
+            }</span>
+            </p>
+          </td>
+        </tr>
+      </table>
+    `;
+
+        const QuoteData = [
+            {
+                FirstName: findCustomerProfile.FirstName || "",
+                LastName: findCustomerProfile.LastName || "",
+                EmailAddress: findCustomer.EmailAddress || "",
+                PhoneNumber: findCustomerProfile.PhoneNumber || "",
+                CompanyName: findCompany.CompanyName || "",
+                EmailAddress: findCompany.EmailAddress || "",
+                companyPhoneNumber: findCompanyProfile.PhoneNumber || "",
+                Title: data.Title || "",
+                QuoteNumber: data.QuoteNumber || "",
+                SubTotal: data.SubTotal || "",
+                Discount: data.Discount || "",
+                Tax: data.Tax || "",
+                Total: data.Total || "",
+            },
+        ];
+
+        const emailStatus = await handleTemplate(
+            "Quote",
+            CompanyId,
+            QuoteData,
+            [fileName],
+            defaultSubject,
+            defaultBody,
+            findCustomer.CustomerId
+        );
+        if (emailStatus) {
+            return res.status(200).json({
+                statusCode: 200,
+                message: `Email was sent to ${findCustomer.EmailAddress}`,
+            });
+        } else {
+            return res.status(203).json({
+                statusCode: 203,
+                message: "Issue sending email",
+            });
+        }
+    } catch (error) {
+        console.error("Error sending email:", error);
+        return res.status(500).json({
+            statusCode: 500,
+            message: "Something went wrong, please try again later",
         });
     }
 };

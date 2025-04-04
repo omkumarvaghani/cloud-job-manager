@@ -73,6 +73,7 @@ exports.register = async (req, res) => {
     return res.status(200).json({
       statusCode: "200",
       message: "Company created successfully",
+      message: "Company created successfully",
       user: {
         UserId: newUser.UserId,
         EmailAddress: newUser.EmailAddress,
@@ -248,21 +249,19 @@ exports.login = async (req, res) => {
     const user = await User.findOne(query);
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid email or password" })
     }
 
     if (!user.IsActive) {
-      return res
-        .status(400)
-        .json({ message: "Account is deactivated. Please contact support." });
+      return res.status(400).json({ message: "Account is deactivated. Please contact support." })
     }
 
     const isMatch = await bcrypt.compare(Password, user.Password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid email or password" })
     }
 
-    const userProfile = await UserProfile.findOne({ UserId: user.UserId });
+    const userProfile = await UserProfile.findOne({ UserId: user.UserId, Role: "Company" })
 
     const tokenData = {
       UserId: user.UserId,
@@ -270,9 +269,11 @@ exports.login = async (req, res) => {
       Role: user.Role,
       ProfileImage: userProfile?.ProfileImage || null,
       CompanyId: user.CompanyId,
-      CompanyName: userProfile?.CompanyName || "",
+      CompanyName: userProfile?.CompanyName || "Unknown Company",
       OwnerName: userProfile?.OwnerName || "",
-    };
+    }
+
+    logUserEvent(user.CompanyId, "LOGIN", `User ${user.EmailAddress} logged in.`)
 
     logUserEvent(
       user.CompanyId,
@@ -281,7 +282,7 @@ exports.login = async (req, res) => {
     );
 
     const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
-      expiresIn: "24h",
+      expiresIn: "4h",
     });
 
     let statusCode, message, roleSpecificId;
@@ -322,6 +323,7 @@ exports.login = async (req, res) => {
         UserId: roleSpecificId,
         EmailAddress: user.EmailAddress,
         CompanyName: userProfile?.CompanyName || "",
+        CompanyName: userProfile?.CompanyName || "",
         Role: user.Role,
         IsActive: user.IsActive,
       },
@@ -332,7 +334,7 @@ exports.login = async (req, res) => {
       .status(500)
       .json({ message: "Something went wrong, please try later!" });
   }
-};
+}
 
 // **Check if User Exists Function**
 exports.checkUserExists = async (req, res) => {

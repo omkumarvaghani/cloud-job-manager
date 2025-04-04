@@ -82,7 +82,7 @@ const CustomerProfile = () => {
       Zip: "",
       // Password: "",
       Country: "",
-      profileImage: "",
+      ProfileImage: "",
       FirstName: "",
       LastName: "",
       // confirmpassword: "",
@@ -125,7 +125,7 @@ const CustomerProfile = () => {
             ...values,
           };
           const res = await AxiosInstance.put(
-            `/customer/profile/${CustomerId}`,
+            `/v1/customer/profile/${CustomerId}`,
             updatedProfile
           );
           if (res?.data?.statusCode === 200) {
@@ -270,12 +270,12 @@ const CustomerProfile = () => {
       const allCountries = Country.getAllCountries();
       setCountries(allCountries);
 
-      const res = await AxiosInstance.get(`/customer/profile/${CustomerId}`);
-
+      const res = await AxiosInstance.get(`/v1/customer/profile/${CustomerId}`);
+      console.log(res, "res000");
       if (res?.data?.statusCode === 200) {
         const data = res?.data?.data;
         setOldData(data);
-        setUploadedImageUrl(data?.profileImage);
+        setUploadedImageUrl(data?.ProfileImage);
 
         profileFormik.setValues({
           ...data,
@@ -342,13 +342,16 @@ const CustomerProfile = () => {
 
       const image = result?.data?.files[0]?.filename;
       if (image) {
-        const res = await AxiosInstance.put(`/customer/profile/${CustomerId}`, {
-          profileImage: image,
-        });
+        const res = await AxiosInstance.put(
+          `/v1/customer/profile/${CustomerId}`,
+          {
+            ProfileImage: image,
+          }
+        );
         if (res?.data?.statusCode === 200) {
           showToast.success("Profile image updated successfully.");
           setUploadedImageUrl(image);
-          profileFormik.setFieldValue("profileImage", image);
+          profileFormik.setFieldValue("ProfileImage", image);
           await getData();
         } else {
           sendToast(
