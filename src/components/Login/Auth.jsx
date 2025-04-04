@@ -27,10 +27,9 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
       });
       return;
     }
-    console.log(res,"res123456u")
     const {
       Role,
-      superAdminId,
+      AdminId,
       CustomerId,
       CompanyId,
       CompanyName,
@@ -42,7 +41,7 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
     switch (Role) {
       case "Superadmin":
         if (!window.location.pathname.includes("/superadmin")) {
-          localStorage.setItem("admin_id", superAdminId);
+          localStorage.setItem("admin_id", AdminId);
           state.redirect = "/superadmin/index";
           state.navigats = ["/index"];
         }

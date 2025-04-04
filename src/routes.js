@@ -160,7 +160,7 @@ var routes = [
     component: <NewPassword />,
     layout: "/auth",
     isDisplay: true,
-  }, 
+  },
   {
     path: "/new-password?email",
     name: "New Password",

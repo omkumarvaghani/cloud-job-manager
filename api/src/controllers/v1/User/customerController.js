@@ -559,6 +559,7 @@ exports.sendWelcomeEmailToCustomer = async (req, res) => {
     };
   }
 };
+
 // **GET USER BY ID API**
 exports.getCustomerData = async (req, res) => {
   try {
@@ -615,7 +616,7 @@ exports.getCustomerData = async (req, res) => {
   }
 };
 
-// **PUT COMPANY PROFILE API**
+// **PUT CUSTOMER PROFILE API**
 exports.updateCustomerProfile = async (req, res) => {
   const { UserId } = req.params;
   const updateData = req.body;
@@ -629,10 +630,12 @@ exports.updateCustomerProfile = async (req, res) => {
     });
   }
 
+  const { CompanyId, ...dataToUpdate } = updateData;
+
   try {
     const admin = await User.findOneAndUpdate(
       { UserId, IsDelete: false },
-      { $set: updateData },
+      { $set: dataToUpdate },
       { new: true }
     );
 
@@ -647,7 +650,7 @@ exports.updateCustomerProfile = async (req, res) => {
       { UserId },
       {
         $set: {
-          ...updateData,
+          ...dataToUpdate,
         },
       },
       { new: true, upsert: true }

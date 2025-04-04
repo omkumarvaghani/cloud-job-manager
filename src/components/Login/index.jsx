@@ -158,7 +158,7 @@
 //               res.data.data.Role == "Superadmin" &&
 //               !location.pathname.includes("/superadmin")
 //             ) {
-//               localStorage.setItem("admin_id", res.data.data.superAdminId);
+//               localStorage.setItem("admin_id", res.data.data.AdminId);
 //               navigate("/superadmin/index", {
 //                 state: { navigats: ["/index"] },
 //               });
@@ -674,7 +674,7 @@ const Login = () => {
               res.data.data.Role == "Superadmin" &&
               !location.pathname.includes("/superadmin")
             ) {
-              localStorage.setItem("admin_id", res.data.data.superAdminId);
+              localStorage.setItem("admin_id", res.data.data.AdminId);
               navigate("/superadmin/index", {
                 state: { navigats: ["/index"] },
               });

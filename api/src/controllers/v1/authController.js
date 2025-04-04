@@ -6,6 +6,7 @@ const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
 const { logUserEvent } = require("../../middleware/eventMiddleware");
 const { verifyToken } = require("../../middleware/authMiddleware");
+const SuperAdmin = require("../../models/Admin/Super-Admin");
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -89,11 +90,80 @@ exports.register = async (req, res) => {
 };
 
 // // **LOGIN API**
+// exports.checkEmail = async (req, res) => {
+//   try {
+//     const { EmailAddress } = req.body;
+//     const users = await User.find({ EmailAddress, IsDelete: false });
+//     if (!users || users.length === 0) {
+//       return res.status(404).json({
+//         statusCode: "404",
+//         message: "Email not found",
+//       });
+//     }
+//     const companiesData = [];
+//     for (const user of users) {
+//       let companyIds = [];
+//       if (Array.isArray(user.CompanyId)) {
+//         companyIds = user.CompanyId;
+//       } else {
+//         companyIds = [user.CompanyId];
+//       }
+//       for (const companyId of companyIds) {
+//         const userProfile = await UserProfile.findOne({
+//           CompanyId: companyId,
+//           Role: "Company",
+//         });
+//         console.log(userProfile, "userProfile");
+//         companiesData.push({
+//           CompanyId: companyId,
+//           CompanyName: userProfile?.CompanyName || "Unknown Company",
+//           Role: "Company",
+//         });
+//       }
+//     }
+
+//     const uniqueCompanies = companiesData.length;
+//     if (uniqueCompanies === 1) {
+//       return res.status(200).json({
+//         statusCode: "200",
+//         message: "Email found",
+//         multipleCompanies: false,
+//         data: {
+//           EmailAddress,
+//           CompanyId: companiesData[0].CompanyId,
+//           Role: companiesData[0].Role,
+//           CompanyName: companiesData[0].CompanyName,
+//         },
+//       });
+//     }
+//     return res.status(200).json({
+//       statusCode: "200",
+//       message: "Email found in multiple companies",
+//       multipleCompanies: true,
+//       data: {
+//         EmailAddress,
+//         companies: companiesData,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Check Email Error:", error);
+//     res
+//       .status(500)
+//       .json({ message: "Something went wrong, please try later!" });
+//   }
+// };
+
 // exports.login = async (req, res) => {
 //   try {
-//     const { EmailAddress, Password } = req.body;
+//     const { EmailAddress, Password, CompanyId } = req.body;
 
-//     const user = await User.findOne({ EmailAddress, IsDelete: false });
+//     // Find user query - add CompanyId if provided
+//     const query = { EmailAddress, IsDelete: false };
+//     if (CompanyId) {
+//       query.CompanyId = CompanyId;
+//     }
+
+//     const user = await User.findOne(query);
 
 //     if (!user) {
 //       return res.status(401).json({ message: "Invalid email or password" });
@@ -110,7 +180,10 @@ exports.register = async (req, res) => {
 //       return res.status(401).json({ message: "Invalid email or password" });
 //     }
 
-//     const userProfile = await UserProfile.findOne({ UserId: user.UserId });
+//     const userProfile = await UserProfile.findOne({
+//       UserId: user.UserId,
+//       Role: "Company",
+//     });
 
 //     const tokenData = {
 //       UserId: user.UserId,
@@ -118,14 +191,32 @@ exports.register = async (req, res) => {
 //       Role: user.Role,
 //       ProfileImage: userProfile?.ProfileImage || null,
 //       CompanyId: user.CompanyId,
-//       CompanyName: userProfile?.CompanyName || "",
+//       CompanyName: userProfile?.CompanyName || "Unknown Company",
 //       OwnerName: userProfile?.OwnerName || "",
 //     };
 
-//     logUserEvent(user.CompanyId, "LOGIN", `User ${user.EmailAddress} logged in.`);
+//     logUserEvent(
+//       user.CompanyId,
+//       "LOGIN",
+//       `User ${user.EmailAddress} logged in.`
+//     );
+
+//     logUserEvent(
+//       user.CompanyId,
+//       "LOGIN",
+//       `User ${user.EmailAddress} logged in.`
+//     );
+//     const superAdmin = await SuperAdmin.findOne({
+//       EmailAddress,
+//       IsDelete: false,
+//     });
+//     const isMatchSuper = await bcrypt.compare(Password, superAdmin.Password);
+//     if (!isMatchSuper) {
+//       return res.status(401).json({ message: "Invalid email or password" });
+//     }
 
 //     const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
-//       expiresIn: "24h",
+//       expiresIn: "4h",
 //     });
 
 //     let statusCode, message, roleSpecificId;
@@ -136,8 +227,8 @@ exports.register = async (req, res) => {
 //         statusCode = "200";
 //         message = "Company Login Successful!";
 //         break;
-//       case "Superadmin":
-//         roleSpecificId = user.UserId;
+//       case "Admin":
+//         roleSpecificId = superAdmin.AdminId;
 //         statusCode = "300";
 //         message = "Superadmin Login Successful!";
 //         break;
@@ -152,7 +243,10 @@ exports.register = async (req, res) => {
 //         message = "Customer Login Successful!";
 //         break;
 //       default:
-//         return res.status(400).json({ statusCode: "204", message: "Invalid Role. Please contact support." });
+//         return res.status(400).json({
+//           statusCode: "204",
+//           message: "Invalid Role. Please contact support.",
+//         });
 //     }
 
 //     res.status(200).json({
@@ -163,50 +257,64 @@ exports.register = async (req, res) => {
 //         UserId: roleSpecificId,
 //         EmailAddress: user.EmailAddress,
 //         CompanyName: userProfile?.CompanyName || "",
+//         CompanyName: userProfile?.CompanyName || "",
 //         Role: user.Role,
 //         IsActive: user.IsActive,
 //       },
 //     });
-
 //   } catch (error) {
 //     console.error("Login Error:", error);
-//     res.status(500).json({ message: "Something went wrong, please try later!" });
+//     res
+//       .status(500)
+//       .json({ message: "Something went wrong, please try later!" });
 //   }
 // };
-
 exports.checkEmail = async (req, res) => {
   try {
     const { EmailAddress } = req.body;
-    const users = await User.find({ EmailAddress, IsDelete: false });
-    if (!users || users.length === 0) {
-      return res.status(404).json({
-        statusCode: "404",
-        message: "Email not found",
-      });
-    }
     const companiesData = [];
+
+    // Check in User collection
+    const users = await User.find({ EmailAddress, IsDelete: false });
     for (const user of users) {
-      let companyIds = [];
-      if (Array.isArray(user.CompanyId)) {
-        companyIds = user.CompanyId;
-      } else {
-        companyIds = [user.CompanyId];
-      }
+      const companyIds = Array.isArray(user.CompanyId)
+        ? user.CompanyId
+        : [user.CompanyId];
       for (const companyId of companyIds) {
         const userProfile = await UserProfile.findOne({
           CompanyId: companyId,
           Role: "Company",
         });
-        console.log(userProfile, "userProfile");
+
         companiesData.push({
           CompanyId: companyId,
           CompanyName: userProfile?.CompanyName || "Unknown Company",
-          Role: "Company",
+          Role: user.Role,
         });
       }
     }
-    const uniqueCompanies = companiesData.length;
-    if (uniqueCompanies === 1) {
+
+    // Check in SuperAdmin collection
+    const superAdmin = await SuperAdmin.findOne({
+      EmailAddress,
+      IsDelete: false,
+    });
+    if (superAdmin) {
+      companiesData.push({
+        CompanyId: null,
+        CompanyName: "Super Admin",
+        Role: "Admin",
+      });
+    }
+
+    if (companiesData.length === 0) {
+      return res.status(404).json({
+        statusCode: "404",
+        message: "Email not found",
+      });
+    }
+
+    if (companiesData.length === 1) {
       return res.status(200).json({
         statusCode: "200",
         message: "Email found",
@@ -219,6 +327,7 @@ exports.checkEmail = async (req, res) => {
         },
       });
     }
+
     return res.status(200).json({
       statusCode: "200",
       message: "Email found in multiple companies",
@@ -235,45 +344,87 @@ exports.checkEmail = async (req, res) => {
       .json({ message: "Something went wrong, please try later!" });
   }
 };
-
 exports.login = async (req, res) => {
   try {
     const { EmailAddress, Password, CompanyId } = req.body;
 
-    // Find user query - add CompanyId if provided
+    let user = null;
+    let role = null;
+    let tokenData = {};
+    let userProfile = null;
+
+    const superAdmin = await SuperAdmin.findOne({
+      EmailAddress,
+      IsDelete: false,
+    });
+    if (superAdmin) {
+      const isMatchSuper = await bcrypt.compare(Password, superAdmin.Password);
+      if (!isMatchSuper) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      role = "Admin";
+      tokenData = {
+        AdminId: superAdmin.AdminId,
+        EmailAddress: superAdmin.EmailAddress,
+        FullName: superAdmin.FullName,
+        ProfileImage: superAdmin.ProfileImage,
+        Role: role,
+      };
+
+      const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
+        expiresIn: "4h",
+      });
+
+      logUserEvent("SYSTEM", "LOGIN", `SuperAdmin ${EmailAddress} logged in.`);
+
+      return res.status(200).json({
+        statusCode: "300",
+        message: "SuperAdmin Login Successful!",
+        token,
+        data: {
+          AdminId: superAdmin.AdminId,
+          EmailAddress: superAdmin.EmailAddress,
+          Role: role,
+        },
+      });
+    }
+
+    // Now check in User collection
     const query = { EmailAddress, IsDelete: false };
-    if (CompanyId) {
-      query.CompanyId = CompanyId;
-    }
+    if (CompanyId) query.CompanyId = CompanyId;
 
-    const user = await User.findOne(query);
-
+    user = await User.findOne(query);
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" })
-    }
-
-    if (!user.IsActive) {
-      return res.status(400).json({ message: "Account is deactivated. Please contact support." })
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const isMatch = await bcrypt.compare(Password, user.Password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" })
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const userProfile = await UserProfile.findOne({ UserId: user.UserId, Role: "Company" })
+    if (!user.IsActive) {
+      return res.status(400).json({
+        message: "Account is deactivated. Please contact support.",
+      });
+    }
 
-    const tokenData = {
+    role = user.Role;
+    userProfile = await UserProfile.findOne({
+      UserId: user.UserId,
+      CompanyId: user.CompanyId,
+    });
+
+    tokenData = {
       UserId: user.UserId,
       EmailAddress: user.EmailAddress,
       Role: user.Role,
-      ProfileImage: userProfile?.ProfileImage || null,
       CompanyId: user.CompanyId,
       CompanyName: userProfile?.CompanyName || "Unknown Company",
       OwnerName: userProfile?.OwnerName || "",
-    }
-
-    logUserEvent(user.CompanyId, "LOGIN", `User ${user.EmailAddress} logged in.`)
+      ProfileImage: userProfile?.ProfileImage || null,
+    };
 
     logUserEvent(
       user.CompanyId,
@@ -287,16 +438,11 @@ exports.login = async (req, res) => {
 
     let statusCode, message, roleSpecificId;
 
-    switch (user.Role) {
+    switch (role) {
       case "Company":
         roleSpecificId = user.CompanyId;
         statusCode = "200";
         message = "Company Login Successful!";
-        break;
-      case "Superadmin":
-        roleSpecificId = user.UserId;
-        statusCode = "300";
-        message = "Superadmin Login Successful!";
         break;
       case "Worker":
         roleSpecificId = user.UserId;
@@ -323,7 +469,6 @@ exports.login = async (req, res) => {
         UserId: roleSpecificId,
         EmailAddress: user.EmailAddress,
         CompanyName: userProfile?.CompanyName || "",
-        CompanyName: userProfile?.CompanyName || "",
         Role: user.Role,
         IsActive: user.IsActive,
       },
@@ -334,7 +479,7 @@ exports.login = async (req, res) => {
       .status(500)
       .json({ message: "Something went wrong, please try later!" });
   }
-}
+};
 
 // **Check if User Exists Function**
 exports.checkUserExists = async (req, res) => {

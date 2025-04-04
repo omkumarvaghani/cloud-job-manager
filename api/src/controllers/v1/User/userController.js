@@ -8,6 +8,7 @@ const { logUserEvent } = require("../../../middleware/eventMiddleware");
 const Location = require("../../../models/User/Location");
 const { addNotification } = require("../../../models/User/AddNotification");
 const Notification = require("../../../models/User/Notification");
+const { sendWelcomeEmailToCustomer } = require("./customerController");
 
 // **CREATE COMPANY BY ADMIN, CUSTOMER & WORKER API**
 exports.createUser = async (req, res) => {
@@ -82,6 +83,10 @@ exports.createUser = async (req, res) => {
       Zip,
       Country,
     };
+
+    if (Role === "Customer") {
+      await sendWelcomeEmailToCustomer(req, res, UserId); 
+    }
 
     if (Role === "Worker") {
       locationData.WorkerId = UserId;
