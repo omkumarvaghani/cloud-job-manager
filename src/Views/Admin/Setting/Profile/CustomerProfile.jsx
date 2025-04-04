@@ -519,6 +519,7 @@ const CustomerProfile = () => {
             >
               <Typography className="text-blue-color mt-3 heading-three">
                 <Typography className="bold-text fs-3">
+                  
                   {profileFormik?.values?.FirstName ||
                     "FirstName not available"}
                   &nbsp;

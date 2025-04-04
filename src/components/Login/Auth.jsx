@@ -11,7 +11,7 @@ const getToken = () => {
 
 const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
   const token = getToken();
-
+  console.log(token,"token")
   if (!token) {
     console.error("Token not found in localStorage");
     navigate(redirectPath, { state: { error: "Token not found" } });
@@ -27,7 +27,7 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
       });
       return;
     }
-
+    console.log(res,"res123456u")
     const {
       Role,
       superAdminId,

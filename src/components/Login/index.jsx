@@ -526,11 +526,6 @@ const Login = () => {
       } else {
         handleSubmit(values);
       }
-      if (!emailChecked) {
-        checkEmail(values.EmailAddress);
-      } else {
-        handleSubmit(values);
-      }
     },
   });
 
@@ -540,7 +535,7 @@ const Login = () => {
       const res = await AxiosInstance.post(`${baseUrl}/v1/auth/check-email`, {
         EmailAddress: email,
       });
-      console.log(res,"res 12")
+      console.log(res, "res 12");
       if (res.data.statusCode === "200") {
         if (res.data.multipleCompanies) {
           setMultipleCompanies(true);
@@ -550,7 +545,7 @@ const Login = () => {
           setEmailChecked(true);
           formik.setFieldValue("CompanyId", "");
         }
-      }     
+      }
     } catch (error) {
       if (error.response) {
         sendToast(error.response?.data.message || "Email not found");
@@ -593,7 +588,7 @@ const Login = () => {
         `${baseUrl}/v1/auth/login`,
         loginData
       );
-      console.log(res,"res 123")
+      console.log(res, "res 123");
       if (res.data.statusCode == "200") {
         localStorage.setItem("adminToken", res.data.token);
         localStorage.setItem("CompanyId", res.data.data.UserId);
@@ -809,83 +804,6 @@ const Login = () => {
                 />
               </FormGroup>
 
-              {multipleCompanies && (
-                <FormGroup
-                  className="text-boxes"
-                  style={{ width: "100%", marginTop: "24px" }}
-                >
-                  <Typography
-                    style={{ marginBottom: "10px", fontWeight: "500" }}
-                  >
-                    Select Company to Login
-                  </Typography>
-                  <div
-                    style={{
-                      border: "1px solid #e0e0e0",
-                      borderRadius: "4px",
-                      padding: "10px",
-                      maxHeight: "200px",
-                      overflowY: "auto",
-                    }}
-                  >
-                    {companies.map((company) => (
-                      <div
-                        key={company.CompanyId}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          padding: "8px 0",
-                          borderBottom: "1px solid #f0f0f0",
-                        }}
-                      >
-                        <input
-                          type="radio"
-                          id={`company-${company.CompanyId}`}
-                          name="companySelection"
-                          value={company.CompanyId}
-                          checked={selectedCompany === company.CompanyId}
-                          onChange={() => {
-                            setSelectedCompany(company.CompanyId);
-                            formik.setFieldValue(
-                              "CompanyId",
-                              company.CompanyId
-                            );
-                          }}
-                          style={{ marginRight: "10px" }}
-                        />
-                        <label
-                          htmlFor={`company-${company.CompanyId}`}
-                          style={{
-                            cursor: "pointer",
-                            fontWeight:
-                              selectedCompany === company.CompanyId
-                                ? "600"
-                                : "normal",
-                            color:
-                              selectedCompany === company.CompanyId
-                                ? "rgba(51, 53, 71, 1)"
-                                : "inherit",
-                          }}
-                        >
-                          {company.CompanyName} ({company.Role}) 
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                  {multipleCompanies && !selectedCompany && (
-                    <Typography
-                      style={{
-                        color: "red",
-                        fontSize: "12px",
-                        marginTop: "5px",
-                      }}
-                    >
-                      Please select a company to continue
-                    </Typography>
-                  )}
-                </FormGroup>
-              )}
-
               {(emailChecked || !multipleCompanies) && (
                 <FormGroup
                   className="text-boxes"
@@ -957,7 +875,82 @@ const Login = () => {
                   Change Email
                 </Typography>
               )}
-
+              {multipleCompanies && (
+                <FormGroup
+                  className="text-boxes"
+                  style={{ width: "100%", marginTop: "24px" }}
+                >
+                  <Typography
+                    style={{ marginBottom: "10px", fontWeight: "500" }}
+                  >
+                    Select Company to Login
+                  </Typography>
+                  <div
+                    style={{
+                      border: "1px solid #e0e0e0",
+                      borderRadius: "4px",
+                      padding: "10px",
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    {companies.map((company) => (
+                      <div
+                        key={company.CompanyId}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          padding: "8px 0",
+                          borderBottom: "1px solid #f0f0f0",
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          id={`company-${company.CompanyId}`}
+                          name="companySelection"
+                          value={company.CompanyId}
+                          checked={selectedCompany === company.CompanyId}
+                          onChange={() => {
+                            setSelectedCompany(company.CompanyId);
+                            formik.setFieldValue(
+                              "CompanyId",
+                              company.CompanyId
+                            );
+                          }}
+                          style={{ marginRight: "10px" }}
+                        />
+                        <label
+                          htmlFor={`company-${company.CompanyId}`}
+                          style={{
+                            cursor: "pointer",
+                            fontWeight:
+                              selectedCompany === company.CompanyId
+                                ? "600"
+                                : "normal",
+                            color:
+                              selectedCompany === company.CompanyId
+                                ? "rgba(51, 53, 71, 1)"
+                                : "inherit",
+                          }}
+                        >
+                          {company.CompanyName} ({company.Role})
+                        </label>
+                      </div>    
+                    ))} 
+                  </div>        
+                  {multipleCompanies && !selectedCompany && (
+                    <Typography
+                      style={{
+                        color: "red",
+                        fontSize: "12px",
+                        marginTop: "5px",
+                      }}
+                    >
+                      Please select a company to continue
+                    </Typography>
+                  )}
+                </FormGroup>
+              )}
               <Typography
                 className="text-orange-color"
                 style={{

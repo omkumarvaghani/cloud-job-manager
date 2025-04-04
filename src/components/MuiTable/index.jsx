@@ -1123,15 +1123,16 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             className="bold-text"
                             style={{ fontSize: "12px" }}
                           >
-                            {data?.OwnerName}
-                            {console.log(data, "datadatadata")}
-                          </Typography>     
+                            {data?.OwnerName ||
+                              data?.FirstName + " " + data?.LastName}
+                            {console.log(data, "data")}
+                          </Typography>
                         </Typography>
                         <Typography
                           className="mb-0 e-mail"
                           style={{ fontSize: "10px" }}
                         >
-                          {data?.EmailAddress}
+                          {data?.EmailAddress || data?.EmailAddress}
                         </Typography>
                       </Grid>
                     </DropdownItem>

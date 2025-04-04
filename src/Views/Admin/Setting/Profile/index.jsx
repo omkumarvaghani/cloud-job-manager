@@ -125,10 +125,10 @@ const Profile = () => {
           setPostLoader(true);
           const updatedProfile = { ...values };
           const res = await AxiosInstance.put(
-            `/v1/user/${CompanyId}`,
+            `/v1/user/update-profile/${CompanyId}`,
             updatedProfile
           );
-          console.log(res, "res");
+          console.log(res, "res852");
           if (res?.data?.statusCode === 200) {
             showToast.success(res?.data?.message);
             // swal(
@@ -278,7 +278,7 @@ const Profile = () => {
       const res = await AxiosInstance.get(
         `/v1/user/company-profile/${CompanyId}`
       );
-      console.log(res, "res");
+      console.log(res, "res 123543");
 
       if (res?.data?.success) {
         const userData = res?.data?.data?.user;
@@ -298,7 +298,7 @@ const Profile = () => {
         };
 
         setOldData(combinedData);
-        setUploadedImageUrl(profileData?.profileImage || "");
+        setUploadedImageUrl(profileData?.profileImage || "");    
         profileFormik.setValues(combinedData);
 
         if (profileData?.Country) {

@@ -117,7 +117,7 @@ const Templates = ({
             }}
           >
             <Typography className="quot text-light customerList_head heading-five tableNameHead fw-medium">
-              Templates List 
+              delete
             </Typography>
             <Grid className=" customersearch d-flex customer_searchBar searchBarOfTable">
               <JobberSearch
@@ -286,7 +286,7 @@ const Templates = ({
               </Grid>
             ) : (
               <Typography className="text-blue-color">
-                <NoDataFound />
+             <NoDataFound/>
               </Typography>
             )}
           </DialogContent>

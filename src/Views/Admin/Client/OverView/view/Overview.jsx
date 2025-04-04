@@ -358,7 +358,7 @@ const CustomerDetails = ({
                                               fontSize: "12px",
                                             }}
                                           >
-                                            {data?.Status ||
+                                            {data?.status ||
                                               "status not available"}
                                           </Typography>
                                         </Typography>
