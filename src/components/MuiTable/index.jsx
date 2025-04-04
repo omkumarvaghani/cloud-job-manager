@@ -1085,9 +1085,9 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                           ?.map((part) => part.charAt(0).toUpperCase())
                           ?.join("")} */}
                       <>
-                        {data?.profileImage ? (
+                        {data?.ProfileImage ? (
                           <img
-                            src={`${cdnUrl}/upload/${data?.profileImage}`}
+                            src={`${cdnUrl}/upload/${data?.ProfileImage}`}
                             alt="Profile"
                             style={{
                               // borderRadius: "50%",
@@ -1124,7 +1124,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             style={{ fontSize: "12px" }}
                           >
                             {data?.OwnerName ||
-                              data?.FirstName + " " + data?.LastName}
+                              data?.FirstName + " " + data?.LastName} 
                             {console.log(data, "data")}
                           </Typography>
                         </Typography>

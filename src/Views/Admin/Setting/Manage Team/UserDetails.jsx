@@ -81,7 +81,7 @@ const Industry = () => {
     setIsProfileChanged(true);
   };
 
-  const [profileImage, setProfileImage] = useState("");
+  const [ProfileImage, setProfileImage] = useState("");
   const [postLoader, setPostLoader] = useState(false);
   const handleSave = async () => {
     try {

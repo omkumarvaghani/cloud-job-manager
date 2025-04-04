@@ -82,7 +82,7 @@ const CustomerProfile = () => {
       Zip: "",
       // Password: "",
       Country: "",
-      profileImage: "",
+      ProfileImage: "",
       FirstName: "",
       LastName: "",
       // confirmpassword: "",
@@ -125,12 +125,12 @@ const CustomerProfile = () => {
             ...values,
           };
           const res = await AxiosInstance.put(
-            `/customer/profile/${CustomerId}`,
+            `/v1/customer/profile/${CustomerId}`,
             updatedProfile
           );
           if (res?.data?.statusCode === 200) {
             showToast.success(res?.data?.message);
-
+            
             swal({
               title: "Profile saved successfully!",
               text: "Your changes have been saved.",
@@ -270,25 +270,34 @@ const CustomerProfile = () => {
       const allCountries = Country.getAllCountries();
       setCountries(allCountries);
 
-      const res = await AxiosInstance.get(`/customer/profile/${CustomerId}`);
+      const res = await AxiosInstance.get(`/v1/customer/profile/${CustomerId}`);
+      console.log(res, "res000");
 
-      if (res?.data?.statusCode === 200) {
-        const data = res?.data?.data;
-        setOldData(data);
-        setUploadedImageUrl(data?.profileImage);
+      if (res?.data?.success) {
+        const userData = res?.data?.data?.user;
+        const profileData = res?.data?.data?.userProfile;
 
-        profileFormik.setValues({
-          ...data,
-          Address: data?.Address || "",
-          City: data?.City || "",
-          State: data?.State || "",
-          Zip: data?.Zip || "",
-          Country: data?.Country || "",
-        });
+        const combinedData = {
+          CompanyId: profileData?.CompanyId || userData?.CompanyId?.[0],
+          FirstName: profileData?.FirstName || "",
+          LastName: profileData?.LastName || "",
+          EmailAddress: userData?.EmailAddress || "",
+          PhoneNumber: profileData?.PhoneNumber || "",
+          Address: profileData?.Address || "",
+          City: profileData?.City || "",
+          State: profileData?.State || "",
+          Zip: profileData?.Zip || "",
+          Country: profileData?.Country || "",
+          ProfileImage: profileData?.ProfileImage || "",
+        };
 
-        if (data?.Country) {
+        setOldData(combinedData);
+        setUploadedImageUrl(profileData?.ProfileImage || "");
+        profileFormik.setValues(combinedData);
+
+        if (profileData?.Country) {
           const selectedCountry = allCountries.find(
-            (item) => item.name === data?.Country
+            (item) => item?.name === profileData?.Country
           );
           setSelectedCountry(selectedCountry);
         }
@@ -342,13 +351,16 @@ const CustomerProfile = () => {
 
       const image = result?.data?.files[0]?.filename;
       if (image) {
-        const res = await AxiosInstance.put(`/customer/profile/${CustomerId}`, {
-          profileImage: image,
-        });
+        const res = await AxiosInstance.put(
+          `/v1/customer/profile/${CustomerId}`,
+          {
+            ProfileImage: image,
+          }
+        );
         if (res?.data?.statusCode === 200) {
           showToast.success("Profile image updated successfully.");
           setUploadedImageUrl(image);
-          profileFormik.setFieldValue("profileImage", image);
+          profileFormik.setFieldValue("ProfileImage", image);
           await getData();
         } else {
           sendToast(
@@ -519,7 +531,6 @@ const CustomerProfile = () => {
             >
               <Typography className="text-blue-color mt-3 heading-three">
                 <Typography className="bold-text fs-3">
-                  
                   {profileFormik?.values?.FirstName ||
                     "FirstName not available"}
                   &nbsp;

@@ -25,5 +25,4 @@ router.get("/dropdown", protect, getCompanyDropdown);
 
 router.put("/update-profile/:CompanyId", protect, updateCompanyProfile);
 
-
 module.exports = router;

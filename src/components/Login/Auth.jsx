@@ -11,7 +11,7 @@ const getToken = () => {
 
 const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
   const token = getToken();
-  console.log(token,"token")
+  console.log(token, "token");
   if (!token) {
     console.error("Token not found in localStorage");
     navigate(redirectPath, { state: { error: "Token not found" } });
@@ -27,10 +27,10 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
       });
       return;
     }
-    console.log(res,"res123456u")
+    console.log(res, "res123456u");
     const {
       Role,
-      superAdminId,
+      AdminId,
       CustomerId,
       CompanyId,
       CompanyName,
@@ -40,9 +40,9 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
     const state = { Role, id: null, navigats: [] };
 
     switch (Role) {
-      case "Superadmin":
+      case "Admin":
         if (!window.location.pathname.includes("/superadmin")) {
-          localStorage.setItem("admin_id", superAdminId);
+          localStorage.setItem("admin_id", AdminId);
           state.redirect = "/superadmin/index";
           state.navigats = ["/index"];
         }
@@ -68,7 +68,7 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
         }
         break;
 
-      case "worker":
+      case "Worker":
         if (!window.location.pathname.includes(`/staff-member`)) {
           localStorage.setItem("worker_id", WorkerId);
           state.redirect = `/staff-member/index`;
