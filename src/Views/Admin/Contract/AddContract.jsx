@@ -289,7 +289,6 @@ function AddContract() {
         );
         if (res?.data?.statusCode === 200) {
           const data = res.data.data;
-          console.log(data,"datadatadatadatadata")
           const locationData = data?.location || {};
           const customerData = data?.customer || {};
           console.log(customerData,"customerData")

@@ -373,22 +373,27 @@ exports.getAllUsers = async (req, res) => {
 // **GET USER BY ID API**
 exports.getUserByCompanyId = async (req, res) => {
     try {
-        const { CompanyId } = req.params;
+        const CompanyId = req.user.CompanyId;
 
-        const user = await User.findOne({ CompanyId, IsDelete: false }).select("-Password");
-        if (!user) {
-            return res.status(404).json({ message: "User not found!" });
+        if (!CompanyId) {
+            return res.status(400).json({ message: "CompanyId is required!" });
         }
 
-        const userProfile = await UserProfile.findOne({ CompanyId });
+        const users = await User.find({ CompanyId, Role: "Company", IsDelete: false }).select("-Password");
+
+        if (!users || users.length === 0) {
+            return res.status(404).json({ message: "Users not found for this company!" });
+        }
+
+        const userProfiles = await UserProfile.find({ CompanyId });
 
         return res.status(200).json({
             statusCode: "200",
-            message: "User fetched successfully.",
-            data: { user, userProfile }
+            message: "Users fetched successfully.",
+            data: { users, userProfiles }
         });
     } catch (error) {
-        console.error("Error in getUserById:", error);
+        console.error("Error in getUserByCompanyId:", error);
         return res.status(500).json({ message: "Something went wrong, please try later!" });
     }
 };

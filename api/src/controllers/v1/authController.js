@@ -80,30 +80,174 @@ exports.register = async (req, res) => {
   }
 };
 
-// **LOGIN API**
+// // **LOGIN API**
+// exports.login = async (req, res) => {
+//   try {
+//     const { EmailAddress, Password } = req.body;
+
+//     const user = await User.findOne({ EmailAddress, IsDelete: false });
+
+//     if (!user) {
+//       return res.status(401).json({ message: "Invalid email or password" });
+//     }
+
+//     if (!user.IsActive) {
+//       return res
+//         .status(400)
+//         .json({ message: "Account is deactivated. Please contact support." });
+//     }
+
+//     const isMatch = await bcrypt.compare(Password, user.Password);
+//     if (!isMatch) {
+//       return res.status(401).json({ message: "Invalid email or password" });
+//     }
+
+//     const userProfile = await UserProfile.findOne({ UserId: user.UserId });
+
+//     const tokenData = {
+//       UserId: user.UserId,
+//       EmailAddress: user.EmailAddress,
+//       Role: user.Role,
+//       ProfileImage: userProfile?.ProfileImage || null,
+//       CompanyId: user.CompanyId,
+//       CompanyName: userProfile?.CompanyName || "",
+//       OwnerName: userProfile?.OwnerName || "",
+//     };
+
+//     logUserEvent(user.CompanyId, "LOGIN", `User ${user.EmailAddress} logged in.`);
+
+//     const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
+//       expiresIn: "24h",
+//     });
+
+//     let statusCode, message, roleSpecificId;
+
+//     switch (user.Role) {
+//       case "Company":
+//         roleSpecificId = user.CompanyId;
+//         statusCode = "200";
+//         message = "Company Login Successful!";
+//         break;
+//       case "Superadmin":
+//         roleSpecificId = user.UserId;
+//         statusCode = "300";
+//         message = "Superadmin Login Successful!";
+//         break;
+//       case "Worker":
+//         roleSpecificId = user.UserId;
+//         statusCode = "302";
+//         message = "Worker Login Successful!";
+//         break;
+//       case "Customer":
+//         roleSpecificId = user.UserId;
+//         statusCode = "303";
+//         message = "Customer Login Successful!";
+//         break;
+//       default:
+//         return res.status(400).json({ statusCode: "204", message: "Invalid Role. Please contact support." });
+//     }
+
+//     res.status(200).json({
+//       statusCode,
+//       message,
+//       token,
+//       data: {
+//         UserId: roleSpecificId,
+//         EmailAddress: user.EmailAddress,
+//         CompanyName: userProfile?.CompanyName || "",
+//         Role: user.Role,
+//         IsActive: user.IsActive,
+//       },
+//     });
+
+//   } catch (error) {
+//     console.error("Login Error:", error);
+//     res.status(500).json({ message: "Something went wrong, please try later!" });
+//   }
+// };
+
+
+exports.checkEmail = async (req, res) => {
+  try {
+    const { EmailAddress } = req.body
+
+    // Find all users with this email across different companies
+    const users = await User.find({ EmailAddress, IsDelete: false })
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({
+        statusCode: "404",
+        message: "Email not found",
+      })
+    }
+
+    // If only one company, return simple response
+    if (users.length === 1) {
+      return res.status(200).json({
+        statusCode: "200",
+        message: "Email found",
+        multipleCompanies: false,
+        data: {
+          EmailAddress,
+        },
+      })
+    }
+
+    // Get company details for each user
+    const companiesData = []
+    for (const user of users) {
+      // Get company details
+      const userProfile = await UserProfile.findOne({ UserId: user.UserId })
+      const company = await Company.findOne({ CompanyId: user.CompanyId })
+
+      companiesData.push({
+        CompanyId: user.CompanyId,
+        CompanyName: company?.CompanyName || userProfile?.CompanyName || "Unknown Company",
+        Role: user.Role,
+      })
+    }
+
+    return res.status(200).json({
+      statusCode: "200",
+      message: "Email found in multiple companies",
+      multipleCompanies: true,
+      data: {
+        EmailAddress,
+        companies: companiesData,
+      },
+    })
+  } catch (error) {
+    console.error("Check Email Error:", error)
+    res.status(500).json({ message: "Something went wrong, please try later!" })
+  }
+}
+
 exports.login = async (req, res) => {
   try {
-    const { EmailAddress, Password } = req.body;
+    const { EmailAddress, Password, CompanyId } = req.body
 
-    const user = await User.findOne({ EmailAddress, IsDelete: false });
+    // Find user query - add CompanyId if provided
+    const query = { EmailAddress, IsDelete: false }
+    if (CompanyId) {
+      query.CompanyId = CompanyId
+    }
+
+    const user = await User.findOne(query)
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid email or password" })
     }
 
     if (!user.IsActive) {
-      return res
-        .status(400)
-        .json({ message: "Account is deactivated. Please contact support." });
+      return res.status(400).json({ message: "Account is deactivated. Please contact support." })
     }
 
-    const isMatch = await bcrypt.compare(Password, user.Password);
-
+    const isMatch = await bcrypt.compare(Password, user.Password)
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid email or password" })
     }
 
-    const userProfile = await UserProfile.findOne({ UserId: user.UserId });
+    const userProfile = await UserProfile.findOne({ UserId: user.UserId })
 
     const tokenData = {
       UserId: user.UserId,
@@ -113,49 +257,58 @@ exports.login = async (req, res) => {
       CompanyId: user.CompanyId,
       CompanyName: userProfile?.CompanyName || "",
       OwnerName: userProfile?.OwnerName || "",
-    };
-
-    logUserEvent(user.CompanyId, "LOGIN", `User ${user.EmailAddress} logged in.`);
-
-    const token = generateToken(tokenData);
-
-    let roleSpecificId;
-    switch (user.Role) {
-      case "Admin":
-        roleSpecificId = user.UserId;
-        break;
-      case "Company":
-        roleSpecificId = user.CompanyId;
-        break;
-      case "Worker":
-        roleSpecificId = user.UserId;
-        break;
-      case "Customer":
-        roleSpecificId = user.UserId;
-        break;
-      default:
-        roleSpecificId = null;
     }
 
-    let response = {
-      statusCode: 200,
+    logUserEvent(user.CompanyId, "LOGIN", `User ${user.EmailAddress} logged in.`)
+
+    const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
+      expiresIn: "24h",
+    })
+
+    let statusCode, message, roleSpecificId
+
+    switch (user.Role) {
+      case "Company":
+        roleSpecificId = user.CompanyId
+        statusCode = "200"
+        message = "Company Login Successful!"
+        break
+      case "Superadmin":
+        roleSpecificId = user.UserId
+        statusCode = "300"
+        message = "Superadmin Login Successful!"
+        break
+      case "Worker":
+        roleSpecificId = user.UserId
+        statusCode = "302"
+        message = "Worker Login Successful!"
+        break
+      case "Customer":
+        roleSpecificId = user.UserId
+        statusCode = "303"
+        message = "Customer Login Successful!"
+        break
+      default:
+        return res.status(400).json({ statusCode: "204", message: "Invalid Role. Please contact support." })
+    }
+
+    res.status(200).json({
+      statusCode,
+      message,
       token,
-      UserId: roleSpecificId,
       data: {
         UserId: roleSpecificId,
-        OwnerName: user.Role === "Company" ? userProfile?.OwnerName : undefined,
         EmailAddress: user.EmailAddress,
-        CompanyName: userProfile.CompanyName,
+        CompanyName: userProfile?.CompanyName || "",
         Role: user.Role,
         IsActive: user.IsActive,
       },
-    };
-    return res.status(200).json(response);
+    })
   } catch (error) {
-    console.error("Login Error:", error);
-    res.status(500).json({ message: "Something went wrong, please try later!" });
+    console.error("Login Error:", error)
+    res.status(500).json({ message: "Something went wrong, please try later!" })
   }
-};
+}
 
 // **Check if User Exists Function**
 exports.checkUserExists = async (req, res) => {

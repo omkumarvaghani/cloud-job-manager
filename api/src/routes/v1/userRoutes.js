@@ -17,7 +17,7 @@ router.post("/", protect, createUser);
 router.get("/:UserId", protect, getUserById);
 router.put("/:UserId", protect, updateUser);
 router.delete("/:UserId", protect, deleteUser);
-router.get("/:CompanyId", protect, getUserByCompanyId);
+router.get("/company-profile", protect, getUserByCompanyId);
 
 router.get("/", protect, getAllUsers);
 

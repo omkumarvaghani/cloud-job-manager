@@ -139,7 +139,7 @@ const Profile = () => {
               title: "Profile saved successfully!",
               text: "Your changes have been saved.",
               icon: "success",
-  
+
               buttons: {
                 confirm: {
                   text: "OK",
@@ -149,8 +149,7 @@ const Profile = () => {
                 },
               },
               dangerMode: true,
-            }
-            ).then(() => {
+            }).then(() => {
               navigate(`/${CompanyName}/index`, {
                 state: { navigats: ["/index"] },
               });
@@ -276,10 +275,11 @@ const Profile = () => {
       const allCountries = Country?.getAllCountries();
       setCountries(allCountries);
 
-      const res = await AxiosInstance.get(`/v1/company/profile/${CompanyId}`);
-      console.log(res,"res098")
+      const res = await AxiosInstance.get(`/v1/user/company-profile`);
+      console.log(res, "res");
       if (res?.data?.statusCode === 200) {
         const data = res?.data?.data;
+        console.log(data, "datadata");
         setOldData(data);
         setUploadedImageUrl(data?.profileImage);
 
