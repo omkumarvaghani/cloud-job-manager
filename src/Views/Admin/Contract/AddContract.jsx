@@ -289,7 +289,7 @@ function AddContract() {
         );
         if (res?.data?.statusCode === 200) {
           const data = res.data.data;
-          console.log(data,"datadatadatadatadata")
+          console.log(data, "datadatadatadatadata");
           const locationData = data?.location || {};
           const customerData = data?.customer || {};
           formik.setValues({
@@ -337,7 +337,7 @@ function AddContract() {
               members.map((member) => ({
                 FirstName: member.FirstName,
                 LastName: member.LastName,
-                EmailAddress: member.EmailAddress,
+                EmailAddress: tokenDecode?.EmailAddress || member.EmailAddress, // Use tokenDecode's EmailAddress if available
                 WorkerId: member.UserId,
               }))
             );
@@ -579,7 +579,7 @@ function AddContract() {
         {
           FirstName: team?.FirstName,
           LastName: team?.LastName,
-          EmailAddress: team?.EmailAddress,
+          EmailAddress: tokenDecode?.EmailAddress || team.EmailAddress,
           WorkerId: team?.UserId,
         },
       ]);
