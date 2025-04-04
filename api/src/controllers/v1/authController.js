@@ -9,7 +9,13 @@ const { verifyToken } = require("../../middleware/authMiddleware");
 
 const generateToken = (user) => {
   return jwt.sign(
-    { UserId: user.UserId, Role: user.Role, CompanyId: user.CompanyId, EmailAddress: user.EmailAddress, OwnerName: user.OwnerName },
+    {
+      UserId: user.UserId,
+      Role: user.Role,
+      CompanyId: user.CompanyId,
+      EmailAddress: user.EmailAddress,
+      OwnerName: user.OwnerName,
+    },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRATION || "4h" }
   );
@@ -18,7 +24,8 @@ const generateToken = (user) => {
 // **REGISTER API**
 exports.register = async (req, res) => {
   try {
-    const { Role, EmailAddress, Password, CompanyName, ...profileDetails } = req.body;
+    const { Role, EmailAddress, Password, CompanyName, ...profileDetails } =
+      req.body;
 
     const existingUser = await User.findOne({ EmailAddress, IsDelete: false });
     if (existingUser) {
@@ -65,6 +72,7 @@ exports.register = async (req, res) => {
 
     return res.status(200).json({
       statusCode: "200",
+      message: "Company created successfully",
       message: "Company created successfully",
       user: {
         UserId: newUser.UserId,
@@ -169,31 +177,27 @@ exports.register = async (req, res) => {
 exports.checkEmail = async (req, res) => {
   try {
     const { EmailAddress } = req.body;
-
     const users = await User.find({ EmailAddress, IsDelete: false });
-
     if (!users || users.length === 0) {
       return res.status(404).json({
         statusCode: "404",
         message: "Email not found",
       });
     }
-
     const companiesData = [];
-
     for (const user of users) {
       let companyIds = [];
-
       if (Array.isArray(user.CompanyId)) {
         companyIds = user.CompanyId;
       } else {
         companyIds = [user.CompanyId];
       }
-
       for (const companyId of companyIds) {
         const userProfile = await UserProfile.findOne({
-          CompanyId: companyId, Role: "Company",
+          CompanyId: companyId,
+          Role: "Company",
         });
+        console.log(userProfile, "userProfile");
         companiesData.push({
           CompanyId: companyId,
           CompanyName: userProfile?.CompanyName || "Unknown Company",
@@ -201,9 +205,7 @@ exports.checkEmail = async (req, res) => {
         });
       }
     }
-
     const uniqueCompanies = companiesData.length;
-
     if (uniqueCompanies === 1) {
       return res.status(200).json({
         statusCode: "200",
@@ -217,7 +219,6 @@ exports.checkEmail = async (req, res) => {
         },
       });
     }
-
     return res.status(200).json({
       statusCode: "200",
       message: "Email found in multiple companies",
@@ -229,21 +230,23 @@ exports.checkEmail = async (req, res) => {
     });
   } catch (error) {
     console.error("Check Email Error:", error);
-    res.status(500).json({ message: "Something went wrong, please try later!" });
+    res
+      .status(500)
+      .json({ message: "Something went wrong, please try later!" });
   }
 };
 
-
 exports.login = async (req, res) => {
   try {
-    const { EmailAddress, Password, CompanyId } = req.body
+    const { EmailAddress, Password, CompanyId } = req.body;
 
-    const query = { EmailAddress, IsDelete: false }
+    // Find user query - add CompanyId if provided
+    const query = { EmailAddress, IsDelete: false };
     if (CompanyId) {
-      query.CompanyId = CompanyId
+      query.CompanyId = CompanyId;
     }
 
-    const user = await User.findOne(query)
+    const user = await User.findOne(query);
 
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" })
@@ -253,7 +256,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Account is deactivated. Please contact support." })
     }
 
-    const isMatch = await bcrypt.compare(Password, user.Password)
+    const isMatch = await bcrypt.compare(Password, user.Password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" })
     }
@@ -272,35 +275,44 @@ exports.login = async (req, res) => {
 
     logUserEvent(user.CompanyId, "LOGIN", `User ${user.EmailAddress} logged in.`)
 
+    logUserEvent(
+      user.CompanyId,
+      "LOGIN",
+      `User ${user.EmailAddress} logged in.`
+    );
+
     const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
       expiresIn: "24h",
-    })
+    });
 
-    let statusCode, message, roleSpecificId
+    let statusCode, message, roleSpecificId;
 
     switch (user.Role) {
       case "Company":
-        roleSpecificId = user.CompanyId
-        statusCode = "200"
-        message = "Company Login Successful!"
-        break
+        roleSpecificId = user.CompanyId;
+        statusCode = "200";
+        message = "Company Login Successful!";
+        break;
       case "Superadmin":
-        roleSpecificId = user.UserId
-        statusCode = "300"
-        message = "Superadmin Login Successful!"
-        break
+        roleSpecificId = user.UserId;
+        statusCode = "300";
+        message = "Superadmin Login Successful!";
+        break;
       case "Worker":
-        roleSpecificId = user.UserId
-        statusCode = "302"
-        message = "Worker Login Successful!"
-        break
+        roleSpecificId = user.UserId;
+        statusCode = "302";
+        message = "Worker Login Successful!";
+        break;
       case "Customer":
-        roleSpecificId = user.UserId
-        statusCode = "303"
-        message = "Customer Login Successful!"
-        break
+        roleSpecificId = user.UserId;
+        statusCode = "303";
+        message = "Customer Login Successful!";
+        break;
       default:
-        return res.status(400).json({ statusCode: "204", message: "Invalid Role. Please contact support." })
+        return res.status(400).json({
+          statusCode: "204",
+          message: "Invalid Role. Please contact support.",
+        });
     }
 
     res.status(200).json({
@@ -311,13 +323,16 @@ exports.login = async (req, res) => {
         UserId: roleSpecificId,
         EmailAddress: user.EmailAddress,
         CompanyName: userProfile?.CompanyName || "",
+        CompanyName: userProfile?.CompanyName || "",
         Role: user.Role,
         IsActive: user.IsActive,
       },
-    })
+    });
   } catch (error) {
-    console.error("Login Error:", error)
-    res.status(500).json({ message: "Something went wrong, please try later!" })
+    console.error("Login Error:", error);
+    res
+      .status(500)
+      .json({ message: "Something went wrong, please try later!" });
   }
 }
 
@@ -358,7 +373,7 @@ const decodeToken = async (token) => {
   try {
     data = verifyToken(token);
   } catch (error) {
-    console.error('Error during token verification:', error.message);
+    console.error("Error during token verification:", error.message);
     return { statusCode: 401, message: error.message };
   }
 
@@ -375,7 +390,6 @@ const decodeToken = async (token) => {
 
   return { statusCode: 200, data };
 };
-
 
 // Endpoint to get token data
 exports.getTokenData = async (req, res) => {
@@ -432,15 +446,22 @@ exports.verifyAndFetchCompany = async (req, res) => {
     const tokenResult = verifyToken(token);
 
     if (!tokenResult.success) {
-      return res.status(tokenResult.statusCode).json({ message: tokenResult.message });
+      return res
+        .status(tokenResult.statusCode)
+        .json({ message: tokenResult.message });
     }
 
     const user = tokenResult.data;
 
-    const company = await User.findOne({ CompanyId: user.CompanyId, IsDelete: false });
+    const company = await User.findOne({
+      CompanyId: user.CompanyId,
+      IsDelete: false,
+    });
 
     if (!company) {
-      return res.status(404).json({ success: false, message: "Company not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Company not found" });
     }
 
     return res.status(200).json({
@@ -451,6 +472,8 @@ exports.verifyAndFetchCompany = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in verifyAndFetchCompany:", error);
-    return res.status(500).json({ success: false, message: "Internal Server Error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
   }
 };

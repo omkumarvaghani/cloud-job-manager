@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ContractMail from "../ContractMail";
 import CustomerModal from "../../Quotes/CustomerModal";
 import { FormGroup } from "@mui/material";
@@ -48,6 +48,7 @@ import { LoaderComponent } from "../../../../components/Icon/Index";
 import { Typography } from "@mui/material";
 import DiscountTable from "../../../../components/DiscountTable/DiscountTable";
 import showToast from "../../../../components/Toast/Toster";
+import { handleAuth } from "../../../../components/Login/Auth";
 
 const AddContract = ({
   lineItems,
@@ -107,9 +108,26 @@ const AddContract = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [tokenDecode, setTokenDecode] = useState({});
 
+  const fetchDatas = async () => {
+    try {
+      const res = await handleAuth(navigate, location);
+      setTokenDecode(res.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
+    fetchDatas();
+  }, []);
+  const [isVisible, setIsVisible] = useState(true);
+  const handleRemove = () => {
+    setIsVisible(false);
+  };
   return (
     <>
+      {console.log(tokenDecode, "tokenDecode")}
       {loader ? (
         <Grid
           className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5"
@@ -385,88 +403,81 @@ const AddContract = ({
                     </Col>
                   </Col>
 
-                  {/* {customersData?.FirstName && ( */}
-                  <Col
-                    lg={6}
-                    md={12}
-                    sm={12}
-                    xl={6}
-                    className="d-flex mt-5 gap-3 contractaddressDetailss"
-                    style={{ color: "rgba(6, 49, 100, 1)" }}
-                  >
-                    {console.log(
-                      location?.state?.formData?.locationData,
-                      "location?.state?.formData?.locationData"
-                    )}
-                    <Col className="text-left widthOfdetailFull" md={6} xl={6}>
-                      <Typography>
-                        <Typography className=" fw-medium">
-                          Property address
+                  {customersData?.FirstName && (
+                    <Col
+                      lg={6}
+                      md={12}
+                      sm={12}
+                      xl={6}
+                      className="d-flex mt-5 gap-3 contractaddressDetailss"
+                      style={{ color: "rgba(6, 49, 100, 1)" }}
+                    >
+                      <Col
+                        className="text-left widthOfdetailFull"
+                        md={6}
+                        xl={6}
+                      >
+                        <Typography>
+                          <Typography className=" fw-medium">
+                            Property address
+                          </Typography>
                         </Typography>
-                      </Typography>
-                      <Typography>
-                        {propertyData?.Address ||
-                          customersData?.location?.[0]?.Address ||
-                          customersData?.location?.Address ||
-                          location?.state?.formData?.locationData?.Address ||
-                          "Address not available"}
-                        ,
-                        <br />
-                        {propertyData?.City ||
-                          customersData?.location?.[0]?.City ||
-                          customersData?.location?.City ||
-                          location?.state?.formData?.locationData?.City ||
-                          "-"}{" "}
-                        {propertyData?.State ||
-                          customersData?.location?.[0]?.State ||
-                          customersData?.location?.State ||
-                          location?.state?.formData?.locationData?.State ||
-                          "-"}{" "}
-                        ,
-                        {propertyData?.Zip ||
-                          customersData?.location?.[0]?.Zip ||
-                          customersData?.location?.Zip ||
-                          location?.state?.formData?.locationData?.Zip ||
-                          "-"}
-                        ,
-                        <br />
-                        {propertyData?.Country ||
-                          customersData?.location?.[0]?.Country ||
-                          customersData?.location?.Country ||
-                          location?.state?.formData?.locationData?.Country ||
-                          "-"}{" "}
-                        <br />
-                        <a
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setIsCustomer(true);
-                          }}
-                          style={{ color: "green", cursor: "pointer" }}
-                          href="#customer-section"
-                        >
-                          Change
-                        </a>
-                      </Typography>
+                        <Typography>
+                          {propertyData?.Address ||
+                            customersData?.location?.Address ||
+                            "-"}{" "}
+                          ,
+                          <br />
+                          {propertyData?.City ||
+                            customersData?.location?.City ||
+                            "-"}
+                          ,{" "}
+                          {propertyData?.State ||
+                            customersData?.location?.State ||
+                            "-"}{" "}
+                          ,
+                          {propertyData?.Zip ||
+                            customersData?.location?.Zip ||
+                            "-"}
+                          ,
+                          <br />
+                          {propertyData?.Country ||
+                            customersData?.location?.Country ||
+                            "-"}{" "}
+                          <br />
+                          <a
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setIsCustomer(true);
+                            }}
+                            style={{ color: "green", cursor: "pointer" }}
+                            href="#customer-section"
+                          >
+                            Change
+                          </a>
+                        </Typography>
+                      </Col>
+                      <Col
+                        className=" text-left widthOfdetailFull"
+                        md={6}
+                        xl={6}
+                      >
+                        <Typography className=" fw-medium">
+                          Contact details
+                        </Typography>
+                        <Typography>
+                          {console.log(customersData, "customersData1234321")}
+                          {customersData?.PhoneNumber || "-"}
+                          <br />
+                          {customersData?.EmailAddress || "-"}
+                          {console.log(
+                            emailData?.EmailAddress,
+                            "customersData?.EmailAddress"
+                          )}
+                        </Typography>
+                      </Col>
                     </Col>
-                    <Col className=" text-left widthOfdetailFull" md={6} xl={6}>
-                      <Typography className=" fw-medium">
-                        Contact details
-                      </Typography>
-                      <Typography>
-                        {console.log(customersData, "customersData1234321")}
-                        {customersData?.PhoneNumber ||
-                          location?.state?.formData?.customerData
-                            ?.EmailAddress ||
-                          "-"}
-                        <br />
-                        {customersData?.EmailAddress ||
-                          location?.state?.formData?.customerData
-                            ?.PhoneNumber ||
-                          "-"}
-                      </Typography>
-                    </Col>
-                  </Col>
-                  {/* // )} */}
+                  )}
                 </Row>
                 <Row className="schedule-section-main my-3">
                   <Col lg={6} md={12} xl={6} className="schedule-section-left">
@@ -897,6 +908,41 @@ const AddContract = ({
                               style={{ marginTop: "-10px", height: "18px" }}
                               className="assingPersoneSeeHereToAssign"
                             >
+                              <Grid
+                                className="tag assignPersonNameHereTo"
+                                style={{
+                                  marginTop: "6px",
+                                  marginLeft: "10px",
+                                  gap: "10px",
+                                }}
+                              >
+                                {isVisible && (
+                                  <Typography
+                                    className="tag-text"
+                                    style={{ fontSize: "16px" }}
+                                  >
+                                    <span>
+                                      {`${
+                                        tokenDecode?.OwnerName ||
+                                        "FullName not available"
+                                      } - ${
+                                        tokenDecode?.EmailAddress ||
+                                        "EmailAddress not available"
+                                      }`}
+                                    </span>
+                                    <button
+                                      className="tag-close"
+                                      onClick={handleRemove}
+                                      aria-label="Close"
+                                    >
+                                      <span style={{ marginTop: "-1px" }}>
+                                        x
+                                      </span>
+                                    </button>
+                                  </Typography>
+                                )}
+                              </Grid>
+
                               {selectedTeams?.map((team, index) => (
                                 <Grid
                                   key={index}
@@ -912,9 +958,11 @@ const AddContract = ({
                                     style={{ fontSize: "16px" }}
                                   >
                                     <span>
-                                      {`${team?.FirstName} ${team?.LastName}` ||
-                                        "FullName not available"}{" "}
-                                      -{" "}
+                                      {`${
+                                        team?.FirstName ||
+                                        "FullName not available"
+                                      } ${team?.LastName || ""}`}{" "}
+                                      -
                                       {team?.EmailAddress ||
                                         "EmailAddress not available"}
                                     </span>
@@ -924,10 +972,7 @@ const AddContract = ({
                                     onClick={() => handleRemoveTeam(team)}
                                     label={"x"}
                                   >
-                                    {" "}
-                                    <span style={{ marginTop: "-1px" }}>
-                                      x{" "}
-                                    </span>{" "}
+                                    <span style={{ marginTop: "-1px" }}>x</span>
                                   </button>
                                 </Grid>
                               ))}

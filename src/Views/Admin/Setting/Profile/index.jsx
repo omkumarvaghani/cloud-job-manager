@@ -79,9 +79,9 @@ const Profile = () => {
   const profileFormik = useFormik({
     initialValues: {
       CompanyId: "",
-      ownerName: "",
+      OwnerName: "",
       EmailAddress: "",
-      phoneNumber: "",
+      PhoneNumber: "",
       Address: "",
       City: "",
       State: "",
@@ -96,8 +96,8 @@ const Profile = () => {
       // confirmpassword: Yup.string()
       //   .oneOf([Yup.ref("Password"), null], "Passwords must match")
       //   .required("Confirmation password is required"),
-      ownerName: Yup.string().required("ownerName Required"),
-      phoneNumber: Yup.string()
+      OwnerName: Yup.string().required("OwnerName Required"),
+      PhoneNumber: Yup.string()
         .required("Phone number required")
         .matches(
           /^\(\d{3}\) \d{3}-\d{4}$/,
@@ -261,11 +261,11 @@ const Profile = () => {
   };
 
   const handlePhoneChange = (e) => {
-    if (profileFormik?.values?.phoneNumber?.length > e.target.value?.length) {
-      profileFormik?.setFieldValue("phoneNumber", e.target.value);
+    if (profileFormik?.values?.PhoneNumber?.length > e.target.value?.length) {
+      profileFormik?.setFieldValue("PhoneNumber", e.target.value);
     } else {
       const formattedValue = formatPhoneNumber(e.target.value);
-      profileFormik?.setFieldValue("phoneNumber", formattedValue);
+      profileFormik?.setFieldValue("PhoneNumber", formattedValue);
     }
     setIsEdited(true);
   };
@@ -275,26 +275,35 @@ const Profile = () => {
       const allCountries = Country?.getAllCountries();
       setCountries(allCountries);
 
-      const res = await AxiosInstance.get(`/v1/user/company-profile`);
+      const res = await AxiosInstance.get(
+        `/v1/user/company-profile/${CompanyId}`
+      );
       console.log(res, "res");
-      if (res?.data?.statusCode === 200) {
-        const data = res?.data?.data;
-        console.log(data, "datadata");
-        setOldData(data);
-        setUploadedImageUrl(data?.profileImage);
 
-        profileFormik.setValues({
-          ...data,
-          Address: data?.Address || "",
-          City: data?.City || "",
-          State: data?.State || "",
-          Zip: data?.Zip || "",
-          Country: data?.Country || "",
-        });
+      if (res?.data?.success) {
+        const userData = res?.data?.data?.user;
+        const profileData = res?.data?.data?.userProfile;
 
-        if (data?.Country) {
+        const combinedData = {
+          CompanyId: profileData?.CompanyId || userData?.CompanyId?.[0],
+          OwnerName: profileData?.OwnerName || "",
+          EmailAddress: userData?.EmailAddress || "",
+          PhoneNumber: profileData?.PhoneNumber || "",
+          Address: profileData?.Address || "",
+          City: profileData?.City || "",
+          State: profileData?.State || "",
+          Zip: profileData?.Zip || "",
+          Country: profileData?.Country || "",
+          profileImage: profileData?.profileImage || "",
+        };
+
+        setOldData(combinedData);
+        setUploadedImageUrl(profileData?.profileImage || "");
+        profileFormik.setValues(combinedData);
+
+        if (profileData?.Country) {
           const selectedCountry = allCountries.find(
-            (item) => item?.name === data?.Country
+            (item) => item?.name === profileData?.Country
           );
           setSelectedCountry(selectedCountry);
         }
@@ -531,7 +540,7 @@ const Profile = () => {
             >
               <Typography className="text-blue-color settingUserInfo heading-three">
                 <Typography className="bold-text fs-3">
-                  {profileFormik?.values?.ownerName}
+                  {profileFormik?.values?.OwnerName}
                 </Typography>
               </Typography>
             </Grid>
@@ -547,22 +556,22 @@ const Profile = () => {
                 <Col className="d-flex col-lg-8 order-2 order-lg-1" lg={8}>
                   <Grid>
                     <InputText
-                      value={profileFormik?.values?.ownerName}
+                      value={profileFormik?.values?.OwnerName}
                       onChange={handleChange}
                       onBlur={profileFormik?.handleBlur}
-                      id="ownerName"
-                      name="ownerName"
+                      id="OwnerName"
+                      name="OwnerName"
                       label="Full Name"
                       placeholder="Enter full name "
                       type="text"
                       className="mb-3 my-2 textfield_bottom w-100"
                       error={
-                        profileFormik?.touched?.ownerName &&
-                        Boolean(profileFormik?.errors?.ownerName)
+                        profileFormik?.touched?.OwnerName &&
+                        Boolean(profileFormik?.errors?.OwnerName)
                       }
                       helperText={
-                        profileFormik?.touched?.ownerName &&
-                        profileFormik?.errors?.ownerName
+                        profileFormik?.touched?.OwnerName &&
+                        profileFormik?.errors?.OwnerName
                       }
                     />
 
@@ -586,7 +595,7 @@ const Profile = () => {
                     />
 
                     <InputText
-                      value={profileFormik?.values?.phoneNumber}
+                      value={profileFormik?.values?.PhoneNumber}
                       onChange={handlePhoneChange}
                       id="PhoneNumber"
                       name="PhoneNumber"
@@ -595,12 +604,12 @@ const Profile = () => {
                       type="text"
                       className="mb-3 my-2 textfield_bottom w-100"
                       error={
-                        profileFormik?.touched?.phoneNumber &&
-                        Boolean(profileFormik?.errors?.phoneNumber)
+                        profileFormik?.touched?.PhoneNumber &&
+                        Boolean(profileFormik?.errors?.PhoneNumber)
                       }
                       helperText={
-                        profileFormik?.touched?.phoneNumber &&
-                        profileFormik?.errors?.phoneNumber
+                        profileFormik?.touched?.PhoneNumber &&
+                        profileFormik?.errors?.PhoneNumber
                       }
                     />
 
@@ -886,8 +895,7 @@ const Profile = () => {
                               className="text-blue-color"
                               style={{ fontWeight: 700, fontSize: "20px" }}
                             >
-                              {profileFormik?.values?.ownerName
-                                ?.split(" ")
+                              {profileFormik?.values?.OwnerName?.split(" ")
                                 ?.map((part) => part.charAt(0).toUpperCase())
                                 ?.join("")}
                             </Typography>
