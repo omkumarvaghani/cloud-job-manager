@@ -40,7 +40,7 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
     const state = { Role, id: null, navigats: [] };
 
     switch (Role) {
-      case "Admin":
+      case "Admin": 
         if (!window.location.pathname.includes("/superadmin")) {
           localStorage.setItem("admin_id", AdminId);
           state.redirect = "/superadmin/index";

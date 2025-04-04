@@ -1123,9 +1123,16 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             className="bold-text"
                             style={{ fontSize: "12px" }}
                           >
-                            {data?.OwnerName ||
-                              data?.FirstName + " " + data?.LastName} 
-                            {console.log(data, "data")}
+                            {/* {data?.OwnerName ||
+                              data?.FirstName + " " + data?.LastName ||
+                              data?.FullName}  */}
+                           {data?.OwnerName ||
+  (data?.FirstName && (data?.LastName || data?.FullName)
+    ? `${data.FirstName} ${data.LastName || data.FullName}`
+    : data?.FirstName || data?.FullName || '')}
+
+
+                            {console.log(data, "datadata")}
                           </Typography>
                         </Typography>
                         <Typography

@@ -611,7 +611,7 @@ const Login = () => {
         }, 1000);
       } else if (res.data.statusCode == "300") {
         localStorage.setItem("adminToken", res.data.token);
-        localStorage.setItem("admin_id", res.data.data.UserId);
+        localStorage.setItem("admin_id", res.data.data.AdminId);
         setTimeout(() => {
           navigate("/superadmin/index", {
             state: { navigats: ["/index"] },

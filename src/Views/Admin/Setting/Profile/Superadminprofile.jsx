@@ -53,7 +53,7 @@ const Superadmin = () => {
   const [showCPassword, setShowCPassword] = useState(false);
   const profileFormik = useFormik({
     initialValues: {
-      fullName: "",
+      FullName: "",
       EmailAddress: "",
       PhoneNumber: "",
       Address: "",
@@ -64,7 +64,7 @@ const Superadmin = () => {
       ProfileImage: "",
     },
     validationSchema: Yup.object({
-      fullName: Yup.string().required("Full Name required"),
+      FullName: Yup.string().required("Full Name required"),
       EmailAddress: Yup.string()
         .email("Invalid email")
         .required("Email required"),
@@ -80,13 +80,13 @@ const Superadmin = () => {
       Zip: Yup.string().required("Zip required"),
       Country: Yup.string().required("Country required"),
     }),
-    validateOnBlur: true, 
-    validateOnChange: true, 
+    validateOnBlur: true,
+    validateOnChange: true,
     validateOnSubmit: true,
     onSubmit: async (values) => {
       try {
         setPostLoader(true);
-        const res = await AxiosInstance.put(`/superadmin/profile`, values);
+        const res = await AxiosInstance.put(`/v1/super-admin/profile`, values);
         if (res?.data?.statusCode === 200) {
           showToast.success(res?.data?.message);
           swal({
@@ -126,7 +126,7 @@ const Superadmin = () => {
       const allCountries = Country.getAllCountries();
       setCountries(allCountries);
 
-      const res = await AxiosInstance.get(`/superadmin/profile`);
+      const res = await AxiosInstance.get(`/v1/super-admin/profile`);
 
       if (res?.data?.statusCode === 200) {
         const data = res?.data?.data;
@@ -311,7 +311,7 @@ const Superadmin = () => {
       });
       const image = result?.data?.files[0]?.filename;
       if (image) {
-        const res = await AxiosInstance.put("/superadmin/profile", {
+        const res = await AxiosInstance.put("/v1/super-admin/profile", {
           ProfileImage: image,
         });
         if (res.data.statusCode === 200) {
@@ -387,21 +387,21 @@ const Superadmin = () => {
             <Grid container spacing={3} className="superAdminProfile">
               <Grid item xs={12} md={6}>
                 <InputText
-                  value={profileFormik?.values?.fullName}
+                  value={profileFormik?.values?.FullName}
                   onChange={profileFormik?.handleChange}
-                  id="fullName"
-                  name="fullName"
+                  id="FullName"
+                  name="FullName"
                   label="Full Name"
                   placeholder="Enter full name"
                   type="text"
                   className="mb-3 my-2 w-100"
                   error={
-                    profileFormik?.touched?.fullName &&
-                    Boolean(profileFormik?.errors?.fullName)
+                    profileFormik?.touched?.FullName &&
+                    Boolean(profileFormik?.errors?.FullName)
                   }
                   helperText={
-                    profileFormik?.touched?.fullName &&
-                    profileFormik?.errors?.fullName
+                    profileFormik?.touched?.FullName &&
+                    profileFormik?.errors?.FullName
                   }
                 />
                 <InputText
@@ -794,8 +794,7 @@ const Superadmin = () => {
                             className="text-blue-color"
                             style={{ fontWeight: 700, fontSize: "20px" }}
                           >
-                            {profileFormik?.values?.fullName
-                              ?.split(" ")
+                            {profileFormik?.values?.FullName?.split(" ")
                               ?.map((part) => part.charAt(0).toUpperCase())
                               ?.join("")}
                           </Typography>
