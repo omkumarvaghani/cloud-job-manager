@@ -6,16 +6,15 @@ require("dotenv").config();
 var SECRET_KEY =
   "fuirfgerug^%GF(Fijrijgrijgidjg#$@#$TYFSD()*$#%^&S(*^uk8olrgrtg#%^%#gerthr%B&^#eergege*&^#gg%*B^";
 
-const secretKey = process.env.JWT_SECRET || "f00e2fb1a87d0663bfc7f38cbab5091e0326e6e668a315a587b54ac2ee98456e";
+const secretKey =
+  process.env.JWT_SECRET ||
+  "f00e2fb1a87d0663bfc7f38cbab5091e0326e6e668a315a587b54ac2ee98456e";
 
 const protect = async (req, res, next) => {
   let token;
-  if (
-    req.headers.authorization
-  ) {
+  if (req.headers.authorization) {
     token = req.headers.authorization.split(" ")[1];
   }
-
 
   if (!token) {
     return res.status(401).json({ error: "Not authorized, no token" });
@@ -25,7 +24,7 @@ const protect = async (req, res, next) => {
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET ||
-      "f00e2fb1a87d0663bfc7f38cbab5091e0326e6e668a315a587b54ac2ee98456e"
+        "f00e2fb1a87d0663bfc7f38cbab5091e0326e6e668a315a587b54ac2ee98456e"
     );
     req.user = {
       UserId: decoded.UserId,
@@ -35,7 +34,9 @@ const protect = async (req, res, next) => {
     const companyExists = await User.findOne({ CompanyId: decoded.CompanyId });
 
     if (!companyExists) {
-      return res.status(401).json({ error: "Not authorized, invalid CompanyId" });
+      return res
+        .status(401)
+        .json({ error: "Not authorized, invalid CompanyId" });
     }
 
     next();
@@ -50,6 +51,10 @@ const createResetToken = async (data) => {
   });
   return token;
 };
+const encryptData = (data) => {
+  const ciphertext = crypto.AES.encrypt(data, secretKey).toString();
+  return ciphertext;
+};
 
 const decryptData = (ciphertext) => {
   const bytes = crypto.AES.decrypt(ciphertext, secretKey);
@@ -62,21 +67,35 @@ const verifyToken = (token) => {
     const decodedData = jwt.verify(token, secretKey);
     return decodedData;
   } catch (err) {
-    console.error('Token verification error:', err.message);
-    if (err.name === 'JsonWebTokenError') {
+    console.error("Token verification error:", err.message);
+    if (err.name === "JsonWebTokenError") {
       throw new Error("Invalid token");
     }
-    if (err.name === 'TokenExpiredError') {
+    if (err.name === "TokenExpiredError") {
       throw new Error("Token expired");
     }
     throw new Error("Token verification failed");
   }
 };
+const verifyResetToken = async (token) => {
+  try {
+    const decoded = JWT.verify(token, SECRET_KEY);
+    const currentTimestamp = Date.now() / 1000;
 
+    if (currentTimestamp >= decoded.exp) {
+      return { status: false, data: null };
+    }
+
+    return { status: true, data: decoded };
+  } catch (err) {
+    return { status: false, data: null };
+  }
+};
 
 module.exports = {
   decryptData,
   verifyToken,
   protect,
-  createResetToken
+  createResetToken,
+  verifyResetToken,
 };

@@ -9,6 +9,7 @@ const Location = require("../../../models/User/Location");
 const { addNotification } = require("../../../models/User/AddNotification");
 const Notification = require("../../../models/User/Notification");
 const { sendWelcomeEmailToCustomer } = require("./customerController");
+const { sendWelcomeEmailToWorker } = require("./workerController");
 
 // **CREATE COMPANY BY ADMIN, CUSTOMER & WORKER API**
 exports.createUser = async (req, res) => {
@@ -85,7 +86,9 @@ exports.createUser = async (req, res) => {
     };
 
     if (Role === "Customer") {
-      await sendWelcomeEmailToCustomer(req, res, UserId); 
+      await sendWelcomeEmailToCustomer(req, res, UserId);
+    } else if (Role === "Worker") {
+      await sendWelcomeEmailToWorker(req, res, UserId);
     }
 
     if (Role === "Worker") {

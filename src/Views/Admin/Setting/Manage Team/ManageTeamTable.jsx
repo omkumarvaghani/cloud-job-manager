@@ -228,7 +228,7 @@ function ManageTeamTable() {
     if (willSendMail) {
       try {
         const response = await AxiosInstance.post(
-          `/worker/send_mail/${WorkerId}`
+          `/v1/worker/send_mail/${WorkerId}`
         );
         if (response?.data?.statusCode === 200) {
           setTimeout(() => {
