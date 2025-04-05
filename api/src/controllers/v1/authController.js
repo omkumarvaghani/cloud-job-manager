@@ -269,6 +269,7 @@ exports.register = async (req, res) => {
 //       .json({ message: "Something went wrong, please try later!" });
 //   }
 // };
+
 exports.checkEmail = async (req, res) => {
   try {
     const { EmailAddress } = req.body;
