@@ -468,7 +468,7 @@ const Login = () => {
                   ) : isSubmit ? (
                     "Login"
                   ) : (
-                    "Continue"
+                    "Submit"
                   )}
                 </Button>
               </FormGroup>

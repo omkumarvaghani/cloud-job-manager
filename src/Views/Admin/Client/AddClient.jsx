@@ -20,6 +20,8 @@ import {
   Label,
 } from "reactstrap";
 import client from "../../../../src/assets/White-sidebar-icon/Customer.svg";
+import clientcontact from "../../../assets/White-sidebar-icon/Home.svg";
+
 import Address from "../../../components/Address";
 import InputText from "../../../components/InputFields/InputText";
 import { Row, Col } from "react-bootstrap";
@@ -256,9 +258,9 @@ function AddClient() {
         const res = await AxiosInstance.get(`/v1/user/${location?.state?.id}`);
         const userProfile = res?.data?.data?.userProfile;
         const userLocations = res?.data?.data?.locations;
-        console.log(res,"resres20")
+        console.log(res, "resres20");
         setUserAddress(userLocations); // Make sure userAddress is updated here
-              
+
         if (userProfile && userLocations?.length) {
           formik.setValues({
             FirstName: userProfile?.FirstName || "",
@@ -543,7 +545,7 @@ function AddClient() {
                       justifyContent: "center",
                     }}
                   >
-                    {/* <img src={clientcontract} alt="Property Details" /> */}
+                    <img src={clientcontact} alt="Property Details" />
                   </Grid>
                   <span className="" style={{ fontSize: "16pxx" }}>
                     Property details
