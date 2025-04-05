@@ -357,9 +357,12 @@ const Profile = () => {
 
       const image = result?.data?.files[0]?.filename;
       if (image) {
-        const res = await AxiosInstance.put(`/v1/user/update-profile/${CompanyId}`, {
-          ProfileImage: image,
-        });
+        const res = await AxiosInstance.put(
+          `/v1/user/update-profile/${CompanyId}`,
+          {
+            ProfileImage: image,
+          }
+        );
         if (res?.data?.statusCode === 200) {
           showToast.success("Profile image updated successfully.");
           setUploadedImageUrl(image);
@@ -701,6 +704,44 @@ const Profile = () => {
                             }}
                             spacing={3}
                           >
+                            <Grid className="d-flex justify-content-start align-items-center">
+                              <InputText
+                                value={profileFormik?.values?.Password}
+                                onChange={profileFormik?.handleChange}
+                                className="mb-3 my-2 textfield_bottom w-100"
+                                onBlur={profileFormik?.handleBlur}
+                                error={
+                                  profileFormik?.touched?.Password &&
+                                  Boolean(profileFormik?.errors?.Password)
+                                }
+                                helperText={
+                                  profileFormik?.touched?.Password &&
+                                  profileFormik?.errors?.Password
+                                }
+                                name="Password"
+                                label="Password"
+                                type={showPassword ? "text" : "password"} // Toggle visibility
+                                fieldHeight="56px"
+                                autoComplete="new-password"
+                                endAdornment={
+                                  <InputAdornment position="end">
+                                    <IconButton
+                                      aria-label="toggle password visibility"
+                                      onClick={() =>
+                                        setShowPassword(!showPassword)
+                                      }
+                                      edge="end"
+                                    >
+                                      {showPassword ? (
+                                        <VisibilityOffIcon />
+                                      ) : (
+                                        <VisibilityIcon />
+                                      )}
+                                    </IconButton>
+                                  </InputAdornment>
+                                }
+                              />
+                            </Grid>
                             <Grid className="d-flex justify-content-start align-items-center">
                               <InputText
                                 value={passwordFormik?.values?.Password}

@@ -21,6 +21,7 @@ const generateToken = (user) => {
       CompanyId: user.CompanyId,
       EmailAddress: user.EmailAddress,
       OwnerName: user.OwnerName,
+      CompanyName: user.CompanyName,
     },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRATION || "4h" }
@@ -251,6 +252,7 @@ exports.checkEmail = async (req, res) => {
   }
 };
 exports.login = async (req, res) => {
+  console.log(req, "reqq");
   try {
     const { EmailAddress, Password, CompanyId } = req.body;
 
@@ -319,10 +321,16 @@ exports.login = async (req, res) => {
 
     role = user.Role;
     userProfile = await UserProfile.findOne({
-      UserId: user.UserId,
-      CompanyId: user.CompanyId,
+      CompanyId: CompanyId,
+      Role: "Company",
     });
-    console.log(user, "user");
+
+    console.log(userProfile, "userProfile");
+    console.log(CompanyId, "CompanyId");
+    // if (!userProfile?.CompanyName) {
+    //   return res.status(404);
+    // }
+    console.log(userProfile?.CompanyName, "userProfile?.CompanyName");
     tokenData = {
       UserId: user.UserId,
       EmailAddress: user.EmailAddress,

@@ -1106,10 +1106,17 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                               borderRadius: "4px",
                             }}
                           >
-                            {data?.full_name
-                              ?.split(" ")
-                              ?.map((part) => part.charAt(0).toUpperCase())
-                              ?.join("")}
+                            {data?.OwnerName ||
+                              (data?.FirstName &&
+                              (data?.LastName || data?.FullName)
+                                ? `${data.FirstName} ${
+                                    data.LastName || data.FullName
+                                  }`
+                                : data?.FirstName || data?.FullName || ""
+                              )
+                                ?.split(" ")
+                                ?.map((part) => part.charAt(0).toUpperCase())
+                                ?.join("")}
                           </Typography>
                         )}
                       </>

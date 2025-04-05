@@ -751,6 +751,7 @@
   border-bottom-left-radius: 30px !important;
   border-bottom-right-radius: 30px !important;
   border-top-right-radius: 30px !important;
+  border-top-left-radius: 30px !important;
   background-image: url("https://app.cloudjobmanager.com/cdn/upload/20250207122342_cms-signup.png");
   background-repeat: no-repeat;
   background-size: cover;
@@ -775,7 +776,6 @@
     background-position: 200% 0;
   }
 }
-
 
 .login-image {
   position: relative;
@@ -913,6 +913,3 @@ body {
 .signup-logo img {
   margin-top: 31px !important;
 }
-
-
-
