@@ -469,7 +469,7 @@ exports.getCustomerWelcomeData = async (UserId) => {
       Url: buttonHtml || "",
     },
   ];
-
+  const defaultSubject = `Welcome To ${companyProfile.CompanyName}`;
   const emailBody = `
     <div style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff;">
       <table align="center" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 20px auto; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border: 1px solid #e88c44;">
@@ -511,7 +511,7 @@ exports.getCustomerWelcomeData = async (UserId) => {
   console.log("Customer CompanyId:", customer.CompanyId);
   console.log("Data:", data);
 
-  return { data, emailBody, customer };
+  return { data, defaultSubject, emailBody, customer };
 };
 
 // **SEND CUSTOMER WELCOME EMAIL**
@@ -528,7 +528,7 @@ exports.sendWelcomeEmailToCustomer = async (req, res) => {
       customer.CompanyId,
       data,
       [],
-      "Welcome to our service",
+      defaultSubject,
       emailBody,
       customer.CustomerId
     );

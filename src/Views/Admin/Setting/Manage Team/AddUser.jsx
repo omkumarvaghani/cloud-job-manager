@@ -76,8 +76,6 @@ const AddUser = () => {
         const response = await AxiosInstance.get(
           `${baseUrl}/v1/worker/get/${location?.state?.id}`
         );
-        console.log(response,"responseresponse")
-        console.log(location?.state?.id,"location?.state?.id")
         const fetchedData = response?.data?.data;
         formik.setValues(fetchedData);
         const data = fetchedData.permissions;

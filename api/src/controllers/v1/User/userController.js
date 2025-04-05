@@ -12,6 +12,159 @@ const { getCustomerWelcomeData } = require("./customerController");
 const { sendWelcomeEmailToWorkerLogic } = require("./workerController");
 
 // **CREATE COMPANY BY ADMIN, CUSTOMER & WORKER API**
+// exports.createUser = async (req, res) => {
+//   try {
+//     if (!req.user || !req.user.Role) {
+//       return res
+//         .status(403)
+//         .json({ message: "Unauthorized: Role not found in token." });
+//     }
+
+//     const {
+//       Role,
+//       EmailAddress,
+//       Password,
+//       Address,
+//       City,
+//       State,
+//       Zip,
+//       Country,
+//       CompanyName,
+//       ...profileDetails
+//     } = req.body;
+
+//     if (!["Company", "Worker", "Customer"].includes(Role)) {
+//       return res.status(400).json({
+//         message: "Invalid Role! Only Company, Worker, or Customer allowed.",
+//       });
+//     }
+
+//     let CompanyId;
+//     if (Role === "Company") {
+//       if (req.user.Role !== "Admin") {
+//         return res
+//           .status(403)
+//           .json({ message: "Unauthorized: Only Admin can create a Company." });
+//       }
+//       CompanyId = [uuidv4()];
+//     } else {
+//       if (!req.user.CompanyId) {
+//         return res
+//           .status(403)
+//           .json({ message: "Unauthorized: CompanyId not found in token." });
+//       }
+//       CompanyId = Array.isArray(req.user.CompanyId)
+//         ? req.user.CompanyId
+//         : [req.user.CompanyId];
+//     }
+
+//     let existingUser;
+//     if (Role === "Company") {
+//       existingUser = await User.findOne({ EmailAddress, IsDelete: false });
+//     } else {
+//       existingUser = await User.findOne({
+//         EmailAddress,
+//         CompanyId: { $in: CompanyId },
+//         Role,
+//         IsDelete: false,
+//       });
+//     }
+
+//     if (existingUser) {
+//       return res.status(202).json({ message: "Email Already Exists!" });
+//     }
+
+//     const UserId = uuidv4();
+
+//     const locationData = {
+//       CompanyId: CompanyId[0],
+//       Address,
+//       City,
+//       State,
+//       Zip,
+//       Country,
+//     };
+
+//     if (Role === "Worker") {
+//       locationData.WorkerId = UserId;
+//     } else if (Role === "Customer") {
+//       locationData.CustomerId = UserId;
+//     }
+
+//     const newLocation = new Location(locationData);
+//     await newLocation.save();
+
+//     const newUser = new User({
+//       UserId: UserId,
+//       Role,
+//       CompanyId,
+//       EmailAddress,
+//       Password,
+//     });
+//     await newUser.save();
+//     console.log(newUser, "newUser");
+//     const newUserProfile = new UserProfile({
+//       UserId: UserId,
+//       Role,
+//       CompanyId: CompanyId[0],
+//       ...profileDetails,
+//       LocationId: newLocation.LocationId,
+//     });
+//     await newUserProfile.save();
+//     console.log(newUserProfile, "newUserProfile");
+
+//     if (Role === "Company") {
+//       if (!CompanyName) {
+//         return res.status(400).json({ message: "Company Name is required." });
+//       }
+
+//       const newCompany = new Company({
+//         CompanyId: CompanyId[0],
+//         CompanyName,
+//         IsTrial: true,
+//         IsActive: true,
+//         IsDeleted: false,
+//       });
+
+//       await newCompany.save();
+//     }
+
+//     await logUserEvent(CompanyId[0], "REGISTRATION", "New user registered", {
+//       EmailAddress,
+//       Role,
+//     });
+
+//     if (Role === "Worker" || Role === "Customer") {
+//       const notificationData = {
+//         CompanyId: CompanyId[0],
+//         UserId: newUser.UserId,
+//         Is_Worker: Role === "Worker",
+//         Is_Customer: Role === "Customer",
+//         AddedAt: moment().utcOffset(330).format("YYYY-MM-DD HH:mm:ss"),
+//         CreatedBy: req.user.UserId,
+//       };
+
+//       await addNotification(notificationData);
+//     }
+//     if (Role === "Customer") {
+//       await getCustomerWelcomeData(UserId);
+//     } else if (Role === "Worker") {
+//       await sendWelcomeEmailToWorkerLogic(UserId);
+//     }
+
+//     return res.status(200).json({
+//       statusCode: "200",
+//       message: `${Role} added successfully.`,
+//       data: newUserProfile,
+//     });
+//   } catch (error) {
+//     console.error("Error in createUser:", error);
+
+//     return res.status(500).json({
+//       message: "Something went wrong, please try later!",
+//     });
+//   }
+// };
 exports.createUser = async (req, res) => {
   try {
     if (!req.user || !req.user.Role) {
@@ -59,19 +212,24 @@ exports.createUser = async (req, res) => {
     }
 
     let existingUser;
+
     if (Role === "Company") {
       existingUser = await User.findOne({ EmailAddress, IsDelete: false });
+      if (existingUser) {
+        return res.status(202).json({ message: "Email Already Exists!" });
+      }
     } else {
       existingUser = await User.findOne({
         EmailAddress,
         CompanyId: { $in: CompanyId },
-        Role,
         IsDelete: false,
       });
-    }
 
-    if (existingUser) {
-      return res.status(202).json({ message: "Email Already Exists!" });
+      if (existingUser) {
+        return res.status(202).json({
+          message: `Email already in use within this company by a ${existingUser.Role}.`,
+        });
+      }
     }
 
     const UserId = uuidv4();
@@ -102,7 +260,7 @@ exports.createUser = async (req, res) => {
       Password,
     });
     await newUser.save();
-    console.log(newUser, "newUser");
+
     const newUserProfile = new UserProfile({
       UserId: UserId,
       Role,
@@ -111,7 +269,6 @@ exports.createUser = async (req, res) => {
       LocationId: newLocation.LocationId,
     });
     await newUserProfile.save();
-    console.log(newUserProfile, "newUserProfile");
 
     if (Role === "Company") {
       if (!CompanyName) {
@@ -146,6 +303,7 @@ exports.createUser = async (req, res) => {
 
       await addNotification(notificationData);
     }
+
     if (Role === "Customer") {
       await getCustomerWelcomeData(UserId);
     } else if (Role === "Worker") {

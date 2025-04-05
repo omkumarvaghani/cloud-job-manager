@@ -77,6 +77,7 @@ const NewPassword = () => {
           { Password: values.password },
           { headers: { "Content-Type": "application/json" } }
         );
+        console.log(response, "responseresponse");
         if (response.status === 200) {
           showToast.success("Password Set Successfully", {
             position: "top-center",

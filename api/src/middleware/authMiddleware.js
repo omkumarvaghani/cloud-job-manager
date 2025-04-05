@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto-js");
 const User = require("../models/User/User");
 require("dotenv").config();
+const bcrypt = require("bcryptjs");
 
 var SECRET_KEY =
   "fuirfgerug^%GF(Fijrijgrijgidjg#$@#$TYFSD()*$#%^&S(*^uk8olrgrtg#%^%#gerthr%B&^#eergege*&^#gg%*B^";
@@ -51,15 +51,16 @@ const createResetToken = async (data) => {
   });
   return token;
 };
-const encryptData = (data) => {
-  const ciphertext = crypto.AES.encrypt(data, secretKey).toString();
-  return ciphertext;
+
+const encryptData = async (data) => {
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(data, saltRounds);
+  return hashedPassword;
 };
 
-const decryptData = (ciphertext) => {
-  const bytes = crypto.AES.decrypt(ciphertext, secretKey);
-  const originalText = bytes.toString(crypto.enc.Utf8);
-  return originalText;
+const decryptData = async (plainText, hashedPassword) => {
+  const isMatch = await bcrypt.compare(plainText, hashedPassword);
+  return isMatch;
 };
 
 const verifyToken = (token) => {
@@ -79,7 +80,8 @@ const verifyToken = (token) => {
 };
 const verifyResetToken = async (token) => {
   try {
-    const decoded = jwt.verify(token, secretKey);
+    const decoded = jwt.verify(token, SECRET_KEY);
+    console.log(decoded, "878878");
     const currentTimestamp = Date.now() / 1000;
 
     if (currentTimestamp >= decoded.exp) {
@@ -88,6 +90,7 @@ const verifyResetToken = async (token) => {
 
     return { status: true, data: decoded };
   } catch (err) {
+    console.log(err);
     return { status: false, data: null };
   }
 };
@@ -98,4 +101,5 @@ module.exports = {
   protect,
   createResetToken,
   verifyResetToken,
+  encryptData,
 };

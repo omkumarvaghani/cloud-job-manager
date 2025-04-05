@@ -130,7 +130,7 @@ const CustomerProfile = () => {
           );
           if (res?.data?.statusCode === 200) {
             showToast.success(res?.data?.message);
-
+            
             swal({
               title: "Profile saved successfully!",
               text: "Your changes have been saved.",
@@ -272,23 +272,32 @@ const CustomerProfile = () => {
 
       const res = await AxiosInstance.get(`/v1/customer/profile/${CustomerId}`);
       console.log(res, "res000");
-      if (res?.data?.statusCode === 200) {
-        const data = res?.data?.data;
-        setOldData(data);
-        setUploadedImageUrl(data?.ProfileImage);
 
-        profileFormik.setValues({
-          ...data,
-          Address: data?.Address || "",
-          City: data?.City || "",
-          State: data?.State || "",
-          Zip: data?.Zip || "",
-          Country: data?.Country || "",
-        });
+      if (res?.data?.success) {
+        const userData = res?.data?.data?.user;
+        const profileData = res?.data?.data?.userProfile;
 
-        if (data?.Country) {
+        const combinedData = {
+          CompanyId: profileData?.CompanyId || userData?.CompanyId?.[0],
+          FirstName: profileData?.FirstName || "",
+          LastName: profileData?.LastName || "",
+          EmailAddress: userData?.EmailAddress || "",
+          PhoneNumber: profileData?.PhoneNumber || "",
+          Address: profileData?.Address || "",
+          City: profileData?.City || "",
+          State: profileData?.State || "",
+          Zip: profileData?.Zip || "",
+          Country: profileData?.Country || "",
+          ProfileImage: profileData?.ProfileImage || "",
+        };
+
+        setOldData(combinedData);
+        setUploadedImageUrl(profileData?.ProfileImage || "");
+        profileFormik.setValues(combinedData);
+
+        if (profileData?.Country) {
           const selectedCountry = allCountries.find(
-            (item) => item.name === data?.Country
+            (item) => item?.name === profileData?.Country
           );
           setSelectedCountry(selectedCountry);
         }

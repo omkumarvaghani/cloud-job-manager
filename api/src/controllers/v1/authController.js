@@ -5,8 +5,13 @@ const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
 const { logUserEvent } = require("../../middleware/eventMiddleware");
-const { verifyToken } = require("../../middleware/authMiddleware");
+const {
+  verifyToken,
+  createResetToken,
+} = require("../../middleware/authMiddleware");
 const SuperAdmin = require("../../models/Admin/Super-Admin");
+const { handleTemplate } = require("./User/templateController");
+const { sendWelcomeEmail } = require("../../Helpers/EmailServices");
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -29,6 +34,7 @@ exports.register = async (req, res) => {
       req.body;
 
     const existingUser = await User.findOne({ EmailAddress, IsDelete: false });
+
     if (existingUser) {
       return res.status(400).json({ error: "Email is already taken." });
     }
@@ -70,11 +76,11 @@ exports.register = async (req, res) => {
       "REGISTRATION",
       `User ${newUser.EmailAddress} registered in`
     );
-
+    const emailStatus = await sendWelcomeEmailToCompanyLogic(newUser.UserId);
     return res.status(200).json({
       statusCode: "200",
       message: "Company created successfully",
-      message: "Company created successfully",
+      emailStatus,
       user: {
         UserId: newUser.UserId,
         EmailAddress: newUser.EmailAddress,
@@ -87,6 +93,86 @@ exports.register = async (req, res) => {
     console.error("Registration Error:", error);
     res.status(500).json({ error: "Internal Server Error." });
   }
+};
+
+// **WELCOME MAIL**
+const sendWelcomeEmailToCompanyLogic = async (UserId) => {
+  const findUser = await User.findOne({ UserId, Role: "Company" });
+  if (!findUser) return { statusCode: 404, message: "Company User Not Found" };
+
+  const findProfile = await UserProfile.findOne({ UserId, Role: "Company" });
+  if (!findProfile)
+    return { statusCode: 404, message: "Company Profile Not Found" };
+
+  const data = [
+    {
+      CompanyName: findProfile.CompanyName || "",
+      OwnerName: findProfile.OwnerName || "",
+      EmailAddress: findUser.EmailAddress || "",
+      PhoneNumber: findProfile.PhoneNumber || "",
+      IndustryId: findProfile.IndustryId || "",
+      TeamSizeId: findProfile.TeamSizeId || "",
+      RevenueId: findProfile.RevenueId || "",
+    },
+  ];
+
+  const defaultSubject = `Welcome To Cloud Job Manager`;
+  const defaultBody = `
+  <div style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff;">
+    <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 20px auto; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border: 1px solid #e88c44;">
+      
+      <tr>
+        <td style="padding: 20px 0; text-align: center; background-color: #063164;">
+          <div style="display: inline-block; padding: 20px; background-color: white; border-radius: 12px;">
+            <img src="https://app.cloudjobmanager.com/cdn/upload/20250213103016_site-logo2.png" alt="CloudJobManager Logo" style="width: 160px; max-width: 100%; display: block; margin: auto;" />
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding: 0px 20px; text-align: center; color: #333333; background-color: #ffffff; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+          <h2 style="font-size: 25px; font-weight: 700; color: #063164; margin-bottom: 20px; letter-spacing: 1px;margin-top:20px;">Welcome To Cloud Job Manager</h2>
+          <p style="font-size: 16px; color: #666666; line-height: 1.6; margin-bottom: 20px; font-weight: 400;">
+            Dear ${findProfile.OwnerName},<br>
+            Thank you for signing up with us! We are excited to have you and your company onboard. Below are your details:
+          </p>
+          
+          <p><strong>Company Name:</strong> ${findProfile.CompanyName}</p>
+          <p><strong>Email:</strong> ${findUser.EmailAddress}</p>
+          <p><strong>Phone Number:</strong> ${findProfile.PhoneNumber}</p>
+
+          <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">
+            Thanks again for choosing Cloud Job Manager. We’re here to support your growth.
+          </p>
+
+          <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">Best regards,<br>The Cloud Job Manager Team</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding: 30px 20px; text-align: center; font-size: 12px; color: #888888; background-color: #f4f4f7; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+          Cloud Job Manager, Inc. | All rights reserved.<br>
+          <a href="#" style="color: #e88c44; text-decoration: none;">Unsubscribe</a> if you no longer wish to receive these emails.
+        </td>
+      </tr>
+    </table>
+  </div>
+  `;
+  const emailStatus = await sendWelcomeEmail(
+    findUser.EmailAddress,
+    defaultSubject,
+    defaultBody,
+    [],
+    findUser.UserId
+  );
+
+  return emailStatus
+    ? {
+        statusCode: 200,
+        message: `Email sent to ${findUser.EmailAddress}`,
+        defaultBody,
+      }
+    : { statusCode: 500, message: "Failed to send email" };
 };
 
 // // **LOGIN API**
@@ -404,6 +490,7 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
+    console.log(isMatch, "isMatch");
 
     if (!user.IsActive) {
       return res.status(400).json({

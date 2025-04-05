@@ -34,6 +34,7 @@ const CustomerDashboard = () => {
   }
 
   const [tokenDecode, setTokenDecode] = useState({});
+  console.log(tokenDecode,"tokenDecode")
   const companyId = tokenDecode.companyId;
   const WorkerId = tokenDecode.WorkerId;
   const fetchData = async () => {

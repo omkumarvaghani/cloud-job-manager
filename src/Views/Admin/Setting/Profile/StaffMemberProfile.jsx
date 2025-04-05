@@ -56,7 +56,7 @@ const CustomerProfile = () => {
   const navigate = useNavigate();
   const { CompanyName } = useParams();
   const cdnUrl = process.env.REACT_APP_CDN_API;
-
+                          
   const [loader, setLoader] = useState(true);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [isEdited, setIsEdited] = useState(false);
@@ -125,7 +125,7 @@ const CustomerProfile = () => {
             ...values,
           };
           const res = await AxiosInstance.put(
-            `/worker/profile/${WorkerId}`,
+            `/v1/worker/profile/${WorkerId}`,
             updatedProfile
           );
           if (res?.data?.statusCode === 200) {
@@ -134,7 +134,7 @@ const CustomerProfile = () => {
               title: "Profile saved successfully!",
               text: "Your changes have been saved.",
               icon: "success",
-  
+
               buttons: {
                 confirm: {
                   text: "OK",
@@ -144,8 +144,7 @@ const CustomerProfile = () => {
                 },
               },
               dangerMode: true,
-            }
-            ).then(() => {
+            }).then(() => {
               if (!postLoader) {
                 navigate(`/staff-member/index`, {
                   state: { navigats: ["/index"] },
@@ -207,8 +206,7 @@ const CustomerProfile = () => {
               },
             },
             dangerMode: true,
-          }
-          ).then(() => {
+          }).then(() => {
             navigate(`/staff-member/profile`, {
               state: { navigats: ["/profile"] },
             });
@@ -273,26 +271,33 @@ const CustomerProfile = () => {
       const allCountries = Country.getAllCountries();
       setCountries(allCountries);
 
-      const res = await AxiosInstance.get(`/worker/profile/${WorkerId}`);
-      if (res?.data?.statusCode === 200) {
-        const data = res?.data?.data;
-        setOldData(data);
-        setUploadedImageUrl(data?.ProfileImage);
+      const res = await AxiosInstance.get(`/v1/worker/profile/${WorkerId}`);
+      console.log(res, "resres00");
+      if (res?.data?.success) {
+        const userData = res?.data?.data?.user;
+        const profileData = res?.data?.data?.userProfile;
 
-        profileFormik.setValues({
-          ...data,
-          FirstName: data?.FirstName || "",
-          LastName: data?.LastName || "",
-          Address: data?.Address || "",
-          City: data?.City || "",
-          State: data?.State || "",
-          Zip: data?.Zip || "",
-          Country: data?.Country || "",
-        });
+        const combinedData = {
+          CompanyId: profileData?.CompanyId || userData?.CompanyId?.[0],
+          FirstName: profileData?.FirstName || "",
+          LastName: profileData?.LastName || "",
+          EmailAddress: userData?.EmailAddress || "",
+          PhoneNumber: profileData?.PhoneNumber || "",
+          Address: profileData?.Address || "",
+          City: profileData?.City || "",
+          State: profileData?.State || "",
+          Zip: profileData?.Zip || "",
+          Country: profileData?.Country || "",
+          ProfileImage: profileData?.ProfileImage || "",
+        };
 
-        if (data?.Country) {
+        setOldData(combinedData);
+        setUploadedImageUrl(profileData?.ProfileImage || "");
+        profileFormik.setValues(combinedData);
+
+        if (profileData?.Country) {
           const selectedCountry = allCountries.find(
-            (item) => item.name === data.Country
+            (item) => item?.name === profileData?.Country
           );
           setSelectedCountry(selectedCountry);
         }
@@ -345,7 +350,7 @@ const CustomerProfile = () => {
 
       const image = result?.data?.files[0]?.filename;
       if (image) {
-        const res = await AxiosInstance.put(`/worker/profile/${WorkerId}`, {
+        const res = await AxiosInstance.put(`/v1/worker/profile/${WorkerId}`, {
           ProfileImage: image,
         });
         if (res?.data?.statusCode === 200) {
