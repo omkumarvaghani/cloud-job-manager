@@ -131,7 +131,7 @@ exports.updatePassword = async (req, res) => {
     const user = await User.findOne({
       EmailAddress: email,
       IsDelete: false,
-    }).select("+Password");
+    });
     console.log(user, "user");
 
     if (!user) {
