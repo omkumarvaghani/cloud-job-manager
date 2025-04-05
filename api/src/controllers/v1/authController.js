@@ -322,7 +322,7 @@ exports.login = async (req, res) => {
       UserId: user.UserId,
       CompanyId: user.CompanyId,
     });
-
+    console.log(user, "user");
     tokenData = {
       UserId: user.UserId,
       EmailAddress: user.EmailAddress,
