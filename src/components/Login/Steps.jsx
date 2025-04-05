@@ -289,7 +289,11 @@ const Steps = ({ EmailAddress, Password }) => {
       }
     } catch (error) {
       console.log(error, "error");
-      sendToast("Unable to connect to the server. Please try again later.");
+      if (error?.response?.data?.error) {
+        sendToast(error.response.data.error);
+      } else {
+        sendToast("Unable to connect to the server. Please try again later.");
+      }
     } finally {
       setLoader(false);
     }

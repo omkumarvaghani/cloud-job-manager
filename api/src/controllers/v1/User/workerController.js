@@ -222,7 +222,7 @@ exports.sendWelcomeEmailToWorkerLogic = async (UserId) => {
     },
   ];
 
-  const defaultSubject = "Welcome to our service";
+  const defaultSubject = `Welcome To ${findCompanyProfile.CompanyName}`;
   const defaultBody = `
   <div style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff;">
     <!-- Outer Wrapper -->

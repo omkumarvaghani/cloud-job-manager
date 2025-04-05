@@ -30,6 +30,8 @@ import {
   LoaderComponent,
   NavigateButton,
 } from "../../../components/Icon/Index";
+import clientcontact from "../../../assets/White-sidebar-icon/Home.svg";
+
 
 function AddClient() {
   const location = useLocation();
@@ -536,7 +538,7 @@ function AddClient() {
                       justifyContent: "center",
                     }}
                   >
-                    {/* <img src={clientcontract} alt="Property Details" /> */}
+                    <img src={clientcontact} alt="Property Details" />
                   </Grid>
                   <span className="" style={{ fontSize: "16px" }}>
                     Property details
