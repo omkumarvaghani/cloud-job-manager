@@ -59,6 +59,7 @@ const encryptData = async (data) => {
 };
 
 const decryptData = async (plainText, hashedPassword) => {
+  console.log(plainText, hashedPassword, "isMatch");
   const isMatch = await bcrypt.compare(plainText, hashedPassword);
   return isMatch;
 };

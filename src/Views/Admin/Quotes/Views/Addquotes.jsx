@@ -201,12 +201,12 @@ const Addquotes = ({
                         className="text-blue-color w-100"
                       />
                     </Grid>
-                 
+
                     {customersData?.FirstName && (
                       <Grid
                         className="d-flex mt-5 gap-3 quoteProperty_detail"
                         style={{ color: "rgba(6, 49, 100, 1)" }}
-                      >  
+                      >
                         <Col
                           className="col-6 text-left quoteAddress quoteDetauils "
                           xl={6}
@@ -219,25 +219,50 @@ const Addquotes = ({
                             </Typography>
                           </Typography>
                           <Typography className="text-blue-color">
-                            {propertyData?.Address ??
-                              customersData?.location?.Address ??
-                              "Address not available"}
-                            ,
+                            {console.log(customersData, "customersData ")}
+                            {propertyData?.Address ||
+                              (Array.isArray(customersData?.location) &&
+                              customersData.location.length > 0
+                                ? customersData.location[0]?.Address
+                                : undefined) ||
+                              customersData?.location?.Address ||
+                              (Array.isArray(
+                                customersData?.locationDetails?.Address
+                              ) && customersData.locationDetails.length > 0
+                                ? customersData.locationDetails[0]?.Address
+                                : undefined) ||
+                              "Address not available"}{" "}
+                            , {console.log(customersData.locationDetails[0]?.Address,"customersData.locationDetails[0]?.Address")}
                             <br />
-                            {console.log(propertyData,"propertyData")}
                             {propertyData?.City ||
+                              (Array.isArray(customersData?.location) &&
+                              customersData.location.length > 0
+                                ? customersData.location[0]?.City
+                                : undefined) ||
                               customersData?.location?.City ||
                               "-"}{" "}
                             {propertyData?.State ||
+                              (Array.isArray(customersData?.location) &&
+                              customersData.location.length > 0
+                                ? customersData.location[0]?.State
+                                : undefined) ||
                               customersData?.location?.State ||
                               "-"}{" "}
-                            , 
+                            ,
                             {propertyData?.Zip ||
+                              (Array.isArray(customersData?.location) &&
+                              customersData.location.length > 0
+                                ? customersData.location[0]?.Zip
+                                : undefined) ||
                               customersData?.location?.Zip ||
                               "-"}
                             ,
                             <br />
                             {propertyData?.Country ||
+                              (Array.isArray(customersData?.location) &&
+                              customersData.location.length > 0
+                                ? customersData.location[0]?.Country
+                                : undefined) ||
                               customersData?.location?.Country ||
                               "-"}{" "}
                             <br />
@@ -258,7 +283,7 @@ const Addquotes = ({
                             Contact details
                           </Typography>
                           <Typography className="text-blue-color">
-                            {console.log(customersData,"customersData")}
+                            {console.log(customersData, "customersData")}
                             {customersData?.PhoneNumber || "-"}
                             <br />
                             {customersData?.EmailAddress || "-"}

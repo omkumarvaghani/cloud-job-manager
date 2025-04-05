@@ -75,6 +75,7 @@ exports.forgetPaswordMail = async (req, res) => {
       defaultBody,
       user.CustomerId || ""
     );
+    console.log(emailStatus, "emailStatus");
 
     return res.json({
       statusCode: 200,
@@ -108,7 +109,7 @@ exports.checkTokenStatus = async (req, res, next) => {
   }
 };
 
-exports.updatePassword = async (req, res) => {
+exports.updateForgetPassword = async (req, res) => {
   try {
     const encryptmail = req.params.mail;
     const verify = await verifyResetToken(encryptmail);
@@ -157,6 +158,68 @@ exports.updatePassword = async (req, res) => {
     });
   } catch (err) {
     console.log("Update Password Error:", err);
+    return res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+
+exports.updatePassword = async (req, res) => {
+  try {
+    const encryptmail = req.params.mail;
+    const verify = await verifyResetToken(encryptmail);
+
+    if (!verify.status) {
+      return res.status(401).json({
+        message: "Token expired. Please request a new password reset email.",
+      });
+    }
+
+    const email = verify.data.EmailAddress;
+    const newPassword = req.body.Password;
+
+    if (!newPassword) {
+      return res.status(400).json({
+        message: "New password is required.",
+      });
+    }
+
+    const user = await User.findOne({
+      EmailAddress: email,
+      IsDelete: false,
+    });
+    console.log(user, "user");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "No user found with the provided email address.",
+      });
+    }
+
+    if (user.Password) {
+      const isSamePassword = await decryptData(newPassword, user.Password);
+      console.log(isSamePassword, "isSamePassword");
+
+      if (isSamePassword) {
+        return res.status(401).json({
+          message: "New password cannot be the same as the old password.",
+        });
+      }
+    }
+
+    const hashConvert = await encryptData(newPassword);
+    console.log(hashConvert, "hashConvert");
+    await user.updateOne({ $set: { Password: hashConvert } });
+
+    return res.status(200).json({
+      data: user,
+      url: "/auth/login",
+      message: user.Password
+        ? "Password Updated Successfully"
+        : "Password Set Successfully",
+    });
+  } catch (err) {
+    console.error("Update Password Error:", err);
     return res.status(500).json({
       message: err.message,
     });

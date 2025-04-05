@@ -519,9 +519,8 @@ exports.sendWelcomeEmailToCustomer = async (req, res) => {
   try {
     const { UserId } = req.params;
 
-    const { data, emailBody, customer } = await exports.getCustomerWelcomeData(
-      UserId
-    );
+    const { data, defaultSubject, emailBody, customer } =
+      await exports.getCustomerWelcomeData(UserId);
     console.log(customer, "customer");
     const status = await handleTemplate(
       "Invitation",
