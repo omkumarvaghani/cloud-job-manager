@@ -34,7 +34,7 @@ const CustomerDashboard = () => {
   }
 
   const [tokenDecode, setTokenDecode] = useState({});
-  console.log(tokenDecode,"tokenDecode")
+  console.log(tokenDecode, "tokenDecode");
   const companyId = tokenDecode.companyId;
   const WorkerId = tokenDecode.WorkerId;
   const fetchData = async () => {
@@ -258,9 +258,9 @@ const CustomerDashboard = () => {
         >
           <LoaderComponent loader={loader} height="50" width="50" />
         </Grid>
-      ) : (
+      ) : ( 
         <Grid>
-          <Grid className="px-0">
+          {/* <Grid className="px-0">
             <Typography
               className="px-1 welcomeMessage_staffMember text-blue-color Good Morning heading-one"
               style={{
@@ -274,8 +274,26 @@ const CustomerDashboard = () => {
               {tokenDecode?.FirstName || "full name not available"} &nbsp;
               {tokenDecode?.LastName || "full name not available"}
             </Typography>
+          </Grid> */}
+          <Grid style={{ display: "flex", justifyContent: "space-between" }}>
+            <Grid className="px-0 mb-3">
+              <Typography
+                className="px-1 welcomeMessage_staffMember staffDashboard heading-three"
+                style={{
+                  fontSize: "35px",
+                  fontWeight: "700",
+                  fontFamily: "Poppins",
+                  lineHeight: "28.8px",
+                  color: "#063164 ",
+                }}
+              >
+                {welcomeMessage}, {tokenDecode?.FirstName}{" "}
+                {tokenDecode?.LastName}
+                {console.log(tokenDecode, "tokenDecode123")}
+              </Typography>
+            </Grid>
+            <Grid>{tokenDecode?.CompanyName}</Grid>
           </Grid>
-
           <Row className="main-customer row mt-3">
             <Col
               className="col-3 staffmemberTopMargin"

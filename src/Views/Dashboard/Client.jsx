@@ -20,7 +20,7 @@ const ClientDashboard = () => {
 
   const [data, setData] = useState({});
   const [loader, setLoader] = useState(true);
-  
+
   const [tokenDecode, setTokenDecode] = useState({});
   const CompanyId = tokenDecode.CompanyId;
   const CustomerId = tokenDecode.CustomerId;
@@ -267,22 +267,25 @@ const ClientDashboard = () => {
         </Grid>
       ) : (
         <Grid>
-          <Grid className="px-0 mb-3">
-            <Typography
-              className="px-1 welcomeMessage_staffMember staffDashboard heading-three"
-              style={{
-                fontSize: "35px",
-                fontWeight: "700",
-                fontFamily: "Poppins",
-                lineHeight: "28.8px",
-                color: "#063164 ",
-              }}
-            >
-              {welcomeMessage}, {tokenDecode?.FirstName} {tokenDecode?.LastName}
-              {console.log(tokenDecode, "tokenDecode123")}
-            </Typography>
+          <Grid style={{display:"flex",justifyContent:"space-between"}}>
+            <Grid className="px-0 mb-3">
+              <Typography
+                className="px-1 welcomeMessage_staffMember staffDashboard heading-three"
+                style={{
+                  fontSize: "35px",
+                  fontWeight: "700",
+                  fontFamily: "Poppins",
+                  lineHeight: "28.8px",
+                  color: "#063164 ",
+                }}
+              >
+                {welcomeMessage}, {tokenDecode?.FirstName}{" "}
+                {tokenDecode?.LastName}
+                {console.log(tokenDecode, "tokenDecode123")}
+              </Typography>
+            </Grid>
+            <Grid>{tokenDecode?.CompanyName}</Grid>
           </Grid>
-
           <Grid className="dashboard-customer">
             <Row className="main-customer row">
               <Col

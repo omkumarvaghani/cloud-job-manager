@@ -56,7 +56,7 @@ const CustomerProfile = () => {
   const navigate = useNavigate();
   const { CompanyName } = useParams();
   const cdnUrl = process.env.REACT_APP_CDN_API;
-                          
+
   const [loader, setLoader] = useState(true);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [isEdited, setIsEdited] = useState(false);
@@ -232,6 +232,7 @@ const CustomerProfile = () => {
       }
     },
   });
+  
 
   const formatPhoneNumber = (value) => {
     const PhoneNumber = value.replace(/[^\d]/g, "");
@@ -282,6 +283,7 @@ const CustomerProfile = () => {
           FirstName: profileData?.FirstName || "",
           LastName: profileData?.LastName || "",
           EmailAddress: userData?.EmailAddress || "",
+          Password: userData?.Password || "",
           PhoneNumber: profileData?.PhoneNumber || "",
           Address: profileData?.Address || "",
           City: profileData?.City || "",
@@ -614,91 +616,7 @@ const CustomerProfile = () => {
                       formik={profileFormik}
                       handleZipChange={handleZipChange}
                     />
-                    {/* <InputText
-                      value={profileFormik?.values?.Password}
-                      onChange={handleChange}
-                      id="Password"
-                      name="Password"
-                      label="Password "
-                      placeholder="Enter password here..."
-                      type="text"
-                      className="mb-3 my-2 textfield_bottom w-100 profilePasswordSet"
-                    /> */}
-                    {/* <Box position="relative">
-                      <Grid style={{ display: "flex" }}>
-                        <InputText
-                          value={profileFormik?.values?.Password}
-                          onChange={profileFormik?.handleChange}
-                          id="Password"
-                          name="Password"
-                          label="Password"
-                          placeholder="Enter password"
-                          type={showPassword ? "text" : "password"}
-                          className="mb-3 my-2 textfield_bottom w-100"
-                          autoComplete="new-password"
-                          error={
-                            profileFormik?.touched?.Password &&
-                            Boolean(profileFormik?.errors?.Password)
-                          }
-                          helperText={
-                            profileFormik?.touched?.Password &&
-                            profileFormik?.errors?.Password
-                          }
-                        />
 
-                        <Grid style={{ display: "flex" }}>
-                          <Grid>
-                            <IconButton
-                              onClick={togglePasswordVisibility}
-                              style={{
-                                position: "absolute",
-                                right: "30px",
-                                top: "45%",
-                                transform: "translateY(-50%)",
-                                color: "#063164",
-                              }}
-                            >
-                              {showPassword ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
-                            </IconButton>
-                          </Grid>
-                          <Grid
-                            style={{ marginLeft: "-35px", marginTop: "13px" }}
-                          >
-                            <Tooltip />
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    </Box> */}
-                    {/* <Grid className="mb-3 my-2 btn-bottm">
-                      <Button
-                        className="save-profile-btn"
-                        onClick={profileFormik?.handleSubmit}
-                        style={{
-                          fontSize: "16px",
-                          textTransform: "none",
-                          backgroundColor: "#063164",
-                          color: "#fff",
-                          width: "20%",
-                          opacity: isEdited ? 1 : 0.5,
-                        }}
-                        disabled={!isEdited}
-                      >
-                        {postLoader ? (
-                          <WhiteLoaderComponent
-                            height="20"
-                            width="20"
-                            padding="20"
-                            loader={postLoader}
-                          />
-                        ) : (
-                          "Save"
-                        )}
-                      </Button>
-                    </Grid> */}
                     <Box position="relative">
                       <Grid
                         className="d-flex"
@@ -777,6 +695,44 @@ const CustomerProfile = () => {
                             }}
                             spacing={3}
                           >
+                            <Grid className="d-flex justify-content-start align-items-center">
+                              <InputText
+                                value={profileFormik?.values?.Password}
+                                onChange={profileFormik?.handleChange}
+                                className="mb-3 my-2 textfield_bottom w-100"
+                                onBlur={profileFormik?.handleBlur}
+                                error={
+                                  profileFormik?.touched?.Password &&
+                                  Boolean(profileFormik?.errors?.Password)
+                                }
+                                helperText={
+                                  profileFormik?.touched?.Password &&
+                                  profileFormik?.errors?.Password
+                                }
+                                name="Password"
+                                label="Password"
+                                type={showPassword ? "text" : "password"} // Toggle visibility
+                                fieldHeight="56px"
+                                autoComplete="new-password"
+                                endAdornment={
+                                  <InputAdornment position="end">
+                                    <IconButton
+                                      aria-label="toggle password visibility"
+                                      onClick={() =>
+                                        setShowPassword(!showPassword)
+                                      }
+                                      edge="end"
+                                    >
+                                      {showPassword ? (
+                                        <VisibilityOffIcon />
+                                      ) : (
+                                        <VisibilityIcon />
+                                      )}
+                                    </IconButton>
+                                  </InputAdornment>
+                                }
+                              />
+                            </Grid>
                             <Grid className="d-flex justify-content-start align-items-center">
                               <InputText
                                 value={passwordFormik?.values?.Password}

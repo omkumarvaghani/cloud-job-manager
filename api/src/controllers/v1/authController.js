@@ -21,6 +21,7 @@ const generateToken = (user) => {
       CompanyId: user.CompanyId,
       EmailAddress: user.EmailAddress,
       OwnerName: user.OwnerName,
+      CompanyName: user.CompanyName,
     },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRATION || "4h" }
@@ -504,6 +505,12 @@ exports.login = async (req, res) => {
       CompanyId: user.CompanyId,
     });
 
+    console.log(userProfile)
+    if (!userProfile?.CompanyName) {
+      return res.status(404);
+    }
+    console.log(user,"user")
+    console.log(userProfile,"userProfile")
     tokenData = {
       UserId: user.UserId,
       EmailAddress: user.EmailAddress,

@@ -600,7 +600,7 @@ function ManageTeamTable() {
                             headerData={[
                               { label: "Profile", field: "" },
                               { label: "Name", field: "Name" },
-                              { label: "Eamil", field: "EmailAddress" },
+                              { label: "Email ", field: "EmailAddress" },
                               { label: "Last Login", field: "createdAt" },
                               { label: "Status", field: "" },
                               { label: "Action" },

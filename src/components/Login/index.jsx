@@ -48,7 +48,7 @@ const Login = () => {
     initialValues: {
       Password: "",
       EmailAddress: "",
-      CompanyId: "",
+      CompanyId: "", // Ensure CompanyId is part of initial values
     },
     validateOnChange: false,
     validateOnBlur: false,
@@ -60,6 +60,10 @@ const Login = () => {
       Password: Yup.string().when("isSubmit", {
         is: true,
         then: Yup.string().required("Password is required"),
+      }),
+      CompanyId: Yup.string().when("isSubmit", {
+        is: true,
+        then: Yup.string().required("Please select a company"),
       }),
     }),
     onSubmit: (values) => {
@@ -96,26 +100,29 @@ const Login = () => {
       setIsLoading(false);
     }
   };
+
   const [loader, setLoader] = useState(false);
 
   const handleSubmit = async (values) => {
     try {
       setLoader(true);
-      const res = await AxiosInstance.post(`${baseUrl}/v1/auth/login`, {
-        ...values,
-      });
-      if (res.data.statusCode == "200") {
+      const payload = {
+        EmailAddress: values.EmailAddress,
+        Password: values.Password,
+        CompanyId: selectedCompany || values.CompanyId, // Use selectedCompany here
+      };
+      const res = await AxiosInstance.post(`${baseUrl}/v1/auth/login`, payload);
+
+      if (res.data.statusCode === "200") {
         localStorage.setItem("adminToken", res.data.token);
         localStorage.setItem("CompanyId", res.data.data.UserId);
-        showToast.success(res.data.message, {
-          autoClose: 3000,
-        });
+        showToast.success(res.data.message, { autoClose: 3000 });
         setTimeout(() => {
           navigate(`/${res.data.data.CompanyName}/index`, {
             state: { navigats: ["/index"] },
           });
         }, 1000);
-      } else if (res.data.statusCode == "300") {
+      } else if (res.data.statusCode === "300") {
         localStorage.setItem("adminToken", res.data.token);
         localStorage.setItem("admin_id", res.data.data.UserId);
         setTimeout(() => {
@@ -124,7 +131,7 @@ const Login = () => {
           });
         }, 1000);
         showToast.success(res.data.message);
-      } else if (res.data.statusCode == "302") {
+      } else if (res.data.statusCode === "302") {
         localStorage.setItem("workerToken", res.data.token);
         localStorage.setItem("worker_id", res.data.data.UserId);
         setTimeout(() => {
@@ -133,7 +140,7 @@ const Login = () => {
           });
         }, 1000);
         showToast.success(res.data.message);
-      } else if (res.data.statusCode == "303") {
+      } else if (res.data.statusCode === "303") {
         localStorage.setItem("customerToken", res.data.token);
         localStorage.setItem("CustomerId", res.data.data.UserId);
         setTimeout(() => {
@@ -142,11 +149,11 @@ const Login = () => {
           });
         }, 1000);
         showToast.success(res.data.message);
-      } else if (res.data.statusCode == "201") {
+      } else if (res.data.statusCode === "201") {
         sendToast(res.data.message);
-      } else if (res.data.statusCode == "202") {
+      } else if (res.data.statusCode === "202") {
         sendToast(res.data.message);
-      } else if (res.data.statusCode == "204") {
+      } else if (res.data.statusCode === "204") {
         sendToast(res.data.message);
       }
     } catch (error) {
@@ -173,7 +180,7 @@ const Login = () => {
             // navigate("/auth/login");
           } else {
             if (
-              res.data.data.Role == "Superadmin" &&
+              res.data.data.Role === "Superadmin" &&
               !location.pathname.includes("/superadmin")
             ) {
               localStorage.setItem("admin_id", res.data.data.superAdminId);
@@ -181,7 +188,7 @@ const Login = () => {
                 state: { navigats: ["/index"] },
               });
             } else if (
-              res.data.data.Role == "client" &&
+              res.data.data.Role === "client" &&
               !location.pathname.includes("/customers")
             ) {
               localStorage.setItem("CustomerId", res.data.data.CustomerId);
@@ -189,7 +196,7 @@ const Login = () => {
                 state: { navigats: ["/index"] },
               });
             } else if (
-              res.data.data.Role == "Company" &&
+              res.data.data.Role === "Company" &&
               !location.pathname.includes(`/${res.data.data.CompanyName}`)
             ) {
               localStorage.setItem("CompanyId", res.data.data.companyId);
@@ -197,7 +204,7 @@ const Login = () => {
                 state: { navigats: ["/index"] },
               });
             } else if (
-              res.data.data.Role == "worker" &&
+              res.data.data.Role === "worker" &&
               !location.pathname.includes(`/staff-member`)
             ) {
               localStorage.setItem("worker_id", res.data.data.WorkerId);
@@ -208,10 +215,10 @@ const Login = () => {
           }
         } catch (err) {
           if (err.response) {
-            if (err.response.status == 401) {
+            if (err.response.status === 401) {
               sendToast("Session has expired. Please log in again.");
               localStorage.clear();
-            } else if (err.response.status == 404) {
+            } else if (err.response.status === 404) {
               sendToast("Session not found. Please log in again.");
               localStorage.clear();
             } else {
@@ -247,7 +254,14 @@ const Login = () => {
       setIsSubmit(false);
       setLoginData(null);
       setSelectedCompany("");
+      formik.setFieldValue("CompanyId", ""); // Reset CompanyId when email changes
     }
+  };
+
+  // Handle company selection and update formik's CompanyId
+  const handleCompanySelection = (companyId) => {
+    setSelectedCompany(companyId);
+    formik.setFieldValue("CompanyId", companyId); // Sync with formik
   };
 
   return (
@@ -394,8 +408,8 @@ const Login = () => {
                               name="companySelection"
                               value={company.CompanyId}
                               checked={selectedCompany === company.CompanyId}
-                              onChange={(e) =>
-                                setSelectedCompany(e.target.value)
+                              onChange={() =>
+                                handleCompanySelection(company.CompanyId)
                               }
                               style={{ marginRight: "10px" }}
                             />
@@ -413,7 +427,7 @@ const Login = () => {
                                     : "inherit",
                               }}
                             >
-                              {company.CompanyName} ({company.Role})
+                              {company.CompanyName}
                             </label>
                           </div>
                         ))}
@@ -426,7 +440,7 @@ const Login = () => {
                             marginTop: "5px",
                           }}
                         >
-                          Please select a company to continue
+                          {formik.touched.CompanyId && formik.errors.CompanyId}
                         </Typography>
                       )}
                     </FormGroup>
@@ -452,13 +466,14 @@ const Login = () => {
                   type="submit"
                   disabled={
                     isLoading ||
+                    loader ||
                     (isSubmit && loginData?.length > 1 && !selectedCompany) ||
                     (!isSubmit &&
                       (!formik.values.EmailAddress ||
                         formik.errors.EmailAddress))
                   }
                 >
-                  {isLoading ? (
+                  {isLoading || loader ? (
                     <WhiteLoaderComponent
                       height="20"
                       width="20"
@@ -516,7 +531,7 @@ const Login = () => {
                   color: "rgba(49, 49, 49, 1)",
                 }}
               >
-                "This website is safeguarded by reCAPTCHA, and your use is
+                This website is safeguarded by reCAPTCHA, and your use is
                 subject to Google's{" "}
                 <Link
                   to="https://cloudjobmanager.com/privacy-policy/"
@@ -529,7 +544,7 @@ const Login = () => {
                   to="https://cloudjobmanager.com/terms-and-conditions/"
                   target="_blank"
                 >
-                  <span style={{ fontWeight: "600" }}>Terms of Service."</span>
+                  <span style={{ fontWeight: "600" }}>Terms of Service.</span>
                 </Link>
               </Typography>
             </form>
@@ -547,4 +562,5 @@ const Login = () => {
     </div>
   );
 };
+
 export default Login;
