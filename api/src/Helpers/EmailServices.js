@@ -39,12 +39,18 @@ async function sendWelcomeEmail(
   from_email
 ) {
   console.log(EmailId, "EmailId");
+  // host = host ? host : "smtp.gmail.com";
+  // port = port ? port : 587;
+  // secure = secure != null ? secure : false;
+  // user = user ? user : "jobmanager691@gmail.com";
+  // pass = pass ? pass : "ysseuitqdzruedty";
+  // from_email = from_email ? from_email : "jobmanager691@gmail.com";
   host = host ? host : "smtp.gmail.com";
   port = port ? port : 587;
   secure = secure != null ? secure : false;
-  user = user ? user : "jobmanager691@gmail.com";
-  pass = pass ? pass : "ysseuitqdzruedty";
-  from_email = from_email ? from_email : "jobmanager691@gmail.com";
+  user = user ? user : "krushilvaghani1227@gmail.com";
+  pass = pass ? pass : "iyorogmnimpgblsz";
+  from_email = from_email ? from_email : "krushil@keybrainstech.com";
 
   console.log(host, port, secure, user, pass, from_email, toEmail);
   const transporter = nodemailer.createTransport({

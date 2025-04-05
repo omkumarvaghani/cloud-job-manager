@@ -510,8 +510,27 @@ exports.getCustomerWelcomeData = async (UserId) => {
   console.log("Customer Email:", customer.EmailAddress);
   console.log("Customer CompanyId:", customer.CompanyId);
   console.log("Data:", data);
+  const status = await handleTemplate(
+    "Invitation",
+    customer.CompanyId,
+    data,
+    [],
+    defaultSubject,
+    emailBody,
+    customer.CustomerId
+  );
 
-  return { data, defaultSubject, emailBody, customer };
+  if (status) {
+    return {
+      statusCode: 200,
+      message: `Email was sent to ${customer.EmailAddress}`,
+    };
+  } else {
+    return {
+      statusCode: 203,
+      message: "Issue sending email",
+    };
+  }
 };
 
 // **SEND CUSTOMER WELCOME EMAIL**
@@ -519,30 +538,8 @@ exports.sendWelcomeEmailToCustomer = async (req, res) => {
   try {
     const { UserId } = req.params;
 
-    const { data, defaultSubject, emailBody, customer } =
-      await exports.getCustomerWelcomeData(UserId);
-    console.log(customer, "customer");
-    const status = await handleTemplate(
-      "Invitation",
-      customer.CompanyId,
-      data,
-      [],
-      defaultSubject,
-      emailBody,
-      customer.CustomerId
-    );
-
-    if (status) {
-      return res.status(200).json({
-        statusCode: 200,
-        message: `Email was sent to ${customer.EmailAddress}`,
-      });
-    } else {
-      return res.status(203).json({
-        statusCode: 203,
-        message: "Issue sending email",
-      });
-    }
+    const result = await exports.getCustomerWelcomeData(UserId);
+    return res.status(result.statusCode).json(result);
   } catch (error) {
     console.error("Error sending welcome email:", error);
     return res.status(500).json({
