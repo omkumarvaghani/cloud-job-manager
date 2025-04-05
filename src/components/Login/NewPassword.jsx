@@ -39,7 +39,7 @@ const NewPassword = () => {
 
     setIsLoading(true);
 
-    AxiosInstance.get(`/resetpassword/check_token_status/${token}`)
+    AxiosInstance.get(`/v1/forget-pass/check_token_status/${token}`)
       .then((response) => {
         const data = response?.data;
         setIsLoading(false);
@@ -73,7 +73,7 @@ const NewPassword = () => {
       try {
         setLoader(true);
         const response = await AxiosInstance.put(
-          `/resetpassword/reset_passwords/${email}`,
+          `/v1/forget-pass/reset_passwords/${email}`,
           { Password: values.password },
           { headers: { "Content-Type": "application/json" } }
         );
@@ -185,9 +185,12 @@ const NewPassword = () => {
                   onChange={formik?.handleChange}
                   onBlur={formik?.handleBlur}
                   error={
-                    formik?.touched?.password && Boolean(formik?.errors?.password)
+                    formik?.touched?.password &&
+                    Boolean(formik?.errors?.password)
                   }
-                  helperText={formik?.touched?.password && formik?.errors?.password}
+                  helperText={
+                    formik?.touched?.password && formik?.errors?.password
+                  }
                   name="password"
                   label="New password"
                   type={showPassword ? "text" : "password"}

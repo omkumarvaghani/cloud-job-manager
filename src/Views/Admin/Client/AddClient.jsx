@@ -115,7 +115,7 @@ function AddClient() {
             `/v1/user/${location?.state?.id}`,
             values
           );
-          // consol.log(response, "responsess");
+          console.log(response, "ressssponsess");
           if (response?.data?.statusCode === "200") {
             setLoader(false);
             showToast.success(response?.data?.message);
@@ -261,20 +261,20 @@ function AddClient() {
         console.log(res, "resres20");
         setUserAddress(userLocations); // Make sure userAddress is updated here
 
-        if (userProfile && userLocations?.length) {
-          formik.setValues({
-            FirstName: userProfile?.FirstName || "",
-            LastName: userProfile?.LastName || "",
-            PhoneNumber: userProfile?.PhoneNumber || "",
-            EmailAddress: res?.data?.data?.user?.EmailAddress || "",
-            // Use the first address if available
-            Address: userLocations[0]?.Address || "",
-            City: userLocations[0]?.City || "",
-            State: userLocations[0]?.State || "",
-            Zip: userLocations[0]?.Zip || "",
-            Country: userLocations[0]?.Country || "",
-          });
-        }
+        // if (userProfile && userLocations?.length) {
+        formik.setValues({
+          FirstName: userProfile?.FirstName || "",
+          LastName: userProfile?.LastName || "",
+          PhoneNumber: userProfile?.PhoneNumber || "",
+          EmailAddress: res?.data?.data?.user?.EmailAddress || "",
+          // Use the first address if available
+          Address: userLocations[0]?.Address || "",
+          City: userLocations[0]?.City || "",
+          State: userLocations[0]?.State || "",
+          Zip: userLocations[0]?.Zip || "",
+          Country: userLocations[0]?.Country || "",
+        });
+        // }
       } catch (error) {
         console.error("Error: ", error?.message);
       }

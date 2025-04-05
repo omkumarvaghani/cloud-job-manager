@@ -91,6 +91,23 @@ exports.forgetPaswordMail = async (req, res) => {
   }
 };
 
+exports.checkTokenStatus = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    // const expirationTimestamp = tokenExpirationMap.get(token);
+    const verify = await verifyResetToken(token);
+
+    if (verify.status) {
+      return res.json({ expired: false });
+    } else {
+      return res.json({ expired: true });
+    }
+  } catch (error) {
+    console.error("Error checking token status:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 exports.updatePassword = async (req, res) => {
   try {
     const encryptmail = req.params.mail;

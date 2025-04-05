@@ -79,7 +79,7 @@ const verifyToken = (token) => {
 };
 const verifyResetToken = async (token) => {
   try {
-    const decoded = JWT.verify(token, SECRET_KEY);
+    const decoded = jwt.verify(token, secretKey);
     const currentTimestamp = Date.now() / 1000;
 
     if (currentTimestamp >= decoded.exp) {

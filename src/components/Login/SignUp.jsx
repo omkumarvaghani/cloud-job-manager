@@ -251,19 +251,14 @@ const SignUp = () => {
                       placeholder="Enter password"
                       className="text-blue-color w-100"
                       fieldHeight="56px"
-                      autoComplete="off" // Disable autocomplete
-                      onKeyDown={(e) => {
-                        if (e.key === "Tab" && !e.shiftKey) {
-                          e.preventDefault();
-                          document.getElementById("cpassword").focus();
-                        }
-                      }}
+                      autoComplete="off"
                       endAdornment={
                         <InputAdornment position="end" style={{ gap: "10px" }}>
                           <IconButton
                             aria-label="toggle password visibility"
                             onClick={() => setShowPassword(!showPassword)}
                             edge="end"
+                            tabIndex={-1} // Prevents tab focus on eye icon
                           >
                             {showPassword ? (
                               <VisibilityOffIcon />
@@ -271,10 +266,13 @@ const SignUp = () => {
                               <VisibilityIcon />
                             )}
                           </IconButton>
-                          {/* Prevents tooltip from being focused */}
-                          <div style={{ pointerEvents: "none" }} tabIndex="-1">
-                            <Tooltip title="Password must be at least 8 characters long" />
-                          </div>
+                          <Tooltip title="Password must be at least 8 characters long">
+                            <span tabIndex={-1}>
+                              {" "}
+                              {/* Prevents tab focus on tooltip */}
+                              <Tooltip style={{ cursor: "pointer" }} />
+                            </span>
+                          </Tooltip>
                         </InputAdornment>
                       }
                     />
@@ -306,22 +304,13 @@ const SignUp = () => {
                       onPaste={(e) => e.preventDefault()}
                       onCopy={(e) => e.preventDefault()}
                       onCut={(e) => e.preventDefault()}
-                      onKeyDown={(e) => {
-                        if (e.key === "Tab" && !e.shiftKey) {
-                          e.preventDefault();
-                          const nextElement =
-                            document.getElementById("nextField");
-                          if (nextElement) {
-                            nextElement.focus();
-                          }
-                        }
-                      }}
                       endAdornment={
                         <InputAdornment position="end" style={{ gap: "10px" }}>
                           <IconButton
                             aria-label="toggle password visibility"
                             onClick={() => setShowCPassword(!showCPassword)}
                             edge="end"
+                            tabIndex={-1} // Prevents tab focus on eye icon
                           >
                             {showCPassword ? (
                               <VisibilityOffIcon />
@@ -329,9 +318,13 @@ const SignUp = () => {
                               <VisibilityIcon />
                             )}
                           </IconButton>
-                          <div style={{ pointerEvents: "none" }} tabIndex="-1">
-                            <Tooltip title="Re-enter your password" />
-                          </div>
+                          <Tooltip title="Re-enter your password">
+                            <span tabIndex={-1}>
+                              {" "}
+                              {/* Prevents tab focus on tooltip */}
+                              <Tooltip style={{ cursor: "pointer" }} />
+                            </span>
+                          </Tooltip>
                         </InputAdornment>
                       }
                     />
