@@ -56,7 +56,7 @@ const Address = ({
               const value = e.target.value;
               if (/^[A-Za-z\s]*$/.test(value)) {
                 handleChange(e);
-              } 
+              }
             }}
             onBlur={formik?.handleBlur}
             error={formik?.touched?.State && Boolean(formik?.errors?.State)}
