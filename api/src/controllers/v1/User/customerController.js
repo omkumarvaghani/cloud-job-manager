@@ -687,68 +687,56 @@ exports.updateCustomerProfile = async (req, res) => {
   }
 };
 
+// **CHANGE PASSWORD IN PROFILE**
 exports.updateChangePass = async (req, res) => {
+  const {
+    oldPassword,
+    Password: newPassword,
+    confirmpassword: confirmPassword,
+  } = req.body;
+  const { UserId } = req.params;
+
   try {
-    const { oldPassword, Password: newPassword, confirmpassword } = req.body;
-    const { UserId } = req.params;
-
-    console.log("[DEBUG] Incoming Request Body:", req.body);
-    console.log("[DEBUG] UserId from Params:", UserId);
-
-    // Basic validation
-    if (!oldPassword || !newPassword || !confirmpassword) {
+    if (!oldPassword || !newPassword || !confirmPassword) {
       return res
         .status(400)
         .json({ message: "All password fields are required" });
     }
 
-    if (newPassword !== confirmpassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
-    }
-
     const user = await User.findOne({ UserId });
-
-    if (!user) {
-      console.log("[ERROR] User not found for UserId:", UserId);
-      return res.status(404).json({ message: "User not found" });
+    if (!user || !user.Password) {
+      return res
+        .status(404)
+        .json({ message: "User not found or missing password" });
     }
 
-    if (!user.Password) {
-      console.log("[ERROR] User found but Password field missing");
-      return res.status(400).json({ message: "Password not set for user" });
-    }
-
-    console.log("[DEBUG] Stored Hashed Password:", user.Password);
-    console.log("[DEBUG] Comparing old password...");
-
-    const isMatch = await decryptData(oldPassword, user.Password);
-    console.log("[DEBUG] isMatch:", isMatch);
-
-    if (!isMatch) {
+    const isOldPasswordCorrect = await decryptData(oldPassword, user.Password);
+    if (!isOldPasswordCorrect) {
       return res.status(400).json({ message: "Old password is incorrect" });
     }
 
-    const isSamePassword = await decryptData(newPassword, user.Password);
-    if (isSamePassword) {
-      return res
-        .status(400)
-        .json({ message: "New password cannot be the same as old password" });
+    const isSameAsOld = await decryptData(newPassword, user.Password);
+    if (isSameAsOld) {
+      return res.status(400).json({
+        message: "New password cannot be the same as the old password",
+      });
     }
 
-    console.log("[DEBUG] Encrypting new password...");
-    const hashedPassword = await encryptData(newPassword);
+    if (newPassword !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ message: "New password and confirm password do not match" });
+    }
+    console.log(newPassword, confirmPassword);
 
-    user.Password = hashedPassword;
-
-    console.log("[DEBUG] New Hashed Password:", hashedPassword);
+    user.Password = await encryptData(newPassword);
     await user.save();
 
-    console.log("[SUCCESS] Password updated successfully for UserId:", UserId);
     return res.status(200).json({ message: "Password successfully changed" });
   } catch (error) {
-    console.error("[ERROR] Password Update Error:", error);
+    console.error("Password Update Error:", error);
     return res
       .status(500)
-      .json({ message: "Something went wrong, please try again" });
+      .json({ message: "Server error, please try again later" });
   }
 };

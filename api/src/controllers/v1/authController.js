@@ -1,6 +1,6 @@
 const User = require("../../models/User/User");
 const UserProfile = require("../../models/User/UserProfile");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
@@ -178,7 +178,6 @@ const sendWelcomeEmailToCompanyLogic = async (UserId) => {
 };
 
 // **LOGIN API**
-
 exports.checkEmail = async (req, res) => {
   try {
     const { EmailAddress } = req.body;
@@ -252,7 +251,6 @@ exports.checkEmail = async (req, res) => {
       .json({ message: "Something went wrong, please try later!" });
   }
 };
-
 exports.login = async (req, res) => {
   try {
     const { EmailAddress, Password, CompanyId } = req.body;
@@ -266,9 +264,8 @@ exports.login = async (req, res) => {
       EmailAddress,
       IsDelete: false,
     });
-
     if (superAdmin) {
-      const isMatchSuper = await decryptData(Password, superAdmin.Password);
+      const isMatchSuper = await bcrypt.compare(Password, superAdmin.Password);
       if (!isMatchSuper) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
@@ -307,10 +304,12 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
+    console.log("Password entered:", `"${Password}"`);
+    console.log("Password in DB:", user.Password);
+    console.log(user, "user");
 
-    const isMatch = await decryptData(Password, user.Password);
-    console.log(isMatch, "isMatch");
-
+    const isMatch = decryptData(Password, user.Password);
+    console.log(isMatch, "isMatch", Password);
     if (!isMatch) {
       console.log("object");
       return res.status(401).json({ message: "Invalid email or password" });
@@ -322,8 +321,8 @@ exports.login = async (req, res) => {
       });
     }
 
-    role = user.Role;
 
+    role = user.Role;
     if (user.Role === "Company") {
       userProfile = await UserProfile.findOne({
         UserId: user.UserId,
@@ -336,6 +335,12 @@ exports.login = async (req, res) => {
       });
     }
 
+    console.log(userProfile, "userProfile");
+    // if (!userProfile?.CompanyName) {
+    //   return res.status(404);
+    // }
+    console.log(user, "user");
+    console.log(userProfile, "userProfile");
     tokenData = {
       UserId: user.UserId,
       EmailAddress: user.EmailAddress,
@@ -400,6 +405,7 @@ exports.login = async (req, res) => {
       .json({ message: "Something went wrong, please try later!" });
   }
 };
+
 // **Check if User Exists Function**
 exports.checkUserExists = async (req, res) => {
   try {
