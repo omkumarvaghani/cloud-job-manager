@@ -219,20 +219,14 @@ const Addquotes = ({
                             </Typography>
                           </Typography>
                           <Typography className="text-blue-color">
-                            {console.log(customersData, "customersData ")}
                             {propertyData?.Address ||
                               (Array.isArray(customersData?.location) &&
                               customersData.location.length > 0
                                 ? customersData.location[0]?.Address
                                 : undefined) ||
                               customersData?.location?.Address ||
-                              (Array.isArray(
-                                customersData?.locationDetails?.Address
-                              ) && customersData.locationDetails.length > 0
-                                ? customersData.locationDetails[0]?.Address
-                                : undefined) ||
-                              "Address not available"}{" "}
-                            , {console.log(customersData.locationDetails[0]?.Address,"customersData.locationDetails[0]?.Address")}
+                              "Address not available"}
+                            ,
                             <br />
                             {propertyData?.City ||
                               (Array.isArray(customersData?.location) &&
