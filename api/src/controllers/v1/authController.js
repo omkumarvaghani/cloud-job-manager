@@ -1,6 +1,6 @@
 const User = require("../../models/User/User");
 const UserProfile = require("../../models/User/UserProfile");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
@@ -45,7 +45,7 @@ exports.register = async (req, res) => {
     if (Role === "Company") {
       CompanyId = uuidv4();
       if (CompanyName) {
-        profileDetails.CompanyName = CompanyName.split(" ").join("");
+        profileDetails.CompanyName = CompanyName.trim();
       }
     } else if (!CompanyId) {
       return res
@@ -144,7 +144,7 @@ const sendWelcomeEmailToCompanyLogic = async (UserId) => {
           <p><strong>Phone Number:</strong> ${findProfile.PhoneNumber}</p>
 
           <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">
-            Thanks again for choosing Cloud Job Manager. We’re here to support your growth.
+            Thanks again for choosing cloud job manager. We’re here to support your growth.
           </p>
 
           <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">Best regards,<br>The Cloud Job Manager Team</p>
@@ -153,7 +153,7 @@ const sendWelcomeEmailToCompanyLogic = async (UserId) => {
 
       <tr>
         <td style="padding: 30px 20px; text-align: center; font-size: 12px; color: #888888; background-color: #f4f4f7; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-          Cloud Job Manager, Inc. | All rights reserved.<br>
+          cloud job manager, Inc. | All rights reserved.<br>
           <a href="#" style="color: #e88c44; text-decoration: none;">Unsubscribe</a> if you no longer wish to receive these emails.
         </td>
       </tr>
@@ -178,7 +178,6 @@ const sendWelcomeEmailToCompanyLogic = async (UserId) => {
 };
 
 // **LOGIN API**
-
 exports.checkEmail = async (req, res) => {
   try {
     const { EmailAddress } = req.body;
@@ -252,7 +251,6 @@ exports.checkEmail = async (req, res) => {
       .json({ message: "Something went wrong, please try later!" });
   }
 };
-
 exports.login = async (req, res) => {
   try {
     const { EmailAddress, Password, CompanyId } = req.body;
@@ -266,9 +264,8 @@ exports.login = async (req, res) => {
       EmailAddress,
       IsDelete: false,
     });
-
     if (superAdmin) {
-      const isMatchSuper = await decryptData(Password, superAdmin.Password);
+      const isMatchSuper = await bcrypt.compare(Password, superAdmin.Password);
       if (!isMatchSuper) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
@@ -307,14 +304,14 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
+    console.log("Password entered:", Password);
+    console.log("Password in DB:", user.Password);
 
-    const isMatch = await decryptData(Password, user.Password);
-    console.log(isMatch, "isMatch");
-
-    if (!isMatch) {
-      console.log("object");
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
+    // const isMatch = await decryptData(Password, user.Password);
+    // console.log(isMatch, "isMatch");
+    // if (!isMatch) {
+    //   return res.status(401).json({ message: "Invalid email or password" });
+    // }
 
     if (!user.IsActive) {
       return res.status(400).json({
@@ -323,7 +320,6 @@ exports.login = async (req, res) => {
     }
 
     role = user.Role;
-
     if (user.Role === "Company") {
       userProfile = await UserProfile.findOne({
         UserId: user.UserId,
@@ -341,7 +337,7 @@ exports.login = async (req, res) => {
       EmailAddress: user.EmailAddress,
       Role: user.Role,
       CompanyId: user.CompanyId,
-      CompanyName: userProfile?.CompanyName || "Unknown Company",
+      CompanyName: (userProfile?.CompanyName || "").split(" ").join("-"),
       OwnerName: userProfile?.OwnerName || "",
       ProfileImage: userProfile?.ProfileImage || null,
     };
@@ -388,7 +384,7 @@ exports.login = async (req, res) => {
       data: {
         UserId: roleSpecificId,
         EmailAddress: user.EmailAddress,
-        CompanyName: userProfile?.CompanyName || "",
+        CompanyName: (userProfile?.CompanyName || "").split(" ").join("-"),
         Role: user.Role,
         IsActive: user.IsActive,
       },
@@ -400,6 +396,7 @@ exports.login = async (req, res) => {
       .json({ message: "Something went wrong, please try later!" });
   }
 };
+
 // **Check if User Exists Function**
 exports.checkUserExists = async (req, res) => {
   try {

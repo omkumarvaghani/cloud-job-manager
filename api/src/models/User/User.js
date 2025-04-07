@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
 
 const userSchema = new mongoose.Schema(
@@ -33,6 +33,15 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    PasswordUpdatedAt: {
+      type: Date,
+      default: null,
+    },
+
+    IsPassSet: {
+      type: Boolean,
+      default: false,
+    },
     IsDelete: {
       type: Boolean,
       default: false,
@@ -43,18 +52,17 @@ const userSchema = new mongoose.Schema(
 userSchema.index({ EmailAddress: 1 });
 userSchema.index({ CompanyId: 1, Role: 1 });
 
-
 userSchema.pre("save", async function (next) {
   if (!this.Password) return next();
 
-  if (!this.isModified("Password")) return next(); 
+  if (!this.isModified("Password")) return next();
 
   try {
     const salt = await bcrypt.genSalt(10);
     this.Password = await bcrypt.hash(this.Password, salt);
     next();
   } catch (error) {
-    return next(error); 
+    return next(error);
   }
 });
 

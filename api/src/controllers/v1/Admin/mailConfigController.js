@@ -154,11 +154,11 @@ exports.testMailConfiguration = async (req, res) => {
 
     const info = await sendWelcomeEmail(
         ToMail,
-        "Verification done with CloudJobManager",
+        "Verification done with Cloud Job Manager",
         `Hello Sir/Ma'am,\n\n
          Your Mail Configuration is working properly.\n\n
          Best regards,\n
-         The CloudJobManager Team`,
+         The Cloud Job Manager Team`,
         [],
         "",
         Host,

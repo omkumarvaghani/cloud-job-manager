@@ -51,7 +51,7 @@ const NewPassword = () => {
   // };
   // useEffect(() => {
   //   fetchDatas();
-  // }, []); 
+  // }, []);
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const token = searchParams.get("token");
@@ -61,6 +61,7 @@ const NewPassword = () => {
     AxiosInstance.get(`/v1/forget-pass/check_token_status/${token}`)
       .then((response) => {
         const data = response?.data;
+        console.log(data, "datadata");
         setIsLoading(false);
         if (data.expired) {
           setTokenExpired(true);

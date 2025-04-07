@@ -1,4 +1,4 @@
-  import {
+import {
   Button,
   FormGroup,
   Grid,
@@ -40,7 +40,7 @@ const ResetPassword = () => {
 
     setLoader(true);
 
-    AxiosInstance.get(`/v1/forget-pass/check_token_status/${token}`)
+    AxiosInstance.get(`/v1/forget-pass/check_forget_token_status/${token}`)
       .then((response) => {
         const data = response?.data;
         setLoader(false);
@@ -73,7 +73,7 @@ const ResetPassword = () => {
         setLoader(true);
 
         const response = await AxiosInstance.put(
-          `/v1/forget-pass/reset_passwords/${email}`, 
+          `/v1/forget-pass/reset_forget_passwords/${email}`,
           {
             Password: values.password,
           },

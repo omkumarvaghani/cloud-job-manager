@@ -3,9 +3,14 @@ const {
   verifyResetToken,
   decryptData,
   encryptData,
+  verifyForgetToken,
 } = require("../../../middleware/authMiddleware");
 const User = require("../../../models/User/User");
 const { handleTemplate } = require("./templateController");
+const jwt = require("jsonwebtoken");
+
+var SECRET_KEY =
+  "fuirfgerug^%GF(Fijrijgrijgidjg#$@#$TYFSD()*$#%^&S(*^uk8olrgrtg#%^%#gerthr%B&^#eergege*&^#gg%*B^";
 
 exports.forgetPaswordMail = async (req, res) => {
   try {
@@ -44,7 +49,7 @@ exports.forgetPaswordMail = async (req, res) => {
                 <h2 style="font-size: 25px; font-weight: 700; color: #063164; margin-bottom: 20px; letter-spacing: 1px;">Reset Your Password</h2>
                 <p style="font-size: 16px; color: #666666; line-height: 1.6; margin-bottom: 20px;">
                   Dear Sir/Ma'am,<br>
-                  We received a request to reset the password for your CloudJobManager account. Please click the button below to proceed. If you did not request this, please disregard this email. The link will expire in 4 hours.
+                  We received a request to reset the password for your cloud job manager portal account. Please click the button below to proceed. If you did not request this, please disregard this email. The link will expire in 4 hours.
                 </p>
                 <a href="${url}" style="display: inline-block; padding: 10px 20px; background-color: #e88c44; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none; border-radius: 50px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease;">Reset Your Password</a>
                 <p style="font-size: 14px; color: #888888; margin-top: 30px;">If you have any questions or concerns, please contact us at <a href="mailto:support@cloudjobmanager.com" style="color: #063164; text-decoration: none;">support@cloudjobmanager.com</a>.</p>
@@ -52,7 +57,7 @@ exports.forgetPaswordMail = async (req, res) => {
             </tr>
             <tr>
               <td style="padding: 30px 20px; text-align: center; font-size: 12px; color: #888888; background-color: #f4f4f7; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-                CloudJobManager, Inc. | All rights reserved.<br>
+                cloud job manager, Inc. | All rights reserved.<br>
                 <a href="#" style="color: #e88c44; text-decoration: none;">Unsubscribe</a> if you no longer wish to receive these emails.
               </td>
             </tr>
@@ -71,7 +76,7 @@ exports.forgetPaswordMail = async (req, res) => {
       user.CompanyId || "",
       data,
       [],
-      "Reset Your Password - CloudJobManager",
+      "Reset Your Password - Cloud Job Manager",
       defaultBody,
       user.CustomerId || ""
     );
@@ -108,6 +113,23 @@ exports.checkTokenStatus = async (req, res, next) => {
   }
 };
 
+exports.checkForgetTokenStatus = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    // const expirationTimestamp = tokenExpirationMap.get(token);
+    const verify = await verifyForgetToken(token);
+
+    if (verify.status) {
+      return res.json({ expired: false });
+    } else {
+      return res.json({ expired: true });
+    }
+  } catch (error) {
+    console.error("Error checking token status:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 exports.updatePassword = async (req, res) => {
   try {
     const encryptmail = req.params.mail;
@@ -132,7 +154,6 @@ exports.updatePassword = async (req, res) => {
       EmailAddress: email,
       IsDelete: false,
     });
-    console.log(user, "user");
 
     if (!user) {
       return res.status(404).json({
@@ -153,7 +174,13 @@ exports.updatePassword = async (req, res) => {
 
     const hashConvert = await encryptData(newPassword);
     console.log(hashConvert, "hashConvert");
-    await user.updateOne({ $set: { Password: hashConvert } });
+
+    await user.updateOne({
+      $set: {
+        Password: hashConvert,
+        IsPassSet: true,
+      },
+    });
 
     return res.status(200).json({
       data: user,
@@ -166,6 +193,80 @@ exports.updatePassword = async (req, res) => {
     console.error("Update Password Error:", err);
     return res.status(500).json({
       message: err.message,
+    });
+  }
+};
+
+exports.updateForgetPassword = async (req, res) => {
+  try {
+    const encryptmail = req.params.mail;
+    const newPassword = req.body.Password;
+
+    if (!newPassword) {
+      return res.status(400).json({
+        message: "New password is required.",
+      });
+    }
+
+    const verify = jwt.verify(encryptmail, SECRET_KEY);
+    const email = verify.EmailAddress;
+
+    const user = await User.findOne({
+      EmailAddress: email,
+      IsDelete: false,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "No user found with the provided email address.",
+      });
+    }
+
+    const currentTime = Math.floor(Date.now() / 1000);
+
+    if (currentTime >= verify.exp) {
+      return res.status(401).json({
+        message: "Token expired. Please request a new password reset email.",
+      });
+    }
+
+    if (
+      user.PasswordUpdatedAt &&
+      verify.iat < Math.floor(new Date(user.PasswordUpdatedAt).getTime() / 1000)
+    ) {
+      return res.status(401).json({
+        message:
+          "Token already used. Please request a new password reset email.",
+      });
+    }
+
+    if (user.Password) {
+      const isSamePassword = await decryptData(newPassword, user.Password);
+      if (isSamePassword) {
+        return res.status(401).json({
+          message: "New password cannot be the same as the old password.",
+        });
+      }
+    }
+
+    const hashConvert = await encryptData(newPassword);
+
+    await user.updateOne({
+      $set: {
+        Password: hashConvert,
+        PasswordUpdatedAt: new Date(),
+      },
+    });
+
+    return res.status(200).json({
+      data: user,
+      url: "/auth/login",
+      message: "Password Updated Successfully",
+    });
+  } catch (err) {
+    console.error("Update Password Error:", err);
+    return res.status(500).json({
+      message: "Invalid or expired token. Please request a new reset link.",
     });
   }
 };

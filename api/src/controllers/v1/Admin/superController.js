@@ -1,5 +1,7 @@
+const { decryptData } = require("../../../middleware/authMiddleware");
 const SuperAdmin = require("../../../models/Admin/Super-Admin");
 const User = require("../../../models/User/User");
+const bcrypt = require("bcryptjs");
 
 // **CREATE SUPERADMIN API**
 exports.createSuperAdmin = async (req, res) => {
@@ -138,4 +140,60 @@ exports.updateSuperAdminProfile = async (req, res) => {
     message: "SuperAdmin updated successfully",
     data: superAdmin,
   });
+};
+
+exports.updateAdminChangePass = async (req, res) => {
+  const {
+    oldPassword,
+    Password: newPassword,
+    confirmpassword: confirmPassword,
+  } = req.body;
+
+  try {
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      return res
+        .status(400)
+        .json({ message: "All password fields are required" });
+    }
+
+    const user = await SuperAdmin.findOne({ IsDelete: false });
+    if (!user || !user.Password) {
+      return res
+        .status(404)
+        .json({ message: "SuperAdmin not found or password missing" });
+    }
+
+    const isOldPasswordCorrect = await bcrypt.compare(
+      oldPassword,
+      user.Password
+    );
+    if (!isOldPasswordCorrect) {
+      return res.status(400).json({ message: "Old password is incorrect" });
+    }
+
+    const isSameAsOld = await bcrypt.compare(newPassword, user.Password);
+    if (isSameAsOld) {
+      return res.status(400).json({
+        message: "New password cannot be the same as the old password",
+      });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        message: "New password and confirm password do not match",
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.Password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Password Update Error:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error, please try again later" });
+  }
 };
