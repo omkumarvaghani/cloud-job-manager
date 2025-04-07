@@ -284,7 +284,7 @@ const ClientDashboard = () => {
                 {console.log(tokenDecode, "tokenDecode123")}
               </Typography>
             </Grid>
-            <Grid>{tokenDecode?.CompanyName}</Grid>
+            {/* <Grid>{tokenDecode?.CompanyName}</Grid> */}
           </Grid>
           <Grid className="dashboard-customer">
             <Row className="main-customer row">

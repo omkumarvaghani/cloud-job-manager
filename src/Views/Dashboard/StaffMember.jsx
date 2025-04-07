@@ -292,7 +292,7 @@ const CustomerDashboard = () => {
                 {console.log(tokenDecode, "tokenDecode123")}
               </Typography>
             </Grid>
-            <Grid>{tokenDecode?.CompanyName}</Grid>
+            {/* <Grid>{tokenDecode?.CompanyName}</Grid> */}
           </Grid>
           <Row className="main-customer row mt-3">
             <Col

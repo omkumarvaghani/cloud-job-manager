@@ -36,7 +36,12 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import "./style.css";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  Navigate,
+} from "react-router-dom";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import routes from "../../routes";
 import setting from "../../assets/image/icons/setting.svg";
@@ -106,125 +111,6 @@ const ArrowSeparator = () => {
     </Typography>
   );
 };
-
-// const JobberTable = ({
-//   headerData,
-//   cellData,
-//   CollapseComponent,
-//   isCollapse,
-//   isNavigate,
-//   navigatePath,
-// }) => {
-//   const [collapseIndex, setCollapseIndex] = useState(null);
-//   const navigate = useNavigate();
-//   const location = useLocation();
-
-//   const handleRowClick = (index, id) => {
-//     setCollapseIndex(collapseIndex === index ? null : index);
-//     if (isNavigate) {
-//       const newPath = navigatePath.split("/");
-//       navigate(navigatePath, {
-//         state: { id, navigats: [...location.state.navigats, `/${newPath[2]}`] },
-//       });
-//     }
-//   };
-
-//   return (
-//     <Grid style={{ overflow: "auto" }}>
-//       <Table>
-//         <TableHead>
-//           <TableRow>
-//             {isCollapse && (
-//               <TableCell
-//                 className="bg-orange-color text-white-color"
-//                 style={{
-//                   width: "10px",
-//                   textAlign: "end",
-//                 }}
-//               />
-//             )}
-//             {headerData &&
-//               headerData?.map((item, index) => (
-//                 <TableCell
-//                   className="bg-orange-color text-white-color"
-//                   key={index}
-//                   style={{
-//                     fontWeight: "600",
-//                     whiteSpace: "nowrap",
-//                   }}
-//                 >
-//                   {item}
-//                 </TableCell>
-//               ))}
-//           </TableRow>
-//         </TableHead>
-//         <TableBody>
-//           {cellData?.length > 0 ? (
-//             cellData?.map((item, index) => (
-//               <React.Fragment key={index}>
-//                 <TableRow
-//                   style={{ cursor: "pointer" }}
-//                   onClick={() => {
-//                     handleRowClick(index, item.key);
-//                   }}
-//                 >
-//                   {isCollapse && (
-//                     <TableCell>
-//                       <IconButton size="small">
-//                         {collapseIndex === index ? (
-//                           <ArrowDropUpIcon className="text-blue-color" />
-//                         ) : (
-//                           <ArrowDropDownIcon className="text-blue-color" />
-//                         )}
-//                       </IconButton>
-//                     </TableCell>
-//                   )}
-//                   {item?.value?.map((value, cellIndex) => (
-//                     <TableCell
-//                       key={cellIndex}
-//                       className="text-blue-color"
-//                       style={{ color: "#063164" }}
-//                     >
-//                       {value}
-//                     </TableCell>
-//                   ))}
-//                 </TableRow>
-//                 {isCollapse && (
-//                   <TableRow>
-//                     <TableCell
-//                       style={{ paddingBottom: 0, paddingTop: 0 }}
-//                       colSpan={headerData?.length + 1}
-//                     >
-//                       <Collapse
-//                         in={collapseIndex === index}
-//                         timeout="auto"
-//                         unmountOnExit
-//                       >
-//                         {CollapseComponent && (
-//                           <CollapseComponent data={item.component} />
-//                         )}
-//                       </Collapse>
-//                     </TableCell>
-//                   </TableRow>
-//                 )}
-//               </React.Fragment>
-//             ))
-//           ) : (
-//             <TableRow>
-//               <TableCell
-//                 align="center"
-//                 className="text-blue-color "
-//                 colSpan={headerData?.length}
-//               >
-//                 Data Not Available
-//               </TableCell>
-//             </TableRow>
-//           )}
-//         </TableBody>
-//       </Table>
-//     </Grid>
-//   );
-// };
 
 const JobberTable = ({
   headerData,
@@ -892,6 +778,23 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
     fetchNotifications();
     // }
   }, []);
+  const [tokenDecode, setTokenDecode] = useState({});
+  // const location = useLocation();
+  const fetchDatas = async () => {
+    try {
+      const res = await handleAuth(Navigate, location);
+      setTokenDecode(res?.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
+    fetchDatas();
+  }, []);
+
+  const Worker = "Worker";
+  const Customer = "Customer";
+
   return (
     <Grid
       className="my-nav bg-orange-color "
@@ -1000,6 +903,22 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                 </React.Fragment>
               ))}
           </Breadcrumb>
+        </Grid>
+        <Grid className="d-flex align-items-center Navigator navigatorBarUrl">
+          {tokenDecode.Role === Worker || tokenDecode.Role === Customer ? (
+            <Grid style={{ borderRadius: "4px", backgroundColor: "white" }}>
+              {console.log(tokenDecode, "tokenDecode")}
+              <Typography
+                style={{
+                  color: "rgb(6, 49, 100)",
+                  fontSize: "20px",
+                  fontWeight: "500",
+                }}
+              >
+                {tokenDecode.CompanyName}
+              </Typography>
+            </Grid>
+          ) : null}
         </Grid>
         <Grid className="setting-notification d-md-flex d-none settingNotificationIcon">
           <Grid
