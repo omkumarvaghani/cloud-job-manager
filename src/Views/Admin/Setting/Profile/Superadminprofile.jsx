@@ -181,11 +181,12 @@ const Superadmin = () => {
       setLoader(true);
 
       try {
-        const res = await AxiosInstance.put(`/superadmin/change-password`, {
+        const res = await AxiosInstance.put(`/v1/super-admin/change-password`, {
+          oldPassword: values.oldPassword,
           Password: values.Password,
           confirmpassword: values.confirmpassword,
         });
-
+        
         if (res?.status === 200) {
           showToast.success(res?.data?.message);
           swal({

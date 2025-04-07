@@ -186,8 +186,9 @@ const CustomerProfile = () => {
         setLoading(true);
 
         const res = await AxiosInstance.put(
-          `/worker/change-password/${WorkerId}`,
+          `/v1/worker/change-password/${WorkerId}`,
           {
+            oldPassword: values.oldPassword,
             Password: values.Password,
             confirmpassword: values.confirmpassword,
           }

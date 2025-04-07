@@ -190,19 +190,16 @@ const Profile = () => {
 
       try {
         const res = await AxiosInstance.put(
-          `/company/change-password/${CompanyId}`,
+          `/v1/user/change-password/${CompanyId}`,
           {
+            oldPassword: values.oldPassword,
             Password: values.Password,
             confirmpassword: values.confirmpassword,
           }
         );
-                  
+
         if (res?.status === 200) {
           showToast.success(res?.data?.message);
-          // swal(
-          //   "Profile saved successfully!",
-          //   "Your changes have been saved.",
-          //   "success"
           swal({
             title: "Profile saved successfully!",
             text: "Your changes have been saved.",
