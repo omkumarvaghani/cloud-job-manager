@@ -1,5 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import routes from "../../routes";
 import Sidebar from "../Sidebar";
 import { MainNav } from "../MuiTable";
@@ -13,6 +19,7 @@ const StaffMember = () => {
   const [isSidebarClosed, setIsSidebarClosed] = useState(false);
   const [isSidebarDisplay, setIsSidebarDisplay] = useState(true);
   const isMediumScreen = useMediaQuery("(max-width:767px)");
+  const { CompanyName } = useParams();
 
   useEffect(() => {
     document.documentElement.scrollTop = 0;
@@ -25,7 +32,7 @@ const StaffMember = () => {
   useEffect(() => {
     const fetchStaffData = async () => {
       try {
-        // let response;   
+        // let response;
         const response = await AxiosInstance.get(
           `${baseUrl}/worker/get/${localStorage.getItem("worker_id")}`
         );
@@ -91,7 +98,7 @@ const StaffMember = () => {
 
   const getRoutes = (routes) => {
     return routes?.map((prop, key) => {
-      if (prop.layout === "/staff-member" && !prop.isCollapse) {
+      if (prop.layout === "/:CompanyName/w" && !prop.isCollapse) {
         return (
           <Route path={prop.path} element={prop.component} key={key} exact />
         );
@@ -122,7 +129,7 @@ const StaffMember = () => {
       }}
     >
       <Sidebar
-        layout="/staff-member"
+        layout={`/:CompanyName/w`}
         isSidebarClosed={isSidebarClosed}
         setIsSidebarClosed={setIsSidebarClosed}
         isSidebarDisplay={isSidebarDisplay}
@@ -151,7 +158,7 @@ const StaffMember = () => {
             {getRoutes(routes)}
             <Route
               path="*"
-              element={<Navigate to="/staff-member/index" replace />}
+              element={<Navigate to={`/${CompanyName}/w/index`} replace />}
             />
           </Routes>
         </Grid>

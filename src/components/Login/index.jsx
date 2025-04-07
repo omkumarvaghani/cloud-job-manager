@@ -135,7 +135,7 @@ const Login = () => {
         localStorage.setItem("workerToken", res.data.token);
         localStorage.setItem("worker_id", res.data.data.UserId);
         setTimeout(() => {
-          navigate("/staff-member/index", {
+          navigate(`/${res.data.data.CompanyName}/w/index`, {
             state: { navigats: ["/index"] },
           });
         }, 1000);
@@ -208,7 +208,7 @@ const Login = () => {
               !location.pathname.includes(`/staff-member`)
             ) {
               localStorage.setItem("worker_id", res.data.data.WorkerId);
-              navigate(`/staff-member/index`, {
+              navigate(`/${res.data.data.CompanyName}/w/index`, {
                 state: { navigats: ["/index"] },
               });
             }
