@@ -69,6 +69,7 @@ const CustomerProfile = () => {
   const [WorkerId] = useState(localStorage.getItem("worker_id"));
   const [showCPassword, setShowCPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
 
   const [oldData, setOldData] = useState("");
   const profileFormik = useFormik({
@@ -169,8 +170,10 @@ const CustomerProfile = () => {
       WorkerId: "",
       Password: "",
       confirmpassword: "",
-    },
+      oldPassword: "",
+    },  
     validationSchema: Yup.object({
+      oldPassword: Yup.string().required("Old password is required"),
       Password: PasswordValidationSchema,
       confirmpassword: Yup.string()
         .oneOf([Yup.ref("Password"), null], "Passwords must match")
@@ -232,7 +235,6 @@ const CustomerProfile = () => {
       }
     },
   });
-  
 
   const formatPhoneNumber = (value) => {
     const PhoneNumber = value.replace(/[^\d]/g, "");
@@ -697,33 +699,33 @@ const CustomerProfile = () => {
                           >
                             <Grid className="d-flex justify-content-start align-items-center">
                               <InputText
-                                value={profileFormik?.values?.Password}
-                                onChange={profileFormik?.handleChange}
+                                value={passwordFormik?.values?.oldPassword}
+                                onChange={passwordFormik?.handleChange}
                                 className="mb-3 my-2 textfield_bottom w-100"
-                                onBlur={profileFormik?.handleBlur}
+                                onBlur={passwordFormik?.handleBlur}
                                 error={
-                                  profileFormik?.touched?.Password &&
-                                  Boolean(profileFormik?.errors?.Password)
+                                  passwordFormik?.touched?.oldPassword &&
+                                  Boolean(passwordFormik?.errors?.oldPassword)
                                 }
                                 helperText={
-                                  profileFormik?.touched?.Password &&
-                                  profileFormik?.errors?.Password
+                                  passwordFormik?.touched?.oldPassword &&
+                                  passwordFormik?.errors?.oldPassword
                                 }
-                                name="Password"
-                                label="Password"
-                                type={showPassword ? "text" : "password"} // Toggle visibility
+                                name="oldPassword"
+                                label="Old Password"
+                                type={showOldPassword ? "text" : "password"}
                                 fieldHeight="56px"
-                                autoComplete="new-password"
+                                autoComplete="current-password"
                                 endAdornment={
                                   <InputAdornment position="end">
                                     <IconButton
                                       aria-label="toggle password visibility"
                                       onClick={() =>
-                                        setShowPassword(!showPassword)
+                                        setShowOldPassword(!showOldPassword)
                                       }
                                       edge="end"
                                     >
-                                      {showPassword ? (
+                                      {showOldPassword ? (
                                         <VisibilityOffIcon />
                                       ) : (
                                         <VisibilityIcon />
@@ -733,6 +735,7 @@ const CustomerProfile = () => {
                                 }
                               />
                             </Grid>
+
                             <Grid className="d-flex justify-content-start align-items-center">
                               <InputText
                                 value={passwordFormik?.values?.Password}
