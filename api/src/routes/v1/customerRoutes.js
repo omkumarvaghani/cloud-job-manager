@@ -7,6 +7,7 @@ const {
   sendWelcomeEmailToCustomer,
   updateCustomerProfile,
   getCustomerData,
+  updateChangePass,
 } = require("../../controllers/v1/User/customerController");
 const { protect } = require("../../middleware/authMiddleware");
 const router = express.Router();
@@ -20,5 +21,6 @@ router.get("/get_customer/:CompanyId", protect, getCustomersWithLocations);
 router.get("/:UserId", protect, getUserDetailWithInvoices);
 
 router.put("/profile/:UserId", protect, updateCustomerProfile);
+router.put("/change-password/:UserId", protect, updateChangePass);
 
 module.exports = router;

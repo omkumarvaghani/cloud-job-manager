@@ -112,7 +112,6 @@ exports.updatePassword = async (req, res) => {
   try {
     const encryptmail = req.params.mail;
     const verify = await verifyResetToken(encryptmail);
-    console.log(verify, "verify");
 
     if (!verify.status) {
       return res.status(401).json({
@@ -129,34 +128,42 @@ exports.updatePassword = async (req, res) => {
       });
     }
 
-    let user = await User.findOne({
+    const user = await User.findOne({
       EmailAddress: email,
       IsDelete: false,
     });
+    console.log(user, "user");
 
     if (!user) {
       return res.status(404).json({
-        message: "No email found",
+        message: "No user found with the provided email address.",
       });
     }
 
-    const isSamePassword = await decryptData(newPassword, user.Password);
-    if (isSamePassword) {
-      return res.status(401).json({
-        message: "New password cannot be the same as the old password.",
-      });
+    if (user.Password) {
+      const isSamePassword = await decryptData(newPassword, user.Password);
+      console.log(isSamePassword, "isSamePassword");
+
+      if (isSamePassword) {
+        return res.status(401).json({
+          message: "New password cannot be the same as the old password.",
+        });
+      }
     }
 
     const hashConvert = await encryptData(newPassword);
+    console.log(hashConvert, "hashConvert");
     await user.updateOne({ $set: { Password: hashConvert } });
 
     return res.status(200).json({
       data: user,
       url: "/auth/login",
-      message: "Password Updated Successfully",
+      message: user.Password
+        ? "Password Updated Successfully"
+        : "Password Set Successfully",
     });
   } catch (err) {
-    console.log("Update Password Error:", err);
+    console.error("Update Password Error:", err);
     return res.status(500).json({
       message: err.message,
     });

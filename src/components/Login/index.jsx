@@ -48,7 +48,7 @@ const Login = () => {
     initialValues: {
       Password: "",
       EmailAddress: "",
-      CompanyId: "", // Ensure CompanyId is part of initial values
+      CompanyId: "",
     },
     validateOnChange: false,
     validateOnBlur: false,

@@ -1,9 +1,14 @@
 const User = require("../../../models/User/User");
 const UserProfile = require("../../../models/User/UserProfile");
 const { sendWelcomeEmail } = require("../../../Helpers/EmailServices");
-const { createResetToken } = require("../../../middleware/authMiddleware");
+const {
+  createResetToken,
+  encryptData,
+  decryptData,
+} = require("../../../middleware/authMiddleware");
 const { handleTemplate } = require("./templateController");
 const AppUrl = process.env.REACT_APP;
+const bcrypt = require("bcryptjs");
 
 // **GET CUSTOMERS FOR COMPANY API**
 exports.getCustomersByCompanyId = async (req, res) => {
@@ -444,18 +449,27 @@ exports.getCustomerWelcomeData = async (UserId) => {
   });
   if (!companyProfile) throw new Error("Company profile not found");
 
-  const resetToken = await createResetToken({
-    EmailAddress: customer.EmailAddress,
-  });
-  const resetUrl = `${AppUrl}/auth/new-password?token=${resetToken}`;
+  // Determine if password is already set
+  const isPasswordSet = !!(
+    customer.Password && customer.Password.trim() !== ""
+  );
 
-  const buttonHtml = `
-    <p>
-      <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #e88c44; border-radius: 8px; background-color: #e88c44; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
-        Set Your Password
-      </a>
-    </p>
-  `;
+  // Generate token + button HTML if password not set
+  let buttonHtml = "";
+  if (!isPasswordSet) {
+    const resetToken = await createResetToken({
+      EmailAddress: customer.EmailAddress,
+    });
+    const resetUrl = `${AppUrl}/auth/new-password?token=${resetToken}`;
+
+    buttonHtml = `
+      <p>
+        <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #e88c44; border-radius: 8px; background-color: #e88c44; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
+          Set Your Password
+        </a>
+      </p>
+    `;
+  }
 
   const data = [
     {
@@ -469,6 +483,7 @@ exports.getCustomerWelcomeData = async (UserId) => {
       Url: buttonHtml || "",
     },
   ];
+
   const defaultSubject = `Welcome To ${companyProfile.CompanyName}`;
   const emailBody = `
     <div style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff;">
@@ -507,11 +522,32 @@ exports.getCustomerWelcomeData = async (UserId) => {
       </table>
     </div>
   `;
+
   console.log("Customer Email:", customer.EmailAddress);
   console.log("Customer CompanyId:", customer.CompanyId);
   console.log("Data:", data);
 
-  return { data, defaultSubject, emailBody, customer };
+  const status = await handleTemplate(
+    "Invitation",
+    customer.CompanyId,
+    data,
+    [],
+    defaultSubject,
+    emailBody,
+    customer.CustomerId
+  );
+
+  if (status) {
+    return {
+      statusCode: 200,
+      message: `Email was sent to ${customer.EmailAddress}`,
+    };
+  } else {
+    return {
+      statusCode: 203,
+      message: "Issue sending email",
+    };
+  }
 };
 
 // **SEND CUSTOMER WELCOME EMAIL**
@@ -519,31 +555,8 @@ exports.sendWelcomeEmailToCustomer = async (req, res) => {
   try {
     const { UserId } = req.params;
 
-    const { data, emailBody, customer } = await exports.getCustomerWelcomeData(
-      UserId
-    );
-    console.log(customer, "customer");
-    const status = await handleTemplate(
-      "Invitation",
-      customer.CompanyId,
-      data,
-      [],
-      defaultSubject,
-      emailBody,
-      customer.CustomerId
-    );
-
-    if (status) {
-      return res.status(200).json({
-        statusCode: 200,
-        message: `Email was sent to ${customer.EmailAddress}`,
-      });
-    } else {
-      return res.status(203).json({
-        statusCode: 203,
-        message: "Issue sending email",
-      });
-    }
+    const result = await exports.getCustomerWelcomeData(UserId);
+    return res.status(result.statusCode).json(result);
   } catch (error) {
     console.error("Error sending welcome email:", error);
     return res.status(500).json({
@@ -557,6 +570,9 @@ exports.sendWelcomeEmailToCustomer = async (req, res) => {
 exports.getCustomerData = async (req, res) => {
   try {
     const { UserId } = req.params;
+    const CompanyId = Array.isArray(req.user.CompanyId)
+      ? req.user.CompanyId
+      : [req.user.CompanyId];
 
     if (!UserId) {
       return res.status(400).json({
@@ -567,7 +583,7 @@ exports.getCustomerData = async (req, res) => {
 
     const user = await User.findOne({
       UserId: { $in: [UserId] },
-
+      CompanyId: CompanyId,
       Role: "Customer",
       IsDelete: false,
     });
@@ -668,5 +684,71 @@ exports.updateCustomerProfile = async (req, res) => {
       message: "Internal server error",
       error: error.message,
     });
+  }
+};
+
+exports.updateChangePass = async (req, res) => {
+  try {
+    const { oldPassword, Password: newPassword, confirmpassword } = req.body;
+    const { UserId } = req.params;
+
+    console.log("[DEBUG] Incoming Request Body:", req.body);
+    console.log("[DEBUG] UserId from Params:", UserId);
+
+    // Basic validation
+    if (!oldPassword || !newPassword || !confirmpassword) {
+      return res
+        .status(400)
+        .json({ message: "All password fields are required" });
+    }
+
+    if (newPassword !== confirmpassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    const user = await User.findOne({ UserId });
+
+    if (!user) {
+      console.log("[ERROR] User not found for UserId:", UserId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.Password) {
+      console.log("[ERROR] User found but Password field missing");
+      return res.status(400).json({ message: "Password not set for user" });
+    }
+
+    console.log("[DEBUG] Stored Hashed Password:", user.Password);
+    console.log("[DEBUG] Comparing old password...");
+
+    const isMatch = await decryptData(oldPassword, user.Password);
+    console.log("[DEBUG] isMatch:", isMatch);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Old password is incorrect" });
+    }
+
+    const isSamePassword = await decryptData(newPassword, user.Password);
+    if (isSamePassword) {
+      return res
+        .status(400)
+        .json({ message: "New password cannot be the same as old password" });
+    }
+
+    console.log("[DEBUG] Encrypting new password...");
+    const hashedPassword = await encryptData(newPassword);
+
+    user.Password = hashedPassword;
+
+    console.log("[DEBUG] New Hashed Password:", hashedPassword);
+    await user.save();
+
+    console.log("[SUCCESS] Password updated successfully for UserId:", UserId);
+    return res.status(200).json({ message: "Password successfully changed" });
+  } catch (error) {
+    console.error("[ERROR] Password Update Error:", error);
+    return res
+      .status(500)
+      .json({ message: "Something went wrong, please try again" });
   }
 };
