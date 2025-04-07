@@ -88,12 +88,6 @@ const verifyForgetToken = async (token) => {
       EmailAddress: email,
       IsDelete: false,
     });
-    console.log("decoded.iat:", decoded.iat);
-    console.log("PasswordUpdatedAt:", user.PasswordUpdatedAt);
-    console.log(
-      "converted:",
-      Math.floor(new Date(user.PasswordUpdatedAt).getTime() / 1000)
-    );
 
     if (!user) {
       return { status: false, data: null };

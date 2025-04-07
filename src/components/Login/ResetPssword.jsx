@@ -131,7 +131,11 @@ const ResetPassword = () => {
   }
 
   if (tokenExpired) {
-    return <div>Token has expired. Please request a new reset link.</div>;
+    return (
+      <Grid style={{ padding: "20px" }}>
+        Token has expired. Please request a new reset link.
+      </Grid>
+    );
   }
 
   return (

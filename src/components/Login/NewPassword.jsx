@@ -133,7 +133,11 @@ const NewPassword = () => {
   }
 
   if (tokenExpired) {
-    return <Grid>Token has expired. Please request a new reset link.</Grid>;
+    return (
+      <Grid sx={{ padding: "20px" }}>
+        Token has expired. Please request a new reset link.
+      </Grid>
+    );
   }
   return (
     <div className="loginnn">
