@@ -28,7 +28,7 @@ const Client = () => {
 
   const getRoutes = (routes) => {
     return routes?.map((prop, key) => {
-      if (prop.layout === "/:CompanyName/c" && !prop.isCollapse) {
+      if (prop.layout === "/:CompanyName/cutomers" && !prop.isCollapse) {
         return (
           <Route path={prop.path} element={prop.component} key={key} exact />
         );
@@ -59,7 +59,7 @@ const Client = () => {
       }}
     >
       <Sidebar
-        layout={`/:CompanyName/c`}
+        layout={`/:CompanyName/cutomers`}
         isSidebarClosed={isSidebarClosed}
         setIsSidebarClosed={setIsSidebarClosed}
         isSidebarDisplay={isSidebarDisplay}
@@ -87,7 +87,7 @@ const Client = () => {
             {getRoutes(routes)}
             <Route
               path="*"
-              element={<Navigate to={`/${CompanyName}/c/index`} replace />}
+              element={<Navigate to={`/${CompanyName}/cutomers/index`} replace />}
             />
           </Routes>
         </Grid>
