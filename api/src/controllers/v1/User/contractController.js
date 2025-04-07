@@ -1554,7 +1554,7 @@ exports.sendContractEmail = async (req, res) => {
         <!-- Footer Section -->
         <tr>
           <td style="padding: 20px; text-align: center; font-size: 12px; color: #888888; background-color: #f4f4f7; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; font-family: 'Arial', sans-serif;">
-            CloudJobManager, Inc. | All rights reserved.<br>
+            Cloud Job Manager, Inc. | All rights reserved.<br>
             <a href="#" style="color: #e88c44; text-decoration: none; font-weight: 600;">Unsubscribe</a> if you no longer wish to receive these emails.
           </td>
         </tr>

@@ -1,7 +1,7 @@
 const User = require("../../../models/User/User");
 const UserProfile = require("../../../models/User/UserProfile");
 const Company = require("../../../models/User/Company");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
 const { logUserEvent } = require("../../../middleware/eventMiddleware");
@@ -10,6 +10,10 @@ const { addNotification } = require("../../../models/User/AddNotification");
 const Notification = require("../../../models/User/Notification");
 const { getCustomerWelcomeData } = require("./customerController");
 const { sendWelcomeEmailToWorkerLogic } = require("./workerController");
+const {
+  decryptData,
+  encryptData,
+} = require("../../../middleware/authMiddleware");
 
 // **CREATE COMPANY BY ADMIN, CUSTOMER & WORKER API**
 // exports.createUser = async (req, res) => {
@@ -481,6 +485,60 @@ exports.updateUser = async (req, res) => {
     return res.status(500).json({
       message: "Something went wrong, please try later!",
     });
+  }
+};
+
+// **CHANGE PASSWORD IN PROFILE**
+exports.updateChangeCompanyPass = async (req, res) => {
+  const {
+    oldPassword,
+    Password: newPassword,
+    confirmpassword: confirmPassword,
+  } = req.body;
+  const { CompanyId } = req.params;
+  try {
+    // if (!oldPassword || !newPassword || !confirmPassword) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "All password fields are required" });
+    // }
+
+    const user = await User.findOne({ CompanyId, Role: "Company" });
+    if (!user || !user.Password) {
+      return res
+        .status(404)
+        .json({ message: "User not found or missing password" });
+    }
+
+    const isOldPasswordCorrect = await decryptData(oldPassword, user.Password);
+    if (!isOldPasswordCorrect) {
+      return res.status(400).json({ message: "Old password is incorrect" });
+    }
+
+    const isSameAsOld = await decryptData(newPassword, user.Password);
+    if (isSameAsOld) {
+      return res.status(400).json({
+        message: "New password cannot be the same as the old password",
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ message: "New password and confirm password do not match" });
+    }
+
+    // const enPass = await encryptData(newPassword);
+
+    user.Password = newPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password successfully changed" });
+  } catch (error) {
+    console.error("Password Update Error:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error, please try again later" });
   }
 };
 

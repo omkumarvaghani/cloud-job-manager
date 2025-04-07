@@ -449,16 +449,16 @@ exports.getCustomerWelcomeData = async (UserId) => {
   });
   if (!companyProfile) throw new Error("Company profile not found");
 
-  // Determine if password is already set
-  const isPasswordSet = !!(
-    customer.Password && customer.Password.trim() !== ""
-  );
+  const isPasswordSet =
+    typeof customer.Password === "string" && customer.Password.length > 0;
 
-  // Generate token + button HTML if password not set
+  console.log("Customer Password:", customer.Password);
+
   let buttonHtml = "";
   if (!isPasswordSet) {
     const resetToken = await createResetToken({
       EmailAddress: customer.EmailAddress,
+      IsPassSet: false,
     });
     const resetUrl = `${AppUrl}/auth/new-password?token=${resetToken}`;
 
@@ -466,6 +466,16 @@ exports.getCustomerWelcomeData = async (UserId) => {
       <p>
         <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #e88c44; border-radius: 8px; background-color: #e88c44; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
           Set Your Password
+        </a>
+      </p>
+    `;
+  } else {
+    const loginUrl = `${AppUrl}/auth/login`;
+
+    buttonHtml = `
+      <p>
+        <a href="${loginUrl}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #063164; border-radius: 8px; background-color: #063164; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
+          Login to your Account
         </a>
       </p>
     `;
@@ -522,10 +532,6 @@ exports.getCustomerWelcomeData = async (UserId) => {
       </table>
     </div>
   `;
-
-  console.log("Customer Email:", customer.EmailAddress);
-  console.log("Customer CompanyId:", customer.CompanyId);
-  console.log("Data:", data);
 
   const status = await handleTemplate(
     "Invitation",
@@ -695,13 +701,12 @@ exports.updateChangePass = async (req, res) => {
     confirmpassword: confirmPassword,
   } = req.body;
   const { UserId } = req.params;
-  console.log(req, "reqreq");
   try {
-    if (!oldPassword || !newPassword || !confirmPassword) {
-      return res
-        .status(400)
-        .json({ message: "All password fields are required" });
-    }
+    // if (!oldPassword || !newPassword || !confirmPassword) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "All password fields are required" });
+    // }
 
     const user = await User.findOne({ UserId });
     if (!user || !user.Password) {
@@ -728,9 +733,9 @@ exports.updateChangePass = async (req, res) => {
         .json({ message: "New password and confirm password do not match" });
     }
 
-    const enPass = await encryptData(newPassword);
+    // const enPass = await encryptData(newPassword);
 
-    user.Password = enPass;
+    user.Password = newPassword;
 
     await user.save();
 

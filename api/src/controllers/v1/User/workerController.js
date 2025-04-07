@@ -1,4 +1,7 @@
-const { createResetToken } = require("../../../middleware/authMiddleware");
+const {
+  createResetToken,
+  decryptData,
+} = require("../../../middleware/authMiddleware");
 const User = require("../../../models/User/User");
 const UserProfile = require("../../../models/User/UserProfile");
 const { handleTemplate } = require("./templateController");
@@ -183,6 +186,61 @@ exports.updateWorkerProfile = async (req, res) => {
       message: "Internal server error",
       error: error.message,
     });
+  }
+};
+
+// **CHANGE PASSWORD IN PROFILE**
+exports.updateWorkerChangePass = async (req, res) => {
+  const {
+    oldPassword,
+    Password: newPassword,
+    confirmpassword: confirmPassword,
+  } = req.body;
+  const { UserId } = req.params;
+  try {
+    // if (!oldPassword || !newPassword || !confirmPassword) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "All password fields are required" });
+    // }
+
+    const user = await User.findOne({ UserId });
+    if (!user || !user.Password) {
+      return res
+        .status(404)
+        .json({ message: "User not found or missing password" });
+    }
+
+    const isOldPasswordCorrect = await decryptData(oldPassword, user.Password);
+    if (!isOldPasswordCorrect) {
+      return res.status(400).json({ message: "Old password is incorrect" });
+    }
+
+    const isSameAsOld = await decryptData(newPassword, user.Password);
+    if (isSameAsOld) {
+      return res.status(400).json({
+        message: "New password cannot be the same as the old password",
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ message: "New password and confirm password do not match" });
+    }
+
+    // const enPass = await encryptData(newPassword);
+
+    user.Password = newPassword;
+
+    await user.save();
+
+    return res.status(200).json({ message: "Password successfully changed" });
+  } catch (error) {
+    console.error("Password Update Error:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error, please try again later" });
   }
 };
 
