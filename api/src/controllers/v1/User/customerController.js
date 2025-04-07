@@ -695,7 +695,7 @@ exports.updateChangePass = async (req, res) => {
     confirmpassword: confirmPassword,
   } = req.body;
   const { UserId } = req.params;
-
+  console.log(req, "reqreq");
   try {
     if (!oldPassword || !newPassword || !confirmPassword) {
       return res
@@ -727,9 +727,11 @@ exports.updateChangePass = async (req, res) => {
         .status(400)
         .json({ message: "New password and confirm password do not match" });
     }
-    console.log(newPassword, confirmPassword);
 
-    user.Password = await encryptData(newPassword);
+    const enPass = await encryptData(newPassword);
+
+    user.Password = enPass;
+
     await user.save();
 
     return res.status(200).json({ message: "Password successfully changed" });

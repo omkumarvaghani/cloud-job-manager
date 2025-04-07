@@ -45,7 +45,7 @@ exports.register = async (req, res) => {
     if (Role === "Company") {
       CompanyId = uuidv4();
       if (CompanyName) {
-        profileDetails.CompanyName = CompanyName.split(" ").join("");
+        profileDetails.CompanyName = CompanyName.split("-").join("");
       }
     } else if (!CompanyId) {
       return res
@@ -304,12 +304,12 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-    console.log("Password entered:", `"${Password}"`);
+    console.log("Password entered:", Password);
     console.log("Password in DB:", user.Password);
-    console.log(user, "user");
 
-    const isMatch = decryptData(Password, user.Password);
-    console.log(isMatch, "isMatch", Password);
+    
+    const isMatch = await decryptData(Password, user.Password);
+
     if (!isMatch) {
       console.log("object");
       return res.status(401).json({ message: "Invalid email or password" });
@@ -320,7 +320,6 @@ exports.login = async (req, res) => {
         message: "Account is deactivated. Please contact support.",
       });
     }
-
 
     role = user.Role;
     if (user.Role === "Company") {
@@ -335,12 +334,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    console.log(userProfile, "userProfile");
-    // if (!userProfile?.CompanyName) {
-    //   return res.status(404);
-    // }
-    console.log(user, "user");
-    console.log(userProfile, "userProfile");
     tokenData = {
       UserId: user.UserId,
       EmailAddress: user.EmailAddress,
