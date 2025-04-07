@@ -77,6 +77,11 @@ const Addquotes = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Handle both location and locationDetails gracefully
+  const address =
+    location?.state?.locationDetails || location?.state || location || {};
+
   return (
     <>
       {loader ? (
@@ -111,7 +116,7 @@ const Addquotes = ({
                 }`,
                 {
                   state: {
-                    navigats: location?.state?.navigats.filter(
+                    navigats: location?.state?.navigats?.filter(
                       (item) => item !== "/quotes"
                     ),
                   },
@@ -224,7 +229,10 @@ const Addquotes = ({
                               customersData.location.length > 0
                                 ? customersData.location[0]?.Address
                                 : undefined) ||
-                              customersData?.location?.Address ||
+                              (Array.isArray(customersData?.locationDetails) &&
+                              customersData.locationDetails.length > 0
+                                ? customersData.locationDetails[0]?.Address
+                                : undefined) ||
                               "Address not available"}
                             ,
                             <br />
@@ -233,14 +241,20 @@ const Addquotes = ({
                               customersData.location.length > 0
                                 ? customersData.location[0]?.City
                                 : undefined) ||
-                              customersData?.location?.City ||
+                              (Array.isArray(customersData?.locationDetails) &&
+                              customersData.locationDetails.length > 0
+                                ? customersData.locationDetails[0]?.City
+                                : undefined) ||
                               "-"}{" "}
                             {propertyData?.State ||
                               (Array.isArray(customersData?.location) &&
                               customersData.location.length > 0
                                 ? customersData.location[0]?.State
                                 : undefined) ||
-                              customersData?.location?.State ||
+                              (Array.isArray(customersData?.locationDetails) &&
+                              customersData.locationDetails.length > 0
+                                ? customersData.locationDetails[0]?.State
+                                : undefined) ||
                               "-"}{" "}
                             ,
                             {propertyData?.Zip ||
@@ -248,7 +262,10 @@ const Addquotes = ({
                               customersData.location.length > 0
                                 ? customersData.location[0]?.Zip
                                 : undefined) ||
-                              customersData?.location?.Zip ||
+                              (Array.isArray(customersData?.locationDetails) &&
+                              customersData.locationDetails.length > 0
+                                ? customersData.locationDetails[0]?.Zip
+                                : undefined) ||
                               "-"}
                             ,
                             <br />
@@ -257,7 +274,10 @@ const Addquotes = ({
                               customersData.location.length > 0
                                 ? customersData.location[0]?.Country
                                 : undefined) ||
-                              customersData?.location?.Country ||
+                              (Array.isArray(customersData?.locationDetails) &&
+                              customersData.locationDetails.length > 0
+                                ? customersData.locationDetails[0]?.Country
+                                : undefined) ||
                               "-"}{" "}
                             <br />
                             <a
@@ -471,30 +491,10 @@ const Addquotes = ({
                       Internal notes and Attachments <HelpOutlineOutlinedIcon />
                     </Typography>
 
-                    {/* <TextField
-                      value={formik?.values?.Notes}
-                      onChange={formik?.handleChange}
-                      onBlur={formik.handleBlur}
-                      error={
-                        formik?.touched?.Notes && Boolean(formik?.errors?.Notes)
-                      }
-                      helperText={
-                        formik?.touched?.Notes && formik?.errors?.Notes
-                      }
-                      name="Notes"
-                      id="outlined-multiline-static"
-                      placeholder="Enter A  notes"
-                      label="Enter Notes "
-                      type="text"
-                      className="w-100 text-blue-color border-blue-color"
-                      multiline
-                      rows={3}
-                    /> */}
                     <TextField
                       value={formik.values.Notes}
                       onChange={(e) => {
                         let value = e.target.value;
-                        // Agar value ka first character space hai toh remove kar do
                         if (value.startsWith(" ")) {
                           value = value.trim();
                         }
@@ -554,23 +554,6 @@ const Addquotes = ({
                     ) : (
                       <Grid className="gap-3 d-flex sec-button-section quoteUpdateCancelBtnSave">
                         <BlueButton
-                          // onClick={async (e) => {
-                          //   e.preventDefault();
-
-                          //   const isValid = await formik?.validateForm();
-                          //   formik?.setTouched({
-                          //     Title: true,
-                          //   });
-                          //   if (
-                          //     Object.keys(isValid)?.length === 0 &&
-                          //     formik?.values?.Title
-                          //   ) {
-                          //     setLoading(true);
-                          //     await handleSaveQuote(false);
-                          //   } else {
-                          //     showToast.error("Please Fill Required Fields");
-                          //   }
-                          // }}
                           onClick={async (e) => {
                             e.preventDefault();
                             setLoading(true);
@@ -591,32 +574,10 @@ const Addquotes = ({
                           }
                         />
                         <Dropdown isOpen={dropdown} toggle={toggle}>
-                          {/* <DropdownToggle
-                            caret
-                            className="bg-blue-color updateQUote_dropdown"
-                            disabled={!formik?.values?.Title}
-                            style={{
-                              opacity:
-                                formik?.values?.Title && lineItems?.length > 0
-                                  ? 1
-                                  : 0.5,
-                              pointerEvents:
-                                formik?.values?.Title &&
-                                lineItems?.length > 0 &&
-                                lineItems[0]?.Name !== ""
-                                  ? "auto"
-                                  : "none",
-                            }}
-                          >
-                            {location?.state?.id
-                              ? "Update And..."
-                              : "Save And ..."}
-                          </DropdownToggle> */}
                           <DropdownToggle
                             caret
                             className="bg-blue-color updateQUote_dropdown"
                             disabled={!formik?.values?.Title}
-                            // onClick={() => updateStatus("Draft")}
                             style={{
                               opacity:
                                 formik?.values?.Title && lineItems?.length > 0
@@ -635,52 +596,6 @@ const Addquotes = ({
                               : "Save And ..."}
                           </DropdownToggle>
                           <DropdownMenu className="mb-2">
-                            {/* <DropdownItem
-                              onClick={() => {
-                                if (
-                                  lineItems?.length > 0 &&
-                                  lineItems[0]?.Name !== "" &&
-                                  formik?.values?.Title
-                                ) {                                 
-                                  setModal(true);
-                                } else if (!formik?.values?.Title) {
-                                  setLoader(false);
-                                  titleRef.focus();
-                                } else {
-                                  setLoader(false);
-                                  setIsError(true);
-                                  productRef.current.focus();
-                                }
-                              }}
-                            >
-                              Save and send mail
-                            </DropdownItem> */}
-                            {/* <DropdownItem
-                              onClick={() => {
-                                if (
-                                  lineItems?.length > 0 &&
-                                  lineItems[0]?.Name !== "" &&
-                                  formik?.values?.Title
-                                ) {
-                                  // handleSaveQuote("Awaiting Response");
-                                  formik.setFieldValue(
-                                    "Status",
-                                    "Awaiting Response"
-                                  );
-                                  setModal(true);
-                                } else if (!formik?.values?.Title) {
-                                  setLoader(false);
-                                  titleRef.focus();
-                                } else {
-                                  setLoader(false);
-                                  setIsError(true);
-                                  productRef.current.focus();
-                                }
-                              }}
-                            >
-                              Save and send mail
-                            </DropdownItem> */}
-
                             <DropdownItem
                               onClick={() => {
                                 if (
@@ -692,7 +607,7 @@ const Addquotes = ({
                                     "Status",
                                     "Awaiting Response"
                                   );
-                                  setModal(true); // Mail send nahi hoga, sirf modal open hoga
+                                  setModal(true);
                                 } else if (!formik?.values?.Title) {
                                   setLoader(false);
                                   titleRef.focus();
@@ -713,24 +628,6 @@ const Addquotes = ({
                             >
                               Convert To Contract
                             </DropdownItem>
-                            {/* <DropdownItem
-                              // onClick={() => {
-                              //   formik.setFieldValue(
-                              //     "Status",
-                              //     "Awaiting Response"
-                              //   );
-                              //   handleSaveQuote(true);
-                              // }}
-                              onClick={() => {
-                                handleSaveQuote("Awaiting Response")
-                                formik.setFieldValue(
-                                  "Status",
-                                  "Awaiting Response"
-                                );
-                              }}
-                            >
-                              Mark as awaiting response
-                            </DropdownItem> */}
                             <DropdownItem
                               onClick={() => {
                                 formik.setFieldValue(

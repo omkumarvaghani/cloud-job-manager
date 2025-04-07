@@ -51,6 +51,8 @@ const Superadmin = () => {
   const [countries, setCountries] = useState([]);
   const [isEdited, setIsEdited] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+
   const profileFormik = useFormik({
     initialValues: {
       FullName: "",
@@ -165,8 +167,11 @@ const Superadmin = () => {
     initialValues: {
       Password: "",
       confirmpassword: "",
+      oldPassword: "",
     },
     validationSchema: Yup.object({
+      oldPassword: Yup.string().required("Old password is required"),
+
       Password: PasswordValidationSchema,
       confirmpassword: Yup.string()
         .oneOf([Yup.ref("Password"), null], "Passwords must match")
@@ -176,11 +181,12 @@ const Superadmin = () => {
       setLoader(true);
 
       try {
-        const res = await AxiosInstance.put(`/superadmin/change-password`, {
+        const res = await AxiosInstance.put(`/v1/super-admin/change-password`, {
+          oldPassword: values.oldPassword,
           Password: values.Password,
           confirmpassword: values.confirmpassword,
         });
-
+        
         if (res?.status === 200) {
           showToast.success(res?.data?.message);
           swal({
@@ -529,31 +535,33 @@ const Superadmin = () => {
                       >
                         <Grid className="d-flex justify-content-start align-items-center">
                           <InputText
-                            value={profileFormik?.values?.Password}
-                            onChange={profileFormik?.handleChange}
+                            value={passwordFormik?.values?.oldPassword}
+                            onChange={passwordFormik?.handleChange}
                             className="mb-3 my-2 textfield_bottom w-100"
-                            onBlur={profileFormik?.handleBlur}
+                            onBlur={passwordFormik?.handleBlur}
                             error={
-                              profileFormik?.touched?.Password &&
-                              Boolean(profileFormik?.errors?.Password)
+                              passwordFormik?.touched?.oldPassword &&
+                              Boolean(passwordFormik?.errors?.oldPassword)
                             }
                             helperText={
-                              profileFormik?.touched?.Password &&
-                              profileFormik?.errors?.Password
+                              passwordFormik?.touched?.oldPassword &&
+                              passwordFormik?.errors?.oldPassword
                             }
-                            name="Password"
-                            label="Password"
-                            type={showPassword ? "text" : "password"} // Toggle visibility
+                            name="oldPassword"
+                            label="Old Password"
+                            type={showOldPassword ? "text" : "password"}
                             fieldHeight="56px"
-                            autoComplete="new-password"
+                            autoComplete="current-password"
                             endAdornment={
                               <InputAdornment position="end">
                                 <IconButton
                                   aria-label="toggle password visibility"
-                                  onClick={() => setShowPassword(!showPassword)}
+                                  onClick={() =>
+                                    setShowOldPassword(!showOldPassword)
+                                  }
                                   edge="end"
                                 >
-                                  {showPassword ? (
+                                  {showOldPassword ? (
                                     <VisibilityOffIcon />
                                   ) : (
                                     <VisibilityIcon />
@@ -563,6 +571,7 @@ const Superadmin = () => {
                             }
                           />
                         </Grid>
+
                         <Grid className="d-flex justify-content-start align-items-center">
                           <InputText
                             value={passwordFormik?.values?.Password}

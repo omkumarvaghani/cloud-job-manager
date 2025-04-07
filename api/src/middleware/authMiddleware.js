@@ -78,12 +78,72 @@ const verifyToken = (token) => {
     throw new Error("Token verification failed");
   }
 };
+
+const verifyForgetToken = async (token) => {
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const email = decoded.EmailAddress;
+
+    const user = await User.findOne({
+      EmailAddress: email,
+      IsDelete: false,
+    });
+    console.log("decoded.iat:", decoded.iat);
+    console.log("PasswordUpdatedAt:", user.PasswordUpdatedAt);
+    console.log(
+      "converted:",
+      Math.floor(new Date(user.PasswordUpdatedAt).getTime() / 1000)
+    );
+
+    if (!user) {
+      return { status: false, data: null };
+    }
+
+    const currentTimestamp = Date.now() / 1000;
+
+    if (currentTimestamp >= decoded.exp) {
+      return { status: false, data: null };
+    }
+
+    if (
+      user.PasswordUpdatedAt &&
+      decoded.iat <
+        Math.floor(new Date(user.PasswordUpdatedAt).getTime() / 1000)
+    ) {
+      return { status: false, data: null };
+    }
+
+    return { status: true, data: decoded };
+  } catch (err) {
+    console.log(err);
+    return { status: false, data: null };
+  }
+};
+
 const verifyResetToken = async (token) => {
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
     console.log(decoded, "878878");
-    const currentTimestamp = Date.now() / 1000;
 
+    const email = decoded.EmailAddress;
+    if (!email) {
+      return { status: false, data: null };
+    }
+
+    const usersWithSameEmail = await User.find({
+      EmailAddress: email,
+      IsDelete: false,
+    });
+
+    const anyUserHasPassSetTrue = usersWithSameEmail.some(
+      (user) => user.IsPassSet === true
+    );
+
+    if (anyUserHasPassSetTrue) {
+      return { status: false, data: null };
+    }
+
+    const currentTimestamp = Date.now() / 1000;
     if (currentTimestamp >= decoded.exp) {
       return { status: false, data: null };
     }
@@ -100,6 +160,7 @@ module.exports = {
   verifyToken,
   protect,
   createResetToken,
+  verifyForgetToken,
   verifyResetToken,
   encryptData,
 };

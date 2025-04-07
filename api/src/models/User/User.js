@@ -33,6 +33,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    PasswordUpdatedAt: {
+      type: Date,
+      default: null,
+    },
+
     IsPassSet: {
       type: Boolean,
       default: false,

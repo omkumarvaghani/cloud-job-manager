@@ -231,9 +231,16 @@ exports.updateWorkerChangePass = async (req, res) => {
 
     // const enPass = await encryptData(newPassword);
 
-    user.Password = newPassword;
+    const allUsers = await User.find({
+      EmailAddress: user.EmailAddress,
+      IsDelete: false,
+      Password: { $ne: null },
+    });
 
-    await user.save();
+    for (const user of allUsers) {
+      user.Password = newPassword;
+      await user.save();
+    }
 
     return res.status(200).json({ message: "Password successfully changed" });
   } catch (error) {
@@ -264,14 +271,42 @@ exports.sendWelcomeEmailToWorkerLogic = async (UserId) => {
   if (!findCompanyProfile)
     return { statusCode: 404, message: "Company Profile Not Found" };
 
-  const resetToken = await createResetToken({
+  const allSameEmailCustomers = await User.find({
     EmailAddress: findCustomer.EmailAddress,
+    Role: "Worker",
+    IsDelete: false,
   });
-  const url = `${AppUrl}/auth/new-password?token=${resetToken}`;
 
-  const button = `
-    <a href="${url}" style="padding: 10px 20px; background-color: #e88c44; color: white; border-radius: 8px;">Set Your Password</a>
-  `;
+  const isAnyPasswordSet = allSameEmailCustomers.some(
+    (cust) => cust.Password && cust.Password.trim().length > 0
+  );
+
+  let buttonHtml = "";
+  if (!isAnyPasswordSet) {
+    const resetToken = await createResetToken({
+      EmailAddress: findCustomer.EmailAddress,
+      IsPassSet: false,
+    });
+    const resetUrl = `${AppUrl}/auth/new-password?token=${resetToken}`;
+
+    buttonHtml = `
+      <p>
+        <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #e88c44; border-radius: 8px; background-color: #e88c44; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
+          Set Your Password
+        </a>
+      </p>
+    `;
+  } else {
+    const loginUrl = `${AppUrl}/auth/login`;
+
+    buttonHtml = `
+      <p>
+        <a href="${loginUrl}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #063164; border-radius: 8px; background-color: #063164; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
+          Login to your Account
+        </a>
+      </p>
+    `;
+  }
 
   const data = [
     {
@@ -280,7 +315,7 @@ exports.sendWelcomeEmailToWorkerLogic = async (UserId) => {
       EmailAddress: findCustomer.EmailAddress || "",
       PhoneNumber: findCustomerProfile.PhoneNumber || "",
       CompanyName: findCompanyProfile.CompanyName || "",
-      Url: button || "",
+      Url: buttonHtml || "",
     },
   ];
 
@@ -309,12 +344,8 @@ exports.sendWelcomeEmailToWorkerLogic = async (UserId) => {
           </p>
           <p><strong>Email:</strong> ${findCustomer.EmailAddress}</p>
 
-          <!-- Set Password Button -->
-          <p>
-            <a href="${url}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #e88c44 ; border-radius: 8px; background-color: #e88c44 ; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
-              Set Your Password    
-            </a> 
-          </p> 
+         
+      ${buttonHtml}
           
           <p style="font-size: 14px; color: #888888; margin-top: 30px; line-height: 1.6;">
             For security reasons, we recommend changing your password upon first login. If you have any questions or need assistance, please do not hesitate to reach out to our support team at <a href="mailto:${findCompany.EmailAddress}" style="color: #063164; font-weight: 600;">${findCompany.EmailAddress}</a> or ${findCompanyProfile.PhoneNumber}.

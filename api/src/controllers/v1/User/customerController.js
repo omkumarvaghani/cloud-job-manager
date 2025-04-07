@@ -419,6 +419,147 @@ exports.getUserDetailWithInvoices = async (req, res) => {
   }
 };
 
+// // **GET DATA FOR WELCOME EMAIL TEMPLATE**
+// exports.getCustomerWelcomeData = async (UserId) => {
+//   if (!UserId) throw new Error("UserId is required");
+
+//   const customer = await User.findOne({
+//     UserId,
+//     Role: "Customer",
+//     IsDelete: false,
+//   });
+//   if (!customer) throw new Error("Customer not found");
+
+//   const customerProfile = await UserProfile.findOne({
+//     UserId,
+//     IsDelete: false,
+//   });
+//   if (!customerProfile) throw new Error("Customer profile not found");
+
+//   const company = await User.findOne({
+//     CompanyId: customer.CompanyId,
+//     Role: "Company",
+//     IsDelete: false,
+//   });
+//   if (!company) throw new Error("Company not found");
+
+//   const companyProfile = await UserProfile.findOne({
+//     CompanyId: customer.CompanyId,
+//     IsDelete: false,
+//   });
+//   if (!companyProfile) throw new Error("Company profile not found");
+
+//   const allSameEmailCustomers = await User.find({
+//     EmailAddress: customer.EmailAddress,
+//     Role: "Customer",
+//     IsDelete: false,
+//   });
+
+//   const isAnyPasswordSet = allSameEmailCustomers.some(
+//     (cust) => cust.Password && cust.Password.trim().length > 0
+//   );
+
+//   let buttonHtml = "";
+//   if (!isAnyPasswordSet) {
+//     const resetToken = await createResetToken({
+//       EmailAddress: customer.EmailAddress,
+//       IsPassSet: false,
+//     });
+//     const resetUrl = `${AppUrl}/auth/new-password?token=${resetToken}`;
+
+//     buttonHtml = `
+//       <p>
+//         <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #e88c44; border-radius: 8px; background-color: #e88c44; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
+//           Set Your Password
+//         </a>
+//       </p>
+//     `;
+//   } else {
+//     const loginUrl = `${AppUrl}/auth/login`;
+
+//     buttonHtml = `
+//       <p>
+//         <a href="${loginUrl}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #063164; border-radius: 8px; background-color: #063164; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
+//           Login to your Account
+//         </a>
+//       </p>
+//     `;
+//   }
+
+//   const data = [
+//     {
+//       FirstName: customerProfile.FirstName || "",
+//       LastName: customerProfile.LastName || "",
+//       EmailAddress: customer.EmailAddress || "",
+//       PhoneNumber: customerProfile.PhoneNumber || "",
+//       CompanyName: companyProfile.CompanyName || "",
+//       companyEmailAddress: company.EmailAddress || "",
+//       PhoneNumber: companyProfile.PhoneNumber || "",
+//       Url: buttonHtml || "",
+//     },
+//   ];
+
+//   const defaultSubject = `Welcome To ${companyProfile.CompanyName}`;
+//   const emailBody = `
+//     <div style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff;">
+//       <table align="center" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 20px auto; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border: 1px solid #e88c44;">
+//         <tr>
+//           <td style="padding: 20px 0; text-align: center; background-color: #063164;">
+//             <div style="display: inline-block; padding: 20px; background-color: white; border-radius: 12px;">
+//               <img src="https://app.cloudjobmanager.com/cdn/upload/20250213103016_site-logo2.png" alt="CloudJobManager Logo" style="width: 160px; max-width: 100%; display: block; margin: auto;" />
+//             </div>
+//           </td>
+//         </tr>
+//         <tr>
+//           <td style="padding: 0px 20px; text-align: center; color: #333333; background-color: #ffffff; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+//             <h2 style="font-size: 25px; font-weight: 700; color: #063164; margin-bottom: 20px; letter-spacing: 1px;margin-top:20px;">Welcome to ${companyProfile.CompanyName}</h2>
+//             <p style="font-size: 16px; color: #666666; line-height: 1.6; margin-bottom: 20px; font-weight: 400;">
+//               Dear ${customerProfile.FirstName} ${customerProfile.LastName},<br>
+//               We are pleased to provide you with your login credentials for accessing our Contract Management System. Below are your details:
+//             </p>
+//             <p><strong>Email:</strong> ${customer.EmailAddress}</p>
+//             ${buttonHtml}
+//             <p style="font-size: 14px; color: #888888; margin-top: 30px; line-height: 1.6;">
+//               For security reasons, we recommend changing your password upon first login. If you have any questions, contact our support team at <a href="mailto:${company.EmailAddress}" style="color: #063164; font-weight: 600;">${company.EmailAddress}</a> or ${companyProfile.PhoneNumber}.
+//             </p>
+//             <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">
+//               Thank you for choosing ${companyProfile.CompanyName}. We are committed to providing you with a seamless and efficient experience.
+//             </p>
+//             <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">Best regards,<br>The ${companyProfile.CompanyName} Team</p>
+//           </td>
+//         </tr>
+//         <tr>
+//           <td style="padding: 30px 20px; text-align: center; font-size: 12px; color: #888888; background-color: #f4f4f7; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+//             ${companyProfile.CompanyName}, Inc. | All rights reserved.<br>
+//             <a href="#" style="color: #e88c44; text-decoration: none;">Unsubscribe</a> if you no longer wish to receive these emails.
+//           </td>
+//         </tr>
+//       </table>
+//     </div>
+//   `;
+
+//   const status = await handleTemplate(
+//     "Invitation",
+//     customer.CompanyId,
+//     data,
+//     [],
+//     defaultSubject,
+//     emailBody,
+//     customer.CustomerId
+//   );
+
+//   if (status) {
+//     return {
+//       statusCode: 200,
+//       message: `Email was sent to ${customer.EmailAddress}`,
+//     };
+//   } else {
+//     return {
+//       statusCode: 203,
+//       message: "Issue sending email",
+//     };
+//   }
+// };
 // **GET DATA FOR WELCOME EMAIL TEMPLATE**
 exports.getCustomerWelcomeData = async (UserId) => {
   if (!UserId) throw new Error("UserId is required");
@@ -449,13 +590,20 @@ exports.getCustomerWelcomeData = async (UserId) => {
   });
   if (!companyProfile) throw new Error("Company profile not found");
 
-  const isPasswordSet =
-    typeof customer.Password === "string" && customer.Password.length > 0;
+  const allSameEmailCustomers = await User.find({
+    EmailAddress: customer.EmailAddress,
+    Role: "Customer",
+    IsDelete: false,
+  });
 
-  console.log("Customer Password:", customer.Password);
+  const isAnyPasswordSet = allSameEmailCustomers.some(
+    (cust) => cust.Password && cust.Password.trim().length > 0
+  );
 
   let buttonHtml = "";
-  if (!isPasswordSet) {
+  let bodyMessage = "";
+
+  if (!isAnyPasswordSet) {
     const resetToken = await createResetToken({
       EmailAddress: customer.EmailAddress,
       IsPassSet: false,
@@ -469,6 +617,14 @@ exports.getCustomerWelcomeData = async (UserId) => {
         </a>
       </p>
     `;
+
+    bodyMessage = `
+      <p style="font-size: 16px; color: #666666; line-height: 1.6; margin-bottom: 20px; font-weight: 400;">
+        Dear ${customerProfile.FirstName} ${customerProfile.LastName},<br>
+        We are pleased to provide you with your login credentials for accessing our Contract Management System. Below are your details:
+      </p>
+      <p><strong>Email:</strong> ${customer.EmailAddress}</p>
+    `;
   } else {
     const loginUrl = `${AppUrl}/auth/login`;
 
@@ -477,6 +633,13 @@ exports.getCustomerWelcomeData = async (UserId) => {
         <a href="${loginUrl}" style="display: inline-block; padding: 10px 20px; margin: 20px 0; border: 1px solid #063164; border-radius: 8px; background-color: #063164; color: #fff; text-decoration: none; text-align: center; font-size: 15px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
           Login to your Account
         </a>
+      </p>
+    `;
+
+    bodyMessage = `
+      <p style="font-size: 16px; color: #666666; line-height: 1.6; margin-bottom: 20px; font-weight: 400;">
+        Dear ${customerProfile.FirstName} ${customerProfile.LastName},<br>
+        Your account has been successfully activated. You can now login to your account below:
       </p>
     `;
   }
@@ -508,11 +671,7 @@ exports.getCustomerWelcomeData = async (UserId) => {
         <tr>
           <td style="padding: 0px 20px; text-align: center; color: #333333; background-color: #ffffff; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
             <h2 style="font-size: 25px; font-weight: 700; color: #063164; margin-bottom: 20px; letter-spacing: 1px;margin-top:20px;">Welcome to ${companyProfile.CompanyName}</h2>
-            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin-bottom: 20px; font-weight: 400;">
-              Dear ${customerProfile.FirstName} ${customerProfile.LastName},<br>
-              We are pleased to provide you with your login credentials for accessing our Contract Management System. Below are your details:
-            </p>
-            <p><strong>Email:</strong> ${customer.EmailAddress}</p>
+            ${bodyMessage}
             ${buttonHtml}
             <p style="font-size: 14px; color: #888888; margin-top: 30px; line-height: 1.6;">
               For security reasons, we recommend changing your password upon first login. If you have any questions, contact our support team at <a href="mailto:${company.EmailAddress}" style="color: #063164; font-weight: 600;">${company.EmailAddress}</a> or ${companyProfile.PhoneNumber}.
@@ -735,10 +894,16 @@ exports.updateChangePass = async (req, res) => {
 
     // const enPass = await encryptData(newPassword);
 
-    user.Password = newPassword;
+    const allUsers = await User.find({
+      EmailAddress: user.EmailAddress,
+      IsDelete: false,
+      Password: { $ne: null },
+    });
 
-    await user.save();
-
+    for (const user of allUsers) {
+      user.Password = newPassword;
+      await user.save();
+    }
     return res.status(200).json({ message: "Password successfully changed" });
   } catch (error) {
     console.error("Password Update Error:", error);

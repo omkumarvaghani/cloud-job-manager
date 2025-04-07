@@ -1106,17 +1106,20 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                               borderRadius: "4px",
                             }}
                           >
-                            {data?.OwnerName ||
-                              (data?.FirstName &&
-                              (data?.LastName || data?.FullName)
-                                ? `${data.FirstName} ${
-                                    data.LastName || data.FullName
-                                  }`
-                                : data?.FirstName || data?.FullName || ""
-                              )
-                                ?.split(" ")
-                                ?.map((part) => part.charAt(0).toUpperCase())
-                                ?.join("")}
+                            {(data?.FirstName &&
+                            (data?.LastName || data?.FullName)
+                              ? `${data.FirstName} ${
+                                  data.LastName || data.FullName
+                                }`
+                              : data?.FirstName ||
+                                data?.FullName ||
+                                data?.OwnerName ||
+                                ""
+                            )
+                              ?.split(" ")
+                              ?.map((part) => part.charAt(0).toUpperCase())
+                              ?.join("")}
+                            {console.log(data, "data2345678")}
                           </Typography>
                         )}
                       </>
@@ -1133,13 +1136,15 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             {/* {data?.OwnerName ||
                               data?.FirstName + " " + data?.LastName ||
                               data?.FullName}  */}
-                            {data?.OwnerName ||
-                              (data?.FirstName &&
-                              (data?.LastName || data?.FullName)
-                                ? `${data.FirstName} ${
-                                    data.LastName || data.FullName
-                                  }`
-                                : data?.FirstName || data?.FullName || "")}
+                            {data?.FirstName &&
+                            (data?.LastName || data?.FullName)
+                              ? `${data.FirstName} ${
+                                  data.LastName || data.FullName
+                                }`
+                              : data?.FirstName ||
+                                data?.FullName ||
+                                data?.OwnerName ||
+                                ""}
 
                             {console.log(data, "datadata")}
                           </Typography>
