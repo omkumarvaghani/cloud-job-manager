@@ -8,6 +8,7 @@ const { logUserEvent } = require("../../middleware/eventMiddleware");
 const {
   verifyToken,
   createResetToken,
+  decryptData,
 } = require("../../middleware/authMiddleware");
 const SuperAdmin = require("../../models/Admin/Super-Admin");
 const { handleTemplate } = require("./User/templateController");
@@ -251,8 +252,8 @@ exports.checkEmail = async (req, res) => {
       .json({ message: "Something went wrong, please try later!" });
   }
 };
+
 exports.login = async (req, res) => {
-  console.log(req, "reqq");
   try {
     const { EmailAddress, Password, CompanyId } = req.body;
 
@@ -265,8 +266,9 @@ exports.login = async (req, res) => {
       EmailAddress,
       IsDelete: false,
     });
+
     if (superAdmin) {
-      const isMatchSuper = await bcrypt.compare(Password, superAdmin.Password);
+      const isMatchSuper = await decryptData(Password, superAdmin.Password);
       if (!isMatchSuper) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
@@ -298,7 +300,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Now check in User collection
     const query = { EmailAddress, IsDelete: false };
     if (CompanyId) query.CompanyId = CompanyId;
 
@@ -307,11 +308,13 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const isMatch = await bcrypt.compare(Password, user.Password);
+    const isMatch = await decryptData(Password, user.Password);
+    console.log(isMatch, "isMatch");
+
     if (!isMatch) {
+      console.log("object");
       return res.status(401).json({ message: "Invalid email or password" });
     }
-    console.log(isMatch, "isMatch");
 
     if (!user.IsActive) {
       return res.status(400).json({
@@ -320,17 +323,19 @@ exports.login = async (req, res) => {
     }
 
     role = user.Role;
-    userProfile = await UserProfile.findOne({
-      CompanyId: CompanyId,
-      Role: "Company",
-    });
 
-    console.log(userProfile, "userProfile");
-    console.log(CompanyId, "CompanyId");
-    // if (!userProfile?.CompanyName) {
-    //   return res.status(404);
-    // }
-    console.log(userProfile?.CompanyName, "userProfile?.CompanyName");
+    if (user.Role === "Company") {
+      userProfile = await UserProfile.findOne({
+        UserId: user.UserId,
+        CompanyId: user.CompanyId,
+      });
+    } else {
+      userProfile = await UserProfile.findOne({
+        CompanyId: user.CompanyId,
+        Role: "Company",
+      });
+    }
+
     tokenData = {
       UserId: user.UserId,
       EmailAddress: user.EmailAddress,
@@ -395,7 +400,6 @@ exports.login = async (req, res) => {
       .json({ message: "Something went wrong, please try later!" });
   }
 };
-
 // **Check if User Exists Function**
 exports.checkUserExists = async (req, res) => {
   try {

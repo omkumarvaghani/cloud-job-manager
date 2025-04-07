@@ -71,6 +71,9 @@ exports.getAllWorkers = async (req, res) => {
 exports.getWorkerData = async (req, res) => {
   try {
     const { UserId } = req.params;
+    const CompanyId = Array.isArray(req.user.CompanyId)
+      ? req.user.CompanyId
+      : [req.user.CompanyId];
 
     if (!UserId) {
       return res.status(400).json({
@@ -81,6 +84,7 @@ exports.getWorkerData = async (req, res) => {
 
     const user = await User.findOne({
       UserId: { $in: [UserId] },
+      CompanyId: CompanyId,
       Role: "Worker",
       IsDelete: false,
     });

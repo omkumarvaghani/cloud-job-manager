@@ -66,6 +66,7 @@ const CustomerProfile = () => {
   const [CustomerId] = useState(localStorage.getItem("CustomerId"));
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -168,22 +169,27 @@ const CustomerProfile = () => {
   const passwordFormik = useFormik({
     initialValues: {
       CustomerId: "",
+      oldPassword: "",
       Password: "",
       confirmpassword: "",
     },
+
     validationSchema: Yup.object({
+      oldPassword: Yup.string().required("Old password is required"),
       Password: PasswordValidationSchema,
       confirmpassword: Yup.string()
         .oneOf([Yup.ref("Password"), null], "Passwords must match")
         .required("Confirmation password is required"),
     }),
+
     onSubmit: async (values) => {
       setLoader(true);
 
       try {
         const res = await AxiosInstance.put(
-          `/customer/change-password/${CustomerId}`,
+          `/v1/customer/change-password/${CustomerId}`,
           {
+            oldPassword: values.oldPassword,
             Password: values.Password,
             confirmpassword: values.confirmpassword,
           }
@@ -764,33 +770,33 @@ const CustomerProfile = () => {
                           >
                             <Grid className="d-flex justify-content-start align-items-center">
                               <InputText
-                                value={profileFormik?.values?.Password}
-                                onChange={profileFormik?.handleChange}
+                                value={passwordFormik?.values?.oldPassword}
+                                onChange={passwordFormik?.handleChange}
                                 className="mb-3 my-2 textfield_bottom w-100"
-                                onBlur={profileFormik?.handleBlur}
+                                onBlur={passwordFormik?.handleBlur}
                                 error={
-                                  profileFormik?.touched?.Password &&
-                                  Boolean(profileFormik?.errors?.Password)
+                                  passwordFormik?.touched?.oldPassword &&
+                                  Boolean(passwordFormik?.errors?.oldPassword)
                                 }
                                 helperText={
-                                  profileFormik?.touched?.Password &&
-                                  profileFormik?.errors?.Password
+                                  passwordFormik?.touched?.oldPassword &&
+                                  passwordFormik?.errors?.oldPassword
                                 }
-                                name="Password"
-                                label="Password"
-                                type={showPassword ? "text" : "password"} // Toggle visibility
+                                name="oldPassword"
+                                label="Old Password"
+                                type={showOldPassword ? "text" : "password"}
                                 fieldHeight="56px"
-                                autoComplete="new-password"
+                                autoComplete="current-password"
                                 endAdornment={
                                   <InputAdornment position="end">
                                     <IconButton
                                       aria-label="toggle password visibility"
                                       onClick={() =>
-                                        setShowPassword(!showPassword)
+                                        setShowOldPassword(!showOldPassword)
                                       }
                                       edge="end"
                                     >
-                                      {showPassword ? (
+                                      {showOldPassword ? (
                                         <VisibilityOffIcon />
                                       ) : (
                                         <VisibilityIcon />
@@ -800,6 +806,7 @@ const CustomerProfile = () => {
                                 }
                               />
                             </Grid>
+
                             <Grid className="d-flex justify-content-start align-items-center">
                               <InputText
                                 value={passwordFormik?.values?.Password}
