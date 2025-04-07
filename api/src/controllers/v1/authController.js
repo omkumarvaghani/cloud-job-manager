@@ -506,9 +506,9 @@ exports.login = async (req, res) => {
     });
 
     console.log(userProfile)
-    if (!userProfile?.CompanyName) {
-      return res.status(404);
-    }
+    // if (!userProfile?.CompanyName) {
+    //   return res.status(404);
+    // }
     console.log(user,"user")
     console.log(userProfile,"userProfile")
     tokenData = {
