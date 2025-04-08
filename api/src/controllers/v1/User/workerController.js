@@ -29,7 +29,7 @@ exports.getAllWorkers = async (req, res) => {
       },
       {
         $lookup: {
-          from: "user-profiles",
+          from: "user-profiles", // Match your actual collection name
           localField: "UserId",
           foreignField: "UserId",
           as: "profile",
@@ -48,11 +48,24 @@ exports.getAllWorkers = async (req, res) => {
           EmailAddress: 1,
           FirstName: "$profile.FirstName",
           LastName: "$profile.LastName",
+          AccountType: "$profile.AccountType",
           createdAt: 1,
           updatedAt: 1,
         },
       },
-      { $sort: { createdAt: -1 } },
+      {
+        $sort: {
+          // Sort Account Owner on top, then by createdAt descending
+          AccountType: {
+            $cond: {
+              if: { $eq: ["$AccountType", "Account Owner"] },
+              then: 0,
+              else: 1,
+            },
+          },
+          createdAt: -1,
+        },
+      },
     ]);
 
     return res.status(200).json({

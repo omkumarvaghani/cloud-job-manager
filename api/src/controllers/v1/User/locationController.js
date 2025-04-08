@@ -6,13 +6,15 @@ const moment = require("moment");
 // **Post Properties for customer**
 exports.addLocation = async (req, res) => {
   const locationData = req.body;
-
   try {
     if (!locationData || !locationData.Address || !locationData.City) {
       return res.status(400).json({
         statusCode: 400,
         message: "Location data is incomplete.",
       });
+    }
+    if (locationData.UserId) {
+      locationData.CustomerId = locationData.UserId;
     }
 
     const newLocation = await Location.create(locationData);
