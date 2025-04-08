@@ -1120,7 +1120,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                                 );
                               }
                             }}
-                          >
+                          >      
                             <img src={AccountBilling} />
                             <span className="mx-2" style={{ fontSize: "12px" }}>
                               Account & Billing
