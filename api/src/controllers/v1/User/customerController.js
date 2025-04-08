@@ -16,9 +16,8 @@ exports.getCustomersByCompanyId = async (req, res) => {
     const CompanyId = Array.isArray(req.user.CompanyId)
       ? req.user.CompanyId[0]
       : req.user.CompanyId;
-
     const query = req.query;
-
+    console.log(query, "queryquery");
     const pageSize = Math.max(parseInt(query.pageSize) || 10, 1);
     const pageNumber = Math.max(parseInt(query.pageNumber) || 0, 0);
     const search = query.search;
@@ -50,7 +49,7 @@ exports.getCustomersByCompanyId = async (req, res) => {
 
     let searchConditions = [];
     if (search) {
-      const searchRegex = new RegExp(search, "i");
+      const searchRegex = { $regex: `.*${search}.*`, $options: "i" };
       searchConditions = [
         { "profile.FirstName": searchRegex },
         { "profile.LastName": searchRegex },

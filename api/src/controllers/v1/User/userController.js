@@ -258,26 +258,30 @@ exports.updateUser = async (req, res) => {
         .status(400)
         .json({ message: "Role and CompanyId cannot be updated." });
     }
+
     const { EmailAddress } = updateData;
     if (EmailAddress) {
       let emailExists;
-      if (req.user.Role === "Company" || req.user.Role === "Worker") {
+
+      if (["Worker", "Customer"].includes(user.Role)) {
         emailExists = await User.findOne({
           EmailAddress,
-          IsDelete: false,
+          CompanyId: { $in: user.CompanyId },
           UserId: { $ne: UserId },
+          IsDelete: false,
         });
-      } else if (req.user.Role === "Customer") {
+      } else {
         emailExists = await User.findOne({
           EmailAddress,
-          CompanyId: user.CompanyId,
-          IsDelete: false,
           UserId: { $ne: UserId },
+          IsDelete: false,
         });
       }
 
       if (emailExists) {
-        return res.status(409).json({ message: "Email already exists!" });
+        return res
+          .status(409)
+          .json({ message: "Email already in use within this company." });
       }
     }
 
@@ -296,6 +300,7 @@ exports.updateUser = async (req, res) => {
     if (!updatedUserProfile) {
       return res.status(404).json({ message: "User profile not found!" });
     }
+
     const { Address, City, State, Zip, Country } = updateData;
     if (Address || City || State || Zip || Country) {
       const userProfile = await UserProfile.findOne({ UserId });
@@ -315,6 +320,7 @@ exports.updateUser = async (req, res) => {
         );
       }
     }
+
     const companyIdForLog = req.user.CompanyId || user.CompanyId;
     await logUserEvent(companyIdForLog, "UPDATE", "User details updated", {
       UpdatedBy: req.user.EmailAddress,

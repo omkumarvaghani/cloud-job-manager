@@ -491,7 +491,6 @@ const AddContract = ({
                           {customersData?.PhoneNumber || "-"}
                           <br />
                           {customersData?.EmailAddress || "-"}
-                        
                         </Typography>
                       </Col>
                     </Col>
@@ -711,9 +710,29 @@ const AddContract = ({
                                                   marginBottom: 0,
                                                 }}
                                               >
-                                                {person?.FirstName}
-                                                {person?.LastName}{" "}
+                                                {person?.AccountType ===
+                                                "Account Owner"
+                                                  ? person?.OwnerName
+                                                  : `${
+                                                      person?.FirstName || ""
+                                                    } ${
+                                                      person?.LastName || ""
+                                                    }`}
                                               </Label>
+                                              {person?.AccountType ===
+                                                "Account Owner" && (
+                                                <Label
+                                                  style={{
+                                                    fontSize: "14px",
+                                                    color: "rgba(6,49,100,0.6)",
+                                                    fontWeight: "500",
+                                                    marginBottom: "4px",
+                                                  }}
+                                                >
+                                                  Account Owner
+                                                </Label>
+                                              )}
+
                                               <Label
                                                 style={{
                                                   fontSize: "16px",
@@ -723,8 +742,7 @@ const AddContract = ({
                                                 }}
                                               >
                                                 <span>
-                                                  {" "}
-                                                  ( {person?.EmailAddress} )
+                                                  ({person?.EmailAddress})
                                                 </span>
                                               </Label>
                                             </FormGroup>
@@ -926,41 +944,6 @@ const AddContract = ({
                               style={{ marginTop: "-10px", height: "18px" }}
                               className="assingPersoneSeeHereToAssign"
                             >
-                              <Grid
-                                className="tag assignPersonNameHereTo"
-                                style={{
-                                  marginTop: "6px",
-                                  marginLeft: "10px",
-                                  gap: "10px",
-                                }}
-                              >
-                                {isVisible && (
-                                  <Typography
-                                    className="tag-text"
-                                    style={{ fontSize: "16px" }}
-                                  >
-                                    <span>
-                                      {`${
-                                        tokenDecode?.OwnerName ||
-                                        "FullName not available"
-                                      } - ${
-                                        tokenDecode?.EmailAddress ||
-                                        "EmailAddress not available"
-                                      }`}
-                                    </span>
-                                    <button
-                                      className="tag-close"
-                                      onClick={handleRemove}
-                                      aria-label="Close"
-                                    >
-                                      <span style={{ marginTop: "-1px" }}>
-                                        x
-                                      </span>
-                                    </button>
-                                  </Typography>
-                                )}
-                              </Grid>
-
                               {selectedTeams?.map((team, index) => (
                                 <Grid
                                   key={index}
@@ -976,15 +959,34 @@ const AddContract = ({
                                     style={{ fontSize: "16px" }}
                                   >
                                     <span>
-                                      {`${
-                                        team?.FirstName ||
-                                        "FullName not available"
-                                      } ${team?.LastName || ""}`}{" "}
-                                      -
+                                      {team?.AccountType === "Account Owner"
+                                        ? `${
+                                            team?.OwnerName ||
+                                            "OwnerName not available"
+                                          }`
+                                        : `${
+                                            team?.FirstName ||
+                                            "FirstName not available"
+                                          } ${team?.LastName || ""}`}
+                                      {" - "}
                                       {team?.EmailAddress ||
                                         "EmailAddress not available"}
                                     </span>
                                   </Typography>
+
+                                  {team?.AccountType === "Account Owner" && (
+                                    <Typography
+                                      className="tag-text"
+                                      style={{
+                                        fontSize: "14px",
+                                        color: "#666",
+                                        fontStyle: "italic",
+                                      }}
+                                    >
+                                      Account Owner
+                                    </Typography>
+                                  )}
+
                                   <button
                                     className="tag-close"
                                     onClick={() => handleRemoveTeam(team)}

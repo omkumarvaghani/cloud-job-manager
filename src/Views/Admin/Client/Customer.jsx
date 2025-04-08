@@ -76,23 +76,23 @@ const Customer = () => {
     }
 
     try {
-      const res = await AxiosInstance.get(
-        `/v1/customer/customers`,
-        {
-          params: {
-            pageSize: rowsPerPage,
-            pageNumber: page,
-            search: search || "",
-            sortField: sortField,
-            sortOrder: sortOrder,
-          },
-        }
-      );
-      if (res?.data) {
+      const res = await AxiosInstance.get(`/v1/customer/customers`, {
+        params: {
+          pageSize: rowsPerPage,
+          pageNumber: page,
+          search: search || "",
+          sortField: sortField,
+          sortOrder: sortOrder,
+        },
+      });
+      if (res?.status === 200 && res?.data) {
         setcustomersData(res?.data?.data || []);
         setCountData(res?.data?.totalCount || 0);
+      } else if (res?.status === 204) {
+        setcustomersData([]);
+        setCountData(0);
       } else {
-        console.error("No data received from the server.");
+        console.error("Unexpected response:", res);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
