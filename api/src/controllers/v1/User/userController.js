@@ -118,7 +118,7 @@ exports.createUser = async (req, res) => {
       companyURL = profileDetails.CompanyName.replace(/\s+/g, "").toLowerCase();
       console.log(companyURL, "companyURL");
     }
-   
+
     const newUserProfile = new UserProfile({
       UserId: UserId,
       Role,
@@ -196,7 +196,10 @@ exports.getUserById = async (req, res) => {
 
     const userProfile = await UserProfile.findOne({ UserId, IsDelete: false });
 
-    const locations = await Location.findOne({ CustomerId: UserId });
+    const locations = await Location.find({
+      CustomerId: UserId,
+      IsDelete: false,
+    });
 
     return res.status(200).json({
       message: "User fetched successfully.",
