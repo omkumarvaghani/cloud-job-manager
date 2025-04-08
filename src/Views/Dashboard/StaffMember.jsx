@@ -34,7 +34,6 @@ const CustomerDashboard = () => {
   }
 
   const [tokenDecode, setTokenDecode] = useState({});
-  console.log(tokenDecode, "tokenDecode");
   const companyId = tokenDecode.companyId;
   const WorkerId = tokenDecode.WorkerId;
   const fetchData = async () => {
@@ -289,7 +288,6 @@ const CustomerDashboard = () => {
               >
                 {welcomeMessage}, {tokenDecode?.FirstName}{" "}
                 {tokenDecode?.LastName}
-                {console.log(tokenDecode, "tokenDecode123")}
               </Typography>
             </Grid>
             {/* <Grid>{tokenDecode?.CompanyName}</Grid> */}

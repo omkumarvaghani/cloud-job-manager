@@ -24,13 +24,10 @@ const ClientDashboard = () => {
   const [tokenDecode, setTokenDecode] = useState({});
   const CompanyId = tokenDecode.CompanyId;
   const CustomerId = tokenDecode.CustomerId;
-  console.log(tokenDecode, "tokenDecode");
   const fetchData = async () => {
     try {
       const res = await handleAuth(navigate, location);
-      console.log(res, "resresresres");
       setTokenDecode(res.data);
-      console.log(res.data, "res.data");
     } catch (error) {
       console.error("Error fetching token decode data:", error);
     }
@@ -281,7 +278,6 @@ const ClientDashboard = () => {
               >
                 {welcomeMessage}, {tokenDecode?.FirstName}{" "}
                 {tokenDecode?.LastName}
-                {console.log(tokenDecode, "tokenDecode123")}
               </Typography>
             </Grid>
             {/* <Grid>{tokenDecode?.CompanyName}</Grid> */}

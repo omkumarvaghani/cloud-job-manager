@@ -226,7 +226,6 @@ const Steps = ({ EmailAddress, Password }) => {
         values
       );
       
-      console.log("Register Response:", registerRes.data); // Debug log
       
       if (registerRes.data.statusCode === "200") {
         // After successful registration, automatically login
@@ -240,7 +239,6 @@ const Steps = ({ EmailAddress, Password }) => {
           loginPayload
         );
         
-        console.log("Login Response:", loginRes.data); // Debug log
         
         if (loginRes.data.statusCode === "200") {
           // Store token and company ID
@@ -272,7 +270,6 @@ const Steps = ({ EmailAddress, Password }) => {
         sendToast(registerRes.data.message || "Registration failed");
       }
     } catch (error) {
-      console.log("Error:", error.response?.data); // Debug log
       if (error?.response?.data?.error) {
         sendToast(error.response.data.error);
       } else {

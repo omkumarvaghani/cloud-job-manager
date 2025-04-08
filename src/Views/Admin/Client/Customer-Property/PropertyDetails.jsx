@@ -88,7 +88,6 @@ const PropertyDetails = () => {
   };
 
   const [quotes, setQuotes] = useState([]);
-  console.log(quotes, "quotes");
 
   useEffect(() => {
     const fetchContract = async () => {
@@ -107,7 +106,6 @@ const PropertyDetails = () => {
   }, [data, tokenDecode]);
 
   const [contract, setContract] = useState([]);
-  console.log(contract, "contract");
   useEffect(() => {
     const fetchContract = async () => {
       if (data && data?.CustomerId && data?.LocationId) {

@@ -94,7 +94,6 @@ const CustomerProperty = ({ open, setOpen, data, getData }) => {
             `${baseUrl}/v1/location`,
             values
           );
-          console.log(values,"valuesvalues")   
           if (response?.data.statusCode === 200) {
             showToast.success("Property created successfully!");
             getData();

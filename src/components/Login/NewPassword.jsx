@@ -34,7 +34,6 @@ const NewPassword = () => {
   const [tokenExpired, setTokenExpired] = useState(false);
   const [loader, setLoader] = useState(false);
   const [tokenDecode, setTokenDecode] = useState({});
-  console.log(tokenDecode, "tokenDecode");
   const [themeData, setthemeData] = useState("");
 
   const navigate = useNavigate();
@@ -43,7 +42,6 @@ const NewPassword = () => {
   //   try {
   //     const res = await handleAuth(Navigate, location);
   //     setTokenDecode(res?.data);
-  //     console.log(res?.data, "res?.data");
   //     setthemeData(res?.themes);
   //   } catch (error) {
   //     console.error("Error fetching data:", error);
@@ -55,13 +53,11 @@ const NewPassword = () => {
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const token = searchParams.get("token");
-    console.log(token, "token");
     setIsLoading(true);
 
     AxiosInstance.get(`/v1/forget-pass/check_token_status/${token}`)
       .then((response) => {
         const data = response?.data;
-        console.log(data, "datadata");
         setIsLoading(false);
         if (data.expired) {
           setTokenExpired(true);
@@ -97,7 +93,6 @@ const NewPassword = () => {
           { Password: values.password },
           { headers: { "Content-Type": "application/json" } }
         );
-        console.log(response, "responseresponse");
         if (response.status === 200) {
           showToast.success("Password Set Successfully", {
             position: "top-center",

@@ -161,10 +161,8 @@ function QuotesDetail() {
       const res = await AxiosInstance.post(
         `/v1/quote/quotepdf/${location?.state?.id}`
       );
-      console.log(res, "res");
       if (res.data.statusCode === 200) {
         const url = `${cdnUrl}/upload/${res?.data?.fileName}`;
-        console.log(url, "urlurl");
         fetch(url)
           .then((response) => {
             if (!response?.ok) throw new Error("Network response was not ok");

@@ -71,7 +71,6 @@ const Templates = () => {
           sortOrder: sortOrder,
         },
       });
-      console.log(res, "resres");
       if (res?.data) {
         setcustomersData(res.data.data || []);
         setCountData(res.data.totalCount || 0);

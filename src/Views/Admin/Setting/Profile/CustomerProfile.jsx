@@ -277,7 +277,6 @@ const CustomerProfile = () => {
       setCountries(allCountries);
 
       const res = await AxiosInstance.get(`/v1/customer/profile/${CustomerId}`);
-      console.log(res, "res000");
 
       if (res?.data?.success) {
         const userData = res?.data?.data?.user;

@@ -67,7 +67,6 @@ const CustomerProfile = () => {
   const [CompanyId] = useState(localStorage.getItem("CompanyId"));
   const [CustomerId] = useState(localStorage.getItem("CustomerId"));
   const [WorkerId] = useState(localStorage.getItem("worker_id"));
-  console.log(WorkerId,"WorkerId")
   const [showCPassword, setShowCPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showOldPassword, setShowOldPassword] = useState(false);
@@ -277,7 +276,6 @@ const CustomerProfile = () => {
       setCountries(allCountries);
 
       const res = await AxiosInstance.get(`/v1/worker/profile/${WorkerId}`);
-      console.log(res, "resres00");
       if (res?.data?.success) {
         const userData = res?.data?.data?.user;
         const profileData = res?.data?.data?.userProfile;

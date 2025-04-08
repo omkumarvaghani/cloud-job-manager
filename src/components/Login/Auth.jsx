@@ -11,7 +11,6 @@ const getToken = () => {
 
 const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
   const token = getToken();
-  console.log(token, "token");
   if (!token) {
     console.error("Token not found in localStorage");
     navigate(redirectPath, { state: { error: "Token not found" } });
@@ -20,7 +19,6 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
 
   try {
     const res = await AxiosInstance.post(`/v1/auth/token_data`, { token });
-    console.log(res, "res0937");
     if (res.data.statusCode != "200") {
       localStorage.clear();
       navigate(redirectPath, {
@@ -39,7 +37,6 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
       UserId,
     } = res.data.data;
     const state = { Role, id: null, navigats: [] };
-    console.log(res.data.data, "res.data.datares.data.data");
     switch (Role) {
       case "Admin":
         if (!window.location.pathname.includes("/superadmin")) {

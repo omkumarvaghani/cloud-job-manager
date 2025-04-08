@@ -297,7 +297,6 @@ const Addquotes = ({
                             Contact details
                           </Typography>
                           <Typography className="text-blue-color">
-                            {console.log(customersData, "customersData")}
                             {customersData?.PhoneNumber || "-"}
                             <br />
                             {customersData?.EmailAddress || "-"}

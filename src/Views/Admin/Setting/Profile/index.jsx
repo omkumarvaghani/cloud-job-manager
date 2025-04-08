@@ -280,7 +280,6 @@ const Profile = () => {
       const res = await AxiosInstance.get(
         `/v1/user/company-profile/${CompanyId}`
       );
-      console.log(res, "res 123543");
 
       if (res?.data?.success) {
         const userData = res?.data?.data?.user;

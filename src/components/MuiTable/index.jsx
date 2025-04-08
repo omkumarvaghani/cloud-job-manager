@@ -910,16 +910,16 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
           tokenDecode.Role === "Company" ? (
             <Grid
               style={{
-                display: "flex", // Flexbox for alignment
-                alignItems: "center", // Center vertically
-                justifyContent: "flex-start", // Align content to the left (common for navbar branding)
-                borderRadius: "6px", // Slightly larger radius for softness
-                backgroundColor: "#ffffff", // Clean white background
-                padding: "8px 24px", // Tighter vertical, wider horizontal padding
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)", // Softer, deeper shadow for elevation
-                borderLeft: "4px solid rgb(6, 49, 100)", // Accent border matching text color
-                transition: "all 0.3s ease", // Smooth hover effect
-                cursor: "pointer", // Indicates interactivity
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                borderRadius: "6px",
+                backgroundColor: "transparent",
+                padding: "8px 24px",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+                border: "2px solid white",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
               }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.boxShadow =
@@ -930,20 +930,15 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                   "0 4px 12px rgba(0, 0, 0, 0.08)")
               }
             >
-              {console.log("Token Data:", tokenDecode)}
               <Typography
                 style={{
-                  color: "rgb(6, 49, 100)", // Your brand color
-                  fontSize: "22px", // Slightly larger for prominence
-                  fontWeight: 600, // Bolder for emphasis
-                  margin: 0, // No extra spacing
-                  textTransform: "uppercase", // Strong branding
-                  letterSpacing: "1.2px", // Enhanced readability
-                  fontFamily: "'Roboto', sans-serif", // Clean, modern font (adjust as needed)
-                  background:
-                    "linear-gradient(90deg, rgb(6, 49, 100), rgb(10, 80, 160))", // Gradient effect
-                  WebkitBackgroundClip: "text", // Text gradient (works in Webkit browsers)
-                  WebkitTextFillColor: "transparent", // Makes gradient visible
+                  color: "white", // Changed to white
+                  fontSize: "22px",
+                  fontWeight: 600,
+                  margin: 0,
+                  textTransform: "uppercase",
+                  letterSpacing: "1.2px",
+                  fontFamily: "'Roboto', sans-serif",
                 }}
               >
                 {tokenDecode.CompanyName || "Unnamed Company"}
@@ -975,12 +970,14 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                       style={{ cursor: "pointer" }}
                       onClick={(e) => {
                         let path = `/${CompanyName}/profile`;
-                      
+
                         if (
-                          location.pathname?.split("/")[2] === "customers" || 
+                          location.pathname?.split("/")[2] === "customers" ||
                           location.pathname?.split("/")[2] === "staff-member"
                         ) {
-                          if (location.pathname?.split("/")[2] === "customers") {
+                          if (
+                            location.pathname?.split("/")[2] === "customers"
+                          ) {
                             navigate(
                               `/${
                                 location?.pathname?.split("/")[2]
@@ -994,7 +991,9 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                                 },
                               }
                             );
-                          } else if (location.pathname?.split("/")[2] === "staff-member") {
+                          } else if (
+                            location.pathname?.split("/")[2] === "staff-member"
+                          ) {
                             navigate(
                               `/${
                                 location?.pathname?.split("/")[2]
@@ -1094,7 +1093,6 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                               ?.split(" ")
                               ?.map((part) => part.charAt(0).toUpperCase())
                               ?.join("")}
-                            {console.log(data, "data2345678")}
                           </Typography>
                         )}
                       </>
@@ -1121,7 +1119,6 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                                 data?.OwnerName ||
                                 ""}
 
-                            {console.log(data, "datadata")}
                           </Typography>
                         </Typography>
                         <Typography

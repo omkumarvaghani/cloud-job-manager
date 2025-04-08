@@ -17,12 +17,10 @@ function CustomerDetails() {
   const navigate = useNavigate();
   const { CompanyName } = useParams();
   const [data, setData] = useState();
-  console.log(data, "data123456");
   const [loader, setLoader] = useState(true);
   const [tokenDecode, setTokenDecode] = useState({});
   const [contract, setContract] = useState([]);
   const [quotes, setQuotes] = useState([]);
-  console.log(quotes, "quotes");
   const [invoice, setInvoice] = useState([]);
   const [DateDecode, setDateDecode] = useState({});
 
@@ -57,7 +55,6 @@ function CustomerDetails() {
       const res = await AxiosInstance.get(
         `/v1/customer/detail/${location?.state?.id}`
       );
-      // console.log(res, "res");
       setData(res?.data?.data);
     } catch (error) {
     } finally {
@@ -85,11 +82,6 @@ function CustomerDetails() {
             `/v1/quote/get_quotes_customer/${companyId}/${data.UserId}`
           );
 
-          console.log(response, "response123");
-          console.log(tokenDecode, "tokenDecode");
-          console.log(data, "datadata");
-          console.log(data.UserId, "data.UserId");
-          console.log(response?.data?.statusCode, "response?.data?.statusCode");
           if (response?.data?.statusCode === 200) {
             setQuotes(response?.data?.data);
           }
@@ -102,7 +94,6 @@ function CustomerDetails() {
     fetchQuote();
   }, [data, tokenDecode]);
 
-  console.log(data?.UserId, "data?.UserId");
 
   useEffect(() => {
     const fetchContract = async () => {
@@ -113,7 +104,6 @@ function CustomerDetails() {
               localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
             }/${data?.UserId}`
           );
-          console.log(response, "response");
           setContract(response?.data?.data);
         } catch (err) {
           console.error("Error to fetching contract data: ", err.message);

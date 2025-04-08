@@ -127,7 +127,6 @@ const AddContract = ({
   };
   return (
     <>
-      {console.log(tokenDecode, "tokenDecode")}
       {loader ? (
         <Grid
           className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5"
@@ -489,14 +488,10 @@ const AddContract = ({
                           Contact details
                         </Typography>
                         <Typography>
-                          {console.log(customersData, "customersData1234321")}
                           {customersData?.PhoneNumber || "-"}
                           <br />
                           {customersData?.EmailAddress || "-"}
-                          {console.log(
-                            emailData?.EmailAddress,
-                            "customersData?.EmailAddress"
-                          )}
+                        
                         </Typography>
                       </Col>
                     </Col>
