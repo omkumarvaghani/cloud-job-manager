@@ -287,7 +287,7 @@ exports.sendWelcomeEmailToWorkerLogic = async (UserId) => {
       EmailAddress: findCustomer.EmailAddress,
       IsPassSet: false,
     });
-    const resetUrl = `${AppUrl}/auth/new-password?token=${resetToken}`;
+    const resetUrl = `http://localhost:4985/auth/new-password?token=${resetToken}`;
 
     buttonHtml = `
       <p>
@@ -297,7 +297,7 @@ exports.sendWelcomeEmailToWorkerLogic = async (UserId) => {
       </p>
     `;
   } else {
-    const loginUrl = `${AppUrl}/auth/login`;
+    const loginUrl = `http://localhost:4985/auth/login`;
 
     buttonHtml = `
       <p>

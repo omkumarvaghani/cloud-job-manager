@@ -560,6 +560,7 @@ exports.getUserDetailWithInvoices = async (req, res) => {
 //     };
 //   }
 // };
+
 // **GET DATA FOR WELCOME EMAIL TEMPLATE**
 exports.getCustomerWelcomeData = async (UserId) => {
   if (!UserId) throw new Error("UserId is required");
@@ -608,7 +609,7 @@ exports.getCustomerWelcomeData = async (UserId) => {
       EmailAddress: customer.EmailAddress,
       IsPassSet: false,
     });
-    const resetUrl = `${AppUrl}/auth/new-password?token=${resetToken}`;
+    const resetUrl = `http://localhost:4985/auth/new-password?token=${resetToken}`;
 
     buttonHtml = `
       <p>
@@ -626,7 +627,7 @@ exports.getCustomerWelcomeData = async (UserId) => {
       <p><strong>Email:</strong> ${customer.EmailAddress}</p>
     `;
   } else {
-    const loginUrl = `${AppUrl}/auth/login`;
+    const loginUrl = `http://localhost:4985/auth/login`;
 
     buttonHtml = `
       <p>
@@ -706,6 +707,10 @@ exports.getCustomerWelcomeData = async (UserId) => {
     return {
       statusCode: 200,
       message: `Email was sent to ${customer.EmailAddress}`,
+      customer,
+      customerProfile,
+      company,
+      companyProfile,
     };
   } else {
     return {

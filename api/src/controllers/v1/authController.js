@@ -23,6 +23,7 @@ const generateToken = (user) => {
       EmailAddress: user.EmailAddress,
       OwnerName: user.OwnerName,
       CompanyName: user.CompanyName,
+      CompanyUrl: user.CompanyUrl,
     },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRATION || "4h" }
@@ -42,10 +43,16 @@ exports.register = async (req, res) => {
     }
 
     let CompanyId = profileDetails.CompanyId;
+    let companyURL = "";
+
     if (Role === "Company") {
       CompanyId = uuidv4();
       if (CompanyName) {
-        profileDetails.CompanyName = CompanyName.trim();
+        const trimmedName = CompanyName.trim();
+        profileDetails.CompanyName = trimmedName;
+        companyURL = trimmedName.replace(/\s+/g, "");
+      } else {
+        return res.status(400).json({ error: "CompanyName is required." });
       }
     } else if (!CompanyId) {
       return res
@@ -60,6 +67,7 @@ exports.register = async (req, res) => {
       EmailAddress,
       Password,
     });
+
     await newUser.save();
 
     const newUserProfile = new UserProfile({
@@ -67,6 +75,7 @@ exports.register = async (req, res) => {
       CompanyId,
       Role,
       ...profileDetails,
+      ...(Role === "Company" && { CompanyUrl: companyURL }),
     });
 
     await newUserProfile.save();
@@ -78,7 +87,9 @@ exports.register = async (req, res) => {
       "REGISTRATION",
       `User ${newUser.EmailAddress} registered in`
     );
+
     const emailStatus = await sendWelcomeEmailToCompanyLogic(newUser.UserId);
+
     return res.status(200).json({
       statusCode: "200",
       message: "Company created successfully",
@@ -256,7 +267,6 @@ exports.login = async (req, res) => {
     const { EmailAddress, Password, CompanyId } = req.body;
 
     let user = null;
-    let role = null;
     let tokenData = {};
     let userProfile = null;
 
@@ -270,18 +280,17 @@ exports.login = async (req, res) => {
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      role = "Admin";
-      tokenData = {
-        AdminId: superAdmin.AdminId,
-        EmailAddress: superAdmin.EmailAddress,
-        FullName: superAdmin.FullName,
-        ProfileImage: superAdmin.ProfileImage,
-        Role: role,
-      };
-
-      const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
-        expiresIn: "4h",
-      });
+      const token = jwt.sign(
+        {
+          AdminId: superAdmin.AdminId,
+          EmailAddress: superAdmin.EmailAddress,
+          FullName: superAdmin.FullName,
+          ProfileImage: superAdmin.ProfileImage,
+          Role: "Admin",
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "4h" }
+      );
 
       logUserEvent("SYSTEM", "LOGIN", `SuperAdmin ${EmailAddress} logged in.`);
 
@@ -292,7 +301,7 @@ exports.login = async (req, res) => {
         data: {
           AdminId: superAdmin.AdminId,
           EmailAddress: superAdmin.EmailAddress,
-          Role: role,
+          Role: "Admin",
         },
       });
     }
@@ -301,26 +310,25 @@ exports.login = async (req, res) => {
     if (CompanyId) query.CompanyId = CompanyId;
 
     user = await User.findOne(query);
+
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-    console.log("Password entered:", Password);
-    console.log("Password in DB:", user.Password);
 
-    // const isMatch = await decryptData(Password, user.Password);
-    // console.log(isMatch, "isMatch");
-    // if (!isMatch) {
-    //   return res.status(401).json({ message: "Invalid email or password" });
-    // }
-
-    if (!user.IsActive) {
-      return res.status(400).json({
-        message: "Account is deactivated. Please contact support.",
-      });
+    const isMatch = await user.comparePassword(Password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    role = user.Role;
-    if (user.Role === "Company") {
+    if (!user.IsActive) {
+      return res
+        .status(400)
+        .json({ message: "Account is deactivated. Please contact support." });
+    }
+
+    const role = user.Role;
+
+    if (role === "Company") {
       userProfile = await UserProfile.findOne({
         UserId: user.UserId,
         CompanyId: user.CompanyId,
@@ -337,20 +345,21 @@ exports.login = async (req, res) => {
       EmailAddress: user.EmailAddress,
       Role: user.Role,
       CompanyId: user.CompanyId,
-      CompanyName: (userProfile?.CompanyName || "").split(" ").join("-"),
+      CompanyName: userProfile?.CompanyName,
+      CompanyUrl: userProfile?.CompanyUrl,
       OwnerName: userProfile?.OwnerName || "",
       ProfileImage: userProfile?.ProfileImage || null,
     };
+
+    const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
+      expiresIn: "4h",
+    });
 
     logUserEvent(
       user.CompanyId,
       "LOGIN",
       `User ${user.EmailAddress} logged in.`
     );
-
-    const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
-      expiresIn: "4h",
-    });
 
     let statusCode, message, roleSpecificId;
 
@@ -384,7 +393,8 @@ exports.login = async (req, res) => {
       data: {
         UserId: roleSpecificId,
         EmailAddress: user.EmailAddress,
-        CompanyName: (userProfile?.CompanyName || "").split(" ").join("-"),
+        CompanyName: userProfile?.CompanyName,
+        CompanyUrl: userProfile?.CompanyUrl,
         Role: user.Role,
         IsActive: user.IsActive,
       },
