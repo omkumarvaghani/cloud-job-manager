@@ -582,7 +582,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
   const cdnUrl = process.env.REACT_APP_CDN_API;
   const location = useLocation();
   const navigate = useNavigate();
-  const { CompanyName, customers } = useParams();
+  const {  CompanyUrl } = useParams();
   const isMediumScreen = useMediaQuery("(max-width:767px)");
   const [data, setData] = useState({});
 
@@ -640,8 +640,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
             route?.isCollapse &&
             route?.children &&
             route?.layout ===
-              (CompanyName
-                ? `/:CompanyName`
+              (CompanyUrl
+                ? `/:CompanyUrl`
                 : `/${location?.pathname.split("/")[1]}`)
           ) {
             route?.children?.forEach((child) => {
@@ -652,8 +652,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
           } else if (
             !route?.isCollapse &&
             route?.layout ===
-              (CompanyName
-                ? `/:CompanyName`
+              (CompanyUrl
+                ? `/:CompanyUrl`
                 : `/${location.pathname.split("/")[1]}`)
           ) {
             if (route?.path === item) {
@@ -675,8 +675,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
             route?.isCollapse &&
             route?.children &&
             route?.layout ===
-              (CompanyName
-                ? `/:CompanyName`
+              (CompanyUrl
+                ? `/:CompanyUrl`
                 : `/${location?.pathname.split("/")[1]}`)
           ) {
             route?.children?.forEach((child) => {
@@ -687,8 +687,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
           } else if (
             !route?.isCollapse &&
             route?.layout ===
-              (CompanyName
-                ? `/:CompanyName`
+              (CompanyUrl
+                ? `/:CompanyUrl`
                 : `/${location.pathname.split("/")[1]}`)
           ) {
             if (route?.path === item) {
@@ -882,8 +882,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                       if (index === 0) {
                         navigate(
                           `/${
-                            CompanyName
-                              ? CompanyName
+                            CompanyUrl
+                              ? CompanyUrl
                               : location?.pathname?.split("/")[1]
                           }/index`,
                           {
@@ -941,7 +941,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                   fontFamily: "'Roboto', sans-serif",
                 }}
               >
-                {tokenDecode.CompanyName || "Unnamed Company"}
+                {tokenDecode.CompanyUrl || "Unnamed Company"}
               </Typography>
             </Grid>
           ) : null}
@@ -969,7 +969,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                       tag="Grid"
                       style={{ cursor: "pointer" }}
                       onClick={(e) => {
-                        let path = `/${CompanyName}/profile`;
+                        let path = `/${CompanyUrl}/profile`;
 
                         if (
                           location.pathname?.split("/")[2] === "customers" ||
@@ -986,7 +986,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                                 state: {
                                   navigats: [
                                     "/index",
-                                    `${CompanyName}/customers/profile`,
+                                    `${CompanyUrl}/customers/profile`,
                                   ],
                                 },
                               }
@@ -1002,14 +1002,14 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                                 state: {
                                   navigats: [
                                     "/index",
-                                    `/${CompanyName}/staff-member/profile`,
+                                    `/${CompanyUrl}/staff-member/profile`,
                                   ],
                                 },
                               }
                             );
                           }
-                        } else if (CompanyName) {
-                          navigate(`/${CompanyName}/profile`, {
+                        } else if (CompanyUrl) {
+                          navigate(`/${CompanyUrl}/profile`, {
                             state: {
                               navigats: ["/index", "/profile"],
                             },
@@ -1036,7 +1036,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                               state: {
                                 navigats: [
                                   "/index",
-                                  `/${CompanyName}/staff-member/profile`,
+                                  `/${CompanyUrl}/staff-member/profile`,
                                 ],
                               },
                             }
@@ -1139,8 +1139,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             onClick={() => {
                               if (!location?.pathname?.includes("/customers")) {
                                 navigate(
-                                  CompanyName
-                                    ? `/${CompanyName}/materials&labor`
+                                  CompanyUrl
+                                    ? `/${CompanyUrl}/materials&labor`
                                     : "/superadmin/materials&labor",
                                   {
                                     state: {
@@ -1162,8 +1162,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             onClick={() => {
                               if (!location.pathname.includes("/customers")) {
                                 navigate(
-                                  CompanyName
-                                    ? `/${CompanyName}/account-billing`
+                                  CompanyUrl
+                                    ? `/${CompanyUrl}/account-billing`
                                     : "/superadmin/account-billing",
                                   {
                                     state: {
@@ -1185,8 +1185,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             onClick={() => {
                               if (!location.pathname.includes("/customers")) {
                                 navigate(
-                                  CompanyName
-                                    ? `/${CompanyName}/activity `
+                                  CompanyUrl
+                                    ? `/${CompanyUrl}/activity `
                                     : "/superadmin/activity",
                                   {
                                     state: {
@@ -1208,8 +1208,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             onClick={() => {
                               if (!location.pathname.includes("/customers")) {
                                 navigate(
-                                  CompanyName
-                                    ? `/${CompanyName}/manageteam `
+                                  CompanyUrl
+                                    ? `/${CompanyUrl}/manageteam `
                                     : "/superadmin/manageteam",
                                   {
                                     state: {

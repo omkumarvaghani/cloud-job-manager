@@ -51,9 +51,9 @@ root.render(
         <Routes>
           <Route path="/auth/*" element={<Auth />} />
           <Route path="/superadmin/*" element={<SuperAdmin />} />
-          <Route path="/:CompanyName/customers/*" element={<Client />} />
-          <Route path="/:CompanyName/staff-member/*" element={<StaffMember />} />
-          <Route path="/:CompanyName/*" element={<Admin />} />
+          <Route path="/:CompanyUrl/customers/*" element={<Client />} />
+          <Route path="/:CompanyUrl/staff-member/*" element={<StaffMember />} />
+          <Route path="/:CompanyUrl/*" element={<Admin />} />
           <Route path="/plan" element={<Plan />} />
           <Route path="/plan-purchase" element={<PlanPurchase />} />
           <Route path="/" element={<Navigate to="/auth/login" replace />} />

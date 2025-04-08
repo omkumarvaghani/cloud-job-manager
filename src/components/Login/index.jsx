@@ -118,7 +118,7 @@ const Login = () => {
         localStorage.setItem("CompanyId", res.data.data.UserId);
         showToast.success(res.data.message, { autoClose: 3000 });
         setTimeout(() => {
-          navigate(`/${res.data.data.CompanyName}/index`, {
+          navigate(`/${res.data.data.CompanyUrl}/index`, {
             state: { navigats: ["/index"] },
           });
         }, 1000);
@@ -135,7 +135,7 @@ const Login = () => {
         localStorage.setItem("workerToken", res.data.token);
         localStorage.setItem("worker_id", res.data.data.UserId);
         setTimeout(() => {
-          navigate(`/${res.data.data.CompanyName}/staff-member/index`, {
+          navigate(`/${res.data.data.CompanyUrl}/staff-member/index`, {
             state: { navigats: ["/index"] },
           });
         }, 1000);
@@ -144,7 +144,7 @@ const Login = () => {
         localStorage.setItem("customerToken", res.data.token);
         localStorage.setItem("CustomerId", res.data.data.UserId);
         setTimeout(() => {
-          navigate(`/${res.data.data.CompanyName}/customers/index`, {
+          navigate(`/${res.data.data.CompanyUrl}/customers/index`, {
             state: { navigats: ["/index"] },
           });
         }, 1000);
@@ -192,15 +192,15 @@ const Login = () => {
               !location.pathname.includes("/customers")
             ) {
               localStorage.setItem("CustomerId", res.data.data.CustomerId);
-              navigate(`/${res.data.data.CompanyName}/customers/index`, {
+              navigate(`/${res.data.data.CompanyUrl}/customers/index`, {
                 state: { navigats: [`/index`] },
               });
             } else if (
               res.data.data.Role === "Company" &&
-              !location.pathname.includes(`/${res.data.data.CompanyName}`)
+              !location.pathname.includes(`/${res.data.data.CompanyUrl}`)
             ) {
               localStorage.setItem("CompanyId", res.data.data.companyId);
-              navigate(`/${res.data.data.CompanyName}/index`, {
+              navigate(`/${res.data.data.CompanyUrl}/index`, {
                 state: { navigats: ["/index"] },
               });
             } else if (
@@ -208,7 +208,7 @@ const Login = () => {
               !location.pathname.includes(`/staff-member`)
             ) {
               localStorage.setItem("worker_id", res.data.data.WorkerId);
-              navigate(`/${res.data.data.CompanyName}/staff-member/index`, {
+              navigate(`/${res.data.data.CompanyUrl}/staff-member/index`, {
                 state: { navigats: ["/index"] },
               });
             }
@@ -427,7 +427,7 @@ const Login = () => {
                                     : "inherit",
                               }}
                             >
-                              {company.CompanyName}
+                              {company.CompanyUrl}
                             </label>
                           </div>
                         ))}
