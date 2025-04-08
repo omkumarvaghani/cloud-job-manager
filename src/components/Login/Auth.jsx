@@ -20,6 +20,7 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
 
   try {
     const res = await AxiosInstance.post(`/v1/auth/token_data`, { token });
+    console.log(res, "res0937");
     if (res.data.statusCode != "200") {
       localStorage.clear();
       navigate(redirectPath, {
@@ -35,11 +36,12 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
       CompanyName,
       WorkerId,
       IsPlanActive,
+      UserId,
     } = res.data.data;
     const state = { Role, id: null, navigats: [] };
-
+    console.log(res.data.data, "res.data.datares.data.data");
     switch (Role) {
-      case "Admin": 
+      case "Admin":
         if (!window.location.pathname.includes("/superadmin")) {
           localStorage.setItem("admin_id", AdminId);
           state.redirect = "/superadmin/index";
@@ -47,9 +49,9 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
         }
         break;
       case "Customer":
-        if (!window.location.pathname.includes(`/${CompanyName}/c`)) {
-          localStorage.setItem("CustomerId", CustomerId);
-          state.redirect = `/${CompanyName}/c/index`;
+        if (!window.location.pathname.includes(`/${CompanyName}/customers`)) {
+          localStorage.setItem("CustomerId", UserId);
+          state.redirect = `/${CompanyName}/customers/index`;
           state.navigats = ["/index"];
         }
         break;
@@ -68,9 +70,11 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
         break;
 
       case "Worker":
-        if (!window.location.pathname.includes(`/staff-member`)) {
-          localStorage.setItem("worker_id", WorkerId);
-          state.redirect = `/staff-member/index`;
+        if (
+          !window.location.pathname.includes(`/${CompanyName}/staff-member`)
+        ) {
+          localStorage.setItem("worker_id", UserId);
+          state.redirect = `/${CompanyName}/staff-member/index`;
           state.navigats = ["/index"];
         }
         break;

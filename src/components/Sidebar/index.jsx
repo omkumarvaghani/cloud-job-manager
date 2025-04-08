@@ -687,6 +687,9 @@ const Sidebar = ({
     }
   }, []);
 
+  const Worker = "Worker";
+  const Customer = "Customer";
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen((prevState) => !prevState);
   const handleNavigation = (path, state) => {
@@ -751,210 +754,318 @@ const Sidebar = ({
               />
             )}
           </Grid>
-          {(CompanyName || location.pathname.includes("/staff-member")) &&
-            (!location.pathname.includes("/staff-member") ||
-              staffData?.ClientsProperties
-                ?.ViewAndEditFullClientAndPropertyInfo ||
-              staffData?.ClientsProperties
-                ?.ViewEditAndDeleteFullClientAndPropertyInfo ||
-              staffData?.Jobs?.JViewCreateAndEdit ||
-              staffData?.Jobs?.JViewCreateEditAndDelete) && (
-              <>
-                {!isMediumScreen && (
-                  <WhiteButton
-                    id="PopoverLegacy"
-                    type="button"
-                    style={{
-                      color: "white",
-                      background: "transparent",
-                      display: "flex",
-                      marginLeft: "39px",
-                      alignItems: "center",
-                      fontWeight: "600",
-                      marginTop: "30px",
-                      border: "none",
-                      marginBottom: "10px",
-                    }}
-                    className="create-button mb-3 text-white-color"
-                    onClick={isMediumScreen ? toggleDropdown : togglePopover}
-                    label={
-                      <>
-                        {isSidebarClosed ? (
-                          <img
-                            src={CreateWhite}
-                            alt="img"
-                            style={{
-                              marginRight: "32px",
-                              marginLeft: "-14px",
-                              height: "18px",
-                            }}
-                            width={"80%"}
-                          />
-                        ) : (
-                          <img
-                            src={CreateWhite}
-                            alt="img"
-                            style={{ marginRight: "23px", marginLeft: "1px" }}
-                          />
-                        )}
-                        {!isSidebarClosed && "Create"}
-                      </>
-                    }
-                  />
-                )}
-                {isMediumScreen ? (
-                  <Dropdown
-                    isOpen={dropdownOpen}
-                    toggle={toggleDropdown}
-                    className="dropdownBottom"
-                  >
-                    <DropdownToggle
-                      className=" drop-down-btn dropdownBotton"
-                      caret
-                      style={{
-                        backgroundColor: "transparent",
-                        border: "none",
-                        marginLeft: "38px",
-                        marginBottom: "-16px",
-                      }}
-                    >
-                      {isSidebarClosed ? (
-                        <img
-                          src={CreateWhite}
-                          alt="img"
-                          style={{
-                            marginRight: "32px",
-                            marginLeft: "-17px",
-                            height: "18px",
-                          }}
-                          width={"80%"}
-                          className="sidebarClosedSideIcon"
-                        />
-                      ) : (
-                        <img
-                          src={CreateWhite}
-                          alt="img"
-                          style={{ marginRight: "23px", marginLeft: "1px" }}
-                        />
-                      )}
-                      {!isSidebarClosed && "Create"}
-                    </DropdownToggle>
-                    <DropdownMenu>
-                      {(!location.pathname.includes("/staff-member") ||
-                        staffData?.ClientsProperties
-                          ?.ViewAndEditFullClientAndPropertyInfo ||
-                        staffData?.ClientsProperties
-                          ?.ViewEditAndDeleteFullClientAndPropertyInfo) && (
-                        <DropdownItem
-                          className="gap-2 d-flex"
-                          onClick={() => {
-                            if (isMediumScreen) {
-                              setIsSidebarDisplay(!isSidebarDisplay);
-                            }
-                            handleNavigation(
-                              CompanyName
-                                ? `/${CompanyName}/customer`
-                                : "/staff-member/add-customer",
-                              {
-                                state: {
-                                  navigats: [
-                                    "/index",
-                                    CompanyName ? "/customer" : "/add-customer",
-                                  ],
-                                },
-                              }
-                            );
-                          }}
-                        >
-                          <img src={Client} style={{ height: "20px" }} />
-                          Customer
-                        </DropdownItem>
-                      )}
-                      {(!location.pathname.includes("/staff-member") ||
-                        staffData?.Quotes?.ViewCreateAndEdit ||
-                        staffData?.Quotes?.ViewCreateEditAndDelete) && (
-                        <DropdownItem
-                          className="text-blue-color d-flex gap-2"
-                          onClick={() => {
-                            if (isMediumScreen) {
-                              setIsSidebarDisplay(!isSidebarDisplay);
-                            }
-                            handleNavigation(
-                              CompanyName
-                                ? `/${CompanyName}/quotes`
-                                : "/staff-member/add-quotes",
-                              {
-                                state: {
-                                  navigats: [
-                                    "/index",
-                                    CompanyName ? "/quotes" : "/add-quotes",
-                                  ],
-                                },
-                              }
-                            );
-                          }}
-                        >
-                          <img src={Quote} style={{ height: "20px" }} />
-                          Quote
-                        </DropdownItem>
-                      )}
-                      {((!location.pathname.includes("/staff-member") &&
-                        CompanyName) ||
-                        staffData?.Jobs?.JViewCreateAndEdit ||
-                        staffData?.Jobs?.JViewCreateEditAndDelete) && (
-                        <DropdownItem
-                          className="d-flex gap-2 text-blue-color"
-                          onClick={() => {
-                            if (isMediumScreen) {
-                              setIsSidebarDisplay(!isSidebarDisplay);
-                            }
-                            handleNavigation(`/${CompanyName}/contract`, {
-                              state: {
-                                navigats: ["/index", "/contract"],
-                              },
-                            });
-                          }}
-                        >
-                          <img src={Contract} style={{ height: "20px" }} />
-                          Contract
-                        </DropdownItem>
-                      )}
-                      {((!location.pathname.includes("/staff-member") &&
-                        CompanyName) ||
-                        staffData?.Jobs?.JViewCreateAndEdit ||
-                        staffData?.Jobs?.JViewCreateEditAndDelete) && (
-                        <DropdownItem
-                          className="d-flex gap-2 text-blue-color"
-                          onClick={() => {
-                            if (isMediumScreen) {
-                              setIsSidebarDisplay(!isSidebarDisplay);
-                            }
-                            handleNavigation(`/${CompanyName}/invoice`, {
-                              state: {
-                                navigats: ["/index", "/invoice"],
-                              },
-                            });
-                          }}
-                        >
-                          <img src={Invoice} style={{ height: "20px" }} />
-                          Invoice
-                        </DropdownItem>
-                      )}
-                    </DropdownMenu>
-                  </Dropdown>
-                ) : (
+          {tokenDecode.Role === "Company" && (
+            <>
+              {(CompanyName || location.pathname.includes("/staff-member")) &&
+                (!location.pathname.includes("/staff-member") ||
+                  staffData?.ClientsProperties
+                    ?.ViewAndEditFullClientAndPropertyInfo ||
+                  staffData?.ClientsProperties
+                    ?.ViewEditAndDeleteFullClientAndPropertyInfo ||
+                  staffData?.Jobs?.JViewCreateAndEdit ||
+                  staffData?.Jobs?.JViewCreateEditAndDelete) && (
                   <>
-                    <MyPopoverComponent
-                      popoverOpen={popoverOpen}
-                      togglePopover={togglePopover}
-                      handleNavigation={handleNavigation}
-                      CompanyName={CompanyName}
-                      staffData={staffData}
-                    />
+                    {!isMediumScreen && (
+                      <WhiteButton
+                        id="PopoverLegacy"
+                        type="button"
+                        style={{
+                          color: "#ffffff",
+                          backgroundColor: "transparent",
+                          display: "flex",
+                          alignItems: "center",
+                          marginLeft: "40px",
+                          fontWeight: 600,
+                          marginTop: "25px",
+                          marginBottom: "10px",
+                          border: "none",
+                          padding: "8px 16px",
+                          transition: "background-color 0.3s ease",
+                        }}
+                        className="create-button mb-3 text-white-color"
+                        onClick={
+                          isMediumScreen ? toggleDropdown : togglePopover
+                        }
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.backgroundColor =
+                            "rgba(255, 255, 255, 0.1)")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.backgroundColor =
+                            "transparent")
+                        }
+                        label={
+                          <>
+                            {isSidebarClosed ? (
+                              <img
+                                src={CreateWhite}
+                                alt="Create Icon"
+                                style={{
+                                  marginRight: "30px",
+                                  marginLeft: "-12px",
+                                  height: "18px",
+                                }}
+                                width="80%"
+                              />
+                            ) : (
+                              <img
+                                src={CreateWhite}
+                                alt="Create Icon"
+                                style={{
+                                  marginRight: "20px",
+                                  marginLeft: "2px",
+                                  height: "18px",
+                                }}
+                              />
+                            )}
+                            {!isSidebarClosed && "Create"}
+                          </>
+                        }
+                      />
+                    )}
+                    {isMediumScreen ? (
+                      <Dropdown
+                        isOpen={dropdownOpen}
+                        toggle={toggleDropdown}
+                        className="dropdownBottom"
+                      >
+                        <DropdownToggle
+                          className="drop-down-btn dropdownBotton"
+                          caret
+                          style={{
+                            backgroundColor: "transparent",
+                            border: "none",
+                            marginLeft: "40px",
+                            marginBottom: "-10px",
+                            color: "#ffffff",
+                            display: "flex",
+                            alignItems: "center",
+                            padding: "8px 16px",
+                            transition: "background-color 0.3s ease",
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "rgba(255, 255, 255, 0.1)")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "transparent")
+                          }
+                        >
+                          {isSidebarClosed ? (
+                            <img
+                              src={CreateWhite}
+                              alt="Create Icon"
+                              style={{
+                                marginRight: "30px",
+                                marginLeft: "-15px",
+                                height: "18px",
+                              }}
+                              width="80%"
+                              className="sidebarClosedSideIcon"
+                            />
+                          ) : (
+                            <img
+                              src={CreateWhite}
+                              alt="Create Icon"
+                              style={{
+                                marginRight: "20px",
+                                marginLeft: "2px",
+                                height: "18px",
+                              }}
+                            />
+                          )}
+                          {!isSidebarClosed && "Create"}
+                        </DropdownToggle>
+                        <DropdownMenu
+                          style={{
+                            backgroundColor: "#ffffff",
+                            borderRadius: "6px",
+                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                            marginTop: "5px",
+                          }}
+                        >
+                          {(!location.pathname.includes("/staff-member") ||
+                            staffData?.ClientsProperties
+                              ?.ViewAndEditFullClientAndPropertyInfo ||
+                            staffData?.ClientsProperties
+                              ?.ViewEditAndDeleteFullClientAndPropertyInfo) && (
+                            <DropdownItem
+                              className="gap-2 d-flex"
+                              onClick={() => {
+                                if (isMediumScreen) {
+                                  setIsSidebarDisplay(!isSidebarDisplay);
+                                }
+                                handleNavigation(
+                                  CompanyName
+                                    ? `/${CompanyName}/customer`
+                                    : "/staff-member/add-customer",
+                                  {
+                                    state: {
+                                      navigats: [
+                                        "/index",
+                                        CompanyName
+                                          ? "/customer"
+                                          : "/add-customer",
+                                      ],
+                                    },
+                                  }
+                                );
+                              }}
+                              style={{
+                                padding: "10px 20px",
+                                color: "rgb(6, 49, 100)",
+                                transition: "background-color 0.3s ease",
+                              }}
+                              onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  "rgba(6, 49, 100, 0.05)")
+                              }
+                              onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  "transparent")
+                              }
+                            >
+                              <img
+                                src={Client}
+                                style={{ height: "20px", marginRight: "10px" }}
+                              />
+                              Customer
+                            </DropdownItem>
+                          )}
+                          {(!location.pathname.includes("/staff-member") ||
+                            staffData?.Quotes?.ViewCreateAndEdit ||
+                            staffData?.Quotes?.ViewCreateEditAndDelete) && (
+                            <DropdownItem
+                              className="text-blue-color d-flex gap-2"
+                              onClick={() => {
+                                if (isMediumScreen) {
+                                  setIsSidebarDisplay(!isSidebarDisplay);
+                                }
+                                handleNavigation(
+                                  CompanyName
+                                    ? `/${CompanyName}/quotes`
+                                    : "/staff-member/add-quotes",
+                                  {
+                                    state: {
+                                      navigats: [
+                                        "/index",
+                                        CompanyName ? "/quotes" : "/add-quotes",
+                                      ],
+                                    },
+                                  }
+                                );
+                              }}
+                              style={{
+                                padding: "10px 20px",
+                                color: "rgb(6, 49, 100)",
+                                transition: "background-color 0.3s ease",
+                              }}
+                              onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  "rgba(6, 49, 100, 0.05)")
+                              }
+                              onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  "transparent")
+                              }
+                            >
+                              <img
+                                src={Quote}
+                                style={{ height: "20px", marginRight: "10px" }}
+                              />
+                              Quote
+                            </DropdownItem>
+                          )}
+                          {((!location.pathname.includes("/staff-member") &&
+                            CompanyName) ||
+                            staffData?.Jobs?.JViewCreateAndEdit ||
+                            staffData?.Jobs?.JViewCreateEditAndDelete) && (
+                            <DropdownItem
+                              className="d-flex gap-2 text-blue-color"
+                              onClick={() => {
+                                if (isMediumScreen) {
+                                  setIsSidebarDisplay(!isSidebarDisplay);
+                                }
+                                handleNavigation(`/${CompanyName}/contract`, {
+                                  state: {
+                                    navigats: ["/index", "/contract"],
+                                  },
+                                });
+                              }}
+                              style={{
+                                padding: "10px 20px",
+                                color: "rgb(6, 49, 100)",
+                                transition: "background-color 0.3s ease",
+                              }}
+                              onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  "rgba(6, 49, 100, 0.05)")
+                              }
+                              onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  "transparent")
+                              }
+                            >
+                              <img
+                                src={Contract}
+                                style={{ height: "20px", marginRight: "10px" }}
+                              />
+                              Contract
+                            </DropdownItem>
+                          )}
+                          {((!location.pathname.includes("/staff-member") &&
+                            CompanyName) ||
+                            staffData?.Jobs?.JViewCreateAndEdit ||
+                            staffData?.Jobs?.JViewCreateEditAndDelete) && (
+                            <DropdownItem
+                              className="d-flex gap-2 text-blue-color"
+                              onClick={() => {
+                                if (isMediumScreen) {
+                                  setIsSidebarDisplay(!isSidebarDisplay);
+                                }
+                                handleNavigation(`/${CompanyName}/invoice`, {
+                                  state: {
+                                    navigats: ["/index", "/invoice"],
+                                  },
+                                });
+                              }}
+                              style={{
+                                padding: "10px 20px",
+                                color: "rgb(6, 49, 100)",
+                                transition: "background-color 0.3s ease",
+                              }}
+                              onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  "rgba(6, 49, 100, 0.05)")
+                              }
+                              onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  "transparent")
+                              }
+                            >
+                              <img
+                                src={Invoice}
+                                style={{ height: "20px", marginRight: "10px" }}
+                              />
+                              Invoice
+                            </DropdownItem>
+                          )}
+                        </DropdownMenu>
+                      </Dropdown>
+                    ) : (
+                      <MyPopoverComponent
+                        popoverOpen={popoverOpen}
+                        togglePopover={togglePopover}
+                        handleNavigation={handleNavigation}
+                        CompanyName={CompanyName}
+                        staffData={staffData}
+                      />
+                    )}
                   </>
                 )}
-              </>
-            )}
+            </>
+          )}
           <Grid className="menu pt-2" style={{ cursor: "pointer" }}>
             {createLinks(routesData ? routesData : routes)}
           </Grid>

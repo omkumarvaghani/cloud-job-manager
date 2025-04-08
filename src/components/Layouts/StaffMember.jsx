@@ -98,7 +98,7 @@ const StaffMember = () => {
 
   const getRoutes = (routes) => {
     return routes?.map((prop, key) => {
-      if (prop.layout === "/:CompanyName/w" && !prop.isCollapse) {
+      if (prop.layout === "/:CompanyName/staff-member" && !prop.isCollapse) {
         return (
           <Route path={prop.path} element={prop.component} key={key} exact />
         );
@@ -129,7 +129,7 @@ const StaffMember = () => {
       }}
     >
       <Sidebar
-        layout={`/:CompanyName/w`}
+        layout={`/:CompanyName/staff-member`}
         isSidebarClosed={isSidebarClosed}
         setIsSidebarClosed={setIsSidebarClosed}
         isSidebarDisplay={isSidebarDisplay}
@@ -158,7 +158,7 @@ const StaffMember = () => {
             {getRoutes(routes)}
             <Route
               path="*"
-              element={<Navigate to={`/${CompanyName}/w/index`} replace />}
+              element={<Navigate to={`/${CompanyName}/staff-member/index`} replace />}
             />
           </Routes>
         </Grid>

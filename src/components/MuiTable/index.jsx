@@ -905,17 +905,48 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
           </Breadcrumb>
         </Grid>
         <Grid className="d-flex align-items-center Navigator navigatorBarUrl">
-          {tokenDecode.Role === Worker || tokenDecode.Role === Customer ? (
-            <Grid style={{ borderRadius: "4px", backgroundColor: "white" }}>
-              {console.log(tokenDecode, "tokenDecode")}
+          {tokenDecode.Role === "Worker" ||
+          tokenDecode.Role === "Customer" ||
+          tokenDecode.Role === "Company" ? (
+            <Grid
+              style={{
+                display: "flex", // Flexbox for alignment
+                alignItems: "center", // Center vertically
+                justifyContent: "flex-start", // Align content to the left (common for navbar branding)
+                borderRadius: "6px", // Slightly larger radius for softness
+                backgroundColor: "#ffffff", // Clean white background
+                padding: "8px 24px", // Tighter vertical, wider horizontal padding
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)", // Softer, deeper shadow for elevation
+                borderLeft: "4px solid rgb(6, 49, 100)", // Accent border matching text color
+                transition: "all 0.3s ease", // Smooth hover effect
+                cursor: "pointer", // Indicates interactivity
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.boxShadow =
+                  "0 6px 16px rgba(0, 0, 0, 0.12)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.boxShadow =
+                  "0 4px 12px rgba(0, 0, 0, 0.08)")
+              }
+            >
+              {console.log("Token Data:", tokenDecode)}
               <Typography
                 style={{
-                  color: "rgb(6, 49, 100)",
-                  fontSize: "20px",
-                  fontWeight: "500",
+                  color: "rgb(6, 49, 100)", // Your brand color
+                  fontSize: "22px", // Slightly larger for prominence
+                  fontWeight: 600, // Bolder for emphasis
+                  margin: 0, // No extra spacing
+                  textTransform: "uppercase", // Strong branding
+                  letterSpacing: "1.2px", // Enhanced readability
+                  fontFamily: "'Roboto', sans-serif", // Clean, modern font (adjust as needed)
+                  background:
+                    "linear-gradient(90deg, rgb(6, 49, 100), rgb(10, 80, 160))", // Gradient effect
+                  WebkitBackgroundClip: "text", // Text gradient (works in Webkit browsers)
+                  WebkitTextFillColor: "transparent", // Makes gradient visible
                 }}
               >
-                {tokenDecode.CompanyName}
+                {tokenDecode.CompanyName || "Unnamed Company"}
               </Typography>
             </Grid>
           ) : null}
@@ -943,25 +974,47 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                       tag="Grid"
                       style={{ cursor: "pointer" }}
                       onClick={(e) => {
-                        if (CompanyName) {
+                        let path = `/${CompanyName}/profile`;
+                      
+                        if (
+                          location.pathname?.split("/")[2] === "customers" || 
+                          location.pathname?.split("/")[2] === "staff-member"
+                        ) {
+                          if (location.pathname?.split("/")[2] === "customers") {
+                            navigate(
+                              `/${
+                                location?.pathname?.split("/")[2]
+                              }/customers/profile`,
+                              {
+                                state: {
+                                  navigats: [
+                                    "/index",
+                                    `${CompanyName}/customers/profile`,
+                                  ],
+                                },
+                              }
+                            );
+                          } else if (location.pathname?.split("/")[2] === "staff-member") {
+                            navigate(
+                              `/${
+                                location?.pathname?.split("/")[2]
+                              }/staff-member/profile`,
+                              {
+                                state: {
+                                  navigats: [
+                                    "/index",
+                                    `/${CompanyName}/staff-member/profile`,
+                                  ],
+                                },
+                              }
+                            );
+                          }
+                        } else if (CompanyName) {
                           navigate(`/${CompanyName}/profile`, {
                             state: {
                               navigats: ["/index", "/profile"],
                             },
                           });
-                        } else if (
-                          location.pathname?.split("/")[1] === "staff-member"
-                        ) {
-                          navigate(
-                            `/${
-                              location?.pathname?.split("/")[1]
-                            }/staff-memberprofile`,
-                            {
-                              state: {
-                                navigats: ["/index", "/staff-memberprofile"],
-                              },
-                            }
-                          );
                         } else if (
                           location.pathname?.split("/")[1] === "superadmin"
                         ) {
@@ -979,10 +1032,13 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                           navigate(
                             `/${
                               location?.pathname?.split("/")[1]
-                            }/customerprofile`,
+                            }/staff-member/profile`,
                             {
                               state: {
-                                navigats: ["/index", "/customerprofile"],
+                                navigats: [
+                                  "/index",
+                                  `/${CompanyName}/staff-member/profile`,
+                                ],
                               },
                             }
                           );
@@ -1120,7 +1176,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                                 );
                               }
                             }}
-                          >      
+                          >
                             <img src={AccountBilling} />
                             <span className="mx-2" style={{ fontSize: "12px" }}>
                               Account & Billing
