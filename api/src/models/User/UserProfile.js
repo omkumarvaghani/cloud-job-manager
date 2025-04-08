@@ -36,6 +36,7 @@ const userProfileSchema = new mongoose.Schema(
 
     /*** COMPANY-SPECIFIC FIELDS ***/
     CompanyName: { type: String, trim: true },
+    CompanyUrl: { type: String, trim: true },
     OwnerName: { type: String, trim: true },
     IndustryId: { type: String },
     TeamSizeId: { type: String },

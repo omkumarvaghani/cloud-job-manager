@@ -38,7 +38,6 @@ async function sendWelcomeEmail(
   pass,
   from_email
 ) {
-  console.log(EmailId, "EmailId");
   // host = host ? host : "smtp.gmail.com";
   // port = port ? port : 587;
   // secure = secure != null ? secure : false;

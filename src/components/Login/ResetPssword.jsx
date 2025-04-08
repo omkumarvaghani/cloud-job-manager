@@ -43,6 +43,8 @@ const ResetPassword = () => {
     AxiosInstance.get(`/v1/forget-pass/check_forget_token_status/${token}`)
       .then((response) => {
         const data = response?.data;
+        console.log(data, "datadata");
+
         setLoader(false);
         if (data.expired) {
           setTokenExpired(true);

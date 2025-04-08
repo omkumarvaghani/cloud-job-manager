@@ -32,7 +32,6 @@ import {
 } from "../../../components/Icon/Index";
 import clientcontact from "../../../assets/White-sidebar-icon/Home.svg";
 
-
 function AddClient() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -251,7 +250,9 @@ function AddClient() {
     const fetchData = async () => {
       try {
         if (location?.state?.id) {
-          const res = await AxiosInstance.get(`/v1/user/${location?.state?.id}`);
+          const res = await AxiosInstance.get(
+            `/v1/user/${location?.state?.id}`
+          );
           const userProfile = res?.data?.data?.userProfile;
           const userLocations = res?.data?.data?.locations || [];
           setUserAddress(userLocations);
@@ -544,7 +545,7 @@ function AddClient() {
                     Property details
                   </span>
                 </CardTitle>
-                {!location?.state?.id || (userAddress.length <= 1) ? (
+                {!location?.state?.id || userAddress.length <= 1 ? (
                   <Grid className="my-4 mb-0 px-0">
                     <Address
                       setSelectedCountry={setSelectedCountry}

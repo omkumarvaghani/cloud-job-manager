@@ -32,7 +32,7 @@ exports.forgetPaswordMail = async (req, res) => {
     }
 
     const token = await createResetToken({ EmailAddress });
-    const url = `https://app.cloudjobmanager.com/auth/reset-password?token=${token}`;
+    const url = `http://localhost:4985/auth/reset-password?token=${token}`;
 
     const defaultBody = `
         <div style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff;">
