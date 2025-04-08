@@ -85,6 +85,7 @@ exports.forgetPaswordMail = async (req, res) => {
       statusCode: 200,
       message: "Password reset email sent successfully",
       emailStatus,
+      user,
     });
   } catch (error) {
     console.error("Error in resetpasswordmail API:", error.message);

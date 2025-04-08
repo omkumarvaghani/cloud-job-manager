@@ -408,22 +408,20 @@ const Sidebar = ({
                             marginLeft: "0",
                           }}
                           onClick={(e) => {
+                            let path = prop.layout;
+                            path = path.replace(":CompanyName", CompanyName);
+
                             if (isMediumScreen) {
                               setIsSidebarDisplay(!isSidebarDisplay);
                             }
                             e.stopPropagation();
-                            navigate(
-                              CompanyName
-                                ? `/${CompanyName}` + item.path
-                                : prop.layout + item.path,
-                              {
-                                state: {
-                                  navigats: item?.path?.includes("/index")
-                                    ? [prop?.path, item?.path]
-                                    : ["/index", prop?.path, item?.path],
-                                },
-                              }
-                            );
+                            navigate(path + item.path, {
+                              state: {
+                                navigats: item?.path?.includes("/index")
+                                  ? [prop?.path, item?.path]
+                                  : ["/index", prop?.path, item?.path],
+                              },
+                            });
                           }}
                         >
                           <li
@@ -507,21 +505,20 @@ const Sidebar = ({
                     >
                       <li
                         onClick={() => {
+                          let path = prop.layout;
+                          path = path.replace(":CompanyName", CompanyName);
+
                           if (isMediumScreen) {
                             setIsSidebarDisplay(!isSidebarDisplay);
                           }
-                          navigate(
-                            CompanyName
-                              ? `/${CompanyName}` + item.path
-                              : prop.layout + item.path,
-                            {
-                              state: {
-                                navigats: item?.path?.includes("/index")
-                                  ? [item.path]
-                                  : ["/index", item.path],
-                              },
-                            }
-                          );
+
+                          navigate(path + item.path, {
+                            state: {
+                              navigats: item?.path?.includes("/index")
+                                ? [item.path]
+                                : ["/index", item.path],
+                            },
+                          });
                         }}
                         className="mb-3"
                         style={{
@@ -587,22 +584,20 @@ const Sidebar = ({
                 >
                   <li
                     onClick={(e) => {
+                      let path = prop.layout;
+                      path = path.replace(":CompanyName", CompanyName);
+
                       if (isMediumScreen) {
                         setIsSidebarDisplay(!isSidebarDisplay);
                       }
                       e.stopPropagation();
-                      navigate(
-                        CompanyName
-                          ? `/${CompanyName}` + prop.path
-                          : prop.layout + prop.path,
-                        {
-                          state: {
-                            navigats: prop.path.includes("/index")
-                              ? [prop.path]
-                              : ["/index", prop.path],
-                          },
-                        }
-                      );
+                      navigate(path + prop.path, {
+                        state: {
+                          navigats: prop.path.includes("/index")
+                            ? [prop.path]
+                            : ["/index", prop.path],
+                        },
+                      });
                     }}
                     className="mb-3"
                     style={{
@@ -718,7 +713,7 @@ const Sidebar = ({
                 toggleSidebar();
               }
             }}
-          >     
+          >
             {!isMediumScreen ? (
               <KeyboardArrowRightRoundedIcon />
             ) : (

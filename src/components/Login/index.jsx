@@ -135,7 +135,7 @@ const Login = () => {
         localStorage.setItem("workerToken", res.data.token);
         localStorage.setItem("worker_id", res.data.data.UserId);
         setTimeout(() => {
-          navigate("/staff-member/index", {
+          navigate(`/${res.data.data.CompanyName}/w/index`, {
             state: { navigats: ["/index"] },
           });
         }, 1000);
@@ -144,7 +144,7 @@ const Login = () => {
         localStorage.setItem("customerToken", res.data.token);
         localStorage.setItem("CustomerId", res.data.data.UserId);
         setTimeout(() => {
-          navigate("/customers/index", {
+          navigate(`/${res.data.data.CompanyName}/c/index`, {
             state: { navigats: ["/index"] },
           });
         }, 1000);
@@ -192,8 +192,8 @@ const Login = () => {
               !location.pathname.includes("/customers")
             ) {
               localStorage.setItem("CustomerId", res.data.data.CustomerId);
-              navigate("/customers/index", {
-                state: { navigats: ["/index"] },
+              navigate(`/${res.data.data.CompanyName}/c/index`, {
+                state: { navigats: [`/index`] },
               });
             } else if (
               res.data.data.Role === "Company" &&
@@ -208,7 +208,7 @@ const Login = () => {
               !location.pathname.includes(`/staff-member`)
             ) {
               localStorage.setItem("worker_id", res.data.data.WorkerId);
-              navigate(`/staff-member/index`, {
+              navigate(`/${res.data.data.CompanyName}/w/index`, {
                 state: { navigats: ["/index"] },
               });
             }
