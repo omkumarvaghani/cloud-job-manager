@@ -52,43 +52,22 @@ const Customer = ({
             <Grid className="searchBarOfTable">
               <BlueButton
                 onClick={() => {
+                  // Default to an empty array if navigats is undefined
+                  const navigats = location?.state?.navigats || [];
                   if (CompanyName) {
                     navigate(`/${CompanyName}/add-customer`, {
                       state: {
-                        navigats: [
-                          ...location?.state?.navigats,
-                          "/add-customer",
-                        ],
+                        navigats: [...navigats, "/add-customer"],
                       },
                     });
                   } else {
                     navigate(`/staff-member/add-customer`, {
                       state: {
-                        navigats: [
-                          ...location?.state?.navigats,
-                          "/add-customer",
-                        ],
+                        navigats: [...navigats, "/add-customer"],
                       },
                     });
                   }
                 }}
-                // onClick={() => {
-                //   const navigats = location?.state?.navigats || [];
-                //   if (CompanyName) {
-                //     navigate(`/${CompanyName}/add-customer`, {
-                //       state: {
-                //         navigats: [...navigats, "/add-customer"],
-                //       },
-                //     });
-                //   } else {
-                //     navigate(`/staff-member/add-customer`, {
-                //       state: {
-                //         navigats: [...navigats, "/add-customer"],
-                //       },
-                //     });
-                //   }
-                // }}
-
                 label="Add customers"
               />
             </Grid>
@@ -113,11 +92,11 @@ const Customer = ({
             <Typography className="quot text-light customerList_head heading-five tableNameHead fw-medium">
               Customers List
             </Typography>
-            <Grid className=" customersearch d-flex customer_searchBar searchBarOfTable">
+            <Grid className="customersearch d-flex customer_searchBar searchBarOfTable">
               <JobberSearch
                 search={search}
                 setSearch={setSearch}
-                style={{ background: "transparant", color: "white" }}
+                style={{ background: "transparent", color: "white" }}
               />
             </Grid>
           </CardHeader>
