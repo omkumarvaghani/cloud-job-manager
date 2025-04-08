@@ -228,7 +228,7 @@ const Addquotes = ({
                               (Array.isArray(customersData?.location) &&
                               customersData.location.length > 0
                                 ? customersData.location[0]?.Address
-                                : undefined) ||
+                                : customersData.location?.Address) ||
                               (Array.isArray(customersData?.locationDetails) &&
                               customersData.locationDetails.length > 0
                                 ? customersData.locationDetails[0]?.Address
@@ -240,45 +240,45 @@ const Addquotes = ({
                               (Array.isArray(customersData?.location) &&
                               customersData.location.length > 0
                                 ? customersData.location[0]?.City
-                                : undefined) ||
+                                : customersData.location?.City) ||
                               (Array.isArray(customersData?.locationDetails) &&
                               customersData.locationDetails.length > 0
                                 ? customersData.locationDetails[0]?.City
                                 : undefined) ||
-                              "-"}{" "}
+                              "City not available"}{" "}
                             {propertyData?.State ||
                               (Array.isArray(customersData?.location) &&
                               customersData.location.length > 0
                                 ? customersData.location[0]?.State
-                                : undefined) ||
+                                : customersData.location?.State) ||
                               (Array.isArray(customersData?.locationDetails) &&
                               customersData.locationDetails.length > 0
                                 ? customersData.locationDetails[0]?.State
                                 : undefined) ||
-                              "-"}{" "}
+                              "State not available"}{" "}
                             ,
                             {propertyData?.Zip ||
                               (Array.isArray(customersData?.location) &&
                               customersData.location.length > 0
                                 ? customersData.location[0]?.Zip
-                                : undefined) ||
+                                : customersData.location?.Zip) ||
                               (Array.isArray(customersData?.locationDetails) &&
                               customersData.locationDetails.length > 0
                                 ? customersData.locationDetails[0]?.Zip
                                 : undefined) ||
-                              "-"}
+                              "Zi not available"}
                             ,
                             <br />
                             {propertyData?.Country ||
                               (Array.isArray(customersData?.location) &&
                               customersData.location.length > 0
                                 ? customersData.location[0]?.Country
-                                : undefined) ||
+                                : customersData.location?.Country) ||
                               (Array.isArray(customersData?.locationDetails) &&
                               customersData.locationDetails.length > 0
                                 ? customersData.locationDetails[0]?.Country
                                 : undefined) ||
-                              "-"}{" "}
+                              "Country not available"}{" "}
                             <br />
                             <a
                               onClick={(e) => {

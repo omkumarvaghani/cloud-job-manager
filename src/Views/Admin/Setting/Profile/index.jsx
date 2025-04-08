@@ -732,6 +732,7 @@ const Profile = () => {
                                         setShowOldPassword(!showOldPassword)
                                       }
                                       edge="end"
+                                      tabIndex={-1}
                                     >
                                       {showOldPassword ? (
                                         <VisibilityOffIcon />
@@ -771,6 +772,7 @@ const Profile = () => {
                                         setShowPassword(!showPassword)
                                       }
                                       edge="end"
+                                      tabIndex={-1}
                                     >
                                       {showPassword ? (
                                         <VisibilityOffIcon />
@@ -814,6 +816,7 @@ const Profile = () => {
                                         setShowCPassword(!showCPassword)
                                       }
                                       edge="end"
+                                      tabIndex={-1}
                                     >
                                       {showCPassword ? (
                                         <VisibilityOffIcon />
