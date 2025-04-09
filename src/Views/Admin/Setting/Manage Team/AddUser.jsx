@@ -69,19 +69,29 @@ const AddUser = () => {
   const { CompanyUrl } = useParams();
 
   const [selectedRole, setSelectedRole] = useState(undefined);
+  const [data, setData] = useState();
   const [loader, setLoader] = useState(true);
+  const CompanyId = location?.state?.id;
   const getData = async () => {
     try {
-      if (location?.state?.id) {
-        const response = await AxiosInstance.get(
-          `${baseUrl}/v1/worker/get/${location?.state?.id}`
-        );
-        const fetchedData = response?.data?.data;
-        formik.setValues(fetchedData);
-        const data = fetchedData.permissions;
-        setSelectedRole(data);
-        setTimes(JSON.parse(fetchedData.ScheduleTime));
-      }
+      console.log(
+        location?.state?.id,
+        "location?.state?.idlocation?.state?.id"
+      );
+      console.log(location?.state, "location?.state");
+      console.log(location, "location");
+      // if (location?.state?.id) {
+      const response = await AxiosInstance.get(
+        `${baseUrl}/v1/worker/get/${location?.state?.id}`
+      );
+      console.log(response, "response");
+      const fetchedData = response?.data?.data;
+      setData(response?.data?.data);
+      formik.setValues(fetchedData);
+      const data = fetchedData.permissions;
+      setSelectedRole(data);
+      setTimes(JSON.parse(fetchedData.ScheduleTime));
+      // }
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -125,6 +135,7 @@ const AddUser = () => {
       Title: "",
       Description: "",
       Schedule: "",
+      OwnerName: "",
     },
     validationSchema: Yup.object({
       FirstName: Yup.string().required("First Name Required"),
@@ -636,47 +647,66 @@ const AddUser = () => {
 
                 <Grid className="responsive-container gap-3 personalInfoMation">
                   <Grid className="w-50 sub-Grid infoInputBoxesWidth">
-                    <Grid className="d-flex  justify-content-between  gap-2">
+                    {data && data.AccountType === "Account Owner" ? (
                       <InputText
-                        value={formik.values?.FirstName}
+                        value={formik.values?.OwnerName}
                         onChange={formik.handleChange}
-                        onBlur={(e) => {
-                          formik.handleBlur(e);
-                        }}
+                        onBlur={(e) => formik.handleBlur(e)}
                         error={
-                          formik.touched.FirstName &&
-                          Boolean(formik.errors.FirstName)
+                          formik.touched.OwnerName &&
+                          Boolean(formik.errors.OwnerName)
                         }
                         helperText={
-                          formik.touched.FirstName && formik.errors.FirstName
+                          formik.touched.OwnerName && formik.errors.OwnerName
                         }
-                        name="FirstName"
-                        label="First Name"
+                        name="OwnerName"
+                        label="Owner Name"
                         type="text"
                         className="text-blue-color w-100 m-0 mb-4"
                         fieldHeight="56px"
                       />
-
-                      <InputText
-                        value={formik.values?.LastName}
-                        onChange={formik.handleChange}
-                        onBlur={(e) => {
-                          formik.handleBlur(e);
-                        }}
-                        error={
-                          formik.touched.LastName &&
-                          Boolean(formik.errors.LastName)
-                        }
-                        helperText={
-                          formik.touched.LastName && formik.errors.LastName
-                        }
-                        name="LastName"
-                        label="Last Name"
-                        type="text"
-                        className="text-blue-color w-100 m-0 mb-4"
-                        fieldHeight="56px"
-                      />
-                    </Grid>
+                    ) : (
+                      <Grid className="d-flex justify-content-between gap-2">
+                        {console.log(
+                          formik.values?.FirstName,
+                          "formik.values?.FirstName"
+                        )}
+                        <InputText
+                          value={formik.values?.FirstName}
+                          onChange={formik.handleChange}
+                          onBlur={(e) => formik.handleBlur(e)}
+                          error={
+                            formik.touched.FirstName &&
+                            Boolean(formik.errors.FirstName)
+                          }
+                          helperText={
+                            formik.touched.FirstName && formik.errors.FirstName
+                          }
+                          name="FirstName"
+                          label="First Name"
+                          type="text"
+                          className="text-blue-color w-100 m-0 mb-4"
+                          fieldHeight="56px"
+                        />
+                        <InputText
+                          value={formik.values?.LastName}
+                          onChange={formik.handleChange}
+                          onBlur={(e) => formik.handleBlur(e)}
+                          error={
+                            formik.touched.LastName &&
+                            Boolean(formik.errors.LastName)
+                          }
+                          helperText={
+                            formik.touched.LastName && formik.errors.LastName
+                          }
+                          name="LastName"
+                          label="Last Name"
+                          type="text"
+                          className="text-blue-color w-100 m-0 mb-4"
+                          fieldHeight="56px"
+                        />
+                      </Grid>
+                    )}
                     <InputText
                       value={formik.values?.EmailAddress}
                       onChange={formik.handleChange}
@@ -729,45 +759,46 @@ const AddUser = () => {
                     />
                   </Grid>
                 </Grid>
-
-                <Grid className="d-flex gap-3 responsive-container personalInfoMation ">
-                  <Grid className="w-50 sub-Grid infoInputBoxesWidth">
-                    <Typography
-                      className="text-blue-color labor labor-top mb-3 adduserLaborCost"
-                      style={{ fontWeight: 700, fontSize: "18px" }}
-                    >
-                      Labor Cost
-                    </Typography>
-                    <DollerInput
-                      value={formik.values?.LaborCost}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      error={
-                        formik.touched.LaborCost &&
-                        Boolean(formik.errors.LaborCost)
-                      }
-                      helperText={
-                        formik.touched.LaborCost && formik.errors.LaborCost
-                      }
-                      name="LaborCost"
-                      label="LaborCost"
-                      type="text"
-                      placeholder="Enter Labor Cost"
-                      className="text-blue-color w-100 m-0 mb-3 personalLaborInput"
-                      fieldHeight="60px"
-                      endAdornment={
-                        <InputAdornment
-                          position="end"
-                          className="text-blue-color"
-                        >
-                          <Typography style={{ fontSize: "12px" }}>
-                            per hour
-                          </Typography>
-                        </InputAdornment>
-                      }
-                    />
+                {data && data.AccountType === "Account Owner" ? null : (
+                  <Grid className="d-flex gap-3 responsive-container personalInfoMation">
+                    <Grid className="w-50 sub-Grid infoInputBoxesWidth">
+                      <Typography
+                        className="text-blue-color labor labor-top mb-3 adduserLaborCost"
+                        style={{ fontWeight: 700, fontSize: "18px" }}
+                      >
+                        Labor Cost
+                      </Typography>
+                      <DollerInput
+                        value={formik.values?.LaborCost}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.LaborCost &&
+                          Boolean(formik.errors.LaborCost)
+                        }
+                        helperText={
+                          formik.touched.LaborCost && formik.errors.LaborCost
+                        }
+                        name="LaborCost"
+                        label="LaborCost"
+                        type="text"
+                        placeholder="Enter Labor Cost"
+                        className="text-blue-color w-100 m-0 mb-3 personalLaborInput"
+                        fieldHeight="60px"
+                        endAdornment={
+                          <InputAdornment
+                            position="end"
+                            className="text-blue-color"
+                          >
+                            <Typography style={{ fontSize: "12px" }}>
+                              per hour
+                            </Typography>
+                          </InputAdornment>
+                        }
+                      />
+                    </Grid>
                   </Grid>
-                </Grid>
+                )}
               </Row>
               <Grid>
                 <Grid className="sub-Grid">
@@ -848,7 +879,9 @@ const AddUser = () => {
                 </Grid>
               </Grid>
             </Card>
-            <Permissions data={selectedRole} setData={setSelectedRole} />
+            {data && data.AccountType === "Account Owner" ? null : (
+              <Permissions data={selectedRole} setData={setSelectedRole} />
+            )}
             <Card
               style={{
                 padding: "40px",
@@ -1063,22 +1096,6 @@ const AddUser = () => {
                   </FormGroup>
                 </Col>
                 <Col className="col-8 d-flex gap-1" xl={8}>
-                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <TimePicker
-                      label="Start Time"
-                      value={isChecked[day] ? dayjs(times[day].start) : null}
-                      onChange={handleTimeChange(day, "start")}
-                      disabled={!isChecked[day]}
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                    <TimePicker
-                      label="End Time"
-                      value={isChecked[day] ? dayjs(times[day].end) : null}
-                      onChange={handleTimeChange(day, "end")}
-                      disabled={!isChecked[day]}
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                  </LocalizationProvider> */}
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <TimePicker
                       label="Start Time"
