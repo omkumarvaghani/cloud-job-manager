@@ -169,7 +169,7 @@ const AddUser = () => {
         let response;
         if (location?.state?.id) {
           response = await AxiosInstance.put(
-            `${baseUrl}/worker/${location?.state?.id}`,
+            `${baseUrl}/v1/worker/${location?.state?.id}`,
             object
           );
         } else {
@@ -770,7 +770,13 @@ const AddUser = () => {
                       </Typography>
                       <DollerInput
                         value={formik.values?.LaborCost}
-                        onChange={formik.handleChange}
+                        onChange={(e) => {
+                          const sanitizedValue = e.target.value.replace(
+                            /[^0-9]/g,
+                            ""
+                          );
+                          formik.setFieldValue("LaborCost", sanitizedValue);
+                        }}
                         onBlur={formik.handleBlur}
                         error={
                           formik.touched.LaborCost &&
