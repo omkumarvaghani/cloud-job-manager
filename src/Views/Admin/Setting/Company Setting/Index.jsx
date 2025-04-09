@@ -13,7 +13,7 @@ import moment from "moment";
 function AddClient() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [loader, setLoader] = useState(false);
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -96,8 +96,8 @@ function AddClient() {
             }, 500);
             navigate(
               `/${
-                CompanyName
-                  ? CompanyName + "/customer"
+                CompanyUrl
+                  ? CompanyUrl + "/customer"
                   : "staff-member" + "/workercustomer"
               }`,
               {
@@ -161,8 +161,8 @@ function AddClient() {
               showToast.success(response?.data?.message);
               navigate(
                 `/${
-                  CompanyName
-                    ? CompanyName + "/customer"
+                  CompanyUrl
+                    ? CompanyUrl + "/customer"
                     : "staff-member" + "/workercustomer"
                 }`,
                 {
@@ -390,7 +390,7 @@ function AddClient() {
         setSelectedCountry={setSelectedCountry}
         handlePhoneChange={handlePhoneChange}
         isEdited={isEdited}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
         handleZipChange={handleZipChange}
         times={times}
         handleSave={handleSave}

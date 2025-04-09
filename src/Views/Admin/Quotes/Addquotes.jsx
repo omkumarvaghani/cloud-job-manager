@@ -18,7 +18,7 @@ function AddQuote() {
   const location = useLocation();
   const toggle = () => setDropdown(!dropdown);
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [redirectToContract, setRedirectToContract] = useState(false);
   const [isNumChange, setIsNumChange] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -216,8 +216,8 @@ function AddQuote() {
 
           if (redirectToContract) {
             navigate(
-              CompanyName
-                ? `/${CompanyName}/add-contract`
+              CompanyUrl
+                ? `/${CompanyUrl}/add-contract`
                 : `/staff-member/add-contract`,
               {
                 state: {
@@ -230,15 +230,15 @@ function AddQuote() {
             );
           } else {
             navigate(
-              CompanyName
-                ? `/${CompanyName}/quotes`
+              CompanyUrl
+                ? `/${CompanyUrl}/quotes`
                 : `/staff-member/WorkerQuotes`,
               {
                 replace: true,
                 state: {
                   navigats: [
                     "/index",
-                    CompanyName ? "/quotes" : "/WorkerQuotes",
+                    CompanyUrl ? "/quotes" : "/WorkerQuotes",
                   ],
                 },
               }
@@ -573,10 +573,10 @@ function AddQuote() {
   //   if (formik.dirty || lineItems.some(item => item.isNew)) {
   //     const confirmCancel = window.confirm("You have unsaved changes. Are you sure you want to cancel?");
   //     if (confirmCancel) {
-  //       navigate(CompanyName ? `/${CompanyName}/quotes` : `/staff-member/WorkerQuotes`);
+  //       navigate(CompanyUrl ? `/${CompanyUrl}/quotes` : `/staff-member/WorkerQuotes`);
   //     }
   //   } else {
-  //     navigate(CompanyName ? `/${CompanyName}/quotes` : `/staff-member/WorkerQuotes`);
+  //     navigate(CompanyUrl ? `/${CompanyUrl}/quotes` : `/staff-member/WorkerQuotes`);
   //   }
   // };
   return (
@@ -630,7 +630,7 @@ function AddQuote() {
         setPropertyData={setPropertyData}
         setCustomersData={setCustomersData}
         emailData={emailData}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
       />
     </>
   );

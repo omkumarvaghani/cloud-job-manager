@@ -34,7 +34,7 @@ const ClientModal = ({
   const baseUrl = process.env.REACT_APP_BASE_API;
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [clientData, setClientData] = useState([]);
   const [locationData, setLocationData] = useState([]);
   const [searchInput, setSearchInput] = useState("");
@@ -70,7 +70,7 @@ const ClientModal = ({
   }, []);
 
   const handleClose = (id) => {
-    navigate(`/${CompanyName}/invoicetable`, {
+    navigate(`/${CompanyUrl}/invoicetable`, {
       state: {
         CustomerId: id,
         navigats: [...location?.state?.navigats, "/invoicetable"],
@@ -203,7 +203,7 @@ const ClientModal = ({
                     className="btn bg-button-blue-color text-white-color flex-grow-1 ms-2 mb-2 cratenclientmodal"
                     style={{ minWidth: "0", fontSize: "14px" }}
                     onClick={() => {
-                      navigate(`/${CompanyName}/add-client`, {
+                      navigate(`/${CompanyUrl}/add-client`, {
                         state: {
                           previewPage: location?.pathname,
                           previewData: {

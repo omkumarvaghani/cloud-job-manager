@@ -35,7 +35,7 @@ import clientcontact from "../../../assets/White-sidebar-icon/Home.svg";
 function AddClient() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [loader, setLoader] = useState(false);
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -117,8 +117,8 @@ function AddClient() {
             showToast.success(response?.data?.message);
             navigate(
               `/${
-                CompanyName
-                  ? CompanyName + "/customer"
+                CompanyUrl
+                  ? CompanyUrl + "/customer"
                   : "staff-member" + "/workercustomer"
               }`,
               {
@@ -156,8 +156,8 @@ function AddClient() {
             } else {
               navigate(
                 `/${
-                  CompanyName
-                    ? CompanyName + "/customer"
+                  CompanyUrl
+                    ? CompanyUrl + "/customer"
                     : "staff-member" + "/workercustomer"
                 }`,
                 {
@@ -339,8 +339,8 @@ function AddClient() {
               }
               navigate(
                 `/${
-                  CompanyName
-                    ? CompanyName + "/customer"
+                  CompanyUrl
+                    ? CompanyUrl + "/customer"
                     : "staff-member" + "/workercustomer"
                 }`,
                 {

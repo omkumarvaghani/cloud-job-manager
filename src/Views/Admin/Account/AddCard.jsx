@@ -26,7 +26,7 @@ const AddCard = ({
   fetchData,
   CustomerId,
 }) => {
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const planFormik = useFormik({
     initialValues: {
       FirstName: "",
@@ -80,7 +80,7 @@ const AddCard = ({
           country: values.Country,
           phone: values.Number,
           email: values.Email,
-          company: CompanyName,
+          company: CompanyUrl,
           CompanyId: localStorage.getItem("CompanyId"),
           customer_vault_id: vaultId,
           type: "card",

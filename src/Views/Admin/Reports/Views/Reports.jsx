@@ -19,7 +19,7 @@ const Reports = ({
   page,
   setPage,
   setRowsPerPage,
-  CompanyName,
+  CompanyUrl,
   countData,
   rowsPerPage,
   isEdited,
@@ -53,7 +53,7 @@ const Reports = ({
                   cursor:"pointer",
               }}
               onClick={() =>
-                navigate(`/${CompanyName}/reports-details`, {
+                navigate(`/${CompanyUrl}/reports-details`, {
                   state: {
                     navigats: [
                       ...location?.state?.navigats,

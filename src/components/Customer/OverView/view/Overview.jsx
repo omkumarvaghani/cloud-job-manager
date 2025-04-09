@@ -28,7 +28,7 @@ const CustomerDetails = ({
   loader,
   navigate,
   data,
-  CompanyName,
+  CompanyUrl,
   location,
   activeTabId,
   handleClick,
@@ -89,8 +89,8 @@ const CustomerDetails = ({
                     <DropdownItem
                       className="dropdown-items text-blue-color"
                       onClick={() => {
-                        if (CompanyName) {
-                          navigate(`/${CompanyName}/add-quotes`, {
+                        if (CompanyUrl) {
+                          navigate(`/${CompanyUrl}/add-quotes`, {
                             state: {
                               Customer: data,
                               CustomerId: data?.CustomerId,
@@ -120,8 +120,8 @@ const CustomerDetails = ({
                     <DropdownItem
                       className="dropdown-items text-blue-color"
                       onClick={() => {
-                        if (CompanyName) {
-                          navigate(`/${CompanyName}/add-contract`, {
+                        if (CompanyUrl) {
+                          navigate(`/${CompanyUrl}/add-contract`, {
                             state: {
                               Customer: data,
                               CustomerId: data?.CustomerId,
@@ -151,8 +151,8 @@ const CustomerDetails = ({
                     <DropdownItem
                       className="dropdown-items text-blue-color"
                       onClick={() => {
-                        if (CompanyName) {
-                          navigate(`/${CompanyName}/invoice`, {
+                        if (CompanyUrl) {
+                          navigate(`/${CompanyUrl}/invoice`, {
                             state: {
                               navigats: [
                                 ...location?.state?.navigats,

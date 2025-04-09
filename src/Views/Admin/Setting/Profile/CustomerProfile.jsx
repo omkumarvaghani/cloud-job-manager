@@ -52,7 +52,7 @@ import PasswordValidationSchema from "../../../../components/Password/PasswordVa
 
 const CustomerProfile = () => {
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const cdnUrl = process.env.REACT_APP_CDN_API;
 
   const [loader, setLoader] = useState(true);
@@ -489,7 +489,7 @@ const CustomerProfile = () => {
                     className="sidebar-link-setting"
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      navigate(`/${CompanyName}/materials&labor`, {
+                      navigate(`/${CompanyUrl}/materials&labor`, {
                         state: { navigats: ["/index", "/materials&labor"] },
                       });
                     }}
@@ -500,7 +500,7 @@ const CustomerProfile = () => {
                     className="sidebar-link-setting"
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      navigate(`/${CompanyName}/profile`, {
+                      navigate(`/${CompanyUrl}/profile`, {
                         state: { navigats: ["/index", "/profile"] },
                       });
                     }}

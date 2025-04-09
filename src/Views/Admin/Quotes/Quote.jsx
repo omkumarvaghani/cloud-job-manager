@@ -15,7 +15,7 @@ import { useStaffContext } from "../../../components/StaffData/Staffdata.jsx";
 const Quotes = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -99,8 +99,8 @@ const Quotes = () => {
   }, [page, search, sortField, sortOrder]);
 
   const handleEditClick = (id) => {
-    if (CompanyName) {
-      navigate(`/${CompanyName}/add-quotes`, {
+    if (CompanyUrl) {
+      navigate(`/${CompanyUrl}/add-quotes`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/add-quotes"],
@@ -260,7 +260,7 @@ const Quotes = () => {
         page={page}
         setPage={setPage}
         setRowsPerPage={setRowsPerPage}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
         countData={countData}
         dropdownOptions={dropdownOptions}
         rowsPerPage={rowsPerPage}

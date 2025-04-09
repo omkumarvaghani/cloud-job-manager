@@ -19,7 +19,7 @@ function QuotesDetail() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [collectSignatureLoader, setCollectSignatureLoader] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -131,14 +131,14 @@ function QuotesDetail() {
   const moreActiontoggle = () => setDropdownOpen((prevState) => !prevState);
 
   const handleEditClick = (id) => {
-    // navigate(`/${CompanyName}/add-quotes`, {
+    // navigate(`/${CompanyUrl}/add-quotes`, {
     //   state: {
     //     id: location?.state?.id,
     //     navigats: [...location?.state?.navigats, "/add-quotes"],
     //   },
     // });
-    if (CompanyName) {
-      navigate(`/${CompanyName}/add-quotes`, {
+    if (CompanyUrl) {
+      navigate(`/${CompanyUrl}/add-quotes`, {
         state: {
           id: location?.state?.id,
           navigats: [...location?.state?.navigats, "/add-quotes"],
@@ -231,7 +231,7 @@ function QuotesDetail() {
       label: "Convert to contract",
       // UCOMMENT FOR THE CONVERT TO CONTRACT
       // onClick: () => {
-      //   navigate(`/${CompanyName}/add-contract`, {
+      //   navigate(`/${CompanyUrl}/add-contract`, {
       //     state: {
       //       navigats: [...location?.state?.navigats, "/add-contract"],
       //       QuoteId: location?.state?.id,
@@ -241,8 +241,8 @@ function QuotesDetail() {
       //   });
       // },
       onClick: () => {
-        if (CompanyName) {
-          navigate(`/${CompanyName}/add-contract`, {
+        if (CompanyUrl) {
+          navigate(`/${CompanyUrl}/add-contract`, {
             state: {
               QuoteId: location?.state?.id,
               formData: quotesData,
@@ -476,7 +476,7 @@ function QuotesDetail() {
         Previous={Previous}
         toggle={toggle}
         setMail={setMail}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
         handleEditClick={handleEditClick}
         dropdownOpen={dropdownOpen}
         moreActiontoggle={moreActiontoggle}

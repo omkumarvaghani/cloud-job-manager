@@ -20,7 +20,7 @@ const Customer = ({
   page,
   setPage,
   setRowsPerPage,
-  CompanyName,
+  CompanyUrl,
   countData,
   rowsPerPage,
   isEdited,
@@ -54,8 +54,8 @@ const Customer = ({
                 onClick={() => {
                   // Default to an empty array if navigats is undefined
                   const navigats = location?.state?.navigats || [];
-                  if (CompanyName) {
-                    navigate(`/${CompanyName}/add-customer`, {
+                  if (CompanyUrl) {
+                    navigate(`/${CompanyUrl}/add-customer`, {
                       state: {
                         navigats: [...navigats, "/add-customer"],
                       },
@@ -131,8 +131,8 @@ const Customer = ({
                 page={page}
                 isNavigate={true}
                 navigatePath={
-                  CompanyName
-                    ? `/${CompanyName}/customerdetails`
+                  CompanyUrl
+                    ? `/${CompanyUrl}/customerdetails`
                     : `/staff-member/ClientDetails`
                 }
               />

@@ -20,7 +20,7 @@ const AdminDashboard = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const currentHour = new Date().getHours();
 
   let welcomeMessage;
@@ -268,7 +268,7 @@ const AdminDashboard = () => {
       desc: "Record new service requests from your Customer.",
       option: "Create a Customer",
       onClick: () => {
-        navigate(`/${CompanyName}/add-customer`, {
+        navigate(`/${CompanyUrl}/add-customer`, {
           state: { navigats: ["/index", "/add-customer"] },
         });
       },
@@ -282,7 +282,7 @@ const AdminDashboard = () => {
       desc: "Send your Customer professional quotes they can approve online.",
       option: "Create a quote",
       onClick: () => {
-        navigate(`/${CompanyName}/add-quotes`, {
+        navigate(`/${CompanyUrl}/add-quotes`, {
           state: { navigats: ["/index", "/add-quotes"] },
         });
       },
@@ -295,7 +295,7 @@ const AdminDashboard = () => {
       desc: "Schedule contract with all the details you need to get them done.",
       option: "Create a contract",
       onClick: () => {
-        navigate(`/${CompanyName}/add-contract`, {
+        navigate(`/${CompanyUrl}/add-contract`, {
           state: { navigats: ["/index", "/add-contract"] },
         });
       },
@@ -307,7 +307,7 @@ const AdminDashboard = () => {
       desc: "Send your Customer professional invoices they can pay online",
       option: "Create an invoice",
       onClick: () => {
-        navigate(`/${CompanyName}/invoice`, {
+        navigate(`/${CompanyUrl}/invoice`, {
           state: { navigats: ["/index", "/invoice"] },
         });
       },

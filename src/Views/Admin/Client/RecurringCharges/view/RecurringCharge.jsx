@@ -62,7 +62,7 @@ const RecurringCharge = ({
   loading,
   location,
   navigate,
-  CompanyName,
+  CompanyUrl,
   // modelOpen,
   // setModelOpen,
   setModelAccOpen,

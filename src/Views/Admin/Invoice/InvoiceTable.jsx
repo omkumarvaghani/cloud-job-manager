@@ -16,7 +16,7 @@ const InvoiceTable = () => {
   const [selectedCustomerData, setSelectedCustomerData] = useState();
   const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_API;
   const location = useLocation();
   useEffect(() => {
@@ -257,8 +257,8 @@ const InvoiceTable = () => {
           <BlueButton
             onClick={() => {
               navigate(
-                CompanyName
-                  ? `/${CompanyName}/addinvoice`
+                CompanyUrl
+                  ? `/${CompanyUrl}/addinvoice`
                   : "/staff-member/workeraddinvoice",
                 {
                   state: {

@@ -36,7 +36,7 @@ const AddCustomer = ({
   setSelectedCountry,
   handlePhoneChange,
   isEdited,
-  CompanyName,
+  CompanyUrl,
   handleZipChange,
   addPhoneNumber,
   phoneNumbers,
@@ -67,8 +67,8 @@ const AddCustomer = ({
             }
             navigate(
               `/${
-                CompanyName
-                  ? CompanyName + "/customer"
+                CompanyUrl
+                  ? CompanyUrl + "/customer"
                   : "staff-member" + "/workercustomer"
               }`,
               {

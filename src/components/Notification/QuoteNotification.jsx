@@ -912,7 +912,7 @@ const Quotesignature = ({ onClick, notification }) => {
 };
 
 const NotificationsPage = ({ handleCloseNotifications, isSwitchOn }) => {
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -1045,7 +1045,7 @@ const NotificationsPage = ({ handleCloseNotifications, isSwitchOn }) => {
             // ? "quotes-detail"
             null;
       if (route) {
-        navigate(`/${CompanyName}/${route}`, {
+        navigate(`/${CompanyUrl}/${route}`, {
           state: { id: id, navigats: ["/index", `/${route}`] },
           replace: true,
         });

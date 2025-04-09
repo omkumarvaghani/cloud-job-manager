@@ -39,7 +39,7 @@ const Templates = ({
   page,
   setPage,
   setRowsPerPage,
-  CompanyName,
+  CompanyUrl,
   countData,
   rowsPerPage,
   isEdited,
@@ -68,7 +68,7 @@ const Templates = ({
           <Grid className="searchBarOfTable">
             <BlueButton
               // onClick={() => {
-              //   navigate(`/${CompanyName}/add-customer`, {
+              //   navigate(`/${CompanyUrl}/add-customer`, {
               //     state: {
               //       navigats: [...location.state.navigats, "/add-customer"],
               //     },
@@ -76,8 +76,8 @@ const Templates = ({
               // }}
 
               onClick={() => {
-                if (CompanyName) {
-                  navigate(`/${CompanyName}/add-templates`, {
+                if (CompanyUrl) {
+                  navigate(`/${CompanyUrl}/add-templates`, {
                     state: {
                       navigats: [
                         ...location?.state?.navigats,

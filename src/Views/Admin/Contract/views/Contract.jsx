@@ -22,7 +22,7 @@ const Contract = ({
   page,
   setPage,
   setRowsPerPage,
-  CompanyName,
+  CompanyUrl,
   countData,
   rowsPerPage,
   dropdownOptions,
@@ -52,8 +52,8 @@ const Contract = ({
             <Grid className="searchBarOfTable">
               <BlueButton
                 onClick={() => {
-                  if (CompanyName) {
-                    navigate(`/${CompanyName}/add-contract`, {
+                  if (CompanyUrl) {
+                    navigate(`/${CompanyUrl}/add-contract`, {
                       state: {
                         navigats: [
                           ...location?.state?.navigats,
@@ -148,8 +148,8 @@ const Contract = ({
                 page={page}
                 isNavigate={true}
                 navigatePath={
-                  CompanyName
-                    ? `/${CompanyName}/contractdetails`
+                  CompanyUrl
+                    ? `/${CompanyUrl}/contractdetails`
                     : `/staff-member/worker-contract-details`
                 }
               />

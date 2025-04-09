@@ -15,7 +15,7 @@ function CustomerDetails() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [data, setData] = useState();
   const [loader, setLoader] = useState(true);
   const [tokenDecode, setTokenDecode] = useState({});
@@ -134,8 +134,8 @@ function CustomerDetails() {
   }, [data, tokenDecode]);
 
   const handleQuoteNavigate = (id) => {
-    if (CompanyName) {
-      navigate(`/${CompanyName}/quotes-detail`, {
+    if (CompanyUrl) {
+      navigate(`/${CompanyUrl}/quotes-detail`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/quotes-detail"],
@@ -152,8 +152,8 @@ function CustomerDetails() {
   };
 
   const handleContractNavigate = (id) => {
-    if (CompanyName) {
-      navigate(`/${CompanyName}/contractdetails`, {
+    if (CompanyUrl) {
+      navigate(`/${CompanyUrl}/contractdetails`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/contractdetails"],
@@ -170,8 +170,8 @@ function CustomerDetails() {
   };
 
   const handleInvoiceNavigate = (id) => {
-    if (CompanyName) {
-      navigate(`/${CompanyName}/invoice-details`, {
+    if (CompanyUrl) {
+      navigate(`/${CompanyUrl}/invoice-details`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/invoice-details"],
@@ -199,7 +199,7 @@ function CustomerDetails() {
         </>
       ),
       onClick: () => {
-        navigate(`/${CompanyName}/add-quotes`, {
+        navigate(`/${CompanyUrl}/add-quotes`, {
           state: {
             Customer: data,
             CustomerId: data?.CustomerId,
@@ -219,7 +219,7 @@ function CustomerDetails() {
         </>
       ),
       onClick: () => {
-        navigate(`/${CompanyName}/add-contract`, {
+        navigate(`/${CompanyUrl}/add-contract`, {
           state: {
             Customer: data,
             CustomerId: data?.CustomerId,
@@ -239,7 +239,7 @@ function CustomerDetails() {
         </>
       ),
       onClick: () => {
-        navigate(`/${CompanyName}/invoicetable`, {
+        navigate(`/${CompanyUrl}/invoicetable`, {
           state: {
             CustomerId: data?.CustomerId,
             navigats: [...location?.state?.navigats, "/invoicetable"],
@@ -255,7 +255,7 @@ function CustomerDetails() {
         loader={loader}
         navigate={navigate}
         data={data}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
         location={location}
         activeTabId={activeTabId}
         activeTabIdMain={activeTabIdMain}

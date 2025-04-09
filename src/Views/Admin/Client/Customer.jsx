@@ -14,7 +14,7 @@ import moment from "moment";
 const Customer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -108,8 +108,8 @@ const Customer = () => {
     }
   }, [page, search, sortField, sortOrder]);
   const handleEditClick = (id) => {
-    if (CompanyName) {
-      navigate(`/${CompanyName}/add-customer`, {
+    if (CompanyUrl) {
+      navigate(`/${CompanyUrl}/add-customer`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/add-customer"],
@@ -268,7 +268,7 @@ const Customer = () => {
         setPage={setPage}
         setRowsPerPage={setRowsPerPage}
         rowsPerPage={rowsPerPage}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
         countData={countData}
         isEdited={isEdited}
         setSortField={setSortField}

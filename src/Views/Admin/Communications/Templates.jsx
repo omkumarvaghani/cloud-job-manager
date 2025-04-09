@@ -14,7 +14,7 @@ import moment from "moment";
 const Templates = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -89,8 +89,8 @@ const Templates = () => {
     }
   }, [page, search, sortField, sortOrder]);
   const handleEditClick = (id) => {
-    if (CompanyName) {
-      navigate(`/${CompanyName}/add-templates`, {
+    if (CompanyUrl) {
+      navigate(`/${CompanyUrl}/add-templates`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/add-templates"],
@@ -211,7 +211,7 @@ const Templates = () => {
         setPage={setPage}
         setRowsPerPage={setRowsPerPage}
         rowsPerPage={rowsPerPage}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
         countData={countData}
         isEdited={isEdited}
         openDialog={openDialog}

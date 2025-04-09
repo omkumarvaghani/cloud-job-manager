@@ -51,7 +51,7 @@ const InvoiceMail = ({
   const [inputValue, setInputValue] = useState(
     customerData?.EmailAddress || ""
   );
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
 
   useEffect(() => {
     setInputValue(customerData?.EmailAddress);
@@ -242,7 +242,7 @@ const InvoiceMail = ({
       const url = `/invoice/send_mail/${data?.companyId}`;
       const object = {
         CustomerId: customerData?.CustomerId,
-        CompanyName: CompanyName,
+        CompanyUrl: CompanyUrl,
         InvoiceId: invoiceData?.InvoiceId,
         CompanyId: invoiceData?.CompanyId,
         Subject: formik?.Subject || invoiceData?.Subject || "",

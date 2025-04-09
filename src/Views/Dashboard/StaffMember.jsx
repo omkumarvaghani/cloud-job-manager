@@ -290,7 +290,7 @@ const CustomerDashboard = () => {
                 {tokenDecode?.LastName}
               </Typography>
             </Grid>
-            {/* <Grid>{tokenDecode?.CompanyName}</Grid> */}
+            {/* <Grid>{tokenDecode?.CompanyUrl}</Grid> */}
           </Grid>
           <Row className="main-customer row mt-3">
             <Col

@@ -130,7 +130,7 @@ const Steps = ({ EmailAddress, Password }) => {
         label: "Select industry type here...",
         value: "",
       },
-      CompanyName: "",
+      CompanyUrl: "",
       TeamSize: {
         label: "Select your team size (including yourself) here...",
         value: "",
@@ -156,7 +156,7 @@ const Steps = ({ EmailAddress, Password }) => {
             }).required("value Required"),
           })
         : Yup.object({
-            CompanyName: Yup.string().required("Company Name Required"),
+            CompanyUrl: Yup.string().required("Company Name Required"),
             TeamSize: Yup.object({
               label: Yup.string().required("Label Required"),
               value: Yup.string().required("Value Required"),
@@ -247,11 +247,11 @@ const Steps = ({ EmailAddress, Password }) => {
           
           showToast.success("Registration and login successful!", { autoClose: 3000 });
           
-          // Use CompanyName from form values if API doesn't provide it
-          const companyName = registerRes.data.data?.CompanyName || values.CompanyName;
+          // Use CompanyUrl from form values if API doesn't provide it
+          const companyName = registerRes.data.data?.CompanyUrl || values.CompanyUrl;
           
           if (!companyName) {
-            console.error("CompanyName not found in response or form values");
+            console.error("CompanyUrl not found in response or form values");
             sendToast("Error: Company name not available");
             navigate("/auth/login"); // Fallback navigation
             return;
@@ -500,18 +500,18 @@ const Steps = ({ EmailAddress, Password }) => {
                         className="fullnemae"
                       >
                         <InputText
-                          value={formik.values.CompanyName}
+                          value={formik.values.CompanyUrl}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
                           error={
-                            formik.touched.CompanyName &&
-                            Boolean(formik.errors.CompanyName)
+                            formik.touched.CompanyUrl &&
+                            Boolean(formik.errors.CompanyUrl)
                           }
                           helperText={
-                            formik.touched.CompanyName &&
-                            formik.errors.CompanyName
+                            formik.touched.CompanyUrl &&
+                            formik.errors.CompanyUrl
                           }
-                          name="CompanyName"
+                          name="CompanyUrl"
                           placeholder="Enter company name"
                           label="Company Name"
                           type="text"

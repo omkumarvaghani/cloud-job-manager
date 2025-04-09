@@ -101,7 +101,7 @@ const RecurringPayments = ({
   fetchRecurringCardData,
   submitloading,
   navigate,
-  CompanyName,
+  CompanyUrl,
   recurringChargeId,
   setRecurringChargeId,
   setSortField,
@@ -737,7 +737,7 @@ const RecurringPayments = ({
                             marginLeft: "30px",
                           }}
                           onClick={() => {
-                            navigate(`/${CompanyName}/account`);
+                            navigate(`/${CompanyUrl}/account`);
                           }}
                         >
                           Add Account

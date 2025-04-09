@@ -13,7 +13,7 @@ import { Grid } from "@mui/material";
 
 export default function CombinedComponent() {
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
 
   const [state, setState] = React.useState({
     top: false,
@@ -36,7 +36,7 @@ export default function CombinedComponent() {
   const myDrawer = [
     {
       name: "Materials & Labor",
-      link: `/${CompanyName}/materials&labor`,
+      link: `/${CompanyUrl}/materials&labor`,
     },
   ];
   const list = (

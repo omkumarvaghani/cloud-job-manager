@@ -941,7 +941,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                   fontFamily: "'Roboto', sans-serif",
                 }}
               >
-                {tokenDecode.CompanyUrl || "Unnamed Company"}
+                {tokenDecode.CompanyName || "Unnamed Company"}
               </Typography>
             </Grid>
           ) : null}
@@ -981,7 +981,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             navigate(
                               `/${
                                 location?.pathname?.split("/")[2]
-                              }/${CompanyUrl}/profile`,
+                              }/${CompanyUrl}/customes/profile`,
                               {
                                 state: {
                                   navigats: [

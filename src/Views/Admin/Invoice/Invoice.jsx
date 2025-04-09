@@ -16,7 +16,7 @@ import { useStaffContext } from "../../../components/StaffData/Staffdata.jsx";
 const Invoice = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_API;
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
@@ -116,8 +116,8 @@ const Invoice = () => {
     }
   }, [page, search, sortField, sortOrder]);
   const handleEditClick = (id) => {
-    if (CompanyName) {
-      navigate(`/${CompanyName}/addinvoice`, {
+    if (CompanyUrl) {
+      navigate(`/${CompanyUrl}/addinvoice`, {
         state: {
           invoiceId: id,
           navigats: [...location?.state?.navigats, "/addinvoice"],
@@ -223,7 +223,7 @@ const Invoice = () => {
 
         if (response.status === 200) {
           showToast.success(response?.message);
-          navigate(`/${CompanyName}/invoice`, {
+          navigate(`/${CompanyUrl}/invoice`, {
             state: {
               navigats: location?.state?.navigats.filter(
                 (item) => item !== "/AddInvoice"
@@ -361,7 +361,7 @@ const Invoice = () => {
         page={page}
         setPage={setPage}
         setRowsPerPage={setRowsPerPage}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
         countData={countData}
         rowsPerPage={rowsPerPage}
         isCustomer={isCustomer}

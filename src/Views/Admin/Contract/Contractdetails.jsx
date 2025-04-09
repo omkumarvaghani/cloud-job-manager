@@ -48,7 +48,7 @@ function ContractDetails() {
   }, []);
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
 
   const baseUrl = process.env.REACT_APP_BASE_API;
   const cdnUrl = process.env.REACT_APP_CDN_API;
@@ -215,8 +215,8 @@ function ContractDetails() {
   };
 
   const handleEditClick = (id) => {
-    if (CompanyName) {
-      navigate(`/${CompanyName}/add-contract`, {
+    if (CompanyUrl) {
+      navigate(`/${CompanyUrl}/add-contract`, {
         state: {
           id: location?.state?.id,
           navigats: [...location?.state?.navigats, "/add-contract"],
@@ -675,7 +675,7 @@ function ContractDetails() {
         Previous={Previous}
         toggle={toggle}
         setMail={setMail}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
         handleEditClick={handleEditClick}
         dropdownOpen={dropdownOpen}
         moreActiontoggle={moreActiontoggle}

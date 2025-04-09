@@ -24,7 +24,7 @@ const Quote = ({
   page,
   setPage,
   setRowsPerPage,
-  CompanyName,
+  CompanyUrl,
   countData,
   rowsPerPage,
   dropdownOptions,
@@ -54,8 +54,8 @@ const Quote = ({
             <Grid className="searchBarOfTable">
               <BlueButton
                 onClick={() => {
-                  if (CompanyName) {
-                    navigate(`/${CompanyName}/add-quotes`, {
+                  if (CompanyUrl) {
+                    navigate(`/${CompanyUrl}/add-quotes`, {
                       state: {
                         navigats: [...location?.state?.navigats, "/add-quotes"],
                       },
@@ -146,8 +146,8 @@ const Quote = ({
                 page={page} 
                 isNavigate={true}
                 navigatePath={
-                  CompanyName
-                    ? `/${CompanyName}/quotes-detail`
+                  CompanyUrl
+                    ? `/${CompanyUrl}/quotes-detail`
                     : `/staff-member/worker-quotes-details`
                 }
               /> 

@@ -58,7 +58,7 @@ import PasswordValidationSchema from "../../../../components/Password/PasswordVa
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const cdnUrl = process.env.REACT_APP_CDN_API;
 
   const [loader, setLoader] = useState(true);
@@ -152,7 +152,7 @@ const Profile = () => {
               },
               dangerMode: true,
             }).then(() => {
-              navigate(`/${CompanyName}/index`, {
+              navigate(`/${CompanyUrl}/index`, {
                 state: { navigats: ["/index"] },
               });
             });
@@ -215,7 +215,7 @@ const Profile = () => {
             },
             dangerMode: true,
           }).then(() => {
-            navigate(`/${CompanyName}/profile`, {
+            navigate(`/${CompanyUrl}/profile`, {
               state: { navigats: ["/profile"] },
             });
           });
@@ -414,7 +414,7 @@ const Profile = () => {
   //     "success"
   //   ).then(() => {
   //     if (!postLoader) {
-  //       navigate(`/${CompanyName}/index`, {
+  //       navigate(`/${CompanyUrl}/index`, {
   //         state: { navigats: ["/index"] },
   //       });
   //     }
@@ -490,7 +490,7 @@ const Profile = () => {
                     className="sidebar-link-setting"
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      navigate(`/${CompanyName}/materials&labor`, {
+                      navigate(`/${CompanyUrl}/materials&labor`, {
                         state: { navigats: ["/index", "/materials&labor"] },
                       });
                     }}
@@ -501,7 +501,7 @@ const Profile = () => {
                     className="sidebar-link-setting"
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      navigate(`/${CompanyName}/profile`, {
+                      navigate(`/${CompanyUrl}/profile`, {
                         state: { navigats: ["/index", "/profile"] },
                       });
                     }}

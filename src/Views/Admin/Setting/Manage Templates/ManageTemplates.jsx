@@ -69,7 +69,7 @@ import Company from "../../../Superadmin/Company/Index.jsx";
 function ManageTeamTable() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -102,7 +102,7 @@ function ManageTeamTable() {
 
   const handleClick = (id) => {
     if (id) {
-      navigate("/" + CompanyName + "/add-user", {
+      navigate("/" + CompanyUrl + "/add-user", {
         state: { id, navigats: [...location?.state?.navigats, "/add-user"] },
       });
     }
@@ -217,7 +217,7 @@ function ManageTeamTable() {
   };
 
   const handleEditClick = (id) => {
-    navigate(`/${CompanyName}/add-customer`, {
+    navigate(`/${CompanyUrl}/add-customer`, {
       state: {
         id,
         navigats: [...location.state.navigats, "/add-customer"],
@@ -570,7 +570,7 @@ function ManageTeamTable() {
                 <SettingDropdown
                   isOpenDropDown={isOpenDropDown}
                   toggle={toggle}
-                  CompanyName={CompanyName}
+                  CompanyUrl={CompanyUrl}
                 />
                 <Grid className=" settings-menu  mb-3">
                   <>
@@ -661,7 +661,7 @@ function ManageTeamTable() {
                                   <MenuItem
                                     onClick={() => {
                                       navigate(
-                                        `/${CompanyName}/add-templates`,
+                                        `/${CompanyUrl}/add-templates`,
                                         {
                                           state: {
                                             navigats: [
