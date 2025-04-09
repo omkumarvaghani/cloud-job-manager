@@ -582,7 +582,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
   const cdnUrl = process.env.REACT_APP_CDN_API;
   const location = useLocation();
   const navigate = useNavigate();
-  const {  CompanyUrl } = useParams();
+  const { CompanyUrl } = useParams();
   const isMediumScreen = useMediaQuery("(max-width:767px)");
   const [data, setData] = useState({});
 
@@ -933,7 +933,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
               <Typography
                 style={{
                   color: "white", // Changed to white
-                  fontSize: "22px",
+                  fontSize: "15px",
                   fontWeight: 600,
                   margin: 0,
                   textTransform: "uppercase",
@@ -981,12 +981,12 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             navigate(
                               `/${
                                 location?.pathname?.split("/")[2]
-                              }/customers/profile`,
+                              }/${CompanyUrl}/profile`,
                               {
                                 state: {
                                   navigats: [
                                     "/index",
-                                    `${CompanyUrl}/customers/profile`,
+                                    `/${CompanyUrl}/profile`,
                                   ],
                                 },
                               }
@@ -1118,7 +1118,6 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                                 data?.FullName ||
                                 data?.OwnerName ||
                                 ""}
-
                           </Typography>
                         </Typography>
                         <Typography

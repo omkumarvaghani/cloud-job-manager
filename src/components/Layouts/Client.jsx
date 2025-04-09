@@ -15,8 +15,8 @@ import { Grid } from "@mui/material";
 const Client = () => {
   const mainContent = useRef(null);
   const location = useLocation();
-  const { CompanyUrl } = useParams();
-  console.log(CompanyUrl,"CompanyUrl")
+  const { CompanyName } = useParams();
+  console.log(CompanyName,"CompanyName")
   const [isSidebarClosed, setIsSidebarClosed] = useState(false);
   const [isSidebarDisplay, setIsSidebarDisplay] = useState(true);
   const isMediumScreen = useMediaQuery("(max-width:767px)");
@@ -29,7 +29,7 @@ const Client = () => {
 
   const getRoutes = (routes) => {
     return routes?.map((prop, key) => {
-      if (prop.layout === "/:CompanyUrl/customers" && !prop.isCollapse) {
+      if (prop.layout === "/:CompanyName/customers" && !prop.isCollapse) {
         return (
           <Route path={prop.path} element={prop.component} key={key} exact />
         );
@@ -60,7 +60,7 @@ const Client = () => {
       }}
     >
       <Sidebar
-        layout={`/:CompanyUrl/customers`}
+        layout={`/:CompanyName/customers`}
         isSidebarClosed={isSidebarClosed}
         setIsSidebarClosed={setIsSidebarClosed}
         isSidebarDisplay={isSidebarDisplay}
@@ -88,7 +88,7 @@ const Client = () => {
             {getRoutes(routes)}
             <Route
               path="*"
-              element={<Navigate to={`/${CompanyUrl}/customers/index`} replace />}
+              element={<Navigate to={`/${CompanyName}/customers/index`} replace />}
             />
           </Routes>
         </Grid>

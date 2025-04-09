@@ -86,14 +86,14 @@ const Customer = () => {
           sortOrder: sortOrder,
         },
       });
-      {
-        console.log(res, "resresresres23");
-      }
-      if (res?.data) {
+      if (res?.status === 200 && res?.data) {
         setcustomersData(res?.data?.data || []);
         setCountData(res?.data?.totalCount || 0);
+      } else if (res?.status === 204) {
+        setcustomersData([]);
+        setCountData(0);
       } else {
-        console.error("No data received from the server.");
+        console.error("Unexpected response:", res);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -108,23 +108,18 @@ const Customer = () => {
     }
   }, [page, search, sortField, sortOrder]);
   const handleEditClick = (id) => {
-    const currentNavigats = location?.state?.navigats || [];
-    const updatedNavigats = Array.isArray(currentNavigats)
-      ? [...currentNavigats, "/add-customer"]
-      : ["/add-customer"];
-
     if (CompanyName) {
       navigate(`/${CompanyName}/add-customer`, {
         state: {
           id,
-          navigats: updatedNavigats,
+          navigats: [...location?.state?.navigats, "/add-customer"],
         },
       });
     } else {
       navigate(`/staff-member/add-customer`, {
         state: {
           id,
-          navigats: updatedNavigats,
+          navigats: [...location?.state?.navigats, "/add-customer"],
         },
       });
     }

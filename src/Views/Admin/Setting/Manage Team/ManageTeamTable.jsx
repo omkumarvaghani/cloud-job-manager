@@ -261,22 +261,6 @@ function ManageTeamTable() {
     return {
       key: user?.WorkerId,
       value: [
-        // <Grid
-        //   className="bg-blue-color text-white-color"
-        //   style={{
-        //     display: "flex",
-        //     alignItems: "center",
-        //     justifyContent: "center",
-        //     borderRadius: "50%",
-        //     padding: "10px",
-        //     width: "40px",
-        //     height: "40px",
-        //   }}
-        // >
-        //   {user?.FullName?.split(" ")
-        //     .map((part) => part.charAt(0).toUpperCase())
-        //     .join("")}
-        // </Grid>,
         <Grid
           className="bg-blue-color text-white-color"
           style={{
@@ -289,15 +273,40 @@ function ManageTeamTable() {
             height: "40px",
           }}
         >
-          {`${user?.FirstName?.charAt(0).toUpperCase()}${user?.LastName?.charAt(
-            0
-          ).toUpperCase()}`}
+          {user?.AccountType
+            ? user?.OwnerName?.split(" ")
+                .map((word) => word?.charAt(0).toUpperCase())
+                .join("")
+            : `${user?.FirstName?.charAt(0).toUpperCase() || ""}${
+                user?.LastName?.charAt(0).toUpperCase() || ""
+              }`}
         </Grid>,
-        `${user?.FirstName || "FirstName not available"} ${
-          user?.LastName || "LastName not available"
-        }`,
+
+        <div>
+          {user?.AccountType ? (
+            <>
+              <div>{user?.OwnerName || "OwnerName not available"}</div>
+              <div
+                style={{
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  color: "#999",
+                }}
+              >
+                {user?.AccountType}
+              </div>
+            </>
+          ) : (
+            `${user?.FirstName || "FirstName not available"} ${
+              user?.LastName || "LastName not available"
+            }`
+          )}
+        </div>,
+
         user?.EmailAddress || "EmailAddress not available",
+
         moment(user?.createdAt).format(dateFormat),
+
         <Grid
           style={{
             color: user?.IsActive ? "green" : "red",
@@ -306,6 +315,7 @@ function ManageTeamTable() {
         >
           {user?.IsActive ? "Active" : "Deactive" || "IsActive not available"}
         </Grid>,
+
         <>
           <Dropdown
             isOpen={activeDropdown === user?.EmailAddress}
