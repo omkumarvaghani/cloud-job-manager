@@ -130,7 +130,7 @@ const Steps = ({ EmailAddress, Password }) => {
         label: "Select industry type here...",
         value: "",
       },
-      CompanyUrl: "",
+      CompanyName: "",
       TeamSize: {
         label: "Select your team size (including yourself) here...",
         value: "",
@@ -156,7 +156,7 @@ const Steps = ({ EmailAddress, Password }) => {
             }).required("value Required"),
           })
         : Yup.object({
-            CompanyUrl: Yup.string().required("Company Name Required"),
+            CompanyName: Yup.string().required("Company Name Required"),
             TeamSize: Yup.object({
               label: Yup.string().required("Label Required"),
               value: Yup.string().required("Value Required"),
@@ -216,47 +216,45 @@ const Steps = ({ EmailAddress, Password }) => {
     values.TeamSizeId = values.TeamSize.value;
     values.RevenueId = values.Revenue.value;
     values.Role = "Company";
-    
+
     try {
       setLoader(true);
-      
+
       // Register the user
       const registerRes = await AxiosInstance.post(
         `${baseUrl}/v1/auth/register`,
         values
       );
-      
-      
       if (registerRes.data.statusCode === "200") {
         // After successful registration, automatically login
         const loginPayload = {
           EmailAddress: values.EmailAddress,
-          Password: values.Password
+          Password: values.Password,
         };
-        
+
         const loginRes = await AxiosInstance.post(
           `${baseUrl}/v1/auth/login`,
           loginPayload
         );
-        
-        
+
         if (loginRes.data.statusCode === "200") {
           // Store token and company ID
           localStorage.setItem("adminToken", loginRes.data.token);
           localStorage.setItem("CompanyId", loginRes.data.data.UserId);
-          
-          showToast.success("Registration and login successful!", { autoClose: 3000 });
-          
-          // Use CompanyUrl from form values if API doesn't provide it
-          const companyName = registerRes.data.data?.CompanyUrl || values.CompanyUrl;
-          
+
+          showToast.success("Registration and login successful!", {
+            autoClose: 3000,
+          });
+
+          // Use CompanyName from form values if API doesn't provide it
+          const companyName = registerRes.data?.userProfile?.CompanyUrl;
           if (!companyName) {
-            console.error("CompanyUrl not found in response or form values");
+            console.error("CompanyName not found in response or form values");
             sendToast("Error: Company name not available");
             navigate("/auth/login"); // Fallback navigation
             return;
           }
-          
+
           // Redirect to company dashboard
           setTimeout(() => {
             navigate(`/${companyName}/index`, {
@@ -437,7 +435,8 @@ const Steps = ({ EmailAddress, Password }) => {
                           options={industry}
                           placeholder="Select Industry type"
                           defaultValue={{
-                            label: "Select your team size (including yourself) here...",
+                            label:
+                              "Select your team size (including yourself) here...",
                             value: "",
                           }}
                           styles={customStyles}
@@ -448,7 +447,8 @@ const Steps = ({ EmailAddress, Password }) => {
                               selectedOption
                                 ? selectedOption
                                 : {
-                                    label: "Select your team size (including yourself) here...",
+                                    label:
+                                      "Select your team size (including yourself) here...",
                                     value: "",
                                   }
                             )
@@ -500,18 +500,18 @@ const Steps = ({ EmailAddress, Password }) => {
                         className="fullnemae"
                       >
                         <InputText
-                          value={formik.values.CompanyUrl}
+                          value={formik.values.CompanyName}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
                           error={
-                            formik.touched.CompanyUrl &&
-                            Boolean(formik.errors.CompanyUrl)
+                            formik.touched.CompanyName &&
+                            Boolean(formik.errors.CompanyName)
                           }
                           helperText={
-                            formik.touched.CompanyUrl &&
-                            formik.errors.CompanyUrl
+                            formik.touched.CompanyName &&
+                            formik.errors.CompanyName
                           }
-                          name="CompanyUrl"
+                          name="CompanyName"
                           placeholder="Enter company name"
                           label="Company Name"
                           type="text"
