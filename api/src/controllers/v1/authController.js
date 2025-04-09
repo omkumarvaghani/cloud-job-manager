@@ -340,6 +340,7 @@ exports.checkEmail = async (req, res) => {
         companiesData.push({
           CompanyId: companyId,
           CompanyName: userProfile?.CompanyName || "Unknown Company",
+          CompanyUrl: userProfile?.CompanyUrl || "Unknown Company",
           Role: role,
         });
       }

@@ -427,7 +427,7 @@ const Login = () => {
                                     : "inherit",
                               }}
                             >
-                              {company.CompanyName}
+                              {company.CompanyUrl}
                             </label>
                           </div>
                         ))}

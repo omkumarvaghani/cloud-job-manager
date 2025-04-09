@@ -19,7 +19,7 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
 
   try {
     const res = await AxiosInstance.post(`/v1/auth/token_data`, { token });
-    console.log(res,"res123456788765")
+    
     if (res.data.statusCode != "200") {
       localStorage.clear();
       navigate(redirectPath, {
@@ -68,9 +68,7 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
         break;
 
       case "Worker":
-        if (
-          !window.location.pathname.includes(`/${CompanyUrl}/staff-member`)
-        ) {
+        if (!window.location.pathname.includes(`/${CompanyUrl}/staff-member`)) {
           localStorage.setItem("worker_id", UserId);
           state.redirect = `/${CompanyUrl}/staff-member/index`;
           state.navigats = ["/index"];
