@@ -166,13 +166,11 @@ exports.register = async (req, res) => {
       CompanyId,
       Role,
       ...profileDetails,
-      FirstName,
-      LastName,
+      OwnerName,
       ...(Role === "Company" && { CompanyUrl: companyURL }),
     });
     await newUserProfile.save();
 
-    // Log event & send welcome email
     logUserEvent(
       CompanyId,
       "REGISTRATION",
@@ -180,7 +178,6 @@ exports.register = async (req, res) => {
     );
     const emailStatus = await sendWelcomeEmailToCompanyLogic(companyUserId);
 
-    // 🔥 Create corresponding Worker as Account Owner
     if (Role === "Company") {
       const workerId = uuidv4();
 
@@ -215,6 +212,7 @@ exports.register = async (req, res) => {
       statusCode: "200",
       message: "Company created successfully",
       emailStatus,
+      userProfile: { CompanyUrl: newUserProfile.CompanyUrl },
       user: {
         UserId: newUser.UserId,
         EmailAddress: newUser.EmailAddress,
