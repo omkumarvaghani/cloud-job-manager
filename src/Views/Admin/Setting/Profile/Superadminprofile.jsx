@@ -186,7 +186,7 @@ const Superadmin = () => {
           Password: values.Password,
           confirmpassword: values.confirmpassword,
         });
-        
+
         if (res?.status === 200) {
           showToast.success(res?.data?.message);
           swal({
@@ -560,6 +560,7 @@ const Superadmin = () => {
                                     setShowOldPassword(!showOldPassword)
                                   }
                                   edge="end"
+                                  tabIndex={-1}
                                 >
                                   {showOldPassword ? (
                                     <VisibilityOffIcon />
@@ -597,6 +598,7 @@ const Superadmin = () => {
                                   aria-label="toggle password visibility"
                                   onClick={() => setShowPassword(!showPassword)}
                                   edge="end"
+                                  tabIndex={-1}
                                 >
                                   {showPassword ? (
                                     <VisibilityOffIcon />
@@ -638,6 +640,7 @@ const Superadmin = () => {
                                     setShowCPassword(!showCPassword)
                                   }
                                   edge="end"
+                                  tabIndex={-1}
                                 >
                                   {showCPassword ? (
                                     <VisibilityOffIcon />

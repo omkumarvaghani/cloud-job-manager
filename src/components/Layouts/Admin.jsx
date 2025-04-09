@@ -15,7 +15,7 @@ import { Grid } from "@mui/material";
     
 const Admin = () => {
   const mainContent = useRef(null);
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const location = useLocation();
   const [isSidebarClosed, setIsSidebarClosed] = useState(false);
   const [isSidebarDisplay, setIsSidebarDisplay] = useState(true);
@@ -32,8 +32,8 @@ const Admin = () => {
   const getRoutes = (routes) => {
     return routes?.map((prop, key) => {
       if (
-        prop.layout === `/:CompanyName` || 
-        prop.layout === `/${CompanyName}`
+        prop.layout === `/:CompanyUrl` || 
+        prop.layout === `/${CompanyUrl}`
       ) {
         if (prop?.children) {
           return prop?.children?.map((item, index) => (
@@ -62,7 +62,7 @@ const Admin = () => {
       }}
     >
       <Sidebar
-        layout={`/:CompanyName`}
+        layout={`/:CompanyUrl`}
         isSidebarClosed={isSidebarClosed}
         setIsSidebarClosed={setIsSidebarClosed}
         isSidebarDisplay={isSidebarDisplay}
@@ -89,7 +89,7 @@ const Admin = () => {
             {getRoutes(routes)} 
             <Route
               path="*"
-              element={<Navigate to={`/${CompanyName}/index`} replace />}
+              element={<Navigate to={`/${CompanyUrl}/index`} replace />}
             />
           </Routes>
         </Grid>

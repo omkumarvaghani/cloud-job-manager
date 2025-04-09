@@ -19,7 +19,7 @@ const StaffMember = () => {
   const [isSidebarClosed, setIsSidebarClosed] = useState(false);
   const [isSidebarDisplay, setIsSidebarDisplay] = useState(true);
   const isMediumScreen = useMediaQuery("(max-width:767px)");
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
 
   useEffect(() => {
     document.documentElement.scrollTop = 0;
@@ -98,7 +98,7 @@ const StaffMember = () => {
 
   const getRoutes = (routes) => {
     return routes?.map((prop, key) => {
-      if (prop.layout === "/:CompanyName/staff-member" && !prop.isCollapse) {
+      if (prop.layout === "/:CompanyUrl/staff-member" && !prop.isCollapse) {
         return (
           <Route path={prop.path} element={prop.component} key={key} exact />
         );
@@ -129,7 +129,7 @@ const StaffMember = () => {
       }}
     >
       <Sidebar
-        layout={`/:CompanyName/staff-member`}
+        layout={`/:CompanyUrl/staff-member`}
         isSidebarClosed={isSidebarClosed}
         setIsSidebarClosed={setIsSidebarClosed}
         isSidebarDisplay={isSidebarDisplay}
@@ -158,7 +158,7 @@ const StaffMember = () => {
             {getRoutes(routes)}
             <Route
               path="*"
-              element={<Navigate to={`/${CompanyName}/staff-member/index`} replace />}
+              element={<Navigate to={`/${CompanyUrl}/staff-member/index`} replace />}
             />
           </Routes>
         </Grid>

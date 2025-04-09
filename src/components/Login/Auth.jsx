@@ -19,6 +19,7 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
 
   try {
     const res = await AxiosInstance.post(`/v1/auth/token_data`, { token });
+    console.log(res,"res123456788765")
     if (res.data.statusCode != "200") {
       localStorage.clear();
       navigate(redirectPath, {
@@ -31,7 +32,7 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
       AdminId,
       CustomerId,
       CompanyId,
-      CompanyName,
+      CompanyUrl,
       WorkerId,
       IsPlanActive,
       UserId,
@@ -46,21 +47,21 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
         }
         break;
       case "Customer":
-        if (!window.location.pathname.includes(`/${CompanyName}/customers`)) {
+        if (!window.location.pathname.includes(`/${CompanyUrl}/customers`)) {
           localStorage.setItem("CustomerId", UserId);
-          state.redirect = `/${CompanyName}/customers/index`;
+          state.redirect = `/${CompanyUrl}/customers/index`;
           state.navigats = ["/index"];
         }
         break;
 
       case "Company":
-        if (!window.location.pathname.includes(`/${CompanyName}`)) {
+        if (!window.location.pathname.includes(`/${CompanyUrl}`)) {
           localStorage.setItem("CompanyId", CompanyId);
-          state.redirect = `/${CompanyName}/index`;
+          state.redirect = `/${CompanyUrl}/index`;
           state.navigats = ["/index"];
         } else if (!IsPlanActive) {
           if (!location.state?.navigats?.includes("/account-billing")) {
-            state.redirect = `/${CompanyName}/account-billing`;
+            state.redirect = `/${CompanyUrl}/account-billing`;
             state.navigats = ["/index", "/account-billing"];
           }
         }
@@ -68,10 +69,10 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
 
       case "Worker":
         if (
-          !window.location.pathname.includes(`/${CompanyName}/staff-member`)
+          !window.location.pathname.includes(`/${CompanyUrl}/staff-member`)
         ) {
           localStorage.setItem("worker_id", UserId);
-          state.redirect = `/${CompanyName}/staff-member/index`;
+          state.redirect = `/${CompanyUrl}/staff-member/index`;
           state.navigats = ["/index"];
         }
         break;

@@ -9,6 +9,7 @@ import { DeleteIcone, EditIcon } from "../../../components/Icon/Index.jsx";
 import { Typography } from "@mui/material";
 import { useStaffContext } from "../../../components/StaffData/Staffdata.jsx";
 import { TroubleshootOutlined } from "@mui/icons-material";
+import moment from "moment";
 
 const Customer = () => {
   const navigate = useNavigate();
@@ -106,20 +107,24 @@ const Customer = () => {
       getData(tokenDecode?.CompanyId);
     }
   }, [page, search, sortField, sortOrder]);
-
   const handleEditClick = (id) => {
+    const currentNavigats = location?.state?.navigats || [];
+    const updatedNavigats = Array.isArray(currentNavigats)
+      ? [...currentNavigats, "/add-customer"]
+      : ["/add-customer"];
+
     if (CompanyName) {
       navigate(`/${CompanyName}/add-customer`, {
         state: {
           id,
-          navigats: [...location?.state?.navigats, "/add-customer"],
+          navigats: updatedNavigats,
         },
       });
     } else {
       navigate(`/staff-member/add-customer`, {
         state: {
           id,
-          navigats: [...location?.state?.navigats, "/add-customer"],
+          navigats: updatedNavigats,
         },
       });
     }
@@ -194,6 +199,8 @@ const Customer = () => {
         ) : (
           <Typography>{propertyDisplay}</Typography>
         ),
+        // item?.createdAt || "Date not available",
+        moment(item?.createdAt).format("YYYY-DD-MM") || "Date not available",
         <>
           {staffData?.CustomersProperties
             ?.ViewAndEditFullCustomerAndPropertyInfo ||
