@@ -66,6 +66,7 @@ function ClientDetails() {
   const navigate = useNavigate();
   const { CompanyUrl } = useParams();
   const [data, setData] = useState();
+  console.log(data, "data");
   const [open, setOpen] = useState({ isOpen: false, propertyData: null });
   const [loader, setLoader] = useState(true);
   const [modelOpen, setModelOpen] = useState(false);
@@ -80,12 +81,12 @@ function ClientDetails() {
   const handleNoteChange = (event) => {
     setNote(event.target.value);
   };
-    
+
   const getData = async () => {
     try {
       const res = await AxiosInstance.get(
         `/v1/customer/detail/${location?.state?.id}`
-      ); 
+      );
       setData(res?.data?.data);
     } catch (error) {
       console.error("Error fetching customer data:", error);

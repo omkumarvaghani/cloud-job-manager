@@ -31,82 +31,6 @@ const generateToken = (user) => {
 };
 
 // **REGISTER API**
-// exports.register = async (req, res) => {
-//   try {
-//     const { Role, EmailAddress, Password, CompanyName, ...profileDetails } =
-//       req.body;
-
-//     const existingUser = await User.findOne({ EmailAddress, IsDelete: false });
-
-//     if (existingUser) {
-//       return res.status(400).json({ error: "Email is already taken." });
-//     }
-
-//     let CompanyId = profileDetails.CompanyId;
-//     let companyURL = "";
-
-//     if (Role === "Company") {
-//       CompanyId = uuidv4();
-//       if (CompanyName) {
-//         const trimmedName = CompanyName.trim();
-//         profileDetails.CompanyName = trimmedName;
-//         companyURL = trimmedName.replace(/\s+/g, "");
-//       } else {
-//         return res.status(400).json({ error: "CompanyName is required." });
-//       }
-//     } else if (!CompanyId) {
-//       return res
-//         .status(400)
-//         .json({ error: "CompanyId is required for Worker/Customer" });
-//     }
-
-//     const newUser = new User({
-//       UserId: uuidv4(),
-//       Role,
-//       CompanyId,
-//       EmailAddress,
-//       Password,
-//     });
-
-//     await newUser.save();
-
-//     const newUserProfile = new UserProfile({
-//       UserId: newUser.UserId,
-//       CompanyId,
-//       Role,
-//       ...profileDetails,
-//       ...(Role === "Company" && { CompanyUrl: companyURL }),
-//     });
-
-//     await newUserProfile.save();
-
-//     const token = generateToken(newUser);
-
-//     logUserEvent(
-//       newUser.CompanyId,
-//       "REGISTRATION",
-//       `User ${newUser.EmailAddress} registered in`
-//     );
-
-//     const emailStatus = await sendWelcomeEmailToCompanyLogic(newUser.UserId);
-
-//     return res.status(200).json({
-//       statusCode: "200",
-//       message: "Company created successfully",
-//       emailStatus,
-//       user: {
-//         UserId: newUser.UserId,
-//         EmailAddress: newUser.EmailAddress,
-//         Role: newUser.Role,
-//         CompanyId: newUser.CompanyId || null,
-//       },
-//       token,
-//     });
-//   } catch (error) {
-//     console.error("Registration Error:", error);
-//     res.status(500).json({ error: "Internal Server Error." });
-//   }
-// };
 exports.register = async (req, res) => {
   try {
     const {
@@ -129,12 +53,24 @@ exports.register = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ error: "Email is already taken." });
     }
+    // const companyNameWithoutSpaces = CompanyName.split(" ").join("");
+
+    // const existingCompany = await UserProfile.findOne({
+    //   CompanyName: companyNameWithoutSpaces,
+    //   IsDelete: false,
+    // });
+
+    // if (existingCompany) {
+    //   return {
+    //     statusCode: 200,
+    //     message: "Company Name Already Used!",
+    //   };
+    // }
 
     let CompanyId = profileDetails.CompanyId;
     let companyURL = "";
 
     if (Role === "Company") {
-      // Generate new Company ID
       CompanyId = uuidv4();
 
       if (!CompanyName) {

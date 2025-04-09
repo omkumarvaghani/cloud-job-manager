@@ -4,72 +4,11 @@ const {
 } = require("../../../middleware/authMiddleware");
 const User = require("../../../models/User/User");
 const UserProfile = require("../../../models/User/UserProfile");
+const Location = require("../../../models/User/Location");
 const { handleTemplate } = require("./templateController");
 const AppUrl = process.env.REACT_APP;
 
 //**GET ALL WORKER FOR COMPANY**
-// exports.getAllWorkers = async (req, res) => {
-//   try {
-//     const { CompanyId } = req.user;
-
-//     if (!CompanyId) {
-//       return res.status(400).json({
-//         statusCode: 400,
-//         message: "CompanyId is required",
-//       });
-//     }
-
-//     const workers = await User.aggregate([
-//       {
-//         $match: {
-//           CompanyId: CompanyId,
-//           Role: "Worker",
-//           IsDelete: false,
-//         },
-//       },
-//       {
-//         $lookup: {
-//           from: "user-profiles",
-//           localField: "UserId",
-//           foreignField: "UserId",
-//           as: "profile",
-//         },
-//       },
-//       {
-//         $unwind: {
-//           path: "$profile",
-//           preserveNullAndEmptyArrays: true,
-//         },
-//       },
-//       {
-//         $project: {
-//           _id: 1,
-//           UserId: 1,
-//           IsActive: 1,
-//           EmailAddress: 1,
-//           FirstName: "$profile.FirstName",
-//           LastName: "$profile.LastName",
-//           createdAt: 1,
-//           updatedAt: 1,
-//         },
-//       },
-//       { $sort: { createdAt: -1 } },
-//     ]);
-
-//     return res.status(200).json({
-//       statusCode: 200,
-//       message: "Workers retrieved successfully",
-//       data: workers,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching workers:", error.message);
-//     return res.status(500).json({
-//       statusCode: 500,
-//       message: "Something went wrong, please try later!",
-//       error: error.message,
-//     });
-//   }
-// };
 exports.getAllWorkers = async (req, res) => {
   try {
     const { CompanyId } = req.user;
@@ -130,7 +69,7 @@ exports.getAllWorkers = async (req, res) => {
       },
       {
         $sort: {
-          AccountTypeExists: -1, 
+          AccountTypeExists: -1,
           createdAt: -1,
         },
       },
@@ -331,6 +270,7 @@ exports.updateWorkerChangePass = async (req, res) => {
   }
 };
 
+// **SEND WELCOME MAIL TO WORKER**
 exports.sendWelcomeEmailToWorkerLogic = async (UserId) => {
   const findCustomer = await User.findOne({ UserId, Role: "Worker" });
   if (!findCustomer) return { statusCode: 404, message: "Customer Not Found" };
@@ -469,6 +409,7 @@ exports.sendWelcomeEmailToWorkerLogic = async (UserId) => {
     : { statusCode: 500, message: "Failed to send email" };
 };
 
+// **SEND EMAIL TO WORKER**
 exports.sendWelcomeEmailToWorker = async (req, res) => {
   const { UserId } = req.params;
   try {
@@ -477,5 +418,248 @@ exports.sendWelcomeEmailToWorker = async (req, res) => {
   } catch (err) {
     console.error("Error in sendWelcomeEmailToCustomer:", err);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// **GET WORKER BY USERID**
+exports.getCompleteWorkerByUserId = async (req, res) => {
+  try {
+    const { UserId } = req.params;
+    const { CompanyId } = req.user;
+
+    let matchConditions = [
+      { UserId: UserId },
+      { Role: "Worker" },
+      { IsDelete: false },
+    ];
+
+    const workerData = await UserProfile.aggregate([
+      { $match: { $and: matchConditions } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "UserId",
+          foreignField: "UserId",
+          as: "userData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$userData",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $lookup: {
+          from: "locations",
+          localField: "LocationId",
+          foreignField: "LocationId",
+          as: "locationData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$locationData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          Address: {
+            $cond: {
+              if: { $eq: ["$AccountType", "Account Owner"] },
+              then: "$Address",
+              else: "$locationData.Address",
+            },
+          },
+          City: {
+            $cond: {
+              if: { $eq: ["$AccountType", "Account Owner"] },
+              then: "$City",
+              else: "$locationData.City",
+            },
+          },
+          State: {
+            $cond: {
+              if: { $eq: ["$AccountType", "Account Owner"] },
+              then: "$State",
+              else: "$locationData.State",
+            },
+          },
+          Country: {
+            $cond: {
+              if: { $eq: ["$AccountType", "Account Owner"] },
+              then: "$Country",
+              else: "$locationData.Country",
+            },
+          },
+          Zip: {
+            $cond: {
+              if: { $eq: ["$AccountType", "Account Owner"] },
+              then: "$Zip",
+              else: "$locationData.Zip",
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          UserId: "$userData.UserId",
+          EmailAddress: "$userData.EmailAddress",
+          IsPassSet: "$userData.IsPassSet",
+          IsActive: "$userData.IsActive",
+          Role: "$userData.Role",
+          CompanyId: "$userData.CompanyId",
+          AccountType: "$userData.AccountType",
+          PasswordUpdatedAt: "$userData.PasswordUpdatedAt",
+
+          OwnerName: 1,
+          FirstName: 1,
+          LastName: 1,
+          PhoneNumber: 1,
+          ProfileImage: 1,
+          LocationId: 1,
+          LaborCost: 1,
+          ScheduleTime: 1,
+          IsPlanActive: 1,
+          CreatedAt: "$createdAt",
+
+          Address: 1,
+          City: 1,
+          State: 1,
+          Country: 1,
+          Zip: 1,
+        },
+      },
+    ]);
+    console.log(workerData, "workerData");
+    if (!workerData || workerData.length === 0) {
+      return res.status(404).json({
+        statusCode: "404",
+        message: "Worker not found",
+      });
+    }
+
+    res.status(200).json({
+      statusCode: "200",
+      message: "Worker details fetched successfully",
+      data: workerData[0],
+    });
+  } catch (error) {
+    console.error("Error fetching complete worker data:", error);
+    res.status(500).json({
+      statusCode: "500",
+      message: "Something went wrong",
+    });
+  }
+};
+
+// **UPDATE WORKER BY ID**
+exports.updateWorkerByUserId = async (req, res) => {
+  try {
+    const { UserId } = req.params;
+    const { CompanyId } = req.user;
+    const {
+      FirstName,
+      LastName,
+      OwnerName,
+      PhoneNumber,
+      ProfileImage,
+      LocationId,
+      LaborCost,
+      ScheduleTime,
+      IsPlanActive,
+      IsActive,
+    } = req.body;
+
+    const workerProfile = await UserProfile.findOne({
+      UserId,
+      CompanyId,
+      Role: "Worker",
+      IsDelete: false,
+    });
+
+    if (!workerProfile) {
+      return res.status(404).json({
+        statusCode: "404",
+        message: "Worker not found",
+      });
+    }
+
+    let updateProfileFields = {
+      ...(PhoneNumber && { PhoneNumber }),
+      ...(ProfileImage && { ProfileImage }),
+      ...(LocationId && { LocationId }),
+      ...(LaborCost !== undefined && { LaborCost }),
+      ...(ScheduleTime && { ScheduleTime }),
+      ...(IsPlanActive !== undefined && { IsPlanActive }),
+    };
+
+    if (workerProfile.AccountType === "Account Owner") {
+      if (OwnerName) updateProfileFields.OwnerName = OwnerName;
+    } else {
+      if (FirstName) updateProfileFields.FirstName = FirstName;
+      if (LastName) updateProfileFields.LastName = LastName;
+    }
+
+    await UserProfile.updateOne({ UserId }, { $set: updateProfileFields });
+
+    if (IsActive !== undefined) {
+      await User.updateOne({ UserId }, { $set: { IsActive } });
+    }
+
+    res.status(200).json({
+      statusCode: "200",
+      message: "Worker profile updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating worker:", error);
+    res.status(500).json({
+      statusCode: "500",
+      message: "Something went wrong",
+    });
+  }
+};
+
+// **DELETE WORKER BY ID**
+exports.deleteWorkerByUserId = async (req, res) => {
+  try {
+    const { UserId } = req.params;
+    const { CompanyId } = req.user;
+
+    const worker = await UserProfile.findOne({
+      UserId,
+      CompanyId,
+      Role: "Worker",
+      IsDelete: false,
+    });
+
+    if (!worker) {
+      return res.status(404).json({
+        statusCode: "404",
+        message: "Worker not found",
+      });
+    }
+
+    await UserProfile.updateOne({ UserId }, { $set: { IsDelete: true } });
+
+    await User.updateOne({ UserId }, { $set: { IsDelete: true } });
+
+    await Location.updateOne(
+      { CustomerId: UserId },
+      { $set: { IsDelete: true } }
+    );
+
+    res.status(200).json({
+      statusCode: "200",
+      message: "Worker deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting worker:", error);
+    res.status(500).json({
+      statusCode: "500",
+      message: "Something went wrong",
+    });
   }
 };
