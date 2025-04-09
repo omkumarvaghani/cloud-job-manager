@@ -358,6 +358,7 @@ const Login = () => {
                             aria-label="toggle password visibility"
                             onClick={() => setShowPassword(!showPassword)}
                             edge="end"
+                            tabIndex={-1} 
                           >
                             {showPassword ? (
                               <VisibilityOffIcon />
@@ -427,7 +428,7 @@ const Login = () => {
                                     : "inherit",
                               }}
                             >
-                              {company.CompanyName} 
+                              {company.CompanyName}
                             </label>
                           </div>
                         ))}

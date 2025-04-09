@@ -981,12 +981,12 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             navigate(
                               `/${
                                 location?.pathname?.split("/")[2]
-                              }/${CompanyUrl}/customes/profile`,
+                              }/${CompanyUrl}/customers/profile`,
                               {
                                 state: {
                                   navigats: [
                                     "/index",
-                                    `/${CompanyUrl}/profile`,
+                                    `/${CompanyUrl}/customers/profile`,
                                   ],
                                 },
                               }

@@ -212,7 +212,7 @@ const CustomerProfile = () => {
             },
             dangerMode: true,
           }).then(() => {
-            navigate(`/${CompanyUrl}/customers/profile`, {
+            navigate(`/profile`, {
               state: { navigats: ["/profile"] },
             });
           });
