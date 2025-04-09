@@ -365,7 +365,7 @@ exports.checkEmail = async (req, res) => {
     }
 
     if (isCompanyUser) {
-      const companyData = companiesData.find(item => item.Role === "Company");
+      const companyData = companiesData.find((item) => item.Role === "Company");
 
       return res.status(200).json({
         statusCode: "200",
@@ -376,6 +376,7 @@ exports.checkEmail = async (req, res) => {
           CompanyId: companyData?.CompanyId || null,
           Role: "Company",
           CompanyName: companyData?.CompanyName || "Unknown Company",
+          CompanyUrl: companyData?.CompanyUrl || "Unknown Company",
         },
       });
     }
@@ -404,7 +405,9 @@ exports.checkEmail = async (req, res) => {
     });
   } catch (error) {
     console.error("Check Email Error:", error);
-    res.status(500).json({ message: "Something went wrong, please try later!" });
+    res
+      .status(500)
+      .json({ message: "Something went wrong, please try later!" });
   }
 };
 
