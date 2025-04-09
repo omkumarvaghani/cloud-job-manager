@@ -108,23 +108,18 @@ const Customer = () => {
     }
   }, [page, search, sortField, sortOrder]);
   const handleEditClick = (id) => {
-    const currentNavigats = location?.state?.navigats || [];
-    const updatedNavigats = Array.isArray(currentNavigats)
-      ? [...currentNavigats, "/add-customer"]
-      : ["/add-customer"];
-
     if (CompanyName) {
       navigate(`/${CompanyName}/add-customer`, {
         state: {
           id,
-          navigats: updatedNavigats,
+          navigats: [...location?.state?.navigats, "/add-customer"],
         },
       });
     } else {
       navigate(`/staff-member/add-customer`, {
         state: {
           id,
-          navigats: updatedNavigats,
+          navigats: [...location?.state?.navigats, "/add-customer"],
         },
       });
     }

@@ -309,7 +309,6 @@ const sendWelcomeEmailToCompanyLogic = async (UserId) => {
     : { statusCode: 500, message: "Failed to send email" };
 };
 
-// **LOGIN API**
 exports.checkEmail = async (req, res) => {
   try {
     const { EmailAddress } = req.body;
@@ -317,23 +316,31 @@ exports.checkEmail = async (req, res) => {
 
     const users = await User.find({
       EmailAddress,
-      // Role: "Company",
       IsDelete: false,
     });
+
+    let isCompanyUser = false;
+
     for (const user of users) {
       const companyIds = Array.isArray(user.CompanyId)
         ? user.CompanyId
         : [user.CompanyId];
+
       for (const companyId of companyIds) {
         const userProfile = await UserProfile.findOne({
           CompanyId: companyId,
           Role: "Company",
         });
-        console.log(userProfile, "userProfile");
+
+        const role = user.Role;
+        if (role === "Company") {
+          isCompanyUser = true;
+        }
+
         companiesData.push({
           CompanyId: companyId,
           CompanyName: userProfile?.CompanyName || "Unknown Company",
-          Role: user.Role,
+          Role: role,
         });
       }
     }
@@ -357,6 +364,22 @@ exports.checkEmail = async (req, res) => {
       });
     }
 
+    if (isCompanyUser) {
+      const companyData = companiesData.find(item => item.Role === "Company");
+
+      return res.status(200).json({
+        statusCode: "200",
+        message: "Company email found",
+        multipleCompanies: false,
+        data: {
+          EmailAddress,
+          CompanyId: companyData?.CompanyId || null,
+          Role: "Company",
+          CompanyName: companyData?.CompanyName || "Unknown Company",
+        },
+      });
+    }
+
     if (companiesData.length === 1) {
       return res.status(200).json({
         statusCode: "200",
@@ -370,7 +393,6 @@ exports.checkEmail = async (req, res) => {
         },
       });
     }
-
     return res.status(200).json({
       statusCode: "200",
       message: "Email found in multiple companies",
@@ -382,11 +404,10 @@ exports.checkEmail = async (req, res) => {
     });
   } catch (error) {
     console.error("Check Email Error:", error);
-    res
-      .status(500)
-      .json({ message: "Something went wrong, please try later!" });
+    res.status(500).json({ message: "Something went wrong, please try later!" });
   }
 };
+
 exports.login = async (req, res) => {
   try {
     const { EmailAddress, Password, CompanyId } = req.body;

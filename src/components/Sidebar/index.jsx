@@ -57,7 +57,7 @@ const MyPopoverComponent = ({
   popoverOpen,
   togglePopover,
   handleNavigation,
-  CompanyUrl = "",
+  CompanyName = "",
   staffData = {},
 }) => {
   const location = useLocation();
@@ -85,14 +85,14 @@ const MyPopoverComponent = ({
             }}
             onClick={() =>
               handleNavigation(
-                CompanyUrl
-                  ? `/${CompanyUrl}/add-customer`
+                CompanyName
+                  ? `/${CompanyName}/add-customer`
                   : "/staff-member/add-customer",
                 {
                   state: {
                     navigats: [
                       "/index",
-                      CompanyUrl ? "/add-customer" : "/add-customer",
+                      CompanyName ? "/add-customer" : "/add-customer",
                     ],
                   },
                 }
@@ -117,14 +117,14 @@ const MyPopoverComponent = ({
             }}
             onClick={() =>
               handleNavigation(
-                CompanyUrl
-                  ? `/${CompanyUrl}/add-quotes`
+                CompanyName
+                  ? `/${CompanyName}/add-quotes`
                   : "/staff-member/add-quotes",
                 {
                   state: {
                     navigats: [
                       "/index",
-                      CompanyUrl ? "/add-quotes" : "/add-quotes",
+                      CompanyName ? "/add-quotes" : "/add-quotes",
                     ],
                   },
                 }
@@ -136,7 +136,7 @@ const MyPopoverComponent = ({
           </Grid>
         )}
 
-        {((!location.pathname.includes("/staff-member") && CompanyUrl) ||
+        {((!location.pathname.includes("/staff-member") && CompanyName) ||
           staffData?.Jobs?.JViewCreateAndEdit ||
           staffData?.Jobs?.JViewCreateEditAndDelete) && (
           <Grid
@@ -149,14 +149,14 @@ const MyPopoverComponent = ({
             }}
             onClick={() =>
               handleNavigation(
-                CompanyUrl
-                  ? `/${CompanyUrl}/add-contract`
+                CompanyName
+                  ? `/${CompanyName}/add-contract`
                   : "/staff-member/add-contract",
                 {
                   state: {
                     navigats: [
                       "/index",
-                      CompanyUrl ? "/add-contract" : "/add-contract",
+                      CompanyName ? "/add-contract" : "/add-contract",
                     ],
                   },
                 }
@@ -179,14 +179,14 @@ const MyPopoverComponent = ({
             }}
             onClick={() =>
               handleNavigation(
-                CompanyUrl
-                  ? `/${CompanyUrl}/invoice`
+                CompanyName
+                  ? `/${CompanyName}/invoice`
                   : "/staff-member/invoice",
                 {
                   state: {
                     navigats: [
                       "/index",
-                      CompanyUrl ? "/add-customer" : "/invoice",
+                      CompanyName ? "/add-customer" : "/invoice",
                     ],
                   },
                 }
@@ -212,7 +212,7 @@ const Sidebar = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyUrl } = useParams();
+  const { CompanyName } = useParams();
   const isMediumScreen = useMediaQuery("(max-width:767px)");
   const [anchorEl, setAnchorEl] = useState(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -269,19 +269,19 @@ const Sidebar = ({
   const closePopover = () => setPopoverOpen(false);
 
   const createLinks = (props) => {
-    const matchPath = (path, layout, CompanyUrl) => {
-      const basePath = CompanyUrl ? `/${CompanyUrl}` : layout;
+    const matchPath = (path, layout, CompanyName) => {
+      const basePath = CompanyName ? `/${CompanyName}` : layout;
       return `${location.pathname}` === `${basePath}${path}`;
     };
 
-    const findMatchingRoute = (routes, layout, CompanyUrl) => {
+    const findMatchingRoute = (routes, layout, CompanyName) => {
       for (const route of routes) {
-        if (!route.isCollapse && matchPath(route.path, layout, CompanyUrl)) {
+        if (!route.isCollapse && matchPath(route.path, layout, CompanyName)) {
           return route;
         }
         if (route.children) {
           const matchingChild = route.children.find((child) =>
-            matchPath(child.path, child.layout, CompanyUrl)
+            matchPath(child.path, child.layout, CompanyName)
           );
           if (matchingChild) {
             return matchingChild;
@@ -291,7 +291,7 @@ const Sidebar = ({
       return null;
     };
 
-    const currentProp = findMatchingRoute(routes, layout, CompanyUrl);
+    const currentProp = findMatchingRoute(routes, layout, CompanyName);
 
     return props?.map((prop, index) => {
       return (
@@ -316,8 +316,8 @@ const Sidebar = ({
                       color:
                         `${location.pathname}` ===
                         `${
-                          CompanyUrl
-                            ? `/${CompanyUrl}` + prop.path
+                          CompanyName
+                            ? `/${CompanyName}` + prop.path
                             : prop.layout + prop.path
                         }`
                           ? "#063164"
@@ -409,7 +409,7 @@ const Sidebar = ({
                           }}
                           onClick={(e) => {
                             let path = prop.layout;
-                            path = path.replace(":CompanyUrl", CompanyUrl);
+                            path = path.replace(":CompanyName", CompanyName);
 
                             if (isMediumScreen) {
                               setIsSidebarDisplay(!isSidebarDisplay);
@@ -446,8 +446,8 @@ const Sidebar = ({
                                   color:
                                     `${location.pathname}` ===
                                     `${
-                                      CompanyUrl
-                                        ? `/${CompanyUrl}` + item.path
+                                      CompanyName
+                                        ? `/${CompanyName}` + item.path
                                         : prop.layout + item.path
                                     }`
                                       ? "#063164"
@@ -461,8 +461,8 @@ const Sidebar = ({
                                 color:
                                   `${location.pathname}` ===
                                   `${
-                                    CompanyUrl
-                                      ? `/${CompanyUrl}` + item.path
+                                    CompanyName
+                                      ? `/${CompanyName}` + item.path
                                       : prop.layout + item.path
                                   }`
                                     ? "#063164"
@@ -478,8 +478,8 @@ const Sidebar = ({
                                 color:
                                   `${location.pathname}` ===
                                   `${
-                                    CompanyUrl
-                                      ? `/${CompanyUrl}` + item.path
+                                    CompanyName
+                                      ? `/${CompanyName}` + item.path
                                       : prop.layout + item.path
                                   }`
                                     ? "#063164"
@@ -506,7 +506,7 @@ const Sidebar = ({
                       <li
                         onClick={() => {
                           let path = prop.layout;
-                          path = path.replace(":CompanyUrl", CompanyUrl);
+                          path = path.replace(":CompanyName", CompanyName);
 
                           if (isMediumScreen) {
                             setIsSidebarDisplay(!isSidebarDisplay);
@@ -585,7 +585,7 @@ const Sidebar = ({
                   <li
                     onClick={(e) => {
                       let path = prop.layout;
-                      path = path.replace(":CompanyUrl", CompanyUrl);
+                      path = path.replace(":CompanyName", CompanyName);
 
                       if (isMediumScreen) {
                         setIsSidebarDisplay(!isSidebarDisplay);
@@ -660,7 +660,7 @@ const Sidebar = ({
 
   const handleLogoClick = () => {
     navigate(
-      `/${CompanyUrl ? CompanyUrl : location.pathname.split("/")[0]}/index`,
+      `/${CompanyName ? CompanyName : location.pathname.split("/")[0]}/index`,
       {
         state: { navigats: ["/index"] },
       }
@@ -756,7 +756,7 @@ const Sidebar = ({
           </Grid>
           {tokenDecode.Role === "Company" && (
             <>
-              {(CompanyUrl || location.pathname.includes("/staff-member")) &&
+              {(CompanyName || location.pathname.includes("/staff-member")) &&
                 (!location.pathname.includes("/staff-member") ||
                   staffData?.ClientsProperties
                     ?.ViewAndEditFullClientAndPropertyInfo ||
@@ -897,14 +897,14 @@ const Sidebar = ({
                                   setIsSidebarDisplay(!isSidebarDisplay);
                                 }
                                 handleNavigation(
-                                  CompanyUrl
-                                    ? `/${CompanyUrl}/customer`
+                                  CompanyName
+                                    ? `/${CompanyName}/customer`
                                     : "/staff-member/add-customer",
                                   {
                                     state: {
                                       navigats: [
                                         "/index",
-                                        CompanyUrl
+                                        CompanyName
                                           ? "/customer"
                                           : "/add-customer",
                                       ],
@@ -943,14 +943,14 @@ const Sidebar = ({
                                   setIsSidebarDisplay(!isSidebarDisplay);
                                 }
                                 handleNavigation(
-                                  CompanyUrl
-                                    ? `/${CompanyUrl}/quotes`
+                                  CompanyName
+                                    ? `/${CompanyName}/quotes`
                                     : "/staff-member/add-quotes",
                                   {
                                     state: {
                                       navigats: [
                                         "/index",
-                                        CompanyUrl ? "/quotes" : "/add-quotes",
+                                        CompanyName ? "/quotes" : "/add-quotes",
                                       ],
                                     },
                                   }
@@ -978,7 +978,7 @@ const Sidebar = ({
                             </DropdownItem>
                           )}
                           {((!location.pathname.includes("/staff-member") &&
-                            CompanyUrl) ||
+                            CompanyName) ||
                             staffData?.Jobs?.JViewCreateAndEdit ||
                             staffData?.Jobs?.JViewCreateEditAndDelete) && (
                             <DropdownItem
@@ -987,7 +987,7 @@ const Sidebar = ({
                                 if (isMediumScreen) {
                                   setIsSidebarDisplay(!isSidebarDisplay);
                                 }
-                                handleNavigation(`/${CompanyUrl}/contract`, {
+                                handleNavigation(`/${CompanyName}/contract`, {
                                   state: {
                                     navigats: ["/index", "/contract"],
                                   },
@@ -1015,7 +1015,7 @@ const Sidebar = ({
                             </DropdownItem>
                           )}
                           {((!location.pathname.includes("/staff-member") &&
-                            CompanyUrl) ||
+                            CompanyName) ||
                             staffData?.Jobs?.JViewCreateAndEdit ||
                             staffData?.Jobs?.JViewCreateEditAndDelete) && (
                             <DropdownItem
@@ -1024,7 +1024,7 @@ const Sidebar = ({
                                 if (isMediumScreen) {
                                   setIsSidebarDisplay(!isSidebarDisplay);
                                 }
-                                handleNavigation(`/${CompanyUrl}/invoice`, {
+                                handleNavigation(`/${CompanyName}/invoice`, {
                                   state: {
                                     navigats: ["/index", "/invoice"],
                                   },
@@ -1058,7 +1058,7 @@ const Sidebar = ({
                         popoverOpen={popoverOpen}
                         togglePopover={togglePopover}
                         handleNavigation={handleNavigation}
-                        CompanyUrl={CompanyUrl}
+                        CompanyName={CompanyName}
                         staffData={staffData}
                       />
                     )}

@@ -223,7 +223,7 @@ const QuoteMail = ({
           }
         }
       }
-      const url = `/quote/send_mail/${data?.companyId}`;
+      const url = `/v1/quote/send_mail/${data?.CompanyId}`;
       const object = {
         CustomerId: customerData?.CustomerId,
         QuoteId: quotesData?.QuoteId,
