@@ -137,7 +137,9 @@ const Permissions = ({ data, setData }) => {
       );
     }
   }, [selectedPermission, permissions, setData]);
-  
+
+ 
+
   return (
     <Grid>
       <Card

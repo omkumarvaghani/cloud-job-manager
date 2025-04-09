@@ -971,6 +971,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                       onClick={(e) => {
                         let path = `/${CompanyUrl}/profile`;
 
+                        // Assuming CompanyUrl is defined (e.g., "sparrowsofttechtechnology")
                         if (
                           location.pathname?.split("/")[2] === "customers" ||
                           location.pathname?.split("/")[2] === "staff-member"
@@ -978,35 +979,25 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                           if (
                             location.pathname?.split("/")[2] === "customers"
                           ) {
-                            navigate(
-                              `/${
-                                location?.pathname?.split("/")[2]
-                              }/${CompanyUrl}/customes/profile`,
-                              {
-                                state: {
-                                  navigats: [
-                                    "/index",
-                                    `/${CompanyUrl}/profile`,
-                                  ],
-                                },
-                              }
-                            );
+                            navigate(`/${CompanyUrl}/customers/profile`, {
+                              state: {
+                                navigats: [
+                                  "/index",
+                                  `/${CompanyUrl}/customers/profile`,
+                                ],
+                              },
+                            });
                           } else if (
                             location.pathname?.split("/")[2] === "staff-member"
                           ) {
-                            navigate(
-                              `/${
-                                location?.pathname?.split("/")[2]
-                              }/staff-member/profile`,
-                              {
-                                state: {
-                                  navigats: [
-                                    "/index",
-                                    `/${CompanyUrl}/staff-member/profile`,
-                                  ],
-                                },
-                              }
-                            );
+                            navigate(`/${CompanyUrl}/staff-member/profile`, {
+                              state: {
+                                navigats: [
+                                  "/index",
+                                  `/${CompanyUrl}/staff-member/profile`,
+                                ],
+                              },
+                            });
                           }
                         } else if (CompanyUrl) {
                           navigate(`/${CompanyUrl}/profile`, {
@@ -1017,54 +1008,43 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                         } else if (
                           location.pathname?.split("/")[1] === "superadmin"
                         ) {
-                          navigate(
-                            `/${
-                              location?.pathname.split("/")[1]
-                            }/SuperAdminProfile`,
-                            {
-                              state: {
-                                navigats: ["/index", "SuperAdminProfile"],
-                              },
-                            }
-                          );
+                          navigate(`/superadmin/SuperAdminProfile`, {
+                            state: {
+                              navigats: ["/index", "SuperAdminProfile"],
+                            },
+                          });
                         } else {
-                          navigate(
-                            `/${
-                              location?.pathname?.split("/")[1]
-                            }/staff-member/profile`,
-                            {
-                              state: {
-                                navigats: [
-                                  "/index",
-                                  `/${CompanyUrl}/staff-member/profile`,
-                                ],
-                              },
-                            }
-                          );
+                          navigate(`/${CompanyUrl}/staff-member/profile`, {
+                            state: {
+                              navigats: [
+                                "/index",
+                                `/${CompanyUrl}/staff-member/profile`,
+                              ],
+                            },
+                          });
                         }
                       }}
                     >
                       {/* <Typography
-                        className="text-overflow m-0 "
-                        style={{
-                          padding: "8px",
-                          borderRadius: "5px",
-                          color: "#E88C44",
-                          fontSize: "12px",
-                          backgroundColor: "#FFF",
-                        }}
-                      > */}
+                          className="text-overflow m-0 "
+                          style={{
+                            padding: "8px",
+                            borderRadius: "5px",
+                            color: "#E88C44",
+                            fontSize: "12px",
+                            backgroundColor: "#FFF",
+                          }}
+                        > */}
                       {/* {data?.full_name
-                          ?.split(" ")
-                          ?.map((part) => part.charAt(0).toUpperCase())
-                          ?.join("")} */}
+                            ?.split(" ")
+                            ?.map((part) => part.charAt(0).toUpperCase())
+                            ?.join("")} */}
                       <>
                         {data?.ProfileImage ? (
                           <img
                             src={`${cdnUrl}/upload/${data?.ProfileImage}`}
                             alt="Profile"
                             style={{
-                              // borderRadius: "50%",
                               width: "40px",
                               height: "40px",
                               borderRadius: "5px",

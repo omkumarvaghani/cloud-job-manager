@@ -258,8 +258,9 @@ function ManageTeamTable() {
   };
 
   const cellData = workerData?.map((user, index) => {
+    console.log(user?.UserId,"user?.WorkerId")
     return {
-      key: user?.WorkerId,
+      key: user?.UserId,
       value: [
         <Grid
           className="bg-blue-color text-white-color"
@@ -576,16 +577,6 @@ function ManageTeamTable() {
                         <Typography className="quot text-light customerList_head heading-five tableNameHead fw-medium">
                           Workers List
                         </Typography>
-                        {/* <Grid className=" customersearch d-flex customer_searchBar searchBarOfTable">
-                          <JobberSearch
-                            search={search}
-                            setSearch={setSearch}
-                            style={{
-                              background: "transparant",
-                              color: "white",
-                            }}
-                          />
-                        </Grid> */}
                       </CardHeader>
                       {loader ? (
                         <Grid className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">

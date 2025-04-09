@@ -663,3 +663,40 @@ exports.deleteWorkerByUserId = async (req, res) => {
     });
   }
 };
+
+// **ACTIVE DEACTIVE WORKER**
+exports.updateUserActiveStatus = async (req, res) => {
+  try {
+    const { UserId } = req.params;
+    const { IsActive } = req.body;
+
+    if (typeof IsActive !== "boolean") {
+      return res.status(400).json({
+        statusCode: "400",
+        message: "IsActive must be a boolean value (true or false)",
+      });
+    }
+
+    const user = await User.findOne({ UserId });
+
+    if (!user) {
+      return res.status(404).json({
+        statusCode: "404",
+        message: "User not found",
+      });
+    }
+
+    await User.updateOne({ UserId }, { $set: { IsActive } });
+
+    res.status(200).json({
+      statusCode: "200",
+      message: `User is now ${IsActive ? "Active" : "Inactive"}`,
+    });
+  } catch (error) {
+    console.error("Error updating IsActive:", error);
+    res.status(500).json({
+      statusCode: "500",
+      message: "Something went wrong",
+    });
+  }
+};
