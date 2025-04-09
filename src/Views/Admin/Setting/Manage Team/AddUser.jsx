@@ -137,19 +137,37 @@ const AddUser = () => {
       Schedule: "",
       OwnerName: "",
     },
-    validationSchema: Yup.object({
-      FirstName: Yup.string().required("First Name Required"),
-      LastName: Yup.string().required("Last Name Required"),
-      EmailAddress: Yup.string()
-        .email("Invalid email")
-        .required("Email required")
-        .matches(/^[^@]+@[^@]+\.[^@]+$/, "Email must contain '@' and '.'"),
-      PhoneNumber: Yup.string()
-        .matches(
-          /^\(\d{3}\) \d{3}-\d{4}$/,
-          "Phone number must be in the format (xxx) xxx-xxxx"
-        )
-        .required("Phone number is required"),
+    validationSchema: Yup.object().shape(() => {
+      if (data && data.AccountType === "Account Owner") {
+        return {
+          OwnerName: Yup.string().required("Owner Name Required"),
+          EmailAddress: Yup.string()
+            .email("Invalid email")
+            .required("Email required")
+            .matches(/^[^@]+@[^@]+\.[^@]+$/, "Email must contain '@' and '.'"),
+          PhoneNumber: Yup.string()
+            .matches(
+              /^\(\d{3}\) \d{3}-\d{4}$/,
+              "Phone number must be in the format (xxx) xxx-xxxx"
+            )
+            .required("Phone number is required"),
+        };  
+      } else {
+        return {
+          FirstName: Yup.string().required("First Name Required"),
+          LastName: Yup.string().required("Last Name Required"),
+          EmailAddress: Yup.string()
+            .email("Invalid email")
+            .required("Email required")
+            .matches(/^[^@]+@[^@]+\.[^@]+$/, "Email must contain '@' and '.'"),
+          PhoneNumber: Yup.string()
+            .matches(
+              /^\(\d{3}\) \d{3}-\d{4}$/,
+              "Phone number must be in the format (xxx) xxx-xxxx"
+            )
+            .required("Phone number is required"),
+        };
+      }
     }),
     validateOnChange: false,
     validateOnBlur: true,
@@ -759,52 +777,51 @@ const AddUser = () => {
                     />
                   </Grid>
                 </Grid>
-                {data && data.AccountType === "Account Owner" ? null : (
-                  <Grid className="d-flex gap-3 responsive-container personalInfoMation">
-                    <Grid className="w-50 sub-Grid infoInputBoxesWidth">
-                      <Typography
-                        className="text-blue-color labor labor-top mb-3 adduserLaborCost"
-                        style={{ fontWeight: 700, fontSize: "18px" }}
-                      >
-                        Labor Cost
-                      </Typography>
-                      <DollerInput
-                        value={formik.values?.LaborCost}
-                        onChange={(e) => {
-                          const sanitizedValue = e.target.value.replace(
-                            /[^0-9]/g,
-                            ""
-                          );
-                          formik.setFieldValue("LaborCost", sanitizedValue);
-                        }}
-                        onBlur={formik.handleBlur}
-                        error={
-                          formik.touched.LaborCost &&
-                          Boolean(formik.errors.LaborCost)
-                        }
-                        helperText={
-                          formik.touched.LaborCost && formik.errors.LaborCost
-                        }
-                        name="LaborCost"
-                        label="LaborCost"
-                        type="text"
-                        placeholder="Enter Labor Cost"
-                        className="text-blue-color w-100 m-0 mb-3 personalLaborInput"
-                        fieldHeight="60px"
-                        endAdornment={
-                          <InputAdornment
-                            position="end"
-                            className="text-blue-color"
-                          >
-                            <Typography style={{ fontSize: "12px" }}>
-                              per hour
-                            </Typography>
-                          </InputAdornment>
-                        }
-                      />
-                    </Grid>
+
+                <Grid className="d-flex gap-3 responsive-container personalInfoMation">
+                  <Grid className="w-50 sub-Grid infoInputBoxesWidth">
+                    <Typography
+                      className="text-blue-color labor labor-top mb-3 adduserLaborCost"
+                      style={{ fontWeight: 700, fontSize: "18px" }}
+                    >
+                      Labor Cost
+                    </Typography>
+                    <DollerInput
+                      value={formik.values?.LaborCost}
+                      onChange={(e) => {
+                        const sanitizedValue = e.target.value.replace(
+                          /[^0-9]/g,
+                          ""
+                        );
+                        formik.setFieldValue("LaborCost", sanitizedValue);
+                      }}
+                      onBlur={formik.handleBlur}
+                      error={
+                        formik.touched.LaborCost &&
+                        Boolean(formik.errors.LaborCost)
+                      }
+                      helperText={
+                        formik.touched.LaborCost && formik.errors.LaborCost
+                      }
+                      name="LaborCost"
+                      label="LaborCost"
+                      type="text"
+                      placeholder="Enter Labor Cost"
+                      className="text-blue-color w-100 m-0 mb-3 personalLaborInput"
+                      fieldHeight="60px"
+                      endAdornment={
+                        <InputAdornment
+                          position="end"
+                          className="text-blue-color"
+                        >
+                          <Typography style={{ fontSize: "12px" }}>
+                            per hour
+                          </Typography>
+                        </InputAdornment>
+                      }
+                    />
                   </Grid>
-                )}
+                </Grid>
               </Row>
               <Grid>
                 <Grid className="sub-Grid">
@@ -828,38 +845,15 @@ const AddUser = () => {
                   </Typography>
                 </Grid>
                 <Grid className="mt-4 d-flex justify-content-between align-items-start manageTeamTimeScheduleFlex">
-                  {/* Scrollable container for the table */}
                   <Grid style={{ width: "424px", overflowX: "auto" }}>
                     <Table className="w-100">
                       <TableBody>
-                        {/* {Object.keys(times).map((day) => (
-                          <TableRow key={day}>
-                            <TableCell
-                              style={{ fontWeight: 700, fontSize: "18px" }}
-                              className="text-blue-color"
-                            >
-                              {day}
-                            </TableCell>
-                            <TableCell
-                              className="text-blue-color"
-                              style={{ fontSize: "16px", fontWeight: 500 }}
-                            >
-                              {times[day].start && times[day].end
-                                ? `${moment(times[day].start).format(
-                                    "hh:mm A"
-                                  )} – ${moment(times[day].end).format(
-                                    "hh:mm A"
-                                  )}`
-                                : "Unavailable"}
-                            </TableCell>
-                          </TableRow>
-                        ))} */}
                         {Object.keys(times).map((day) => (
                           <tr key={day}>
                             <td>{day}</td>
                             <td colSpan={2}>
                               {!isChecked[day]
-                                ? "Unavailable" // ✅ If unchecked, show "Unavailable" in full row
+                                ? "Unavailable"
                                 : `${moment(times[day].start).format(
                                     "hh:mm A"
                                   )} - ${moment(times[day].end).format(
@@ -1034,22 +1028,32 @@ const AddUser = () => {
                       onClick={async (e) => {
                         e.preventDefault();
                         const isValid = await formik.validateForm();
-                        formik.setTouched({
-                          FirstName: true,
-                          LastName: true,
-                          EmailAddress: true,
-                        });
+
+                        if (data && data.AccountType === "Account Owner") {
+                          formik.setTouched({
+                            OwnerName: true,
+                            EmailAddress: true,
+                            PhoneNumber: true,
+                          });
+                        } else {
+                          formik.setTouched({
+                            FirstName: true,
+                            LastName: true,
+                            EmailAddress: true,
+                            PhoneNumber: true,
+                          });
+                        }
 
                         if (Object.keys(isValid).length === 0) {
                           formik.handleSubmit();
-                        } else showToast.error("Please Fill Required Fields");
+                        } else {
+                          showToast.error("Please Fill Required Fields");
+                        }
                       }}
                       label={
                         location?.state?.id ? "Update Worker" : "Save Worker"
                       }
-                    >
-                      {/* {" "} */}
-                    </BlueButton>
+                    />
                   </Grid>
                 )}
               </Grid>
