@@ -115,7 +115,7 @@ const Customer = ({
                   { label: "Full Name", field: "FirstName" },
                   { label: "Email", field: "EmailAddress" },
                   { label: "Address", field: "property.Address" },
-                  { label: "Created", field: "createdAt" },
+                  { label: "Created At", field: "createdAt" },
                   ...(!staffData?.CustomersProperties
                     ?.ViewCustomerNameAndAddressOnly
                     ? [{ label: "Action", field: "" }]

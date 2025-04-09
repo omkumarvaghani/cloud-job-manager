@@ -136,14 +136,15 @@ function ManageTeamTable() {
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
-          const response = await AxiosInstance.delete(`/worker/${id}`, {
+          const response = await AxiosInstance.delete(`/v1/worker/${id}`, {
             data: { DeleteReason: deleteReason },
           });
+          console.log(response, "response");
           if (response?.data?.statusCode === 200) {
             showToast.success(response?.data?.message);
             fetchData();
           } else {
-            showToast.warning(response?.data?.message);
+            showToast.success(response?.data?.message);
           }
         } catch (error) {
           console.error("Error:", error);
@@ -208,7 +209,7 @@ function ManageTeamTable() {
     },
   });
 
-  const sendMail = async (WorkerId) => {
+  const sendMail = async (UserId) => {
     const willSendMail = await swal({
       title: "Are you sure?",
       text: "Are you sure you want to send the email?",
@@ -228,7 +229,7 @@ function ManageTeamTable() {
     if (willSendMail) {
       try {
         const response = await AxiosInstance.post(
-          `/v1/worker/send_mail/${WorkerId}`
+          `/v1/worker/send_mail/${UserId}`
         );
         if (response?.data?.statusCode === 200) {
           setTimeout(() => {
@@ -258,7 +259,7 @@ function ManageTeamTable() {
   };
 
   const cellData = workerData?.map((user, index) => {
-    console.log(user?.UserId,"user?.WorkerId")
+    console.log(user?.UserId, "user?.WorkerId");
     return {
       key: user?.UserId,
       value: [
@@ -330,7 +331,7 @@ function ManageTeamTable() {
               className="text-blue-color outline border-blue-color"
               style={{
                 background: "none",
-                border: "none ",
+                border: "none",
               }}
             >
               <MoreHorizIcon />
@@ -344,6 +345,7 @@ function ManageTeamTable() {
                 minWidth: "150px",
               }}
             >
+              {/* Always show Resend Invitation */}
               <DropdownItem
                 style={{
                   fontSize: "14px",
@@ -355,7 +357,7 @@ function ManageTeamTable() {
                 className="text-blue-color"
               >
                 <MarkEmailReadOutlinedIcon
-                  className="icones-dropdown texxt-blue-color"
+                  className="icones-dropdown text-blue-color"
                   style={{
                     fontSize: "16px",
                     marginRight: "5px",
@@ -363,94 +365,100 @@ function ManageTeamTable() {
                 />
                 Resend Invitation
               </DropdownItem>
-              <DropdownItem
-                style={{
-                  fontSize: "14px",
-                  padding: "5px 10px",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-                onClick={async () => {
-                  swal({
-                    title: "Are you sure?",
-                    text: "Do you want to change the worker's status?",
-                    icon: "warning",
-                    buttons: {
-                      cancel: "Cancel",
-                      confirm: {
-                        text: "Yes, change status",
-                        closeModal: true,
-                        value: true,
-                        className: "bg-orange-color",
-                      },
-                    },
-                    dangerMode: true,
-                  }).then(async (confirmation) => {
-                    if (confirmation) {
-                      try {
-                        const newStatus = !user?.IsActive;
-                        const response = await AxiosInstance.put(
-                          `/worker/${user?.WorkerId}`,
-                          { IsActive: newStatus }
-                        );
 
-                        if (response?.data.statusCode === 200) {
-                          const successMessage = newStatus
-                            ? "Worker activated successfully"
-                            : "Worker deactivated successfully";
-                          setTimeout(() => {
-                            showToast.success(successMessage);
-                          }, 500);
-                          fetchData();
-                        } else {
-                          setTimeout(() => {
-                            showToast.error(response?.data.message);
-                          }, 500);
+              {/* Show Deactivate/Activate and Delete only if NOT Account Owner */}
+              {user?.AccountType !== "Account Owner" && (
+                <>
+                  <DropdownItem
+                    style={{
+                      fontSize: "14px",
+                      padding: "5px 10px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                    onClick={async () => {
+                      swal({
+                        title: "Are you sure?",
+                        text: "Do you want to change the worker's status?",
+                        icon: "warning",
+                        buttons: {
+                          cancel: "Cancel",
+                          confirm: {
+                            text: "Yes, change status",
+                            closeModal: true,
+                            value: true,
+                            className: "bg-orange-color",
+                          },
+                        },
+                        dangerMode: true,
+                      }).then(async (confirmation) => {
+                        if (confirmation) {
+                          try {
+                            const newStatus = !user?.IsActive;
+                            const response = await AxiosInstance.put(
+                              `/v1/worker/active/${user?.UserId}`,
+                              { IsActive: newStatus }
+                            );
+                            console.log(response, "response1234567");
+                            if (response?.data.statusCode === 200) {
+                              const successMessage = newStatus
+                                ? "Worker activated successfully"
+                                : "Worker deactivated successfully";
+                              setTimeout(() => {
+                                showToast.success(successMessage);
+                              }, 500);
+                              fetchData();
+                            } else {
+                              setTimeout(() => {
+                                showToast.success(response?.data.message);
+                              }, 500);
+                            }
+                          } catch (error) {
+                            console.error("Error:", error);
+                            setTimeout(() => {
+                              showToast.error(
+                                "Failed to update the worker's status"
+                              );
+                            }, 500);
+                          }
                         }
-                      } catch (error) {
-                        console.error("Error:", error);
-                        setTimeout(() => {
-                          showToast.error(
-                            "Failed to update the worker's status"
-                          );
-                        }, 500);
-                      }
-                    }
-                  });
-                }}
-              >
-                <NoAccountsIcon
-                  className="icones-dropdown"
-                  style={{
-                    fontSize: "16px",
-                    color: user?.IsActive ? "red" : "green",
-                    marginRight: "5px",
-                  }}
-                />
-                <Typography
-                  style={{
-                    color: user?.IsActive ? "red" : "green",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {user?.IsActive ? "Deactivate" : "Activate"}
-                </Typography>
-              </DropdownItem>
+                      });
+                    }}
+                  >
+                    <NoAccountsIcon
+                      className="icones-dropdown"
+                      style={{
+                        fontSize: "16px",
+                        color: user?.IsActive ? "red" : "green",
+                        marginRight: "5px",
+                      }}
+                    />
+                    <Typography
+                      style={{
+                        color: user?.IsActive ? "red" : "green",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {user?.IsActive ? "Deactivate" : "Activate"}
+                    </Typography>
+                  </DropdownItem>
 
-              <DropdownItem
-                style={{
-                  fontSize: "14px",
-                  padding: "5px 10px",
-                  alignItems: "center",
-                  marginLeft: "2px",
-                  display: "flex",
-                }}
-                onClick={() => handleDelete(user?.WorkerId)}
-                className="text-blue-color"
-              >
-                <DeleteIcone />
-                <Typography className="mx-1">Delete</Typography>
-              </DropdownItem>
+                  <DropdownItem
+                    style={{
+                      fontSize: "14px",
+                      padding: "5px 10px",
+                      alignItems: "center",
+                      marginLeft: "2px",
+                      display: "flex",
+                    }}
+                    onClick={() => handleDelete(user?.UserId)}
+                    className="text-blue-color"
+                  >
+                    <DeleteIcone />
+                    <Typography className="mx-1">Delete</Typography>
+                  </DropdownItem>
+                </>
+              )}
             </DropdownMenu>
           </Dropdown>
         </>,

@@ -425,7 +425,9 @@ exports.sendWelcomeEmailToWorker = async (req, res) => {
 exports.getCompleteWorkerByUserId = async (req, res) => {
   try {
     const { UserId } = req.params;
-    const { CompanyId } = req.user;
+    const CompanyId = Array.isArray(req.user.CompanyId)
+      ? req.user.CompanyId
+      : [req.user.CompanyId];
 
     let matchConditions = [
       { UserId: UserId },
@@ -533,7 +535,6 @@ exports.getCompleteWorkerByUserId = async (req, res) => {
         },
       },
     ]);
-    console.log(workerData, "workerData");
     if (!workerData || workerData.length === 0) {
       return res.status(404).json({
         statusCode: "404",
@@ -690,7 +691,7 @@ exports.updateUserActiveStatus = async (req, res) => {
 
     res.status(200).json({
       statusCode: "200",
-      message: `User is now ${IsActive ? "Active" : "Inactive"}`,
+      message: `Worker is now ${IsActive ? "Active" : "Inactive"}`,
     });
   } catch (error) {
     console.error("Error updating IsActive:", error);
@@ -699,4 +700,30 @@ exports.updateUserActiveStatus = async (req, res) => {
       message: "Something went wrong",
     });
   }
+};
+
+// **ACTIVE AND DEACTIVE WORKER COUNT**
+exports.getActiveWorkerStats = async (req, res) => {
+  const CompanyId = Array.isArray(req.user.CompanyId)
+    ? req.user.CompanyId
+    : [req.user.CompanyId];
+
+  const allWorkerCount = await User.countDocuments({
+    CompanyId,
+    Role: "Worker",
+    IsDelete: false,
+  });
+  const activeWorkerCount = await User.countDocuments({
+    CompanyId,
+    Role: "Worker",
+    IsActive: true,
+    IsDelete: false,
+  });
+
+  return res.status(200).json({
+    statusCode: 200,
+    message: "Active worker stats retrieved successfully!",
+    AllWorker: allWorkerCount,
+    activeWorkerCount,
+  });
 };
