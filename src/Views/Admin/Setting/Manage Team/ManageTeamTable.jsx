@@ -108,6 +108,7 @@ function ManageTeamTable() {
           sortOrder: sortOrder,
         },
       });
+      console.log(res, "resres0537");
       if (res?.data?.statusCode === 200) {
         setWorkerData(res?.data?.data);
         setTotalCount(res?.data?.count);
@@ -124,6 +125,26 @@ function ManageTeamTable() {
     fetchData();
   }, [rowsPerPage, page, search, sortField, sortOrder]);
 
+  const countDataWorker = async () => {
+    setLoader(true);
+    try {
+      const res = await AxiosInstance.get(`/v1/worker/activeuser`);
+      console.log(res, "dsdsddsd");
+      if (res?.data?.statusCode === 200) {
+        // setWorkerData(res?.data?.data);
+        setTotalCount(res?.data?.AllWorker);
+        // setCountData(res?.data?.count);
+        setActiveCount(res?.data?.activeWorkerCount);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoader(false);
+    }
+  };
+  useEffect(() => {
+    countDataWorker();
+  }, []);
   const handleClick = (id) => {
     if (id) {
       navigate("/" + CompanyUrl + "/add-user", {
@@ -319,55 +340,56 @@ function ManageTeamTable() {
         </Grid>,
 
         <>
-          <Dropdown
-            isOpen={activeDropdown === user?.EmailAddress}
-            toggle={() => toggleDropdown(user?.EmailAddress)}
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              zIndex: activeDropdown === user?.EmailAddress ? 9999 : 0,
-            }}
-          >
-            <DropdownToggle
-              className="text-blue-color outline border-blue-color"
+          {user?.AccountType !== "Account Owner" && (
+            <Dropdown
+              isOpen={activeDropdown === user?.EmailAddress}
+              toggle={() => toggleDropdown(user?.EmailAddress)}
+              onClick={(e) => e.stopPropagation()}
               style={{
-                background: "none",
-                border: "none",
+                zIndex: activeDropdown === user?.EmailAddress ? 9999 : 0,
               }}
             >
-              <MoreHorizIcon />
-            </DropdownToggle>
-            <DropdownMenu
-              container="body"
-              style={{
-                position: "absolute",
-                zIndex: activeDropdown === user?.EmailAddress ? 9998 : 1,
-                padding: "5px",
-                minWidth: "150px",
-              }}
-            >
-              {/* Always show Resend Invitation */}
-              <DropdownItem
+              <DropdownToggle
+                className="text-blue-color outline border-blue-color"
                 style={{
-                  fontSize: "14px",
-                  padding: "5px 10px",
+                  background: "none",
+                  border: "none",
                 }}
-                onClick={() => {
-                  sendMail(user?.UserId);
-                }}
-                className="text-blue-color"
               >
-                <MarkEmailReadOutlinedIcon
-                  className="icones-dropdown text-blue-color"
+                <MoreHorizIcon />
+              </DropdownToggle>
+              <DropdownMenu
+                container="body"
+                style={{
+                  position: "absolute",
+                  zIndex: activeDropdown === user?.EmailAddress ? 9998 : 1,
+                  padding: "5px",
+                  minWidth: "150px",
+                }}
+              >
+                {/* Always show Resend Invitation */}
+                <DropdownItem
                   style={{
-                    fontSize: "16px",
-                    marginRight: "5px",
+                    fontSize: "14px",
+                    padding: "5px 10px",
                   }}
-                />
-                Resend Invitation
-              </DropdownItem>
+                  onClick={() => {
+                    sendMail(user?.UserId);
+                  }}
+                  className="text-blue-color"
+                >
+                  <MarkEmailReadOutlinedIcon
+                    className="icones-dropdown text-blue-color"
+                    style={{
+                      fontSize: "16px",
+                      marginRight: "5px",
+                    }}
+                  />
+                  Resend Invitation
+                </DropdownItem>
 
-              {/* Show Deactivate/Activate and Delete only if NOT Account Owner */}
-              {user?.AccountType !== "Account Owner" && (
+                {/* Show Deactivate/Activate and Delete only if NOT Account Owner */}
+
                 <>
                   <DropdownItem
                     style={{
@@ -458,9 +480,9 @@ function ManageTeamTable() {
                     <Typography className="mx-1">Delete</Typography>
                   </DropdownItem>
                 </>
-              )}
-            </DropdownMenu>
-          </Dropdown>
+              </DropdownMenu>
+            </Dropdown>
+          )}
         </>,
       ],
     };
