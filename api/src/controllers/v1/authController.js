@@ -121,6 +121,7 @@ exports.register = async (req, res) => {
       State,
       Zip,
       Country,
+      OwnerName,
       ...profileDetails
     } = req.body;
 
@@ -314,7 +315,11 @@ exports.checkEmail = async (req, res) => {
     const { EmailAddress } = req.body;
     const companiesData = [];
 
-    const users = await User.find({ EmailAddress, IsDelete: false });
+    const users = await User.find({
+      EmailAddress,
+      // Role: "Company",
+      IsDelete: false,
+    });
     for (const user of users) {
       const companyIds = Array.isArray(user.CompanyId)
         ? user.CompanyId
