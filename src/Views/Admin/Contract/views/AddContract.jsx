@@ -710,14 +710,11 @@ const AddContract = ({
                                                   marginBottom: 0,
                                                 }}
                                               >
-                                                {person?.Role === "Company"
-                                                  ? person?.OwnerName
-                                                  : `${
-                                                      person?.FirstName || ""
-                                                    } ${
-                                                      person?.LastName || ""
-                                                    }`}
+                                                {`${person?.FirstName || ""} ${
+                                                  person?.LastName || ""
+                                                }`}
                                               </Label>
+
                                               {person?.Role === "Company" && (
                                                 <Label
                                                   style={{
