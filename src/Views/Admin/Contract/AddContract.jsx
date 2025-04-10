@@ -336,7 +336,7 @@ function AddContract() {
               members.map((member) => ({
                 FirstName: member.FirstName,
                 LastName: member.LastName,
-                EmailAddress: tokenDecode?.EmailAddress || member.EmailAddress, // Use tokenDecode's EmailAddress if available
+                EmailAddress: tokenDecode?.EmailAddress || member.EmailAddress, 
                 WorkerId: member.UserId,
               }))
             );

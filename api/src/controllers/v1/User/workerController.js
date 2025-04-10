@@ -20,7 +20,7 @@ exports.getAllWorkers = async (req, res) => {
       });
     }
 
-    const users = await User.aggregate([
+    const workers = await User.aggregate([
       {
         $match: {
           CompanyId,
@@ -43,10 +43,43 @@ exports.getAllWorkers = async (req, res) => {
         },
       },
       {
-        $addFields: {
-          AccountTypeExists: {
-            $cond: [{ $ifNull: ["$AccountType", false] }, 1, 0],
-          },
+        $project: {
+          _id: 1,
+          UserId: 1,
+          CompanyId: 1,
+          EmailAddress: 1,
+          Role: 1,
+          IsActive: 1,
+          FirstName: "$profile.FirstName",
+          LastName: "$profile.LastName",
+          OwnerName: "$profile.OwnerName",
+          PhoneNumber: "$profile.PhoneNumber",
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+    ]);
+
+    const accountOwner = await User.aggregate([
+      {
+        $match: {
+          CompanyId,
+          Role: "Company",
+          IsDelete: false,
+        },
+      },
+      {
+        $lookup: {
+          from: "user-profiles",
+          localField: "UserId",
+          foreignField: "UserId",
+          as: "profile",
+        },
+      },
+      {
+        $unwind: {
+          path: "$profile",
+          preserveNullAndEmptyArrays: true,
         },
       },
       {
@@ -55,30 +88,24 @@ exports.getAllWorkers = async (req, res) => {
           UserId: 1,
           CompanyId: 1,
           EmailAddress: 1,
-          Role: 1,
+          Role: { $literal: "Company" },
           IsActive: 1,
-          AccountType: 1,
           FirstName: "$profile.FirstName",
           LastName: "$profile.LastName",
           OwnerName: "$profile.OwnerName",
           PhoneNumber: "$profile.PhoneNumber",
           createdAt: 1,
           updatedAt: 1,
-          AccountTypeExists: 1,
-        },
-      },
-      {
-        $sort: {
-          AccountTypeExists: -1,
-          createdAt: -1,
         },
       },
     ]);
 
+    const allUsers = [...accountOwner, ...workers];
+
     return res.status(200).json({
       statusCode: 200,
-      message: "Users retrieved successfully",
-      data: users,
+      message: "Workers and account owner retrieved successfully",
+      data: allUsers,
     });
   } catch (error) {
     console.error("Error fetching users:", error.message);
@@ -151,55 +178,92 @@ exports.updateWorkerProfile = async (req, res) => {
   const { UserId } = req.params;
   const updateData = req.body;
 
-  console.log(req.body, "Request Body");
-
-  if (!updateData) {
+  if (!updateData || Object.keys(updateData).length === 0) {
     return res.status(400).json({
       statusCode: 400,
       message: "Update data is required.",
     });
   }
 
-  const { CompanyId, ...dataToUpdate } = updateData;
-
   try {
-    const admin = await User.findOneAndUpdate(
+    // First find the user to check their Role
+    const user = await User.findOne({ UserId, IsDelete: false });
+
+    if (!user) {
+      return res.status(404).json({
+        statusCode: 404,
+        message: "User not found!",
+      });
+    }
+
+    const role = user.Role;
+
+    // Fields that belong to the User collection
+    const userFields = [
+      "Address",
+      "City",
+      "State",
+      "ZipCode",
+      "Country",
+      "Location",
+      "EmailAddress",
+      "CompanyId", // if present
+    ];
+
+    // Split update data into user & profile specific fields
+    const userUpdateData = {};
+    const profileUpdateData = {};
+
+    for (const key in updateData) {
+      if (userFields.includes(key)) {
+        userUpdateData[key] = updateData[key];
+      } else {
+        profileUpdateData[key] = updateData[key];
+      }
+    }
+
+    // If role is Company (i.e., Account Owner from Worker table), allow both updates
+    if (role === "Company") {
+      // Push everything into both models
+      const updatedUser = await User.findOneAndUpdate(
+        { UserId, IsDelete: false },
+        { $set: updateData },
+        { new: true }
+      );
+
+      const updatedProfile = await UserProfile.findOneAndUpdate(
+        { UserId },
+        { $set: updateData },
+        { new: true, upsert: true }
+      );
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: "Company profile updated successfully",
+        data: updatedUser,
+      });
+    }
+
+    // If role is Worker
+    const updatedWorkerUser = await User.findOneAndUpdate(
       { UserId, IsDelete: false },
-      { $set: dataToUpdate },
+      { $set: userUpdateData },
       { new: true }
     );
 
-    if (!admin) {
-      return res.status(404).json({
-        statusCode: 404,
-        message: "Worker not found!",
-      });
-    }
-
-    const userProfileUpdate = await UserProfile.findOneAndUpdate(
+    const updatedWorkerProfile = await UserProfile.findOneAndUpdate(
       { UserId },
-      {
-        $set: {
-          ...dataToUpdate,
-        },
-      },
+      { $set: profileUpdateData },
       { new: true, upsert: true }
     );
 
-    if (!userProfileUpdate) {
-      return res.status(404).json({
-        statusCode: 404,
-        message: "Worker Profile not found!",
-      });
-    }
-
     return res.status(200).json({
       statusCode: 200,
-      message: "Profile updated successfully",
-      data: admin,
+      message: "Worker profile updated successfully",
+      data: updatedWorkerUser,
     });
   } catch (error) {
-    console.error("Error updating company profile:", error);
+    console.error("Error updating profile:", error);
     return res.status(500).json({
       statusCode: 500,
       message: "Internal server error",
@@ -429,126 +493,155 @@ exports.getCompleteWorkerByUserId = async (req, res) => {
       ? req.user.CompanyId
       : [req.user.CompanyId];
 
-    let matchConditions = [
-      { UserId: UserId },
-      { Role: "Worker" },
-      { IsDelete: false },
-    ];
+    const user = await User.findOne({ UserId, IsDelete: false });
 
-    const workerData = await UserProfile.aggregate([
-      { $match: { $and: matchConditions } },
-      {
-        $lookup: {
-          from: "users",
-          localField: "UserId",
-          foreignField: "UserId",
-          as: "userData",
-        },
-      },
-      {
-        $unwind: {
-          path: "$userData",
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
-        $lookup: {
-          from: "locations",
-          localField: "LocationId",
-          foreignField: "LocationId",
-          as: "locationData",
-        },
-      },
-      {
-        $unwind: {
-          path: "$locationData",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $addFields: {
-          Address: {
-            $cond: {
-              if: { $eq: ["$AccountType", "Account Owner"] },
-              then: "$Address",
-              else: "$locationData.Address",
-            },
-          },
-          City: {
-            $cond: {
-              if: { $eq: ["$AccountType", "Account Owner"] },
-              then: "$City",
-              else: "$locationData.City",
-            },
-          },
-          State: {
-            $cond: {
-              if: { $eq: ["$AccountType", "Account Owner"] },
-              then: "$State",
-              else: "$locationData.State",
-            },
-          },
-          Country: {
-            $cond: {
-              if: { $eq: ["$AccountType", "Account Owner"] },
-              then: "$Country",
-              else: "$locationData.Country",
-            },
-          },
-          Zip: {
-            $cond: {
-              if: { $eq: ["$AccountType", "Account Owner"] },
-              then: "$Zip",
-              else: "$locationData.Zip",
-            },
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          UserId: "$userData.UserId",
-          EmailAddress: "$userData.EmailAddress",
-          IsPassSet: "$userData.IsPassSet",
-          IsActive: "$userData.IsActive",
-          Role: "$userData.Role",
-          CompanyId: "$userData.CompanyId",
-          AccountType: "$userData.AccountType",
-          PasswordUpdatedAt: "$userData.PasswordUpdatedAt",
+    if (!user) {
+      return res.status(404).json({
+        statusCode: "404",
+        message: "User not found",
+      });
+    }
 
-          OwnerName: 1,
-          FirstName: 1,
-          LastName: 1,
-          PhoneNumber: 1,
-          ProfileImage: 1,
-          LocationId: 1,
-          LaborCost: 1,
-          ScheduleTime: 1,
-          IsPlanActive: 1,
-          CreatedAt: "$createdAt",
+    const role = user.Role;
 
-          Address: 1,
-          City: 1,
-          State: 1,
-          Country: 1,
-          Zip: 1,
+    let pipeline = [];
+
+    if (role === "Company") {
+      pipeline = [
+        {
+          $match: {
+            UserId,
+            Role: "Company",
+            CompanyId: { $in: CompanyId },
+            IsDelete: false,
+          },
         },
-      },
-    ]);
-    if (!workerData || workerData.length === 0) {
+        {
+          $lookup: {
+            from: "user-profiles",
+            localField: "UserId",
+            foreignField: "UserId",
+            as: "profile",
+          },
+        },
+        { $unwind: { path: "$profile", preserveNullAndEmptyArrays: true } },
+        {
+          $project: {
+            _id: 0,
+            UserId: 1,
+            EmailAddress: 1,
+            IsPassSet: 1,
+            IsActive: 1,
+            Role: 1,
+            CompanyId: 1,
+            PasswordUpdatedAt: 1,
+
+            FirstName: "$profile.FirstName",
+            LastName: "$profile.LastName",
+            OwnerName: "$profile.OwnerName",
+            PhoneNumber: "$profile.PhoneNumber",
+            ProfileImage: "$profile.ProfileImage",
+            LocationId: "$profile.LocationId",
+            LaborCost: "$profile.LaborCost",
+            ScheduleTime: "$profile.ScheduleTime",
+            IsPlanActive: "$profile.IsPlanActive",
+            CreatedAt: "$profile.createdAt",
+
+            Address: "$profile.Address",
+            City: "$profile.City",
+            State: "$profile.State",
+            Country: "$profile.Country",
+            Zip: "$profile.Zip",
+          },
+        },
+      ];
+    } else {
+      pipeline = [
+        {
+          $match: {
+            UserId,
+            Role: "Worker",
+            IsDelete: false,
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "UserId",
+            foreignField: "UserId",
+            as: "userData",
+          },
+        },
+        {
+          $unwind: {
+            path: "$userData",
+            preserveNullAndEmptyArrays: false,
+          },
+        },
+        {
+          $lookup: {
+            from: "locations",
+            localField: "LocationId",
+            foreignField: "LocationId",
+            as: "locationData",
+          },
+        },
+        {
+          $unwind: {
+            path: "$locationData",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            UserId: "$userData.UserId",
+            EmailAddress: "$userData.EmailAddress",
+            IsPassSet: "$userData.IsPassSet",
+            IsActive: "$userData.IsActive",
+            Role: "$userData.Role",
+            CompanyId: "$userData.CompanyId",
+            PasswordUpdatedAt: "$userData.PasswordUpdatedAt",
+
+            FirstName: 1,
+            LastName: 1,
+            OwnerName: 1,
+            PhoneNumber: 1,
+            ProfileImage: 1,
+            LocationId: 1,
+            LaborCost: 1,
+            ScheduleTime: 1,
+            IsPlanActive: 1,
+            CreatedAt: "$createdAt",
+
+            Address: "$locationData.Address",
+            City: "$locationData.City",
+            State: "$locationData.State",
+            Country: "$locationData.Country",
+            Zip: "$locationData.Zip",
+          },
+        },
+      ];
+    }
+
+    const result = await (role === "Company"
+      ? User.aggregate(pipeline)
+      : UserProfile.aggregate(pipeline));
+
+    if (!result || result.length === 0) {
       return res.status(404).json({
         statusCode: "404",
         message: "Worker not found",
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       statusCode: "200",
-      message: "Worker details fetched successfully",
-      data: workerData[0],
+      message: "User data fetched successfully",
+      data: result[0],
     });
   } catch (error) {
-    console.error("Error fetching complete worker data:", error);
+    console.error("Error fetching user data:", error);
     res.status(500).json({
       statusCode: "500",
       message: "Something went wrong",
@@ -557,68 +650,111 @@ exports.getCompleteWorkerByUserId = async (req, res) => {
 };
 
 // **UPDATE WORKER BY ID**
-exports.updateWorkerByUserId = async (req, res) => {
-  try {
-    const { UserId } = req.params;
-    const { CompanyId } = req.user;
-    const {
-      FirstName,
-      LastName,
-      OwnerName,
-      PhoneNumber,
-      ProfileImage,
-      LocationId,
-      LaborCost,
-      ScheduleTime,
-      IsPlanActive,
-      IsActive,
-    } = req.body;
+exports.updateUserByUserId = async (req, res) => {
+  const { UserId } = req.params;
+  const updateData = req.body;
+  delete updateData.Role;
+  if (updateData.CompanyId && Array.isArray(updateData.CompanyId)) {
+    updateData.CompanyId = updateData.CompanyId[0]; 
+  }
 
-    const workerProfile = await UserProfile.findOne({
-      UserId,
-      CompanyId,
-      Role: "Worker",
-      IsDelete: false,
+  if (!updateData) {
+    return res.status(400).json({
+      statusCode: 400,
+      message: "Update data is required.",
     });
+  }
 
-    if (!workerProfile) {
+  try {
+    const user = await User.findOne({ UserId, IsDelete: false });
+
+    if (!user) {
       return res.status(404).json({
-        statusCode: "404",
-        message: "Worker not found",
+        statusCode: 404,
+        message: "User not found!",
       });
     }
 
-    let updateProfileFields = {
-      ...(PhoneNumber && { PhoneNumber }),
-      ...(ProfileImage && { ProfileImage }),
-      ...(LocationId && { LocationId }),
-      ...(LaborCost !== undefined && { LaborCost }),
-      ...(ScheduleTime && { ScheduleTime }),
-      ...(IsPlanActive !== undefined && { IsPlanActive }),
-    };
+    const role = user.Role;
 
-    if (workerProfile.AccountType === "Account Owner") {
-      if (OwnerName) updateProfileFields.OwnerName = OwnerName;
+    const {
+      EmailAddress,
+      Address,
+      City,
+      State,
+      Zip,
+      Country,
+      ...profileFields
+    } = updateData;
+
+    const userUpdateFields = {};
+    if (EmailAddress) userUpdateFields.EmailAddress = EmailAddress;
+
+    let userUpdatePromise = null;
+    let userProfileUpdatePromise = null;
+    let locationUpdatePromise = null;
+
+    if (Object.keys(userUpdateFields).length > 0) {
+      userUpdatePromise = User.findOneAndUpdate(
+        { UserId },
+        { $set: userUpdateFields },
+        { new: true }
+      );
+    }
+
+    if (role === "Company") {
+      userProfileUpdatePromise = UserProfile.findOneAndUpdate(
+        { UserId },
+        { $set: { ...profileFields, Address, City, State, Zip, Country } },
+        { new: true, upsert: true }
+      );
     } else {
-      if (FirstName) updateProfileFields.FirstName = FirstName;
-      if (LastName) updateProfileFields.LastName = LastName;
+      const userProfile = await UserProfile.findOne({ UserId });
+
+      userProfileUpdatePromise = UserProfile.findOneAndUpdate(
+        { UserId },
+        { $set: profileFields },
+        { new: true, upsert: true }
+      );
+
+      if (userProfile?.LocationId) {
+        locationUpdatePromise = Location.findOneAndUpdate(
+          { LocationId: userProfile.LocationId },
+          {
+            $set: {
+              Address,
+              City,
+              State,
+              Zip,
+              Country,
+            },
+          },
+          { new: true }
+        );
+      }
     }
 
-    await UserProfile.updateOne({ UserId }, { $set: updateProfileFields });
+    const [userUpdate, profileUpdate, locationUpdate] = await Promise.all([
+      userUpdatePromise,
+      userProfileUpdatePromise,
+      locationUpdatePromise,
+    ]);
 
-    if (IsActive !== undefined) {
-      await User.updateOne({ UserId }, { $set: { IsActive } });
-    }
-
-    res.status(200).json({
+    return res.status(200).json({
       statusCode: "200",
-      message: "Worker profile updated successfully",
+      message: "User updated successfully",
+      data: {
+        user: userUpdate,
+        profile: profileUpdate,
+        location: locationUpdate,
+      },
     });
   } catch (error) {
-    console.error("Error updating worker:", error);
-    res.status(500).json({
-      statusCode: "500",
-      message: "Something went wrong",
+    console.error("Error updating user profile:", error);
+    return res.status(500).json({
+      statusCode: 500,
+      message: "Internal server error",
+      error: error.message,
     });
   }
 };

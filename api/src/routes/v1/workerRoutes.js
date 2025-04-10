@@ -7,9 +7,9 @@ const {
   updateWorkerChangePass,
   getCompleteWorkerByUserId,
   deleteWorkerByUserId,
-  updateWorkerByUserId,
   updateUserActiveStatus,
   getActiveWorkerStats,
+  updateUserByUserId,
 } = require("../../controllers/v1/User/workerController");
 const { protect } = require("../../middleware/authMiddleware");
 const router = express.Router();
@@ -23,7 +23,7 @@ router.get("/activeuser", protect, getActiveWorkerStats);
 
 router.put("/profile/:UserId", protect, updateWorkerProfile);
 router.put("/change-password/:UserId", protect, updateWorkerChangePass);
-router.put("/:UserId", protect, updateWorkerByUserId);
+router.put("/:UserId", protect, updateUserByUserId);
 router.put("/active/:UserId", protect, updateUserActiveStatus);
 
 router.delete("/:UserId", protect, deleteWorkerByUserId);

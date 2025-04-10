@@ -710,8 +710,7 @@ const AddContract = ({
                                                   marginBottom: 0,
                                                 }}
                                               >
-                                                {person?.AccountType ===
-                                                "Account Owner"
+                                                {person?.Role === "Company"
                                                   ? person?.OwnerName
                                                   : `${
                                                       person?.FirstName || ""
@@ -719,8 +718,7 @@ const AddContract = ({
                                                       person?.LastName || ""
                                                     }`}
                                               </Label>
-                                              {person?.AccountType ===
-                                                "Account Owner" && (
+                                              {person?.Role === "Company" && (
                                                 <Label
                                                   style={{
                                                     fontSize: "14px",
@@ -959,7 +957,7 @@ const AddContract = ({
                                     style={{ fontSize: "16px" }}
                                   >
                                     <span>
-                                      {team?.AccountType === "Account Owner"
+                                      {team?.Role === "Company"
                                         ? `${
                                             team?.OwnerName ||
                                             "OwnerName not available"
@@ -974,7 +972,7 @@ const AddContract = ({
                                     </span>
                                   </Typography>
 
-                                  {team?.AccountType === "Account Owner" && (
+                                  {team?.Role === "Company" && (
                                     <Typography
                                       className="tag-text"
                                       style={{
@@ -983,7 +981,7 @@ const AddContract = ({
                                         fontStyle: "italic",
                                       }}
                                     >
-                                      Account Owner
+                                      Company
                                     </Typography>
                                   )}
 

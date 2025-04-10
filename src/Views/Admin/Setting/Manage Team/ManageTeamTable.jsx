@@ -296,7 +296,7 @@ function ManageTeamTable() {
             height: "40px",
           }}
         >
-          {user?.AccountType
+          {user?.Role === "Company"
             ? user?.OwnerName?.split(" ")
                 .map((word) => word?.charAt(0).toUpperCase())
                 .join("")
@@ -306,7 +306,7 @@ function ManageTeamTable() {
         </Grid>,
 
         <div>
-          {user?.AccountType ? (
+          {user?.Role === "Company" ? (
             <>
               <div>{user?.OwnerName || "OwnerName not available"}</div>
               <div
@@ -316,7 +316,7 @@ function ManageTeamTable() {
                   color: "#999",
                 }}
               >
-                {user?.AccountType}
+                Account Owner
               </div>
             </>
           ) : (
@@ -340,7 +340,7 @@ function ManageTeamTable() {
         </Grid>,
 
         <>
-          {user?.AccountType !== "Account Owner" && (
+          {user?.Role !== "Company" && (
             <Dropdown
               isOpen={activeDropdown === user?.EmailAddress}
               toggle={() => toggleDropdown(user?.EmailAddress)}
@@ -388,7 +388,7 @@ function ManageTeamTable() {
                   Resend Invitation
                 </DropdownItem>
 
-                {/* Show Deactivate/Activate and Delete only if NOT Account Owner */}
+                {/* Show Deactivate/Activate and Delete only if NOT Company */}
 
                 <>
                   <DropdownItem

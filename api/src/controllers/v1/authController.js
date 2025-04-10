@@ -62,7 +62,7 @@ exports.register = async (req, res) => {
 
     // if (existingCompany) {
     //   return {
-    //     statusCode: 200,
+    //     statusCode: 400,
     //     message: "Company Name Already Used!",
     //   };
     // }
@@ -113,34 +113,6 @@ exports.register = async (req, res) => {
       `User ${EmailAddress} registered in`
     );
     const emailStatus = await sendWelcomeEmailToCompanyLogic(companyUserId);
-
-    if (Role === "Company") {
-      const workerId = uuidv4();
-
-      const newWorkerUser = new User({
-        UserId: workerId,
-        Role: "Worker",
-        CompanyId,
-        EmailAddress,
-        Password,
-        AccountType: "Account Owner",
-      });
-      await newWorkerUser.save();
-
-      const newWorkerProfile = new UserProfile({
-        UserId: workerId,
-        CompanyId,
-        Role: "Worker",
-        OwnerName,
-      });
-      await newWorkerProfile.save();
-
-      await logUserEvent(
-        CompanyId,
-        "REGISTRATION",
-        `Default Account Owner Worker created for company ${EmailAddress}`
-      );
-    }
 
     const token = generateToken(newUser);
 

@@ -29,7 +29,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       // required: true,
     },
-    AccountType: { type: String },
     IsActive: {
       type: Boolean,
       default: true,

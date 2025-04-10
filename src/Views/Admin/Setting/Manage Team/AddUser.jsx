@@ -138,7 +138,7 @@ const AddUser = () => {
       OwnerName: "",
     },
     validationSchema: Yup.object().shape(() => {
-      if (data && data.AccountType === "Account Owner") {
+      if (data && data.Role === "Company") {
         return {
           OwnerName: Yup.string().required("Owner Name Required"),
           EmailAddress: Yup.string()
@@ -151,7 +151,7 @@ const AddUser = () => {
               "Phone number must be in the format (xxx) xxx-xxxx"
             )
             .required("Phone number is required"),
-        };  
+        };
       } else {
         return {
           FirstName: Yup.string().required("First Name Required"),
@@ -665,7 +665,7 @@ const AddUser = () => {
 
                 <Grid className="responsive-container gap-3 personalInfoMation">
                   <Grid className="w-50 sub-Grid infoInputBoxesWidth">
-                    {data && data.AccountType === "Account Owner" ? (
+                    {data && data.Role === "Company" ? (
                       <InputText
                         value={formik.values?.OwnerName}
                         onChange={formik.handleChange}
@@ -879,7 +879,7 @@ const AddUser = () => {
                 </Grid>
               </Grid>
             </Card>
-            {data && data.AccountType === "Account Owner" ? null : (
+            {data && data.Role === "Company" ? null : (
               <Permissions data={selectedRole} setData={setSelectedRole} />
             )}
             <Card
@@ -1029,7 +1029,7 @@ const AddUser = () => {
                         e.preventDefault();
                         const isValid = await formik.validateForm();
 
-                        if (data && data.AccountType === "Account Owner") {
+                        if (data && data.Role === "Company") {
                           formik.setTouched({
                             OwnerName: true,
                             EmailAddress: true,

@@ -562,7 +562,7 @@ exports.getCompanyData = async (req, res) => {
 // **GET COMPANY PROFILE API**
 exports.companyProfile = async function (req, res) {
   try {
-    const { CompanyId } = req.params;
+    const CompanyId = req.params;
 
     const companyProfile = await UserProfile.findOne({ CompanyId: CompanyId });
 
