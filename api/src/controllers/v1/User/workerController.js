@@ -7,7 +7,6 @@ const UserProfile = require("../../../models/User/UserProfile");
 const Location = require("../../../models/User/Location");
 const { handleTemplate } = require("./templateController");
 const AppUrl = process.env.REACT_APP;
-
 //**GET ALL WORKER FOR COMPANY**
 exports.getAllWorkers = async (req, res) => {
   try {
@@ -20,7 +19,7 @@ exports.getAllWorkers = async (req, res) => {
       });
     }
 
-    const workers = await User.aggregate([
+    const workerAggregation = [
       {
         $match: {
           CompanyId,
@@ -43,6 +42,44 @@ exports.getAllWorkers = async (req, res) => {
         },
       },
       {
+        $addFields: {
+          FirstName: {
+            $cond: {
+              if: { $ifNull: ["$profile.FirstName", false] },
+              then: "$profile.FirstName",
+              else: {
+                $arrayElemAt: [{ $split: ["$profile.OwnerName", " "] }, 0],
+              },
+            },
+          },
+          LastName: {
+            $cond: {
+              if: { $ifNull: ["$profile.LastName", false] },
+              then: "$profile.LastName",
+              else: {
+                $reduce: {
+                  input: {
+                    $slice: [
+                      { $split: ["$profile.OwnerName", " "] },
+                      1,
+                      { $size: { $split: ["$profile.OwnerName", " "] } },
+                    ],
+                  },
+                  initialValue: "",
+                  in: {
+                    $cond: [
+                      { $eq: ["$$value", ""] },
+                      "$$this",
+                      { $concat: ["$$value", " ", "$$this"] },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      {
         $project: {
           _id: 1,
           UserId: 1,
@@ -50,17 +87,16 @@ exports.getAllWorkers = async (req, res) => {
           EmailAddress: 1,
           Role: 1,
           IsActive: 1,
-          FirstName: "$profile.FirstName",
-          LastName: "$profile.LastName",
-          OwnerName: "$profile.OwnerName",
+          FirstName: 1,
+          LastName: 1,
           PhoneNumber: "$profile.PhoneNumber",
           createdAt: 1,
           updatedAt: 1,
         },
       },
-    ]);
+    ];
 
-    const accountOwner = await User.aggregate([
+    const ownerAggregation = [
       {
         $match: {
           CompanyId,
@@ -83,6 +119,44 @@ exports.getAllWorkers = async (req, res) => {
         },
       },
       {
+        $addFields: {
+          FirstName: {
+            $cond: {
+              if: { $ifNull: ["$profile.FirstName", false] },
+              then: "$profile.FirstName",
+              else: {
+                $arrayElemAt: [{ $split: ["$profile.OwnerName", " "] }, 0],
+              },
+            },
+          },
+          LastName: {
+            $cond: {
+              if: { $ifNull: ["$profile.LastName", false] },
+              then: "$profile.LastName",
+              else: {
+                $reduce: {
+                  input: {
+                    $slice: [
+                      { $split: ["$profile.OwnerName", " "] },
+                      1,
+                      { $size: { $split: ["$profile.OwnerName", " "] } },
+                    ],
+                  },
+                  initialValue: "",
+                  in: {
+                    $cond: [
+                      { $eq: ["$$value", ""] },
+                      "$$this",
+                      { $concat: ["$$value", " ", "$$this"] },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      {
         $project: {
           _id: 1,
           UserId: 1,
@@ -90,14 +164,18 @@ exports.getAllWorkers = async (req, res) => {
           EmailAddress: 1,
           Role: { $literal: "Company" },
           IsActive: 1,
-          FirstName: "$profile.FirstName",
-          LastName: "$profile.LastName",
-          OwnerName: "$profile.OwnerName",
+          FirstName: 1,
+          LastName: 1,
           PhoneNumber: "$profile.PhoneNumber",
           createdAt: 1,
           updatedAt: 1,
         },
       },
+    ];
+
+    const [workers, accountOwner] = await Promise.all([
+      User.aggregate(workerAggregation),
+      User.aggregate(ownerAggregation),
     ]);
 
     const allUsers = [...accountOwner, ...workers];
@@ -655,7 +733,7 @@ exports.updateUserByUserId = async (req, res) => {
   const updateData = req.body;
   delete updateData.Role;
   if (updateData.CompanyId && Array.isArray(updateData.CompanyId)) {
-    updateData.CompanyId = updateData.CompanyId[0]; 
+    updateData.CompanyId = updateData.CompanyId[0];
   }
 
   if (!updateData) {
@@ -676,7 +754,39 @@ exports.updateUserByUserId = async (req, res) => {
     }
 
     const role = user.Role;
+    const companyIdToCheck = updateData.CompanyId || user.CompanyId;
 
+    if (updateData.EmailAddress) {
+      const emailExists = await User.findOne({
+        EmailAddress: updateData.EmailAddress,
+        CompanyId: companyIdToCheck,
+        UserId: { $ne: UserId },
+        IsDelete: false,
+      });
+
+      if (emailExists) {
+        return res.status(400).json({
+          statusCode: 400,
+          message: "Email already exists under the same company.",
+        });
+      }
+    }
+
+    if (["Customer", "Worker"].includes(role)) {
+      const existingUser = await User.findOne({
+        CompanyId: companyIdToCheck,
+        Role: role,
+        UserId: { $ne: UserId },
+        IsDelete: false,
+      });
+
+      if (existingUser) {
+        return res.status(400).json({
+          statusCode: 400,
+          message: `Another ${role} already exists under this company.`,
+        });
+      }
+    }
     const {
       EmailAddress,
       Address,
@@ -844,22 +954,42 @@ exports.getActiveWorkerStats = async (req, res) => {
     ? req.user.CompanyId
     : [req.user.CompanyId];
 
-  const allWorkerCount = await User.countDocuments({
-    CompanyId,
-    Role: "Worker",
-    IsDelete: false,
-  });
-  const activeWorkerCount = await User.countDocuments({
-    CompanyId,
-    Role: "Worker",
-    IsActive: true,
-    IsDelete: false,
-  });
+  try {
+    const [allWorkerCount, activeWorkerCount, companyCount] = await Promise.all(
+      [
+        User.countDocuments({
+          CompanyId: { $in: CompanyId },
+          Role: "Worker",
+          IsDelete: false,
+        }).lean(),
 
-  return res.status(200).json({
-    statusCode: 200,
-    message: "Active worker stats retrieved successfully!",
-    AllWorker: allWorkerCount,
-    activeWorkerCount,
-  });
+        User.countDocuments({
+          CompanyId: { $in: CompanyId },
+          Role: "Worker",
+          IsActive: true,
+          IsDelete: false,
+        }).lean(),
+
+        User.countDocuments({
+          CompanyId: req.user.CompanyId,
+          Role: "Company",
+          IsDelete: false,
+        }).lean(),
+      ]
+    );
+
+    return res.status(200).json({
+      statusCode: 200,
+      message: "Active worker stats retrieved successfully!",
+      AllWorker: allWorkerCount + companyCount,
+      activeWorkerCount: activeWorkerCount + companyCount,
+    });
+  } catch (error) {
+    console.error("Error getting worker stats:", error);
+    return res.status(500).json({
+      statusCode: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
 };

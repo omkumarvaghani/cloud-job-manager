@@ -86,7 +86,6 @@ exports.register = async (req, res) => {
         .json({ error: "CompanyId is required for Worker/Customer" });
     }
 
-    // Create Company user
     const companyUserId = uuidv4();
     const newUser = new User({
       UserId: companyUserId,
