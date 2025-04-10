@@ -767,26 +767,26 @@ exports.updateUserByUserId = async (req, res) => {
       if (emailExists) {
         return res.status(400).json({
           statusCode: 400,
-          message: "Email already exists under the same company.",
+          message: "Email already exists in this company.",
         });
       }
     }
 
-    if (["Customer", "Worker"].includes(role)) {
-      const existingUser = await User.findOne({
-        CompanyId: companyIdToCheck,
-        Role: role,
-        UserId: { $ne: UserId },
-        IsDelete: false,
-      });
+    // if (["Customer", "Worker"].includes(role)) {
+    //   const existingUser = await User.findOne({
+    //     CompanyId: companyIdToCheck,
+    //     Role: role,
+    //     UserId: { $ne: UserId },
+    //     IsDelete: false,
+    //   });
 
-      if (existingUser) {
-        return res.status(400).json({
-          statusCode: 400,
-          message: `Another ${role} already exists under this company.`,
-        });
-      }
-    }
+    //   if (existingUser) {
+    //     return res.status(400).json({
+    //       statusCode: 400,
+    //       message: `Another ${role} already exists under this company.`,
+    //     });
+    //   }
+    // }
     const {
       EmailAddress,
       Address,

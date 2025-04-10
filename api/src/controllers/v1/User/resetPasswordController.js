@@ -174,14 +174,16 @@ exports.updatePassword = async (req, res) => {
     }
 
     const hashConvert = await encryptData(newPassword);
-    console.log(hashConvert, "hashConvert");
 
-    await user.updateOne({
-      $set: {
-        Password: hashConvert,
-        IsPassSet: true,
-      },
-    });
+    await User.updateMany(
+      { EmailAddress: email, IsDelete: false },
+      {
+        $set: {
+          Password: hashConvert,
+          PasswordUpdatedAt: new Date(),
+        },
+      }
+    );
 
     return res.status(200).json({
       data: user,
@@ -252,12 +254,15 @@ exports.updateForgetPassword = async (req, res) => {
 
     const hashConvert = await encryptData(newPassword);
 
-    await user.updateOne({
-      $set: {
-        Password: hashConvert,
-        PasswordUpdatedAt: new Date(),
-      },
-    });
+    await User.updateMany(
+      { EmailAddress: email, IsDelete: false },
+      {
+        $set: {
+          Password: hashConvert,
+          PasswordUpdatedAt: new Date(),
+        },
+      }
+    );
 
     return res.status(200).json({
       data: user,
