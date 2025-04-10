@@ -151,7 +151,7 @@ const AddUser = () => {
               "Phone number must be in the format (xxx) xxx-xxxx"
             )
             .required("Phone number is required"),
-        };  
+        };
       } else {
         return {
           FirstName: Yup.string().required("First Name Required"),
@@ -193,7 +193,7 @@ const AddUser = () => {
         } else {
           response = await AxiosInstance.post(`${baseUrl}/v1/user`, object);
         }
-
+        console.log(response, "response post");
         if (response?.data.statusCode === "200") {
           showToast.success(response?.data.message);
           navigate(-1);
@@ -665,6 +665,11 @@ const AddUser = () => {
 
                 <Grid className="responsive-container gap-3 personalInfoMation">
                   <Grid className="w-50 sub-Grid infoInputBoxesWidth">
+                    {console.log(
+                      formik.values?.OwnerName,
+                      "formik.values?.OwnerName"
+                    )}
+
                     {data && data.AccountType === "Account Owner" ? (
                       <InputText
                         value={formik.values?.OwnerName}

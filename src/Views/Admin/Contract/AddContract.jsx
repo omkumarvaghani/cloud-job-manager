@@ -46,6 +46,7 @@ function AddContract() {
   const [loading, setLoading] = useState(false);
   const [teamData, setTeamData] = useState([]);
   const [selectedTeams, setSelectedTeams] = useState([]);
+
   const [showDiscount, setShowDiscount] = useState(false);
   const [showTax, setShowTax] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -331,12 +332,16 @@ function AddContract() {
           const members = teamData.filter((item) =>
             data.WorkerId.includes(item.UserId)
           );
+          console.log("teamData:", teamData);
+          console.log("data:", data);
+          console.log("User Id from data:", data.WorkerId);
+          console.log("Filtered members:", members);
           if (members.length > 0) {
             setSelectedTeams(
               members.map((member) => ({
                 FirstName: member.FirstName,
                 LastName: member.LastName,
-                EmailAddress: tokenDecode?.EmailAddress || member.EmailAddress, // Use tokenDecode's EmailAddress if available
+                EmailAddress: member.EmailAddress, // Use tokenDecode's EmailAddress if available
                 WorkerId: member.UserId,
               }))
             );
@@ -578,7 +583,7 @@ function AddContract() {
         {
           FirstName: team?.FirstName,
           LastName: team?.LastName,
-          EmailAddress: tokenDecode?.EmailAddress || team.EmailAddress,
+          EmailAddress:  team.EmailAddress,
           WorkerId: team?.UserId,
         },
       ]);
