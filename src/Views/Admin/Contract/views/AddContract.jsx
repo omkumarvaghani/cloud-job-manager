@@ -957,7 +957,7 @@ const AddContract = ({
                                     style={{ fontSize: "16px" }}
                                   >
                                     <span>
-                                      {team?.Role === "Company"
+                                      {team?.OwnerName
                                         ? `${
                                             team?.OwnerName ||
                                             "OwnerName not available"
@@ -984,7 +984,11 @@ const AddContract = ({
                                       Company
                                     </Typography>
                                   )}
-
+                                  {console.log(team, "team234")}
+                                  {console.log(
+                                    team?.OwnerName,
+                                    "team?.OwnerName"
+                                  )}
                                   <button
                                     className="tag-close"
                                     onClick={() => handleRemoveTeam(team)}

@@ -334,9 +334,10 @@ function AddContract() {
           if (members.length > 0) {
             setSelectedTeams(
               members.map((member) => ({
+                OwnerName: member.OwnerName,
                 FirstName: member.FirstName,
                 LastName: member.LastName,
-                EmailAddress: tokenDecode?.EmailAddress || member.EmailAddress, 
+                EmailAddress: member.EmailAddress,
                 WorkerId: member.UserId,
               }))
             );
@@ -576,9 +577,10 @@ function AddContract() {
       setSelectedTeams((prevTeams) => [
         ...prevTeams,
         {
+          OwnerName: team.OwnerName,
           FirstName: team?.FirstName,
           LastName: team?.LastName,
-          EmailAddress: tokenDecode?.EmailAddress || team.EmailAddress,
+          EmailAddress: team.EmailAddress,
           WorkerId: team?.UserId,
         },
       ]);
