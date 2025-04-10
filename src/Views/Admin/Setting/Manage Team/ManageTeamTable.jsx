@@ -108,7 +108,6 @@ function ManageTeamTable() {
           sortOrder: sortOrder,
         },
       });
-      console.log(res, "resres0537");
       if (res?.data?.statusCode === 200) {
         setWorkerData(res?.data?.data);
         setTotalCount(res?.data?.count);
@@ -129,7 +128,6 @@ function ManageTeamTable() {
     setLoader(true);
     try {
       const res = await AxiosInstance.get(`/v1/worker/activeuser`);
-      console.log(res, "dsdsddsd");
       if (res?.data?.statusCode === 200) {
         // setWorkerData(res?.data?.data);
         setTotalCount(res?.data?.AllWorker);
@@ -160,7 +158,6 @@ function ManageTeamTable() {
           const response = await AxiosInstance.delete(`/v1/worker/${id}`, {
             data: { DeleteReason: deleteReason },
           });
-          console.log(response, "response");
           if (response?.data?.statusCode === 200) {
             showToast.success(response?.data?.message);
             fetchData();
@@ -280,7 +277,6 @@ function ManageTeamTable() {
   };
 
   const cellData = workerData?.map((user, index) => {
-    console.log(user?.UserId, "user?.WorkerId");
     return {
       key: user?.UserId,
       value: [
@@ -296,19 +292,18 @@ function ManageTeamTable() {
             height: "40px",
           }}
         >
-          {user?.Role === "Company"
-            ? user?.OwnerName?.split(" ")
-                .map((word) => word?.charAt(0).toUpperCase())
-                .join("")
-            : `${user?.FirstName?.charAt(0).toUpperCase() || ""}${
-                user?.LastName?.charAt(0).toUpperCase() || ""
-              }`}
+          {`${user?.FirstName?.charAt(0)?.toUpperCase() || ""}${
+            user?.LastName?.charAt(0)?.toUpperCase() || ""
+          }`}
         </Grid>,
 
         <div>
           {user?.Role === "Company" ? (
             <>
-              <div>{user?.OwnerName || "OwnerName not available"}</div>
+              <div>
+                {user?.FirstName || "FirstName not available"} {""}
+                {user?.LastName || "LastName not available"}
+              </div>
               <div
                 style={{
                   fontSize: "12px",
@@ -421,7 +416,6 @@ function ManageTeamTable() {
                               `/v1/worker/active/${user?.UserId}`,
                               { IsActive: newStatus }
                             );
-                            console.log(response, "response1234567");
                             if (response?.data.statusCode === 200) {
                               const successMessage = newStatus
                                 ? "Worker activated successfully"
