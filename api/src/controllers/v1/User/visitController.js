@@ -209,11 +209,11 @@ exports.getVisitDetails = async (req, res) => {
                     preserveNullAndEmptyArrays: true,
                 },
             },
-            {
-                $match: {
-                    "UserDetails.Role": "Worker",
-                },
-            },
+            // {
+            //     $match: {
+            //         "UserDetails.Role": "Worker",
+            //     },
+            // },
             {
                 $lookup: {
                     from: "user-profiles",

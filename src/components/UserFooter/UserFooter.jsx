@@ -40,7 +40,7 @@ const FooterDetails = ({
           </Typography>
           <Grid className="mx-2">
             <Typography className="mb-0" style={{ fontSize: "12px" }}>
-              <b className="text-blue-color">
+              <b className="text-blue-color mb-0">
                 {data?.customerData?.FirstName ||
                   data?.customer?.FirstName ||
                   ""}
@@ -49,7 +49,7 @@ const FooterDetails = ({
             </Typography>
             <Typography
               style={{ fontSize: "12px" }}
-              className="text-blue-color mt-3"
+              className="text-blue-color"
             >
               Created: {data?.updatedAt && formatDate(data?.updatedAt)}
             </Typography>

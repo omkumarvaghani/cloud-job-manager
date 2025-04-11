@@ -66,7 +66,6 @@ function ClientDetails() {
   const navigate = useNavigate();
   const { CompanyUrl } = useParams();
   const [data, setData] = useState();
-  console.log(data, "data");
   const [open, setOpen] = useState({ isOpen: false, propertyData: null });
   const [loader, setLoader] = useState(true);
   const [modelOpen, setModelOpen] = useState(false);

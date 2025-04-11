@@ -16,7 +16,6 @@ const Client = () => {
   const mainContent = useRef(null);
   const location = useLocation();
   const { CompanyUrl } = useParams();
-  console.log(CompanyUrl, "CompanyUrl");
   const [isSidebarClosed, setIsSidebarClosed] = useState(false);
   const [isSidebarDisplay, setIsSidebarDisplay] = useState(true);
   const isMediumScreen = useMediaQuery("(max-width:767px)");

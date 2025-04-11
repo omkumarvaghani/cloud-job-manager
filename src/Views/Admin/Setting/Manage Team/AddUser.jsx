@@ -74,17 +74,11 @@ const AddUser = () => {
   const CompanyId = location?.state?.id;
   const getData = async () => {
     try {
-      console.log(
-        location?.state?.id,
-        "location?.state?.idlocation?.state?.id"
-      );
-      console.log(location?.state, "location?.state");
-      console.log(location, "location");
       // if (location?.state?.id) {
       const response = await AxiosInstance.get(
         `${baseUrl}/v1/worker/get/${location?.state?.id}`
       );
-      console.log(response, "response");
+
       const fetchedData = response?.data?.data;
       setData(response?.data?.data);
       formik.setValues(fetchedData);
@@ -685,10 +679,6 @@ const AddUser = () => {
                       />
                     ) : (
                       <Grid className="d-flex justify-content-between gap-2">
-                        {console.log(
-                          formik.values?.FirstName,
-                          "formik.values?.FirstName"
-                        )}
                         <InputText
                           value={formik.values?.FirstName}
                           onChange={formik.handleChange}
@@ -698,7 +688,7 @@ const AddUser = () => {
                             Boolean(formik.errors.FirstName)
                           }
                           helperText={
-                            formik.touched.FirstName && formik.errors.FirstName
+                            formik.touched.FirstName && formik.errors.FirstName                                                     
                           }
                           name="FirstName"
                           label="First Name"

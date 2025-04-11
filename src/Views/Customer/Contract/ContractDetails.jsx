@@ -186,7 +186,7 @@ function ContractsDetails() {
   const downloadPdf = async () => {
     try {
       const res = await AxiosInstance.post(
-        `/contract/contractpdf/${location?.state?.id}`
+        `/v1/contract/contractpdf/${location?.state?.id}`
       );
       if (res.data.statusCode === 200) {
         const url = `${cdnUrl}/upload/${res.data.fileName}`;

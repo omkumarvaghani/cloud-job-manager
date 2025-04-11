@@ -37,7 +37,7 @@ const TimeEmpty = ({
   setOpen,
   data,
   ContractId,
-  WorkerId, 
+  WorkerId,
   fetchData,
   CompanyId,
   LabourId,
@@ -87,7 +87,7 @@ const TimeEmpty = ({
     } catch (error) {
       console.error("Error: ", error?.messae);
     }
-  }; 
+  };
   useEffect(() => {
     fetchLabourData();
   }, [LabourId]);
@@ -111,7 +111,7 @@ const TimeEmpty = ({
       LabourCost: "",
       TotalCost: "0.00",
       UserId: "",
-    }, 
+    },
     validationSchema: Yup.object({
       StartTime: Yup.string().required("StartTime required"),
       EndTime: Yup.string().required("EndTime required"),
@@ -129,7 +129,6 @@ const TimeEmpty = ({
             `${baseUrl}/v1/labour`,
             values
           );
-      
 
           if (response?.data?.statusCode === 200) {
             showToast.success(response?.data?.message);
@@ -570,25 +569,35 @@ const TimeEmpty = ({
                     setSelectedPerson(newValue);
                   }}
                   textFieldProps={formik?.getFieldProps("WorkerId")}
-                  options={teamData}
+                  options={teamData || []} // Ensure options is an array, default to empty if undefined
                   value={selectedPerson || null}
                   inputValue={
                     selectedPerson
-                      ? `${selectedPerson?.FirstName} ${selectedPerson?.LastName}`
+                      ? selectedPerson.OwnerName ||
+                        `${selectedPerson.FirstName || ""} ${
+                          selectedPerson.LastName || ""
+                        }`.trim()
                       : ""
                   }
                   onTextFieldChange={formik?.handleChange}
                   onBlur={formik?.handleBlur}
                   getOptionLabel={(option) =>
-                    `${option?.FirstName} ${option?.LastName}`.trim()
+                    `${option?.FirstName || ""} ${option?.LastName || ""} || ${
+                      option?.OwnerName || ""
+                    }`.trim()
                   }
                   error={
-                    formik?.touched?.WorkerId && Boolean(formik?.errors?.WorkerId)
+                    formik?.touched?.WorkerId &&
+                    Boolean(formik?.errors?.WorkerId)
                   }
-                  helperText={formik?.touched?.WorkerId && formik?.errors?.WorkerId}
+                  helperText={
+                    formik?.touched?.WorkerId && formik?.errors?.WorkerId
+                  }
                   filterOptions={(options, state) => {
-                    return options?.filter((option) =>
-                      `${option?.FirstName} ${option?.LastName}`
+                    return (options || []).filter((option) =>
+                      `${option?.FirstName || ""} ${
+                        option?.LastName || ""
+                      } || ${option?.OwnerName || ""}`
                         .toLowerCase()
                         .includes(state?.inputValue?.toLowerCase() || "")
                     );

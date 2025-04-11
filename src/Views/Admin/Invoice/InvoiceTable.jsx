@@ -22,14 +22,14 @@ const InvoiceTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       const CustomerId = location?.state?.UserId;
-   
+
       if (!CustomerId) return;
       setLoader(true);
       try {
         const res = await AxiosInstance.get(
           `${baseUrl}/v1/contract/get_invoice_data/${CustomerId}`
         );
-        const data = res?.data?.data;
+        const data = res?.data?.data[0];
         setCustomerData(data.contracts || data.locations);
       } catch (error) {
         console.error("Error: ", error?.message);
@@ -95,11 +95,7 @@ const InvoiceTable = () => {
             <Grid className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
               <LoaderComponent loader={loader} height="50" width="50" />
             </Grid>
-          ) : customerData.length === 0 ? (
-            <Grid className="d-flex justify-content-center align-items-center my-5 text-blue-color">
-              <Typography>No Contracts Available</Typography>
-            </Grid>
-          ) : (
+          ) : customerData.length >= 1 ? (
             <Grid
               style={{
                 border: "1px solid rgba(6, 49, 100, 0.3)",
@@ -241,6 +237,10 @@ const InvoiceTable = () => {
                   ))}
                 </TableBody>
               </Table>
+            </Grid>
+          ) : (
+            <Grid className="d-flex justify-content-center align-items-center my-5 text-blue-color">
+              <Typography>No Contracts Available</Typography>
             </Grid>
           )}
         </Grid>
