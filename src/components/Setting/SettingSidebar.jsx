@@ -7,7 +7,7 @@ import { Grid } from "@mui/material";
 import WhiteButton from "../Button/WhiteButton";
 
 function SettingSidebar() {
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const navigate = useNavigate();
 
   return (
@@ -38,8 +38,8 @@ function SettingSidebar() {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 navigate(
-                  CompanyName
-                    ? `/${CompanyName}/company-setting`
+                  CompanyUrl
+                    ? `/${CompanyUrl}/company-setting`
                     : "/superadmin/company-setting",
                   {
                     state: { navigats: ["/index", "/company-setting"] },
@@ -54,8 +54,8 @@ function SettingSidebar() {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 navigate(
-                  CompanyName
-                    ? `/${CompanyName}/materials&labor`
+                  CompanyUrl
+                    ? `/${CompanyUrl}/materials&labor`
                     : "/superadmin/materials&labor",
                   {
                     state: { navigats: ["/index", "/materials&labor"] },
@@ -76,8 +76,8 @@ function SettingSidebar() {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 navigate(
-                  CompanyName
-                    ? `/${CompanyName}/manageteam`
+                  CompanyUrl
+                    ? `/${CompanyUrl}/manageteam`
                     : "/superadmin/manageteam",
                   {
                     state: { navigats: ["/index", "/manageteam"] },
@@ -98,8 +98,8 @@ function SettingSidebar() {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 navigate(
-                  CompanyName
-                    ? `/${CompanyName}/manage-template`
+                  CompanyUrl
+                    ? `/${CompanyUrl}/manage-template`
                     : "/superadmin/manage-template",
                   {
                     state: { navigats: ["/index", "/manage-template"] },
@@ -120,7 +120,7 @@ function SettingSidebar() {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 navigate(
-                  CompanyName ? `/${CompanyName}/theme` : "/superadmin/theme",
+                  CompanyUrl ? `/${CompanyUrl}/theme` : "/superadmin/theme",
                   {
                     state: { navigats: ["/index", "/theme"] },
                   }
@@ -140,8 +140,8 @@ function SettingSidebar() {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 navigate(
-                  CompanyName
-                    ? `/${CompanyName}/date-format`
+                  CompanyUrl
+                    ? `/${CompanyUrl}/date-format`
                     : "/superadmin/date-format",
                   {
                     state: { navigats: ["/index", "/date-format"] },
@@ -162,8 +162,8 @@ function SettingSidebar() {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 navigate(
-                  CompanyName
-                    ? `/${CompanyName}/Surcharge`
+                  CompanyUrl
+                    ? `/${CompanyUrl}/Surcharge`
                     : "/superadmin/Surcharge",
                   {
                     state: { navigats: ["/index", "/Surcharge"] },
@@ -184,8 +184,8 @@ function SettingSidebar() {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 navigate(
-                  CompanyName
-                    ? `/${CompanyName}/account`
+                  CompanyUrl
+                    ? `/${CompanyUrl}/account`
                     : "/superadmin/account",
                   {
                     state: { navigats: ["/index", "/account"] },

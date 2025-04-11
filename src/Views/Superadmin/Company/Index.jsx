@@ -463,7 +463,7 @@ const Company = () => {
       value: [
         page * rowsPerPage + index + 1,
         item?.ownerName ? item?.ownerName : "-",
-        item?.CompanyName ? item?.CompanyName : "-",
+        item?.CompanyUrl ? item?.CompanyUrl : "-",
         item?.EmailAddress ? item?.EmailAddress : "-",
 
         <Grid
@@ -873,7 +873,7 @@ const Company = () => {
                 headerData={[
                   { label: "Sr No." },
                   { label: "Full Name", field: "ownerName" },
-                  { label: "Company Name", field: "CompanyName" },
+                  { label: "Company Name", field: "CompanyUrl" },
                   { label: "Email", field: "EmailAddress" },
                   { label: "Status", field: "IsActive" },
                   { label: "Plan Name", field: "plandata" },
@@ -943,8 +943,8 @@ const Company = () => {
               EmailAddress: selectedIndustry
                 ? selectedIndustry?.EmailAddress
                 : "",
-              CompanyName: selectedIndustry
-                ? selectedIndustry?.CompanyName
+              CompanyUrl: selectedIndustry
+                ? selectedIndustry?.CompanyUrl
                 : "",
               Password: selectedIndustry ? selectedIndustry?.Password : "",
               ConfirmPassword: selectedIndustry
@@ -962,7 +962,7 @@ const Company = () => {
                   /^[^@]+@[^@]+\.[^@]+$/,
                   "Email must contain '@' and '.'"
                 ),
-              CompanyName: Yup.string().required("Company Name Required"),
+              CompanyUrl: Yup.string().required("Company Name Required"),
 
               // Password: Yup.string()
               //   .required("No password provided")
@@ -1083,14 +1083,14 @@ const Company = () => {
                           fullWidth
                           placeholder="Enter company name"
                           label="Company Name"
-                          name="CompanyName"
-                          value={values?.CompanyName}
+                          name="CompanyUrl"
+                          value={values?.CompanyUrl}
                           onBlur={handleBlur}
                           onChange={handleChange}
                         />
-                        {touched?.CompanyName && errors?.CompanyName ? (
+                        {touched?.CompanyUrl && errors?.CompanyUrl ? (
                           <Grid className="text-danger">
-                            {errors?.CompanyName}
+                            {errors?.CompanyUrl}
                           </Grid>
                         ) : null}
                       </Grid>

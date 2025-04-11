@@ -103,7 +103,7 @@ const ContractDetails = ({
   selectedFileUri,
   handleDropboxDelete,
   dateFormat,
-  CompanyName,
+  CompanyUrl,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -191,8 +191,8 @@ const ContractDetails = ({
                     // navigate(-1);
                     navigate(
                       `/${
-                        CompanyName
-                          ? CompanyName + "/contract"
+                        CompanyUrl
+                          ? CompanyUrl + "/contract"
                           : "staff-member" + "/workercontract"
                       }`,
                       {

@@ -15,14 +15,12 @@ function CustomerDetails() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [data, setData] = useState();
-  console.log(data, "data123456");
   const [loader, setLoader] = useState(true);
   const [tokenDecode, setTokenDecode] = useState({});
   const [contract, setContract] = useState([]);
   const [quotes, setQuotes] = useState([]);
-  console.log(quotes, "quotes");
   const [invoice, setInvoice] = useState([]);
   const [DateDecode, setDateDecode] = useState({});
 
@@ -57,7 +55,6 @@ function CustomerDetails() {
       const res = await AxiosInstance.get(
         `/v1/customer/detail/${location?.state?.id}`
       );
-      // console.log(res, "res");
       setData(res?.data?.data);
     } catch (error) {
     } finally {
@@ -85,11 +82,6 @@ function CustomerDetails() {
             `/v1/quote/get_quotes_customer/${companyId}/${data.UserId}`
           );
 
-          console.log(response, "response123");
-          console.log(tokenDecode, "tokenDecode");
-          console.log(data, "datadata");
-          console.log(data.UserId, "data.UserId");
-          console.log(response?.data?.statusCode, "response?.data?.statusCode");
           if (response?.data?.statusCode === 200) {
             setQuotes(response?.data?.data);
           }
@@ -102,7 +94,6 @@ function CustomerDetails() {
     fetchQuote();
   }, [data, tokenDecode]);
 
-  console.log(data?.UserId, "data?.UserId");
 
   useEffect(() => {
     const fetchContract = async () => {
@@ -113,7 +104,6 @@ function CustomerDetails() {
               localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
             }/${data?.UserId}`
           );
-          console.log(response, "response");
           setContract(response?.data?.data);
         } catch (err) {
           console.error("Error to fetching contract data: ", err.message);
@@ -144,8 +134,8 @@ function CustomerDetails() {
   }, [data, tokenDecode]);
 
   const handleQuoteNavigate = (id) => {
-    if (CompanyName) {
-      navigate(`/${CompanyName}/quotes-detail`, {
+    if (CompanyUrl) {
+      navigate(`/${CompanyUrl}/quotes-detail`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/quotes-detail"],
@@ -162,8 +152,8 @@ function CustomerDetails() {
   };
 
   const handleContractNavigate = (id) => {
-    if (CompanyName) {
-      navigate(`/${CompanyName}/contractdetails`, {
+    if (CompanyUrl) {
+      navigate(`/${CompanyUrl}/contractdetails`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/contractdetails"],
@@ -180,8 +170,8 @@ function CustomerDetails() {
   };
 
   const handleInvoiceNavigate = (id) => {
-    if (CompanyName) {
-      navigate(`/${CompanyName}/invoice-details`, {
+    if (CompanyUrl) {
+      navigate(`/${CompanyUrl}/invoice-details`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/invoice-details"],
@@ -209,7 +199,7 @@ function CustomerDetails() {
         </>
       ),
       onClick: () => {
-        navigate(`/${CompanyName}/add-quotes`, {
+        navigate(`/${CompanyUrl}/add-quotes`, {
           state: {
             Customer: data,
             CustomerId: data?.CustomerId,
@@ -229,7 +219,7 @@ function CustomerDetails() {
         </>
       ),
       onClick: () => {
-        navigate(`/${CompanyName}/add-contract`, {
+        navigate(`/${CompanyUrl}/add-contract`, {
           state: {
             Customer: data,
             CustomerId: data?.CustomerId,
@@ -249,7 +239,7 @@ function CustomerDetails() {
         </>
       ),
       onClick: () => {
-        navigate(`/${CompanyName}/invoicetable`, {
+        navigate(`/${CompanyUrl}/invoicetable`, {
           state: {
             CustomerId: data?.CustomerId,
             navigats: [...location?.state?.navigats, "/invoicetable"],
@@ -265,7 +255,7 @@ function CustomerDetails() {
         loader={loader}
         navigate={navigate}
         data={data}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
         location={location}
         activeTabId={activeTabId}
         activeTabIdMain={activeTabIdMain}

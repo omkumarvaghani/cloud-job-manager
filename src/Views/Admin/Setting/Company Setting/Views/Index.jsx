@@ -51,7 +51,7 @@ const Index = ({
   setSelectedCountry,
   handlePhoneChange,
   isEdited,
-  CompanyName,
+  CompanyUrl,
   handleZipChange,
   times,
   handleSave,
@@ -95,8 +95,8 @@ const Index = ({
                   // navigate(-1);
                   navigate(
                     `/${
-                      CompanyName
-                        ? CompanyName + "/customer"
+                      CompanyUrl
+                        ? CompanyUrl + "/customer"
                         : "staff-member" + "/workercustomer"
                     }`,
                     {

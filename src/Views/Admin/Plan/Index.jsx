@@ -11,7 +11,7 @@ function Index() {
   const baseUrl = process.env.REACT_APP_BASE_API;
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
 
   const [plans, setPlans] = useState([]);
   const [loader, setLoader] = useState(true);
@@ -235,8 +235,8 @@ function Index() {
                         }}
                         onClick={() => {
                           if (!location.state?.plan) {
-                            if (CompanyName) {
-                              navigate(`/${CompanyName}/plan-purchase`, {
+                            if (CompanyUrl) {
+                              navigate(`/${CompanyUrl}/plan-purchase`, {
                                 state: {
                                   navigats: [
                                     ...location?.state?.navigats,

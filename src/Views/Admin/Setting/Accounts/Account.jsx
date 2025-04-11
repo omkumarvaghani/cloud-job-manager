@@ -26,7 +26,7 @@ const Account = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -292,7 +292,7 @@ const Account = () => {
         setPage={setPage}
         setRowsPerPage={setRowsPerPage}
         rowsPerPage={rowsPerPage}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
         countData={countData}
         isEdited={isEdited}
         modelOpen={modelOpen}

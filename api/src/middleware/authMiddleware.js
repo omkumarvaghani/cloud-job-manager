@@ -1,21 +1,20 @@
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto-js");
 const User = require("../models/User/User");
 require("dotenv").config();
+const bcrypt = require("bcryptjs");
 
 var SECRET_KEY =
   "fuirfgerug^%GF(Fijrijgrijgidjg#$@#$TYFSD()*$#%^&S(*^uk8olrgrtg#%^%#gerthr%B&^#eergege*&^#gg%*B^";
 
-const secretKey = process.env.JWT_SECRET || "f00e2fb1a87d0663bfc7f38cbab5091e0326e6e668a315a587b54ac2ee98456e";
+const secretKey =
+  process.env.JWT_SECRET ||
+  "f00e2fb1a87d0663bfc7f38cbab5091e0326e6e668a315a587b54ac2ee98456e";
 
 const protect = async (req, res, next) => {
   let token;
-  if (
-    req.headers.authorization
-  ) {
+  if (req.headers.authorization) {
     token = req.headers.authorization.split(" ")[1];
   }
-
 
   if (!token) {
     return res.status(401).json({ error: "Not authorized, no token" });
@@ -25,7 +24,7 @@ const protect = async (req, res, next) => {
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET ||
-      "f00e2fb1a87d0663bfc7f38cbab5091e0326e6e668a315a587b54ac2ee98456e"
+        "f00e2fb1a87d0663bfc7f38cbab5091e0326e6e668a315a587b54ac2ee98456e"
     );
     req.user = {
       UserId: decoded.UserId,
@@ -35,7 +34,9 @@ const protect = async (req, res, next) => {
     const companyExists = await User.findOne({ CompanyId: decoded.CompanyId });
 
     if (!companyExists) {
-      return res.status(401).json({ error: "Not authorized, invalid CompanyId" });
+      return res
+        .status(401)
+        .json({ error: "Not authorized, invalid CompanyId" });
     }
 
     next();
@@ -51,10 +52,15 @@ const createResetToken = async (data) => {
   return token;
 };
 
-const decryptData = (ciphertext) => {
-  const bytes = crypto.AES.decrypt(ciphertext, secretKey);
-  const originalText = bytes.toString(crypto.enc.Utf8);
-  return originalText;
+const encryptData = async (data) => {
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(data, saltRounds);
+  return hashedPassword;
+};
+
+const decryptData = async (plainText, hashedPassword) => {
+  const isMatch = await bcrypt.compare(plainText, hashedPassword);
+  return isMatch;
 };
 
 const verifyToken = (token) => {
@@ -62,21 +68,92 @@ const verifyToken = (token) => {
     const decodedData = jwt.verify(token, secretKey);
     return decodedData;
   } catch (err) {
-    console.error('Token verification error:', err.message);
-    if (err.name === 'JsonWebTokenError') {
+    console.error("Token verification error:", err.message);
+    if (err.name === "JsonWebTokenError") {
       throw new Error("Invalid token");
     }
-    if (err.name === 'TokenExpiredError') {
+    if (err.name === "TokenExpiredError") {
       throw new Error("Token expired");
     }
     throw new Error("Token verification failed");
   }
 };
 
+const verifyForgetToken = async (token) => {
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const email = decoded.EmailAddress;
+
+    const user = await User.findOne({
+      EmailAddress: email,
+      IsDelete: false,
+    });
+
+    if (!user) {
+      return { status: false, data: null };
+    }
+
+    const currentTimestamp = Date.now() / 1000;
+
+    if (currentTimestamp >= decoded.exp) {
+      return { status: false, data: null };
+    }
+
+    if (
+      user.PasswordUpdatedAt &&
+      decoded.iat <
+        Math.floor(new Date(user.PasswordUpdatedAt).getTime() / 1000)
+    ) {
+      return { status: false, data: null };
+    }
+
+    return { status: true, data: decoded };
+  } catch (err) {
+    console.log(err);
+    return { status: false, data: null };
+  }
+};
+
+const verifyResetToken = async (token) => {
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+
+    const email = decoded.EmailAddress;
+    if (!email) {
+      return { status: false, data: null };
+    }
+
+    const usersWithSameEmail = await User.find({
+      EmailAddress: email,
+      IsDelete: false,
+    });
+
+    const anyUserHasPassSetTrue = usersWithSameEmail.some(
+      (user) => user.IsPassSet === true
+    );
+
+    if (anyUserHasPassSetTrue) {
+      return { status: false, data: null };
+    }
+
+    const currentTimestamp = Date.now() / 1000;
+    if (currentTimestamp >= decoded.exp) {
+      return { status: false, data: null };
+    }
+
+    return { status: true, data: decoded };
+  } catch (err) {
+    console.log(err);
+    return { status: false, data: null };
+  }
+};
 
 module.exports = {
   decryptData,
   verifyToken,
   protect,
-  createResetToken
+  createResetToken,
+  verifyForgetToken,
+  verifyResetToken,
+  encryptData,
 };

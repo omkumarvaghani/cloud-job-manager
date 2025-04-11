@@ -18,7 +18,7 @@ import BlueButton from "../../../../components/Button/BlueButton.jsx";
 import WhiteButton from "../../../../components/Button/WhiteButton.jsx";
 
 function Theme() {
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [loader, setLoader] = useState(false);
 
   const [isOpenDropDown, setIsOpenDropDown] = useState(false);
@@ -159,7 +159,7 @@ function Theme() {
               <SettingDropdown
                 isOpenDropDown={isOpenDropDown}
                 toggle={toggle}
-                CompanyName={CompanyName}
+                CompanyUrl={CompanyUrl}
               />
               <Grid className=" settings-menu  mb-3">
                 <>

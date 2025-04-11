@@ -1,15 +1,22 @@
 const User = require("../../../models/User/User");
 const UserProfile = require("../../../models/User/UserProfile");
 const Company = require("../../../models/User/Company");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
 const { logUserEvent } = require("../../../middleware/eventMiddleware");
 const Location = require("../../../models/User/Location");
 const { addNotification } = require("../../../models/User/AddNotification");
 const Notification = require("../../../models/User/Notification");
+const { getCustomerWelcomeData } = require("./customerController");
+const { sendWelcomeEmailToWorkerLogic } = require("./workerController");
+const {
+  decryptData,
+  encryptData,
+} = require("../../../middleware/authMiddleware");
 
 // **CREATE COMPANY BY ADMIN, CUSTOMER & WORKER API**
+
 exports.createUser = async (req, res) => {
   try {
     if (!req.user || !req.user.Role) {
@@ -57,19 +64,24 @@ exports.createUser = async (req, res) => {
     }
 
     let existingUser;
+
     if (Role === "Company") {
       existingUser = await User.findOne({ EmailAddress, IsDelete: false });
+      if (existingUser) {
+        return res.status(202).json({ message: "Email Already Exists!" });
+      }
     } else {
       existingUser = await User.findOne({
         EmailAddress,
         CompanyId: { $in: CompanyId },
-        Role,
         IsDelete: false,
       });
-    }
 
-    if (existingUser) {
-      return res.status(202).json({ message: "Email Already Exists!" });
+      if (existingUser) {
+        return res.status(202).json({
+          message: `Email already in use within this company by a ${existingUser.Role}.`,
+        });
+      }
     }
 
     const UserId = uuidv4();
@@ -100,16 +112,22 @@ exports.createUser = async (req, res) => {
       Password,
     });
     await newUser.save();
-    console.log(newUser, "newUser");
+
+    let companyURL = "";
+    if (Role === "Company" && profileDetails.CompanyName) {
+      companyURL = profileDetails.CompanyName.replace(/\s+/g, "").toLowerCase();
+      console.log(companyURL, "companyURL");
+    }
+
     const newUserProfile = new UserProfile({
       UserId: UserId,
       Role,
       CompanyId: CompanyId[0],
       ...profileDetails,
       LocationId: newLocation.LocationId,
+      ...(Role === "Company" && { CompanyUrl: companyURL }),
     });
     await newUserProfile.save();
-    console.log(newUserProfile, "newUserProfile");
 
     if (Role === "Company") {
       if (!CompanyName) {
@@ -145,6 +163,12 @@ exports.createUser = async (req, res) => {
       await addNotification(notificationData);
     }
 
+    if (Role === "Customer") {
+      await getCustomerWelcomeData(UserId);
+    } else if (Role === "Worker") {
+      await sendWelcomeEmailToWorkerLogic(UserId);
+    }
+
     return res.status(200).json({
       statusCode: "200",
       message: `${Role} added successfully.`,
@@ -172,7 +196,10 @@ exports.getUserById = async (req, res) => {
 
     const userProfile = await UserProfile.findOne({ UserId, IsDelete: false });
 
-    const locations = await Location.findOne({ CustomerId: UserId });
+    const locations = await Location.find({
+      CustomerId: UserId,
+      IsDelete: false,
+    });
 
     return res.status(200).json({
       message: "User fetched successfully.",
@@ -231,26 +258,30 @@ exports.updateUser = async (req, res) => {
         .status(400)
         .json({ message: "Role and CompanyId cannot be updated." });
     }
+
     const { EmailAddress } = updateData;
     if (EmailAddress) {
       let emailExists;
-      if (req.user.Role === "Company" || req.user.Role === "Worker") {
+
+      if (["Worker", "Customer"].includes(user.Role)) {
         emailExists = await User.findOne({
           EmailAddress,
-          IsDelete: false,
+          CompanyId: { $in: user.CompanyId },
           UserId: { $ne: UserId },
+          IsDelete: false,
         });
-      } else if (req.user.Role === "Customer") {
+      } else {
         emailExists = await User.findOne({
           EmailAddress,
-          CompanyId: user.CompanyId,
-          IsDelete: false,
           UserId: { $ne: UserId },
+          IsDelete: false,
         });
       }
 
       if (emailExists) {
-        return res.status(409).json({ message: "Email already exists!" });
+        return res
+          .status(409)
+          .json({ message: "Email already in use within this company." });
       }
     }
 
@@ -269,6 +300,7 @@ exports.updateUser = async (req, res) => {
     if (!updatedUserProfile) {
       return res.status(404).json({ message: "User profile not found!" });
     }
+
     const { Address, City, State, Zip, Country } = updateData;
     if (Address || City || State || Zip || Country) {
       const userProfile = await UserProfile.findOne({ UserId });
@@ -288,6 +320,7 @@ exports.updateUser = async (req, res) => {
         );
       }
     }
+
     const companyIdForLog = req.user.CompanyId || user.CompanyId;
     await logUserEvent(companyIdForLog, "UPDATE", "User details updated", {
       UpdatedBy: req.user.EmailAddress,
@@ -316,6 +349,60 @@ exports.updateUser = async (req, res) => {
     return res.status(500).json({
       message: "Something went wrong, please try later!",
     });
+  }
+};
+
+// **CHANGE PASSWORD IN PROFILE**
+exports.updateChangeCompanyPass = async (req, res) => {
+  const {
+    oldPassword,
+    Password: newPassword,
+    confirmpassword: confirmPassword,
+  } = req.body;
+  const { CompanyId } = req.params;
+  try {
+    // if (!oldPassword || !newPassword || !confirmPassword) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "All password fields are required" });
+    // }
+
+    const user = await User.findOne({ CompanyId, Role: "Company" });
+    if (!user || !user.Password) {
+      return res
+        .status(404)
+        .json({ message: "User not found or missing password" });
+    }
+
+    const isOldPasswordCorrect = await decryptData(oldPassword, user.Password);
+    if (!isOldPasswordCorrect) {
+      return res.status(400).json({ message: "Old password is incorrect" });
+    }
+
+    const isSameAsOld = await decryptData(newPassword, user.Password);
+    if (isSameAsOld) {
+      return res.status(400).json({
+        message: "New password cannot be the same as the old password",
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ message: "New password and confirm password do not match" });
+    }
+
+    // const enPass = await encryptData(newPassword);
+
+    user.Password = newPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password successfully changed" });
+  } catch (error) {
+    console.error("Password Update Error:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error, please try again later" });
   }
 };
 
@@ -475,7 +562,7 @@ exports.getCompanyData = async (req, res) => {
 // **GET COMPANY PROFILE API**
 exports.companyProfile = async function (req, res) {
   try {
-    const { CompanyId } = req.params;
+    const CompanyId = req.params;
 
     const companyProfile = await UserProfile.findOne({ CompanyId: CompanyId });
 

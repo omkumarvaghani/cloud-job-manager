@@ -13,7 +13,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useFormik } from "formik";
 import AxiosInstance from "../../Views/AxiosInstance";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 import backimg from "../../assets/image/icons/back.png";
 import InputText from "../InputFields/InputText";
 import * as Yup from "yup";
@@ -21,9 +21,10 @@ import showToast from "../Toast/Toster";
 import AppLogo from "../../assets/image/CMS_LOGO.svg";
 import { WhiteLoaderComponent } from "../Icon/Index";
 import PasswordValidation from "../Password/PasswordValidation";
+import { handleAuth } from "../Login/Auth";
 
 const NewPassword = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const location = useLocation();
   const [showCPassword, setShowCPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -32,14 +33,29 @@ const NewPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [tokenExpired, setTokenExpired] = useState(false);
   const [loader, setLoader] = useState(false);
+  const [tokenDecode, setTokenDecode] = useState({});
+  const [themeData, setthemeData] = useState("");
 
+  const navigate = useNavigate();
+
+  // const fetchDatas = async () => {
+  //   try {
+  //     const res = await handleAuth(Navigate, location);
+  //     setTokenDecode(res?.data);
+  //     setthemeData(res?.themes);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   fetchDatas();
+  // }, []);
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const token = searchParams.get("token");
-
     setIsLoading(true);
 
-    AxiosInstance.get(`/resetpassword/check_token_status/${token}`)
+    AxiosInstance.get(`/v1/forget-pass/check_token_status/${token}`)
       .then((response) => {
         const data = response?.data;
         setIsLoading(false);
@@ -73,7 +89,7 @@ const NewPassword = () => {
       try {
         setLoader(true);
         const response = await AxiosInstance.put(
-          `/resetpassword/reset_passwords/${email}`,
+          `/v1/forget-pass/reset_passwords/${email}`,
           { Password: values.password },
           { headers: { "Content-Type": "application/json" } }
         );
@@ -112,7 +128,11 @@ const NewPassword = () => {
   }
 
   if (tokenExpired) {
-    return <Grid>Token has expired. Please request a new reset link.</Grid>;
+    return (
+      <Grid sx={{ padding: "20px" }}>
+        Token has expired. Please request a new reset link.
+      </Grid>
+    );
   }
   return (
     <div className="loginnn">
@@ -185,9 +205,12 @@ const NewPassword = () => {
                   onChange={formik?.handleChange}
                   onBlur={formik?.handleBlur}
                   error={
-                    formik?.touched?.password && Boolean(formik?.errors?.password)
+                    formik?.touched?.password &&
+                    Boolean(formik?.errors?.password)
                   }
-                  helperText={formik?.touched?.password && formik?.errors?.password}
+                  helperText={
+                    formik?.touched?.password && formik?.errors?.password
+                  }
                   name="password"
                   label="New password"
                   type={showPassword ? "text" : "password"}

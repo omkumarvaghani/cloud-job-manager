@@ -9,11 +9,12 @@ import { DeleteIcone, EditIcon } from "../../../components/Icon/Index.jsx";
 import { Typography } from "@mui/material";
 import { useStaffContext } from "../../../components/StaffData/Staffdata.jsx";
 import { TroubleshootOutlined } from "@mui/icons-material";
+import moment from "moment";
 
 const Customer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -76,23 +77,23 @@ const Customer = () => {
     }
 
     try {
-      const res = await AxiosInstance.get(
-        `/v1/customer/customers`,
-        {
-          params: {
-            pageSize: rowsPerPage,
-            pageNumber: page,
-            search: search || "",
-            sortField: sortField,
-            sortOrder: sortOrder,
-          },
-        }
-      );
-      if (res?.data) {
+      const res = await AxiosInstance.get(`/v1/customer/customers`, {
+        params: {
+          pageSize: rowsPerPage,
+          pageNumber: page,
+          search: search || "",
+          sortField: sortField,
+          sortOrder: sortOrder,
+        },
+      });
+      if (res?.status === 200 && res?.data) {
         setcustomersData(res?.data?.data || []);
         setCountData(res?.data?.totalCount || 0);
+      } else if (res?.status === 204) {
+        setcustomersData([]);
+        setCountData(0);
       } else {
-        console.error("No data received from the server.");
+        console.error("Unexpected response:", res);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -106,10 +107,9 @@ const Customer = () => {
       getData(tokenDecode?.CompanyId);
     }
   }, [page, search, sortField, sortOrder]);
-
   const handleEditClick = (id) => {
-    if (CompanyName) {
-      navigate(`/${CompanyName}/add-customer`, {
+    if (CompanyUrl) {
+      navigate(`/${CompanyUrl}/add-customer`, {
         state: {
           id,
           navigats: [...location?.state?.navigats, "/add-customer"],
@@ -194,6 +194,8 @@ const Customer = () => {
         ) : (
           <Typography>{propertyDisplay}</Typography>
         ),
+        // item?.createdAt || "Date not available",
+        moment(item?.createdAt).format("YYYY-DD-MM") || "Date not available",
         <>
           {staffData?.CustomersProperties
             ?.ViewAndEditFullCustomerAndPropertyInfo ||
@@ -266,7 +268,7 @@ const Customer = () => {
         setPage={setPage}
         setRowsPerPage={setRowsPerPage}
         rowsPerPage={rowsPerPage}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
         countData={countData}
         isEdited={isEdited}
         setSortField={setSortField}

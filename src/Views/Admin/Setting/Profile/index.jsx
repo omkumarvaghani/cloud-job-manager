@@ -58,7 +58,7 @@ import PasswordValidationSchema from "../../../../components/Password/PasswordVa
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const cdnUrl = process.env.REACT_APP_CDN_API;
 
   const [loader, setLoader] = useState(true);
@@ -69,8 +69,10 @@ const Profile = () => {
   const [countries, setCountries] = useState([]);
   const [isOpenDropDown, setIsOpenDropDown] = useState(false);
   const [CompanyId] = useState(localStorage.getItem("CompanyId"));
+  const [CustomerId] = useState(localStorage.getItem("CustomerId"));
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -150,7 +152,7 @@ const Profile = () => {
               },
               dangerMode: true,
             }).then(() => {
-              navigate(`/${CompanyName}/index`, {
+              navigate(`/${CompanyUrl}/index`, {
                 state: { navigats: ["/index"] },
               });
             });
@@ -173,8 +175,11 @@ const Profile = () => {
       CompanyId: "",
       Password: "",
       confirmpassword: "",
+      oldPassword: "",
     },
     validationSchema: Yup.object({
+      oldPassword: Yup.string().required("Old password is required"),
+
       Password: PasswordValidationSchema,
       confirmpassword: Yup.string()
         .oneOf([Yup.ref("Password"), null], "Passwords must match")
@@ -185,8 +190,9 @@ const Profile = () => {
 
       try {
         const res = await AxiosInstance.put(
-          `/company/change-password/${CompanyId}`,
+          `/v1/user/change-password/${CompanyId}`,
           {
+            oldPassword: values.oldPassword,
             Password: values.Password,
             confirmpassword: values.confirmpassword,
           }
@@ -194,10 +200,6 @@ const Profile = () => {
 
         if (res?.status === 200) {
           showToast.success(res?.data?.message);
-          // swal(
-          //   "Profile saved successfully!",
-          //   "Your changes have been saved.",
-          //   "success"
           swal({
             title: "Profile saved successfully!",
             text: "Your changes have been saved.",
@@ -213,7 +215,7 @@ const Profile = () => {
             },
             dangerMode: true,
           }).then(() => {
-            navigate(`/${CompanyName}/profile`, {
+            navigate(`/${CompanyUrl}/profile`, {
               state: { navigats: ["/profile"] },
             });
           });
@@ -278,7 +280,6 @@ const Profile = () => {
       const res = await AxiosInstance.get(
         `/v1/user/company-profile/${CompanyId}`
       );
-      console.log(res, "res 123543");
 
       if (res?.data?.success) {
         const userData = res?.data?.data?.user;
@@ -357,9 +358,12 @@ const Profile = () => {
 
       const image = result?.data?.files[0]?.filename;
       if (image) {
-        const res = await AxiosInstance.put(`/v1/user/update-profile/${CompanyId}`, {
-          ProfileImage: image,
-        });
+        const res = await AxiosInstance.put(
+          `/v1/user/update-profile/${CompanyId}`,
+          {
+            ProfileImage: image,
+          }
+        );
         if (res?.data?.statusCode === 200) {
           showToast.success("Profile image updated successfully.");
           setUploadedImageUrl(image);
@@ -410,7 +414,7 @@ const Profile = () => {
   //     "success"
   //   ).then(() => {
   //     if (!postLoader) {
-  //       navigate(`/${CompanyName}/index`, {
+  //       navigate(`/${CompanyUrl}/index`, {
   //         state: { navigats: ["/index"] },
   //       });
   //     }
@@ -486,7 +490,7 @@ const Profile = () => {
                     className="sidebar-link-setting"
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      navigate(`/${CompanyName}/materials&labor`, {
+                      navigate(`/${CompanyUrl}/materials&labor`, {
                         state: { navigats: ["/index", "/materials&labor"] },
                       });
                     }}
@@ -497,7 +501,7 @@ const Profile = () => {
                     className="sidebar-link-setting"
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      navigate(`/${CompanyName}/profile`, {
+                      navigate(`/${CompanyUrl}/profile`, {
                         state: { navigats: ["/index", "/profile"] },
                       });
                     }}
@@ -703,6 +707,46 @@ const Profile = () => {
                           >
                             <Grid className="d-flex justify-content-start align-items-center">
                               <InputText
+                                value={passwordFormik?.values?.oldPassword}
+                                onChange={passwordFormik?.handleChange}
+                                className="mb-3 my-2 textfield_bottom w-100"
+                                onBlur={passwordFormik?.handleBlur}
+                                error={
+                                  passwordFormik?.touched?.oldPassword &&
+                                  Boolean(passwordFormik?.errors?.oldPassword)
+                                }
+                                helperText={
+                                  passwordFormik?.touched?.oldPassword &&
+                                  passwordFormik?.errors?.oldPassword
+                                }
+                                name="oldPassword"
+                                label="Old Password"
+                                type={showOldPassword ? "text" : "password"}
+                                fieldHeight="56px"
+                                autoComplete="current-password"
+                                endAdornment={
+                                  <InputAdornment position="end">
+                                    <IconButton
+                                      aria-label="toggle password visibility"
+                                      onClick={() =>
+                                        setShowOldPassword(!showOldPassword)
+                                      }
+                                      edge="end"
+                                      tabIndex={-1}
+                                    >
+                                      {showOldPassword ? (
+                                        <VisibilityOffIcon />
+                                      ) : (
+                                        <VisibilityIcon />
+                                      )}
+                                    </IconButton>
+                                  </InputAdornment>
+                                }
+                              />
+                            </Grid>
+
+                            <Grid className="d-flex justify-content-start align-items-center">
+                              <InputText
                                 value={passwordFormik?.values?.Password}
                                 onChange={passwordFormik?.handleChange}
                                 className="mb-3 my-2 textfield_bottom w-100"
@@ -728,6 +772,7 @@ const Profile = () => {
                                         setShowPassword(!showPassword)
                                       }
                                       edge="end"
+                                      tabIndex={-1}
                                     >
                                       {showPassword ? (
                                         <VisibilityOffIcon />
@@ -771,6 +816,7 @@ const Profile = () => {
                                         setShowCPassword(!showCPassword)
                                       }
                                       edge="end"
+                                      tabIndex={-1}
                                     >
                                       {showCPassword ? (
                                         <VisibilityOffIcon />

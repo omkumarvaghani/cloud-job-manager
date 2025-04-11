@@ -51,6 +51,8 @@ const Superadmin = () => {
   const [countries, setCountries] = useState([]);
   const [isEdited, setIsEdited] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+
   const profileFormik = useFormik({
     initialValues: {
       FullName: "",
@@ -165,8 +167,11 @@ const Superadmin = () => {
     initialValues: {
       Password: "",
       confirmpassword: "",
+      oldPassword: "",
     },
     validationSchema: Yup.object({
+      oldPassword: Yup.string().required("Old password is required"),
+
       Password: PasswordValidationSchema,
       confirmpassword: Yup.string()
         .oneOf([Yup.ref("Password"), null], "Passwords must match")
@@ -176,7 +181,8 @@ const Superadmin = () => {
       setLoader(true);
 
       try {
-        const res = await AxiosInstance.put(`/superadmin/change-password`, {
+        const res = await AxiosInstance.put(`/v1/super-admin/change-password`, {
+          oldPassword: values.oldPassword,
           Password: values.Password,
           confirmpassword: values.confirmpassword,
         });
@@ -448,49 +454,7 @@ const Superadmin = () => {
                   formik={profileFormik}
                   handleZipChange={handleZipChange}
                 />
-                {/* <Box position="relative">
-                  <Grid style={{ display: "flex" }}>
-                    <InputText
-                      value={profileFormik?.values?.Password}
-                      onChange={profileFormik?.handleChange}
-                      id="Password"
-                      name="Password"
-                      label="Password"
-                      placeholder="Enter password"
-                      type={showPassword ? "text" : "password"}
-                      className="mb-3 my-2 textfield_bottom w-100"
-                      autoComplete="new-password"
-                      error={
-                        profileFormik?.touched?.Password &&
-                        Boolean(profileFormik?.errors?.Password)
-                      }
-                      helperText={
-                        profileFormik?.touched?.Password &&
-                        profileFormik?.errors?.Password
-                      }
-                    />
 
-                    <Grid style={{ display: "flex" }}>
-                      <Grid>
-                        <IconButton
-                          onClick={togglePasswordVisibility}
-                          style={{
-                            position: "absolute",
-                            right: "30px",
-                            top: "45%",
-                            transform: "translateY(-50%)",
-                            color: "#063164",
-                          }}
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </Grid>
-                      <Grid style={{ marginLeft: "-35px", marginTop: "13px" }}>
-                        <Tooltip />
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </Box> */}
                 <Box position="relative">
                   <Grid
                     className="d-flex"
@@ -571,6 +535,46 @@ const Superadmin = () => {
                       >
                         <Grid className="d-flex justify-content-start align-items-center">
                           <InputText
+                            value={passwordFormik?.values?.oldPassword}
+                            onChange={passwordFormik?.handleChange}
+                            className="mb-3 my-2 textfield_bottom w-100"
+                            onBlur={passwordFormik?.handleBlur}
+                            error={
+                              passwordFormik?.touched?.oldPassword &&
+                              Boolean(passwordFormik?.errors?.oldPassword)
+                            }
+                            helperText={
+                              passwordFormik?.touched?.oldPassword &&
+                              passwordFormik?.errors?.oldPassword
+                            }
+                            name="oldPassword"
+                            label="Old Password"
+                            type={showOldPassword ? "text" : "password"}
+                            fieldHeight="56px"
+                            autoComplete="current-password"
+                            endAdornment={
+                              <InputAdornment position="end">
+                                <IconButton
+                                  aria-label="toggle password visibility"
+                                  onClick={() =>
+                                    setShowOldPassword(!showOldPassword)
+                                  }
+                                  edge="end"
+                                  tabIndex={-1}
+                                >
+                                  {showOldPassword ? (
+                                    <VisibilityOffIcon />
+                                  ) : (
+                                    <VisibilityIcon />
+                                  )}
+                                </IconButton>
+                              </InputAdornment>
+                            }
+                          />
+                        </Grid>
+
+                        <Grid className="d-flex justify-content-start align-items-center">
+                          <InputText
                             value={passwordFormik?.values?.Password}
                             onChange={passwordFormik?.handleChange}
                             className="mb-3 my-2 textfield_bottom w-100"
@@ -594,6 +598,7 @@ const Superadmin = () => {
                                   aria-label="toggle password visibility"
                                   onClick={() => setShowPassword(!showPassword)}
                                   edge="end"
+                                  tabIndex={-1}
                                 >
                                   {showPassword ? (
                                     <VisibilityOffIcon />
@@ -635,6 +640,7 @@ const Superadmin = () => {
                                     setShowCPassword(!showCPassword)
                                   }
                                   edge="end"
+                                  tabIndex={-1}
                                 >
                                   {showCPassword ? (
                                     <VisibilityOffIcon />

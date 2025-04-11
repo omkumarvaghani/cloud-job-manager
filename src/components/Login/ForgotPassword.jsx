@@ -1,11 +1,11 @@
-import { Button, FormGroup, Grid,   Typography } from "@mui/material";
+import { Button, FormGroup, Grid, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import "./style.css";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import AxiosInstance from "../../Views/AxiosInstance";
 import { Link, useNavigate } from "react-router-dom";
-import backimg from "../../assets/image/icons/back.png"; 
+import backimg from "../../assets/image/icons/back.png";
 import InputText from "../InputFields/InputText";
 import AppLogo from "../../assets/image/CMS_LOGO.svg";
 import showToast from "../Toast/Toster";
@@ -35,7 +35,7 @@ const ForgotPassword = () => {
         EmailAddress: email,
       };
       const res = await AxiosInstance.post(
-        `/resetpassword/resetpasswordmail`,
+        `/v1/forget-pass/resetpasswordmail`,
         data
       );
       if (res.status === 200) {
@@ -52,7 +52,9 @@ const ForgotPassword = () => {
     } catch (error) {
       if (error.response) {
         console.error("Server responded with an error:", error.response?.data);
-        showToast.error(error.response?.data.message || "Something went wrong!");
+        showToast.error(
+          error.response?.data.message || "Something went wrong!"
+        );
       } else if (error.request) {
         console.error("No response received:", error.request);
         showToast.error("No response from the server, please try again later.");

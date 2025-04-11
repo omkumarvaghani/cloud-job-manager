@@ -1,11 +1,18 @@
 const User = require("../../models/User/User");
 const UserProfile = require("../../models/User/UserProfile");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
 const { logUserEvent } = require("../../middleware/eventMiddleware");
-const { verifyToken } = require("../../middleware/authMiddleware");
+const {
+  verifyToken,
+  createResetToken,
+  decryptData,
+} = require("../../middleware/authMiddleware");
+const SuperAdmin = require("../../models/Admin/Super-Admin");
+const { handleTemplate } = require("./User/templateController");
+const { sendWelcomeEmail } = require("../../Helpers/EmailServices");
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -15,6 +22,8 @@ const generateToken = (user) => {
       CompanyId: user.CompanyId,
       EmailAddress: user.EmailAddress,
       OwnerName: user.OwnerName,
+      CompanyName: user.CompanyName,
+      CompanyUrl: user.CompanyUrl,
     },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRATION || "4h" }
@@ -24,28 +33,62 @@ const generateToken = (user) => {
 // **REGISTER API**
 exports.register = async (req, res) => {
   try {
-    const { Role, EmailAddress, Password, CompanyName, ...profileDetails } =
-      req.body;
+    const {
+      Role,
+      EmailAddress,
+      Password,
+      CompanyName,
+      FirstName,
+      LastName,
+      Address,
+      City,
+      State,
+      Zip,
+      Country,
+      OwnerName,
+      ...profileDetails
+    } = req.body;
 
     const existingUser = await User.findOne({ EmailAddress, IsDelete: false });
     if (existingUser) {
       return res.status(400).json({ error: "Email is already taken." });
     }
+    // const companyNameWithoutSpaces = CompanyName.split(" ").join("");
+
+    // const existingCompany = await UserProfile.findOne({
+    //   CompanyName: companyNameWithoutSpaces,
+    //   IsDelete: false,
+    // });
+
+    // if (existingCompany) {
+    //   return {
+    //     statusCode: 400,
+    //     message: "Company Name Already Used!",
+    //   };
+    // }
 
     let CompanyId = profileDetails.CompanyId;
+    let companyURL = "";
+
     if (Role === "Company") {
       CompanyId = uuidv4();
-      if (CompanyName) {
-        profileDetails.CompanyName = CompanyName.split(" ").join("");
+
+      if (!CompanyName) {
+        return res.status(400).json({ error: "CompanyName is required." });
       }
+
+      const trimmedName = CompanyName.trim();
+      profileDetails.CompanyName = trimmedName;
+      companyURL = trimmedName.replace(/\s+/g, "").toLowerCase();
     } else if (!CompanyId) {
       return res
         .status(400)
         .json({ error: "CompanyId is required for Worker/Customer" });
     }
 
+    const companyUserId = uuidv4();
     const newUser = new User({
-      UserId: uuidv4(),
+      UserId: companyUserId,
       Role,
       CompanyId,
       EmailAddress,
@@ -54,31 +97,34 @@ exports.register = async (req, res) => {
     await newUser.save();
 
     const newUserProfile = new UserProfile({
-      UserId: newUser.UserId,
+      UserId: companyUserId,
       CompanyId,
       Role,
       ...profileDetails,
+      OwnerName,
+      ...(Role === "Company" && { CompanyUrl: companyURL }),
     });
-
     await newUserProfile.save();
 
-    const token = generateToken(newUser);
-
     logUserEvent(
-      newUser.CompanyId,
+      CompanyId,
       "REGISTRATION",
-      `User ${newUser.EmailAddress} registered in`
+      `User ${EmailAddress} registered in`
     );
+    const emailStatus = await sendWelcomeEmailToCompanyLogic(companyUserId);
+
+    const token = generateToken(newUser);
 
     return res.status(200).json({
       statusCode: "200",
       message: "Company created successfully",
-      message: "Company created successfully",
+      emailStatus,
+      userProfile: { CompanyUrl: newUserProfile.CompanyUrl },
       user: {
         UserId: newUser.UserId,
         EmailAddress: newUser.EmailAddress,
         Role: newUser.Role,
-        CompanyId: newUser.CompanyId || null,
+        CompanyId,
       },
       token,
     });
@@ -88,125 +134,160 @@ exports.register = async (req, res) => {
   }
 };
 
-// // **LOGIN API**
-// exports.login = async (req, res) => {
-//   try {
-//     const { EmailAddress, Password } = req.body;
+// **WELCOME MAIL**
+const sendWelcomeEmailToCompanyLogic = async (UserId) => {
+  const findUser = await User.findOne({ UserId, Role: "Company" });
+  if (!findUser) return { statusCode: 404, message: "Company User Not Found" };
 
-//     const user = await User.findOne({ EmailAddress, IsDelete: false });
+  const findProfile = await UserProfile.findOne({ UserId, Role: "Company" });
+  if (!findProfile)
+    return { statusCode: 404, message: "Company Profile Not Found" };
 
-//     if (!user) {
-//       return res.status(401).json({ message: "Invalid email or password" });
-//     }
+  const data = [
+    {
+      CompanyName: findProfile.CompanyName || "",
+      OwnerName: findProfile.OwnerName || "",
+      EmailAddress: findUser.EmailAddress || "",
+      PhoneNumber: findProfile.PhoneNumber || "",
+      IndustryId: findProfile.IndustryId || "",
+      TeamSizeId: findProfile.TeamSizeId || "",
+      RevenueId: findProfile.RevenueId || "",
+    },
+  ];
 
-//     if (!user.IsActive) {
-//       return res
-//         .status(400)
-//         .json({ message: "Account is deactivated. Please contact support." });
-//     }
+  const defaultSubject = `Welcome To Cloud Job Manager`;
+  const defaultBody = `
+  <div style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff;">
+    <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 20px auto; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border: 1px solid #e88c44;">
+      
+      <tr>
+        <td style="padding: 20px 0; text-align: center; background-color: #063164;">
+          <div style="display: inline-block; padding: 20px; background-color: white; border-radius: 12px;">
+            <img src="https://app.cloudjobmanager.com/cdn/upload/20250213103016_site-logo2.png" alt="CloudJobManager Logo" style="width: 160px; max-width: 100%; display: block; margin: auto;" />
+          </div>
+        </td>
+      </tr>
 
-//     const isMatch = await bcrypt.compare(Password, user.Password);
-//     if (!isMatch) {
-//       return res.status(401).json({ message: "Invalid email or password" });
-//     }
+      <tr>
+        <td style="padding: 0px 20px; text-align: center; color: #333333; background-color: #ffffff; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+          <h2 style="font-size: 25px; font-weight: 700; color: #063164; margin-bottom: 20px; letter-spacing: 1px;margin-top:20px;">Welcome To Cloud Job Manager</h2>
+          <p style="font-size: 16px; color: #666666; line-height: 1.6; margin-bottom: 20px; font-weight: 400;">
+            Dear ${findProfile.OwnerName},<br>
+            Thank you for signing up with us! We are excited to have you and your company onboard. Below are your details:
+          </p>
+          
+          <p><strong>Company Name:</strong> ${findProfile.CompanyName}</p>
+          <p><strong>Email:</strong> ${findUser.EmailAddress}</p>
+          <p><strong>Phone Number:</strong> ${findProfile.PhoneNumber}</p>
 
-//     const userProfile = await UserProfile.findOne({ UserId: user.UserId });
+          <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">
+            Thanks again for choosing cloud job manager. We’re here to support your growth.
+          </p>
 
-//     const tokenData = {
-//       UserId: user.UserId,
-//       EmailAddress: user.EmailAddress,
-//       Role: user.Role,
-//       ProfileImage: userProfile?.ProfileImage || null,
-//       CompanyId: user.CompanyId,
-//       CompanyName: userProfile?.CompanyName || "",
-//       OwnerName: userProfile?.OwnerName || "",
-//     };
+          <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">Best regards,<br>The Cloud Job Manager Team</p>
+        </td>
+      </tr>
 
-//     logUserEvent(user.CompanyId, "LOGIN", `User ${user.EmailAddress} logged in.`);
+      <tr>
+        <td style="padding: 30px 20px; text-align: center; font-size: 12px; color: #888888; background-color: #f4f4f7; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+          cloud job manager, Inc. | All rights reserved.<br>
+          <a href="#" style="color: #e88c44; text-decoration: none;">Unsubscribe</a> if you no longer wish to receive these emails.
+        </td>
+      </tr>
+    </table>
+  </div>
+  `;
+  const emailStatus = await sendWelcomeEmail(
+    findUser.EmailAddress,
+    defaultSubject,
+    defaultBody,
+    [],
+    findUser.UserId
+  );
 
-//     const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
-//       expiresIn: "24h",
-//     });
-
-//     let statusCode, message, roleSpecificId;
-
-//     switch (user.Role) {
-//       case "Company":
-//         roleSpecificId = user.CompanyId;
-//         statusCode = "200";
-//         message = "Company Login Successful!";
-//         break;
-//       case "Superadmin":
-//         roleSpecificId = user.UserId;
-//         statusCode = "300";
-//         message = "Superadmin Login Successful!";
-//         break;
-//       case "Worker":
-//         roleSpecificId = user.UserId;
-//         statusCode = "302";
-//         message = "Worker Login Successful!";
-//         break;
-//       case "Customer":
-//         roleSpecificId = user.UserId;
-//         statusCode = "303";
-//         message = "Customer Login Successful!";
-//         break;
-//       default:
-//         return res.status(400).json({ statusCode: "204", message: "Invalid Role. Please contact support." });
-//     }
-
-//     res.status(200).json({
-//       statusCode,
-//       message,
-//       token,
-//       data: {
-//         UserId: roleSpecificId,
-//         EmailAddress: user.EmailAddress,
-//         CompanyName: userProfile?.CompanyName || "",
-//         Role: user.Role,
-//         IsActive: user.IsActive,
-//       },
-//     });
-
-//   } catch (error) {
-//     console.error("Login Error:", error);
-//     res.status(500).json({ message: "Something went wrong, please try later!" });
-//   }
-// };
+  return emailStatus
+    ? {
+        statusCode: 200,
+        message: `Email sent to ${findUser.EmailAddress}`,
+        defaultBody,
+      }
+    : { statusCode: 500, message: "Failed to send email" };
+};
 
 exports.checkEmail = async (req, res) => {
   try {
     const { EmailAddress } = req.body;
-    const users = await User.find({ EmailAddress, IsDelete: false });
-    if (!users || users.length === 0) {
-      return res.status(404).json({
-        statusCode: "404",
-        message: "Email not found",
-      });
-    }
     const companiesData = [];
+
+    const users = await User.find({
+      EmailAddress,
+      IsDelete: false,
+    });
+
+    let isCompanyUser = false;
+
     for (const user of users) {
-      let companyIds = [];
-      if (Array.isArray(user.CompanyId)) {
-        companyIds = user.CompanyId;
-      } else {
-        companyIds = [user.CompanyId];
-      }
+      const companyIds = Array.isArray(user.CompanyId)
+        ? user.CompanyId
+        : [user.CompanyId];
+
       for (const companyId of companyIds) {
         const userProfile = await UserProfile.findOne({
           CompanyId: companyId,
           Role: "Company",
         });
-        console.log(userProfile, "userProfile");
+
+        const role = user.Role;
+        if (role === "Company") {
+          isCompanyUser = true;
+        }
+
         companiesData.push({
           CompanyId: companyId,
           CompanyName: userProfile?.CompanyName || "Unknown Company",
-          Role: "Company",
+          CompanyUrl: userProfile?.CompanyUrl || "Unknown Company",
+          Role: role,
         });
       }
     }
-    const uniqueCompanies = companiesData.length;
-    if (uniqueCompanies === 1) {
+
+    const superAdmin = await SuperAdmin.findOne({
+      EmailAddress,
+      IsDelete: false,
+    });
+    if (superAdmin) {
+      companiesData.push({
+        CompanyId: null,
+        CompanyName: "Super Admin",
+        Role: "Admin",
+      });
+    }
+
+    if (companiesData.length === 0) {
+      return res.status(404).json({
+        statusCode: "404",
+        message: "Email not found",
+      });
+    }
+
+    if (isCompanyUser) {
+      const companyData = companiesData.find((item) => item.Role === "Company");
+
+      return res.status(200).json({
+        statusCode: "200",
+        message: "Company email found",
+        multipleCompanies: false,
+        data: {
+          EmailAddress,
+          CompanyId: companyData?.CompanyId || null,
+          Role: "Company",
+          CompanyName: companyData?.CompanyName || "Unknown Company",
+          CompanyUrl: companyData?.CompanyUrl || "Unknown Company",
+        },
+      });
+    }
+
+    if (companiesData.length === 1) {
       return res.status(200).json({
         statusCode: "200",
         message: "Email found",
@@ -240,40 +321,102 @@ exports.login = async (req, res) => {
   try {
     const { EmailAddress, Password, CompanyId } = req.body;
 
-    // Find user query - add CompanyId if provided
-    const query = { EmailAddress, IsDelete: false };
-    if (CompanyId) {
-      query.CompanyId = CompanyId;
+    let user = null;
+    let tokenData = {};
+    let userProfile = null;
+
+    const superAdmin = await SuperAdmin.findOne({
+      EmailAddress,
+      IsDelete: false,
+    });
+    if (superAdmin) {
+      const isMatchSuper = await bcrypt.compare(Password, superAdmin.Password);
+      if (!isMatchSuper) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      const token = jwt.sign(
+        {
+          AdminId: superAdmin.AdminId,
+          EmailAddress: superAdmin.EmailAddress,
+          FullName: superAdmin.FullName,
+          ProfileImage: superAdmin.ProfileImage,
+          Role: "Admin",
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "4h" }
+      );
+
+      logUserEvent("SYSTEM", "LOGIN", `SuperAdmin ${EmailAddress} logged in.`);
+
+      return res.status(200).json({
+        statusCode: "300",
+        message: "Super-admin Login Successful!",
+        token,
+        data: {
+          AdminId: superAdmin.AdminId,
+          EmailAddress: superAdmin.EmailAddress,
+          Role: "Admin",
+        },
+      });
     }
 
-    const user = await User.findOne(query);
+    const query = { EmailAddress, IsDelete: false };
+    if (CompanyId) query.CompanyId = CompanyId;
+
+    user = await User.findOne(query);
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" })
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+    // if (
+    //   (user.Role === "Worker" || user.Role === "Customer") &&
+    //   user.IsPassSet === false
+    // ) {
+    //   return res.status(403).json({
+    //     statusCode: "205",
+    //     message: "Please set your password using the invitation link.",
+    //   });
+    // }
+    const isMatch = await user.comparePassword(Password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     if (!user.IsActive) {
-      return res.status(400).json({ message: "Account is deactivated. Please contact support." })
+      return res
+        .status(400)
+        .json({ message: "Account is deactivated. Please contact support." });
     }
 
-    const isMatch = await bcrypt.compare(Password, user.Password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" })
+    const role = user.Role;
+
+    if (role === "Company") {
+      userProfile = await UserProfile.findOne({
+        UserId: user.UserId,
+        CompanyId: user.CompanyId,
+      });
+    } else {
+      userProfile = await UserProfile.findOne({
+        CompanyId: user.CompanyId,
+        Role: "Company",
+      });
     }
 
-    const userProfile = await UserProfile.findOne({ UserId: user.UserId, Role: "Company" })
-
-    const tokenData = {
+    tokenData = {
       UserId: user.UserId,
       EmailAddress: user.EmailAddress,
       Role: user.Role,
-      ProfileImage: userProfile?.ProfileImage || null,
       CompanyId: user.CompanyId,
-      CompanyName: userProfile?.CompanyName || "Unknown Company",
+      CompanyName: userProfile?.CompanyName,
+      CompanyUrl: userProfile?.CompanyUrl,
       OwnerName: userProfile?.OwnerName || "",
-    }
+      ProfileImage: userProfile?.ProfileImage || null,
+    };
 
-    logUserEvent(user.CompanyId, "LOGIN", `User ${user.EmailAddress} logged in.`)
+    const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
+      expiresIn: "4h",
+    });
 
     logUserEvent(
       user.CompanyId,
@@ -281,22 +424,13 @@ exports.login = async (req, res) => {
       `User ${user.EmailAddress} logged in.`
     );
 
-    const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
-      expiresIn: "4h",
-    });
-
     let statusCode, message, roleSpecificId;
 
-    switch (user.Role) {
+    switch (role) {
       case "Company":
         roleSpecificId = user.CompanyId;
         statusCode = "200";
         message = "Company Login Successful!";
-        break;
-      case "Superadmin":
-        roleSpecificId = user.UserId;
-        statusCode = "300";
-        message = "Superadmin Login Successful!";
         break;
       case "Worker":
         roleSpecificId = user.UserId;
@@ -322,8 +456,8 @@ exports.login = async (req, res) => {
       data: {
         UserId: roleSpecificId,
         EmailAddress: user.EmailAddress,
-        CompanyName: userProfile?.CompanyName || "",
-        CompanyName: userProfile?.CompanyName || "",
+        CompanyName: userProfile?.CompanyName,
+        CompanyUrl: userProfile?.CompanyUrl,
         Role: user.Role,
         IsActive: user.IsActive,
       },
@@ -334,7 +468,7 @@ exports.login = async (req, res) => {
       .status(500)
       .json({ message: "Something went wrong, please try later!" });
   }
-}
+};
 
 // **Check if User Exists Function**
 exports.checkUserExists = async (req, res) => {

@@ -60,7 +60,7 @@ const AddContract = ({
   setCustomersData,
   mail,
   setMail,
-  CompanyName,
+  CompanyUrl,
   customersData,
   contractData,
   propertyData,
@@ -127,7 +127,6 @@ const AddContract = ({
   };
   return (
     <>
-      {console.log(tokenDecode, "tokenDecode")}
       {loader ? (
         <Grid
           className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5"
@@ -149,8 +148,8 @@ const AddContract = ({
               // navigate(-1);
               navigate(
                 `/${
-                  CompanyName
-                    ? CompanyName + "/contract"
+                  CompanyUrl
+                    ? CompanyUrl + "/contract"
                     : "staff-member" + "/workercontract"
                 }`,
                 {
@@ -185,8 +184,8 @@ const AddContract = ({
               }
               navigate(
                 `/${
-                  CompanyName
-                    ? CompanyName + "/contract"
+                  CompanyUrl
+                    ? CompanyUrl + "/contract"
                     : "staff-member" + "/workercontract"
                 }`,
                 {
@@ -411,28 +410,62 @@ const AddContract = ({
                             Property address
                           </Typography>
                         </Typography>
-                        <Typography>
+                        <Typography className="text-blue-color">
                           {propertyData?.Address ||
-                            customersData?.location?.Address ||
-                            "-"}{" "}
+                            (Array.isArray(customersData?.location) &&
+                            customersData.location.length > 0
+                              ? customersData.location[0]?.Address
+                              : customersData.location?.Address) ||
+                            (Array.isArray(customersData?.locationDetails) &&
+                            customersData.locationDetails.length > 0
+                              ? customersData.locationDetails[0]?.Address
+                              : undefined) ||
+                            "Address not available"}
                           ,
                           <br />
                           {propertyData?.City ||
-                            customersData?.location?.City ||
-                            "-"}
-                          ,{" "}
+                            (Array.isArray(customersData?.location) &&
+                            customersData.location.length > 0
+                              ? customersData.location[0]?.City
+                              : customersData.location?.City) ||
+                            (Array.isArray(customersData?.locationDetails) &&
+                            customersData.locationDetails.length > 0
+                              ? customersData.locationDetails[0]?.City
+                              : undefined) ||
+                            "City not available"}{" "}
                           {propertyData?.State ||
-                            customersData?.location?.State ||
-                            "-"}{" "}
+                            (Array.isArray(customersData?.location) &&
+                            customersData.location.length > 0
+                              ? customersData.location[0]?.State
+                              : customersData.location?.State) ||
+                            (Array.isArray(customersData?.locationDetails) &&
+                            customersData.locationDetails.length > 0
+                              ? customersData.locationDetails[0]?.State
+                              : undefined) ||
+                            "State not available"}{" "}
                           ,
                           {propertyData?.Zip ||
-                            customersData?.location?.Zip ||
-                            "-"}
+                            (Array.isArray(customersData?.location) &&
+                            customersData.location.length > 0
+                              ? customersData.location[0]?.Zip
+                              : customersData.location?.Zip) ||
+                            (Array.isArray(customersData?.locationDetails) &&
+                            customersData.locationDetails.length > 0
+                              ? customersData.locationDetails[0]?.Zip
+                              : undefined) ||
+                            " Zip not available"}
                           ,
                           <br />
                           {propertyData?.Country ||
-                            customersData?.location?.Country ||
-                            "-"}{" "}
+                            (Array.isArray(customersData?.location) &&
+                            customersData.location.length > 0
+                              ? customersData.location[0]?.Country
+                              : customersData.location?.Country) ||
+                            (Array.isArray(customersData?.locationDetails) &&
+                            customersData.locationDetails.length > 0
+                              ? customersData.locationDetails[0]?.Country
+                              : undefined) ||
+                            "Country not available"}{" "}
                           <br />
                           <a
                             onClick={(e) => {
@@ -455,14 +488,9 @@ const AddContract = ({
                           Contact details
                         </Typography>
                         <Typography>
-                          {console.log(customersData, "customersData1234321")}
                           {customersData?.PhoneNumber || "-"}
                           <br />
                           {customersData?.EmailAddress || "-"}
-                          {console.log(
-                            emailData?.EmailAddress,
-                            "customersData?.EmailAddress"
-                          )}
                         </Typography>
                       </Col>
                     </Col>
@@ -673,6 +701,30 @@ const AddContract = ({
                                                   handleTeamSelect(e, person)
                                                 }
                                               />
+                                              {person?.Role === "Company" && (
+                                                <Label
+                                                  style={{
+                                                    fontSize: "14px",
+                                                    color: "rgba(6,49,100,0.6)",
+                                                    fontWeight: "500",
+                                                    marginBottom: "0px",
+                                                  }}
+                                                >
+                                                  Account Owner :
+                                                </Label>
+                                              )}
+                                              <Label
+                                                style={{
+                                                  fontSize: "16px",
+                                                  color: "rgba(6,49,100,0.7)",
+                                                  fontWeight: "400",
+                                                  marginBottom: 0,
+                                                }}
+                                              >
+                                                {`${person?.FirstName || ""} ${
+                                                  person?.LastName || ""
+                                                }`}
+                                              </Label>
 
                                               <Label
                                                 style={{
@@ -682,20 +734,8 @@ const AddContract = ({
                                                   marginBottom: 0,
                                                 }}
                                               >
-                                                {person?.FirstName}
-                                                {person?.LastName}{" "}
-                                              </Label>
-                                              <Label
-                                                style={{
-                                                  fontSize: "16px",
-                                                  color: "rgba(6,49,100,0.7)",
-                                                  fontWeight: "400",
-                                                  marginBottom: 0,
-                                                }}
-                                              >
                                                 <span>
-                                                  {" "}
-                                                  ( {person?.EmailAddress} )
+                                                  ({person?.EmailAddress})
                                                 </span>
                                               </Label>
                                             </FormGroup>
@@ -897,41 +937,6 @@ const AddContract = ({
                               style={{ marginTop: "-10px", height: "18px" }}
                               className="assingPersoneSeeHereToAssign"
                             >
-                              <Grid
-                                className="tag assignPersonNameHereTo"
-                                style={{
-                                  marginTop: "6px",
-                                  marginLeft: "10px",
-                                  gap: "10px",
-                                }}
-                              >
-                                {isVisible && (
-                                  <Typography
-                                    className="tag-text"
-                                    style={{ fontSize: "16px" }}
-                                  >
-                                    <span>
-                                      {`${
-                                        tokenDecode?.OwnerName ||
-                                        "FullName not available"
-                                      } - ${
-                                        tokenDecode?.EmailAddress ||
-                                        "EmailAddress not available"
-                                      }`}
-                                    </span>
-                                    <button
-                                      className="tag-close"
-                                      onClick={handleRemove}
-                                      aria-label="Close"
-                                    >
-                                      <span style={{ marginTop: "-1px" }}>
-                                        x
-                                      </span>
-                                    </button>
-                                  </Typography>
-                                )}
-                              </Grid>
-
                               {selectedTeams?.map((team, index) => (
                                 <Grid
                                   key={index}
@@ -947,15 +952,34 @@ const AddContract = ({
                                     style={{ fontSize: "16px" }}
                                   >
                                     <span>
-                                      {`${
-                                        team?.FirstName ||
-                                        "FullName not available"
-                                      } ${team?.LastName || ""}`}{" "}
-                                      -
+                                      {team?.Role === "Company"
+                                        ? `${
+                                            team?.OwnerName ||
+                                            "OwnerName not available"
+                                          }`
+                                        : `${
+                                            team?.FirstName ||
+                                            "FirstName not available"
+                                          } ${team?.LastName || ""}`}
+                                      {" - "}
                                       {team?.EmailAddress ||
                                         "EmailAddress not available"}
                                     </span>
                                   </Typography>
+
+                                  {team?.Role === "Company" && (
+                                    <Typography
+                                      className="tag-text"
+                                      style={{
+                                        fontSize: "14px",
+                                        color: "#666",
+                                        fontStyle: "italic",
+                                      }}
+                                    >
+                                      Company
+                                    </Typography>
+                                  )}
+
                                   <button
                                     className="tag-close"
                                     onClick={() => handleRemoveTeam(team)}
@@ -972,240 +996,7 @@ const AddContract = ({
                     </Grid>
                   </Col>
                 </Row>
-                {/* 
-                {activeTab === 2 ? (
-                  <Card
-                    className="p-3 my-3 border-blue-color"
-                    style={{
-                      paddingRight: "30px",
-                      border: "1px solid ",
-                      marginBottom: "15px",
-                    }}
-                  >
-                    <Typography
-                      className="text-blue-color heading-four"
-                      style={{ fontWeight: 600 }}
-                    >
-                      Invoicing
-                    </Typography>
-                    <Row className="d-flex row">
-                      <Col className="col-lg-5" md={5} xl={5}>
-                        <Grid>
-                          <Typography
-                            style={{
-                              fontSize: "16px",
-                              fontWeight: "600",
-                              marginBottom: "0px",
-                            }}
-                            className="text-blue-color "
-                          >
-                            How do you want to invoice?
-                          </Typography>
-                          <Grid className="d-flex gap-4 contractInvoicePerVisit">
-                            <Grid
-                              className="text-blue-color"
-                              style={{
-                                fontSize: "16px",
-                                fontWeight: "400",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Input type="radio" name="radio" value="yes" />{" "}
-                              Per Visit
-                            </Grid>
-                            <Grid
-                              className="text-blue-color"
-                              style={{
-                                fontSize: "16px",
-                                fontWeight: "400",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Input type="radio" name="radio" value="no" />{" "}
-                              Fixed Price
-                            </Grid>
-                          </Grid>
-                        </Grid>
 
-                        <Grid className="mt-3">
-                          <Typography
-                            style={{
-                              fontSize: "16px",
-                              fontWeight: "600",
-                              marginBottom: "0px",
-                            }}
-                            className="text-blue-color "
-                          >
-                            When do you want to invoice?
-                          </Typography>
-                          <Grid className="mt-1">
-                            <Input
-                              type="select text-blue-color"
-                              style={{
-                                fontSize: "14px",
-                                border: "1px solid rgba(6, 49, 100, 30%)",
-                                borderRadius: "10px",
-                                fontSize: "12px",
-                                width: "70%",
-                              }}
-                            >
-                              <option value="">
-                                Monthly on the last day of mont
-                              </option>
-                            </Input>
-                          </Grid>
-                        </Grid>
-                        <Grid className="mt-3">
-                          <Label
-                            className="my-2 text-blue-color"
-                            for="exampleEmail"
-                            style={{
-                              fontWeight: 600,
-                              fontSize: "16px",
-                            }}
-                          >
-                            Visits
-                          </Label>
-                          <Grid className="d-flex">
-                            <Col
-                              className="col-4 text-blue-color"
-                              style={{
-                                borderRight: "0.5px solid rgba(6,49,100, 0.8)",
-                              }}
-                              md={4}
-                              xl={4}
-                            >
-                              <Typography
-                                className="mb-0 text-blue-color"
-                                style={{ fontSize: "12px", marginRight: "0px" }}
-                              >
-                                First
-                              </Typography>
-                              <Typography
-                                className="mb-0 text-blue-color"
-                                style={{ fontSize: "12px" }}
-                              >
-                                May 21, 2024
-                              </Typography>
-                            </Col>
-                            <Col
-                              className=" mx-0"
-                              style={{
-                                borderRight:
-                                  "0.5px solid rgba(6, 49, 100, 30%)",
-                              }}
-                              md={4}
-                              xl={4}
-                            >
-                              <Typography
-                                className="mb-0 text-blue-color"
-                                style={{ fontSize: "12px", marginLeft: "5px" }}
-                              >
-                                Last
-                              </Typography>
-                              <Typography
-                                className="mb-0 text-blue-color"
-                                style={{ fontSize: "12px", marginLeft: "5px" }}
-                              >
-                                May 21, 2024
-                              </Typography>
-                            </Col>
-                            <Grid className="col-4 mx-1">
-                              <Typography
-                                className="mb-0 text-blue-color"
-                                style={{ fontSize: "12px" }}
-                              >
-                                Total
-                              </Typography>
-                              <Typography
-                                className="mb-0 text-blue-color"
-                                style={{ fontSize: "12px" }}
-                              >
-                                27
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </Grid>
-                      </Col>
-                      <Col className="col-lg-7" md={7} xl={7}>
-                        <Grid style={{ width: "100%" }}>
-                          <Grid className="d-flex justify-content-between">
-                            <Typography
-                              style={{
-                                fontSize: "16px",
-                                fontWeight: "600",
-                                marginBottom: "0px",
-                              }}
-                              className="text-blue-color "
-                            >
-                              Automatically pay invoices
-                            </Typography>
-                            <Grid style={{ marginRight: "18%" }}>
-                              <FormGroup
-                                switch
-                                className="my-3 automaticalliyPayCheckBoxHere"
-                              >
-                                <Input
-                                  type="switch"
-                                  style={{ cursor: "pointer" }}
-                                />
-                              </FormGroup>
-                            </Grid>
-                          </Grid>
-                          <Grid>
-                            <Typography
-                              style={{
-                                fontSize: "12px",
-                                fontWeight: "400",
-                                marginTop: "5px",
-                              }}
-                              className="text-blue-color "
-                            >
-                              Automatic payments will be enabled as soon as your
-                              Customer adds a payment method. Learn more in{" "}
-                              <Typography
-                                style={{
-                                  fontSize: "16px",
-                                  textDecoration: "underline",
-                                }}
-                                className="text-blue-color "
-                              >
-                                Help Center
-                              </Typography>
-                              .
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                        <Grid
-                          style={{ width: "60%" }}
-                          className="noPaymentMethodAndPara"
-                        >
-                          <Typography
-                            style={{
-                              fontSize: "16px",
-                              fontWeight: "600",
-                              marginBottom: "0px",
-                            }}
-                            className="text-blue-color "
-                          >
-                            No payment methods on file
-                          </Typography>
-                          <Typography
-                            style={{
-                              fontSize: "12px",
-                              fontWeight: "400",
-                              marginTop: "5px",
-                            }}
-                            className="text-blue-color "
-                          >
-                            Your customer can save a payment method when they
-                            make their first payment.
-                          </Typography>
-                        </Grid>
-                      </Col>
-                    </Row>
-                  </Card>
-                ) : null} */}
                 <Card
                   className="p-3 my-4 border-blue-color"
                   style={{

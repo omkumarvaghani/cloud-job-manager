@@ -50,7 +50,7 @@ const QuoteMail = ({
   formik,
   handleSubmit,
   Attachment,
-  handleSubmits
+  handleSubmits,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -223,9 +223,9 @@ const QuoteMail = ({
           }
         }
       }
-      const url = `/quote/send_mail/${data?.companyId}`;
+      const url = `/v1/quote/send_mail/${data?.CompanyId}`;
       const object = {
-        CustomerId: customerData?.CustomerId,
+        CustomerId: quotesData?.CustomerId,
         QuoteId: quotesData?.QuoteId,
         Title: formik?.Title || quotesData?.Title || "",
         QuoteNumber: formik?.QuoteNumber || quotesData?.QuoteNumber || "",
@@ -256,11 +256,8 @@ const QuoteMail = ({
     try {
       setLoader(true);
       const saveResponse = await handleSubmits();
-           if (saveResponse?.statusCode === 200) {
-        await handleSendMail(
-
-        );
-       
+      if (saveResponse?.statusCode === 200) {
+        await handleSendMail();
       } else {
         sendToast(saveResponse?.message || "Failed to save quote.");
       }
@@ -304,7 +301,7 @@ const QuoteMail = ({
           className="d-flex justify-content-between  "
           style={{
             color: "#fff",
-            fontSize: "18px", 
+            fontSize: "18px",
             fontWeight: "bold",
             borderBottom: "4px solid #e88c44",
           }}
@@ -335,7 +332,7 @@ const QuoteMail = ({
               }}
               className="text-orange-color"
             >
-              {customerData?.EmailAddress || "the customer's email"}
+              {quotesData?.customerData?.EmailAddress || "the customer's email"}
             </Typography>
             ?{/* <br /> */}
             <Typography
@@ -539,10 +536,9 @@ const QuoteMail = ({
                     style={{ marginTop: "0px" }}
                   >
                     <Grid className="ButtomWithN">
-                     <BlueButton
-                       onClick={async () => 
-                        handleSendMail()} 
-                        style={{  
+                      <BlueButton
+                        onClick={async () => handleSendMail()}
+                        style={{
                           fontSize: "14px",
                           color: "#fff",
                           textTransform: "none",
@@ -554,7 +550,7 @@ const QuoteMail = ({
                         }}
                         label="Yes, Send email"
                         className="yesSnedmailQuote"
-                      /> 
+                      />
                       {/* <BlueButton
                         onClick={async () => handleSaveAndSendMail()}
                         style={{

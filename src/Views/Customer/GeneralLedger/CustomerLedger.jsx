@@ -69,7 +69,7 @@ function CustomerLedger() {
   const [loader, setLoader] = useState(true);
   const [countData, setCountData] = useState(0);
   const isEdited = true;
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [sortField, setSortField] = useState("asc");
 
   const [sortOrder, setSortOrder] = useState("desc");

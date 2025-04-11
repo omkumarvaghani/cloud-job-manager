@@ -66,22 +66,32 @@ const AddUser = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
 
   const [selectedRole, setSelectedRole] = useState(undefined);
+  const [data, setData] = useState();
   const [loader, setLoader] = useState(true);
+  const CompanyId = location?.state?.id;
   const getData = async () => {
     try {
-      if (location?.state?.id) {
-        const response = await AxiosInstance.get(
-          `${baseUrl}/v1/worker/get/${location?.state?.id}`
-        );
-        const fetchedData = response?.data?.data;
-        formik.setValues(fetchedData);
-        const data = fetchedData.permissions;
-        setSelectedRole(data);
-        setTimes(JSON.parse(fetchedData.ScheduleTime));
-      }
+      console.log(
+        location?.state?.id,
+        "location?.state?.idlocation?.state?.id"
+      );
+      console.log(location?.state, "location?.state");
+      console.log(location, "location");
+      // if (location?.state?.id) {
+      const response = await AxiosInstance.get(
+        `${baseUrl}/v1/worker/get/${location?.state?.id}`
+      );
+      console.log(response, "response");
+      const fetchedData = response?.data?.data;
+      setData(response?.data?.data);
+      formik.setValues(fetchedData);
+      const data = fetchedData.permissions;
+      setSelectedRole(data);
+      setTimes(JSON.parse(fetchedData.ScheduleTime));
+      // }
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -125,20 +135,39 @@ const AddUser = () => {
       Title: "",
       Description: "",
       Schedule: "",
+      OwnerName: "",
     },
-    validationSchema: Yup.object({
-      FirstName: Yup.string().required("First Name Required"),
-      LastName: Yup.string().required("Last Name Required"),
-      EmailAddress: Yup.string()
-        .email("Invalid email")
-        .required("Email required")
-        .matches(/^[^@]+@[^@]+\.[^@]+$/, "Email must contain '@' and '.'"),
-      PhoneNumber: Yup.string()
-        .matches(
-          /^\(\d{3}\) \d{3}-\d{4}$/,
-          "Phone number must be in the format (xxx) xxx-xxxx"
-        )
-        .required("Phone number is required"),
+    validationSchema: Yup.object().shape(() => {
+      if (data && data.Role === "Company") {
+        return {
+          OwnerName: Yup.string().required("Owner Name Required"),
+          EmailAddress: Yup.string()
+            .email("Invalid email")
+            .required("Email required")
+            .matches(/^[^@]+@[^@]+\.[^@]+$/, "Email must contain '@' and '.'"),
+          PhoneNumber: Yup.string()
+            .matches(
+              /^\(\d{3}\) \d{3}-\d{4}$/,
+              "Phone number must be in the format (xxx) xxx-xxxx"
+            )
+            .required("Phone number is required"),
+        };
+      } else {
+        return {
+          FirstName: Yup.string().required("First Name Required"),
+          LastName: Yup.string().required("Last Name Required"),
+          EmailAddress: Yup.string()
+            .email("Invalid email")
+            .required("Email required")
+            .matches(/^[^@]+@[^@]+\.[^@]+$/, "Email must contain '@' and '.'"),
+          PhoneNumber: Yup.string()
+            .matches(
+              /^\(\d{3}\) \d{3}-\d{4}$/,
+              "Phone number must be in the format (xxx) xxx-xxxx"
+            )
+            .required("Phone number is required"),
+        };
+      }
     }),
     validateOnChange: false,
     validateOnBlur: true,
@@ -158,7 +187,7 @@ const AddUser = () => {
         let response;
         if (location?.state?.id) {
           response = await AxiosInstance.put(
-            `${baseUrl}/worker/${location?.state?.id}`,
+            `${baseUrl}/v1/worker/${location?.state?.id}`,
             object
           );
         } else {
@@ -539,7 +568,7 @@ const AddUser = () => {
                       className="sidebar-link-setting"
                       style={{ cursor: "pointer" }}
                       onClick={() => {
-                        navigate(`/${CompanyName}/materials&labor`, {
+                        navigate(`/${CompanyUrl}/materials&labor`, {
                           state: { navigats: ["/index", "/materials&labor"] },
                         });
                       }}
@@ -550,7 +579,7 @@ const AddUser = () => {
                       className="sidebar-link-setting"
                       style={{ cursor: "pointer" }}
                       onClick={() => {
-                        navigate(`/${CompanyName}/profile`, {
+                        navigate(`/${CompanyUrl}/profile`, {
                           state: { navigats: ["/index", "/profile"] },
                         });
                       }}
@@ -594,8 +623,8 @@ const AddUser = () => {
                 }
                 navigate(
                   `/${
-                    CompanyName
-                      ? CompanyName + "/manageteam"
+                    CompanyUrl
+                      ? CompanyUrl + "/manageteam"
                       : "staff-member" + "/workermanageteam"
                   }`,
                   {
@@ -636,47 +665,66 @@ const AddUser = () => {
 
                 <Grid className="responsive-container gap-3 personalInfoMation">
                   <Grid className="w-50 sub-Grid infoInputBoxesWidth">
-                    <Grid className="d-flex  justify-content-between  gap-2">
+                    {data && data.Role === "Company" ? (
                       <InputText
-                        value={formik.values?.FirstName}
+                        value={formik.values?.OwnerName}
                         onChange={formik.handleChange}
-                        onBlur={(e) => {
-                          formik.handleBlur(e);
-                        }}
+                        onBlur={(e) => formik.handleBlur(e)}
                         error={
-                          formik.touched.FirstName &&
-                          Boolean(formik.errors.FirstName)
+                          formik.touched.OwnerName &&
+                          Boolean(formik.errors.OwnerName)
                         }
                         helperText={
-                          formik.touched.FirstName && formik.errors.FirstName
+                          formik.touched.OwnerName && formik.errors.OwnerName
                         }
-                        name="FirstName"
-                        label="First Name"
+                        name="OwnerName"
+                        label="Owner Name"
                         type="text"
                         className="text-blue-color w-100 m-0 mb-4"
                         fieldHeight="56px"
                       />
-
-                      <InputText
-                        value={formik.values?.LastName}
-                        onChange={formik.handleChange}
-                        onBlur={(e) => {
-                          formik.handleBlur(e);
-                        }}
-                        error={
-                          formik.touched.LastName &&
-                          Boolean(formik.errors.LastName)
-                        }
-                        helperText={
-                          formik.touched.LastName && formik.errors.LastName
-                        }
-                        name="LastName"
-                        label="Last Name"
-                        type="text"
-                        className="text-blue-color w-100 m-0 mb-4"
-                        fieldHeight="56px"
-                      />
-                    </Grid>
+                    ) : (
+                      <Grid className="d-flex justify-content-between gap-2">
+                        {console.log(
+                          formik.values?.FirstName,
+                          "formik.values?.FirstName"
+                        )}
+                        <InputText
+                          value={formik.values?.FirstName}
+                          onChange={formik.handleChange}
+                          onBlur={(e) => formik.handleBlur(e)}
+                          error={
+                            formik.touched.FirstName &&
+                            Boolean(formik.errors.FirstName)
+                          }
+                          helperText={
+                            formik.touched.FirstName && formik.errors.FirstName
+                          }
+                          name="FirstName"
+                          label="First Name"
+                          type="text"
+                          className="text-blue-color w-100 m-0 mb-4"
+                          fieldHeight="56px"
+                        />
+                        <InputText
+                          value={formik.values?.LastName}
+                          onChange={formik.handleChange}
+                          onBlur={(e) => formik.handleBlur(e)}
+                          error={
+                            formik.touched.LastName &&
+                            Boolean(formik.errors.LastName)
+                          }
+                          helperText={
+                            formik.touched.LastName && formik.errors.LastName
+                          }
+                          name="LastName"
+                          label="Last Name"
+                          type="text"
+                          className="text-blue-color w-100 m-0 mb-4"
+                          fieldHeight="56px"
+                        />
+                      </Grid>
+                    )}
                     <InputText
                       value={formik.values?.EmailAddress}
                       onChange={formik.handleChange}
@@ -730,7 +778,7 @@ const AddUser = () => {
                   </Grid>
                 </Grid>
 
-                <Grid className="d-flex gap-3 responsive-container personalInfoMation ">
+                <Grid className="d-flex gap-3 responsive-container personalInfoMation">
                   <Grid className="w-50 sub-Grid infoInputBoxesWidth">
                     <Typography
                       className="text-blue-color labor labor-top mb-3 adduserLaborCost"
@@ -740,7 +788,13 @@ const AddUser = () => {
                     </Typography>
                     <DollerInput
                       value={formik.values?.LaborCost}
-                      onChange={formik.handleChange}
+                      onChange={(e) => {
+                        const sanitizedValue = e.target.value.replace(
+                          /[^0-9]/g,
+                          ""
+                        );
+                        formik.setFieldValue("LaborCost", sanitizedValue);
+                      }}
                       onBlur={formik.handleBlur}
                       error={
                         formik.touched.LaborCost &&
@@ -791,38 +845,15 @@ const AddUser = () => {
                   </Typography>
                 </Grid>
                 <Grid className="mt-4 d-flex justify-content-between align-items-start manageTeamTimeScheduleFlex">
-                  {/* Scrollable container for the table */}
                   <Grid style={{ width: "424px", overflowX: "auto" }}>
                     <Table className="w-100">
                       <TableBody>
-                        {/* {Object.keys(times).map((day) => (
-                          <TableRow key={day}>
-                            <TableCell
-                              style={{ fontWeight: 700, fontSize: "18px" }}
-                              className="text-blue-color"
-                            >
-                              {day}
-                            </TableCell>
-                            <TableCell
-                              className="text-blue-color"
-                              style={{ fontSize: "16px", fontWeight: 500 }}
-                            >
-                              {times[day].start && times[day].end
-                                ? `${moment(times[day].start).format(
-                                    "hh:mm A"
-                                  )} – ${moment(times[day].end).format(
-                                    "hh:mm A"
-                                  )}`
-                                : "Unavailable"}
-                            </TableCell>
-                          </TableRow>
-                        ))} */}
                         {Object.keys(times).map((day) => (
                           <tr key={day}>
                             <td>{day}</td>
                             <td colSpan={2}>
                               {!isChecked[day]
-                                ? "Unavailable" // ✅ If unchecked, show "Unavailable" in full row
+                                ? "Unavailable"
                                 : `${moment(times[day].start).format(
                                     "hh:mm A"
                                   )} - ${moment(times[day].end).format(
@@ -848,7 +879,9 @@ const AddUser = () => {
                 </Grid>
               </Grid>
             </Card>
-            <Permissions data={selectedRole} setData={setSelectedRole} />
+            {data && data.Role === "Company" ? null : (
+              <Permissions data={selectedRole} setData={setSelectedRole} />
+            )}
             <Card
               style={{
                 padding: "40px",
@@ -995,22 +1028,32 @@ const AddUser = () => {
                       onClick={async (e) => {
                         e.preventDefault();
                         const isValid = await formik.validateForm();
-                        formik.setTouched({
-                          FirstName: true,
-                          LastName: true,
-                          EmailAddress: true,
-                        });
+
+                        if (data && data.Role === "Company") {
+                          formik.setTouched({
+                            OwnerName: true,
+                            EmailAddress: true,
+                            PhoneNumber: true,
+                          });
+                        } else {
+                          formik.setTouched({
+                            FirstName: true,
+                            LastName: true,
+                            EmailAddress: true,
+                            PhoneNumber: true,
+                          });
+                        }
 
                         if (Object.keys(isValid).length === 0) {
                           formik.handleSubmit();
-                        } else showToast.error("Please Fill Required Fields");
+                        } else {
+                          showToast.error("Please Fill Required Fields");
+                        }
                       }}
                       label={
                         location?.state?.id ? "Update Worker" : "Save Worker"
                       }
-                    >
-                      {/* {" "} */}
-                    </BlueButton>
+                    />
                   </Grid>
                 )}
               </Grid>
@@ -1063,22 +1106,6 @@ const AddUser = () => {
                   </FormGroup>
                 </Col>
                 <Col className="col-8 d-flex gap-1" xl={8}>
-                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <TimePicker
-                      label="Start Time"
-                      value={isChecked[day] ? dayjs(times[day].start) : null}
-                      onChange={handleTimeChange(day, "start")}
-                      disabled={!isChecked[day]}
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                    <TimePicker
-                      label="End Time"
-                      value={isChecked[day] ? dayjs(times[day].end) : null}
-                      onChange={handleTimeChange(day, "end")}
-                      disabled={!isChecked[day]}
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                  </LocalizationProvider> */}
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <TimePicker
                       label="Start Time"

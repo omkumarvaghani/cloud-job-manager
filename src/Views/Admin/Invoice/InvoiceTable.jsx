@@ -13,26 +13,22 @@ import { Typography } from "@mui/material";
 
 const InvoiceTable = () => {
   const [customerData, setCustomerData] = useState([]);
-  console.log(customerData, "customerData");
   const [selectedCustomerData, setSelectedCustomerData] = useState();
   const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_API;
   const location = useLocation();
-  console.log(location, "locationlocation");
   useEffect(() => {
     const fetchData = async () => {
       const CustomerId = location?.state?.UserId;
-      console.log(location?.state?.UserId, "Location State");
-      console.log(CustomerId, "CustomerId");
+   
       if (!CustomerId) return;
       setLoader(true);
       try {
         const res = await AxiosInstance.get(
           `${baseUrl}/v1/contract/get_invoice_data/${CustomerId}`
         );
-        console.log(res, "resresres");
         const data = res?.data?.data;
         setCustomerData(data.contracts || data.locations);
       } catch (error) {
@@ -156,7 +152,6 @@ const InvoiceTable = () => {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {console.log(item, "itemitem")}
                       <TableCell
                         component="th"
                         scope="row"
@@ -262,8 +257,8 @@ const InvoiceTable = () => {
           <BlueButton
             onClick={() => {
               navigate(
-                CompanyName
-                  ? `/${CompanyName}/addinvoice`
+                CompanyUrl
+                  ? `/${CompanyUrl}/addinvoice`
                   : "/staff-member/workeraddinvoice",
                 {
                   state: {

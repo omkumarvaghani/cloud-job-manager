@@ -298,7 +298,7 @@ const Payment = () => {
       key: item.companyId,
       value: [
         item.ownerName,
-        item.CompanyName,
+        item.CompanyUrl,
         item.EmailAddress,
         item.status,
         "-",
@@ -635,7 +635,7 @@ const Payment = () => {
               EmailAddress: selectedIndustry
                 ? selectedIndustry.EmailAddress
                 : "",
-              CompanyName: selectedIndustry ? selectedIndustry.CompanyName : "",
+              CompanyUrl: selectedIndustry ? selectedIndustry.CompanyUrl : "",
               Password: selectedIndustry ? selectedIndustry.Password : "",
               ConfirmPassword: selectedIndustry
                 ? selectedIndustry.Password
@@ -652,7 +652,7 @@ const Payment = () => {
                   /^[^@]+@[^@]+\.[^@]+$/,
                   "Email must contain '@' and '.'"
                 ),
-              CompanyName: Yup.string().required(" Company Name is Required"),
+              CompanyUrl: Yup.string().required(" Company Name is Required"),
               Password: Yup.string().required("Password is Required"),
               ConfirmPassword: Yup.string()
                 .required("Confirm Password is Required")
@@ -725,13 +725,13 @@ const Payment = () => {
                       fullWidth
                       placeholder="Enter company name"
                       label="Company Name"
-                      name="CompanyName"
-                      value={values?.CompanyName}
+                      name="CompanyUrl"
+                      value={values?.CompanyUrl}
                       onBlur={handleBlur}
                       onChange={handleChange}
                     />
-                    {touched.CompanyName && errors.CompanyName ? (
-                      <Grid className="text-danger">{errors.CompanyName}</Grid>
+                    {touched.CompanyUrl && errors.CompanyUrl ? (
+                      <Grid className="text-danger">{errors.CompanyUrl}</Grid>
                     ) : null}
                   </Grid>
 

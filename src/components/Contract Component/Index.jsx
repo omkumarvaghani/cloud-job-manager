@@ -1093,7 +1093,7 @@ const CalendarJOB = ({ isCalendarVisible, setIsCalendarVisible }) => {
   const [isCardVisible, setIsCardVisible] = useState(true);
   const [clickedDate, setClickedDate] = useState(null);
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [open, setOpen] = useState(false);
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });

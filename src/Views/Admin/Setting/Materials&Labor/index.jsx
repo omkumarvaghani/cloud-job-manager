@@ -496,7 +496,7 @@ const MaterialsLabor = () => {
   //   setSelectedUnitsAndHours(null);
   // }, [selectedProductAndService]);
 
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [isOpenDropDown, setIsOpenDropDown] = useState(false);
   const toggle = () => setIsOpenDropDown(!isOpenDropDown);
 
@@ -545,7 +545,7 @@ const MaterialsLabor = () => {
                     <SettingDropdown
                       isOpenDropDown={isOpenDropDown}
                       toggle={toggle}
-                      CompanyName={CompanyName}
+                      CompanyUrl={CompanyUrl}
                     />
                   )}
                 </Grid> */}
@@ -553,7 +553,7 @@ const MaterialsLabor = () => {
                 <SettingDropdown
                   isOpenDropDown={isOpenDropDown}
                   toggle={toggle}
-                  CompanyName={CompanyName}
+                  CompanyUrl={CompanyUrl}
                 />
               </Grid>
               <Grid

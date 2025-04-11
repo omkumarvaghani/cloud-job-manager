@@ -48,7 +48,7 @@ import { handleAuth } from "../../../../components/Login/Auth.jsx";
 function ManageTeamTable() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -124,9 +124,28 @@ function ManageTeamTable() {
     fetchData();
   }, [rowsPerPage, page, search, sortField, sortOrder]);
 
+  const countDataWorker = async () => {
+    setLoader(true);
+    try {
+      const res = await AxiosInstance.get(`/v1/worker/activeuser`);
+      if (res?.data?.statusCode === 200) {
+        // setWorkerData(res?.data?.data);
+        setTotalCount(res?.data?.AllWorker);
+        // setCountData(res?.data?.count);
+        setActiveCount(res?.data?.activeWorkerCount);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoader(false);
+    }
+  };
+  useEffect(() => {
+    countDataWorker();
+  }, []);
   const handleClick = (id) => {
     if (id) {
-      navigate("/" + CompanyName + "/add-user", {
+      navigate("/" + CompanyUrl + "/add-user", {
         state: { id, navigats: [...location?.state?.navigats, "/add-user"] },
       });
     }
@@ -136,14 +155,14 @@ function ManageTeamTable() {
     sendSwal().then(async (deleteReason) => {
       if (deleteReason) {
         try {
-          const response = await AxiosInstance.delete(`/worker/${id}`, {
+          const response = await AxiosInstance.delete(`/v1/worker/${id}`, {
             data: { DeleteReason: deleteReason },
           });
           if (response?.data?.statusCode === 200) {
             showToast.success(response?.data?.message);
             fetchData();
           } else {
-            showToast.warning(response?.data?.message);
+            showToast.success(response?.data?.message);
           }
         } catch (error) {
           console.error("Error:", error);
@@ -208,7 +227,7 @@ function ManageTeamTable() {
     },
   });
 
-  const sendMail = async (WorkerId) => {
+  const sendMail = async (UserId) => {
     const willSendMail = await swal({
       title: "Are you sure?",
       text: "Are you sure you want to send the email?",
@@ -228,7 +247,7 @@ function ManageTeamTable() {
     if (willSendMail) {
       try {
         const response = await AxiosInstance.post(
-          `/worker/send_mail/${WorkerId}`
+          `/v1/worker/send_mail/${UserId}`
         );
         if (response?.data?.statusCode === 200) {
           setTimeout(() => {
@@ -249,7 +268,7 @@ function ManageTeamTable() {
   };
 
   const handleEditClick = (id) => {
-    navigate(`/${CompanyName}/add-customer`, {
+    navigate(`/${CompanyUrl}/add-customer`, {
       state: {
         id,
         navigats: [...location.state.navigats, "/add-customer"],
@@ -259,24 +278,8 @@ function ManageTeamTable() {
 
   const cellData = workerData?.map((user, index) => {
     return {
-      key: user?.WorkerId,
+      key: user?.UserId,
       value: [
-        // <Grid
-        //   className="bg-blue-color text-white-color"
-        //   style={{
-        //     display: "flex",
-        //     alignItems: "center",
-        //     justifyContent: "center",
-        //     borderRadius: "50%",
-        //     padding: "10px",
-        //     width: "40px",
-        //     height: "40px",
-        //   }}
-        // >
-        //   {user?.FullName?.split(" ")
-        //     .map((part) => part.charAt(0).toUpperCase())
-        //     .join("")}
-        // </Grid>,
         <Grid
           className="bg-blue-color text-white-color"
           style={{
@@ -289,15 +292,39 @@ function ManageTeamTable() {
             height: "40px",
           }}
         >
-          {`${user?.FirstName?.charAt(0).toUpperCase()}${user?.LastName?.charAt(
-            0
-          ).toUpperCase()}`}
+          {`${user?.FirstName?.charAt(0)?.toUpperCase() || ""}${
+            user?.LastName?.charAt(0)?.toUpperCase() || ""
+          }`}
         </Grid>,
-        `${user?.FirstName || "FirstName not available"} ${
-          user?.LastName || "LastName not available"
-        }`,
+
+        <div>
+          {user?.Role === "Company" ? (
+            <>
+              <div>
+                {user?.FirstName || "FirstName not available"} {""}
+                {user?.LastName || "LastName not available"}
+              </div>
+              <div
+                style={{
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  color: "#999",
+                }}
+              >
+                Account Owner
+              </div>
+            </>
+          ) : (
+            `${user?.FirstName || "FirstName not available"} ${
+              user?.LastName || "LastName not available"
+            }`
+          )}
+        </div>,
+
         user?.EmailAddress || "EmailAddress not available",
+
         moment(user?.createdAt).format(dateFormat),
+
         <Grid
           style={{
             color: user?.IsActive ? "green" : "red",
@@ -306,142 +333,150 @@ function ManageTeamTable() {
         >
           {user?.IsActive ? "Active" : "Deactive" || "IsActive not available"}
         </Grid>,
+
         <>
-          <Dropdown
-            isOpen={activeDropdown === user?.EmailAddress}
-            toggle={() => toggleDropdown(user?.EmailAddress)}
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              zIndex: activeDropdown === user?.EmailAddress ? 9999 : 0,
-            }}
-          >
-            <DropdownToggle
-              className="text-blue-color outline border-blue-color"
+          {user?.Role !== "Company" && (
+            <Dropdown
+              isOpen={activeDropdown === user?.EmailAddress}
+              toggle={() => toggleDropdown(user?.EmailAddress)}
+              onClick={(e) => e.stopPropagation()}
               style={{
-                background: "none",
-                border: "none ",
+                zIndex: activeDropdown === user?.EmailAddress ? 9999 : 0,
               }}
             >
-              <MoreHorizIcon />
-            </DropdownToggle>
-            <DropdownMenu
-              container="body"
-              style={{
-                position: "absolute",
-                zIndex: activeDropdown === user?.EmailAddress ? 9998 : 1,
-                padding: "5px",
-                minWidth: "150px",
-              }}
-            >
-              <DropdownItem
+              <DropdownToggle
+                className="text-blue-color outline border-blue-color"
                 style={{
-                  fontSize: "14px",
-                  padding: "5px 10px",
-                }}
-                onClick={() => {
-                  sendMail(user?.WorkerId);
-                }}
-                className="text-blue-color"
-              >
-                <MarkEmailReadOutlinedIcon
-                  className="icones-dropdown texxt-blue-color"
-                  style={{
-                    fontSize: "16px",
-                    marginRight: "5px",
-                  }}
-                />
-                Resend Invitation
-              </DropdownItem>
-              <DropdownItem
-                style={{
-                  fontSize: "14px",
-                  padding: "5px 10px",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-                onClick={async () => {
-                  swal({
-                    title: "Are you sure?",
-                    text: "Do you want to change the worker's status?",
-                    icon: "warning",
-                    buttons: {
-                      cancel: "Cancel",
-                      confirm: {
-                        text: "Yes, change status",
-                        closeModal: true,
-                        value: true,
-                        className: "bg-orange-color",
-                      },
-                    },
-                    dangerMode: true,
-                  }).then(async (confirmation) => {
-                    if (confirmation) {
-                      try {
-                        const newStatus = !user?.IsActive;
-                        const response = await AxiosInstance.put(
-                          `/worker/${user?.WorkerId}`,
-                          { IsActive: newStatus }
-                        );
-
-                        if (response?.data.statusCode === 200) {
-                          const successMessage = newStatus
-                            ? "Worker activated successfully"
-                            : "Worker deactivated successfully";
-                          setTimeout(() => {
-                            showToast.success(successMessage);
-                          }, 500);
-                          fetchData();
-                        } else {
-                          setTimeout(() => {
-                            showToast.error(response?.data.message);
-                          }, 500);
-                        }
-                      } catch (error) {
-                        console.error("Error:", error);
-                        setTimeout(() => {
-                          showToast.error(
-                            "Failed to update the worker's status"
-                          );
-                        }, 500);
-                      }
-                    }
-                  });
+                  background: "none",
+                  border: "none",
                 }}
               >
-                <NoAccountsIcon
-                  className="icones-dropdown"
+                <MoreHorizIcon />
+              </DropdownToggle>
+              <DropdownMenu
+                container="body"
+                style={{
+                  position: "absolute",
+                  zIndex: activeDropdown === user?.EmailAddress ? 9998 : 1,
+                  padding: "5px",
+                  minWidth: "150px",
+                }}
+              >
+                {/* Always show Resend Invitation */}
+                <DropdownItem
                   style={{
-                    fontSize: "16px",
-                    color: user?.IsActive ? "red" : "green",
-                    marginRight: "5px",
+                    fontSize: "14px",
+                    padding: "5px 10px",
                   }}
-                />
-                <Typography
-                  style={{
-                    color: user?.IsActive ? "red" : "green",
-                    fontWeight: "bold",
+                  onClick={() => {
+                    sendMail(user?.UserId);
                   }}
+                  className="text-blue-color"
                 >
-                  {user?.IsActive ? "Deactivate" : "Activate"}
-                </Typography>
-              </DropdownItem>
+                  <MarkEmailReadOutlinedIcon
+                    className="icones-dropdown text-blue-color"
+                    style={{
+                      fontSize: "16px",
+                      marginRight: "5px",
+                    }}
+                  />
+                  Resend Invitation
+                </DropdownItem>
 
-              <DropdownItem
-                style={{
-                  fontSize: "14px",
-                  padding: "5px 10px",
-                  alignItems: "center",
-                  marginLeft: "2px",
-                  display: "flex",
-                }}
-                onClick={() => handleDelete(user?.WorkerId)}
-                className="text-blue-color"
-              >
-                <DeleteIcone />
-                <Typography className="mx-1">Delete</Typography>
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+                {/* Show Deactivate/Activate and Delete only if NOT Company */}
+
+                <>
+                  <DropdownItem
+                    style={{
+                      fontSize: "14px",
+                      padding: "5px 10px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                    onClick={async () => {
+                      swal({
+                        title: "Are you sure?",
+                        text: "Do you want to change the worker's status?",
+                        icon: "warning",
+                        buttons: {
+                          cancel: "Cancel",
+                          confirm: {
+                            text: "Yes, change status",
+                            closeModal: true,
+                            value: true,
+                            className: "bg-orange-color",
+                          },
+                        },
+                        dangerMode: true,
+                      }).then(async (confirmation) => {
+                        if (confirmation) {
+                          try {
+                            const newStatus = !user?.IsActive;
+                            const response = await AxiosInstance.put(
+                              `/v1/worker/active/${user?.UserId}`,
+                              { IsActive: newStatus }
+                            );
+                            if (response?.data.statusCode === 200) {
+                              const successMessage = newStatus
+                                ? "Worker activated successfully"
+                                : "Worker deactivated successfully";
+                              setTimeout(() => {
+                                showToast.success(successMessage);
+                              }, 500);
+                              fetchData();
+                            } else {
+                              setTimeout(() => {
+                                showToast.success(response?.data.message);
+                              }, 500);
+                            }
+                          } catch (error) {
+                            console.error("Error:", error);
+                            setTimeout(() => {
+                              showToast.error(
+                                "Failed to update the worker's status"
+                              );
+                            }, 500);
+                          }
+                        }
+                      });
+                    }}
+                  >
+                    <NoAccountsIcon
+                      className="icones-dropdown"
+                      style={{
+                        fontSize: "16px",
+                        color: user?.IsActive ? "red" : "green",
+                        marginRight: "5px",
+                      }}
+                    />
+                    <Typography
+                      style={{
+                        color: user?.IsActive ? "red" : "green",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {user?.IsActive ? "Deactivate" : "Activate"}
+                    </Typography>
+                  </DropdownItem>
+
+                  <DropdownItem
+                    style={{
+                      fontSize: "14px",
+                      padding: "5px 10px",
+                      alignItems: "center",
+                      marginLeft: "2px",
+                      display: "flex",
+                    }}
+                    onClick={() => handleDelete(user?.UserId)}
+                    className="text-blue-color"
+                  >
+                    <DeleteIcone />
+                    <Typography className="mx-1">Delete</Typography>
+                  </DropdownItem>
+                </>
+              </DropdownMenu>
+            </Dropdown>
+          )}
         </>,
       ],
     };
@@ -505,7 +540,7 @@ function ManageTeamTable() {
                           zIndex: "9999",
                         }}
                         onClick={() => {
-                          navigate(`/${CompanyName}/add-user`, {
+                          navigate(`/${CompanyUrl}/add-user`, {
                             state: {
                               navigats: [
                                 ...location?.state?.navigats,
@@ -532,7 +567,7 @@ function ManageTeamTable() {
               <SettingDropdown
                 isOpenDropDown={isOpenDropDown}
                 toggle={toggle}
-                CompanyName={CompanyName}
+                CompanyUrl={CompanyUrl}
               />
               <Grid className="justify-content-center align-items-center mb-3">
                 <Grid className="row mt-5" style={{ gap: "20px" }}>
@@ -566,16 +601,6 @@ function ManageTeamTable() {
                         <Typography className="quot text-light customerList_head heading-five tableNameHead fw-medium">
                           Workers List
                         </Typography>
-                        {/* <Grid className=" customersearch d-flex customer_searchBar searchBarOfTable">
-                          <JobberSearch
-                            search={search}
-                            setSearch={setSearch}
-                            style={{
-                              background: "transparant",
-                              color: "white",
-                            }}
-                          />
-                        </Grid> */}
                       </CardHeader>
                       {loader ? (
                         <Grid className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
@@ -600,7 +625,7 @@ function ManageTeamTable() {
                             headerData={[
                               { label: "Profile", field: "" },
                               { label: "Name", field: "Name" },
-                              { label: "Eamil", field: "EmailAddress" },
+                              { label: "Email ", field: "EmailAddress" },
                               { label: "Last Login", field: "createdAt" },
                               { label: "Status", field: "" },
                               { label: "Action" },
@@ -615,8 +640,8 @@ function ManageTeamTable() {
                             page={page}
                             isNavigate={true}
                             navigatePath={
-                              CompanyName
-                                ? `/${CompanyName}/add-user`
+                              CompanyUrl
+                                ? `/${CompanyUrl}/add-user`
                                 : `/staff-member/ClientDetails`
                             }
                           />

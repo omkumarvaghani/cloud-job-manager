@@ -23,7 +23,7 @@ import "./style.css";
 
 const CustomerProperty = ({ open, setOpen, data, getData }) => {
   const baseUrl = process.env.REACT_APP_BASE_API;
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const UserId = data?.UserId;
   const companyId = localStorage.getItem("CompanyId");
   const [loading, setLoading] = useState(false);

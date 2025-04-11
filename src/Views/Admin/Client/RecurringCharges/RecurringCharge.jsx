@@ -17,7 +17,7 @@ function RecurringCharges() {
   useEffect(() => {
     handleAuth(navigate, location);
   }, []);
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -589,7 +589,7 @@ function RecurringCharges() {
         countData={countData}
         loading={loading}
         location={location}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
         handleCloseDialog={handleCloseDialog}
         setModelOpen={setModelOpen}
         handleSubmit={handleSubmit}

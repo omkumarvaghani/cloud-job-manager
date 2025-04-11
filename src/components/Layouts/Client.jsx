@@ -1,15 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import routes from "../../routes";
 import Sidebar from "../Sidebar";
 import { MainNav } from "../MuiTable";
 import { useMediaQuery } from "@mui/material";
 import { Grid } from "@mui/material";
 
-
 const Client = () => {
   const mainContent = useRef(null);
   const location = useLocation();
+  const { CompanyUrl } = useParams();
+  console.log(CompanyUrl, "CompanyUrl");
   const [isSidebarClosed, setIsSidebarClosed] = useState(false);
   const [isSidebarDisplay, setIsSidebarDisplay] = useState(true);
   const isMediumScreen = useMediaQuery("(max-width:767px)");
@@ -20,10 +27,9 @@ const Client = () => {
     mainContent.current.scrollTop = 0;
   }, [location]);
 
-
   const getRoutes = (routes) => {
     return routes?.map((prop, key) => {
-      if (prop.layout === "/customers" && !prop.isCollapse) {
+      if (prop.layout === "/:CompanyUrl/customers" && !prop.isCollapse) {
         return (
           <Route path={prop.path} element={prop.component} key={key} exact />
         );
@@ -54,7 +60,7 @@ const Client = () => {
       }}
     >
       <Sidebar
-        layout="/customers"
+        layout={`/:CompanyUrl/customers`}
         isSidebarClosed={isSidebarClosed}
         setIsSidebarClosed={setIsSidebarClosed}
         isSidebarDisplay={isSidebarDisplay}
@@ -82,7 +88,9 @@ const Client = () => {
             {getRoutes(routes)}
             <Route
               path="*"
-              element={<Navigate to="/customers/index" replace />}
+              element={
+                <Navigate to={`/${CompanyUrl}/customers/index`} replace />
+              }
             />
           </Routes>
         </Grid>

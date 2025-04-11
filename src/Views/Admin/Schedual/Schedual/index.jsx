@@ -32,7 +32,7 @@ const CustomEvent = () => {
   const baseUrl = process.env.REACT_APP_BASE_API;
   const navigate = useNavigate();
   const location = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const calendarRef = React.useRef(null);
   const [clickedDate, setClickedDate] = useState(null);
 
@@ -484,10 +484,10 @@ const CustomEvent = () => {
                     selectedEvent?.ContractId ||
                     selectedEvent?.InvoiceId;
                   const navigateTo = selectedEvent?.QuoteId
-                    ? `/${CompanyName}/add-quotes`
+                    ? `/${CompanyUrl}/add-quotes`
                     : selectedEvent?.ContractId
-                    ? `/${CompanyName}/add-contract`
-                    : `/${CompanyName}/addinvoice`;
+                    ? `/${CompanyUrl}/add-contract`
+                    : `/${CompanyUrl}/addinvoice`;
 
                   navigate(navigateTo, {
                     state: {
@@ -524,13 +524,13 @@ const CustomEvent = () => {
                   selectedEvent?.InvoiceId;
 
                 const navigateTo = selectedEvent?.VisitContractId
-                  ? `/${CompanyName}/contractdetails`
+                  ? `/${CompanyUrl}/contractdetails`
                   : selectedEvent?.QuoteId
-                  ? `/${CompanyName}/quotes-detail`
+                  ? `/${CompanyUrl}/quotes-detail`
                   : selectedEvent?.ContractId
-                  ? `/${CompanyName}/contractdetails`
+                  ? `/${CompanyUrl}/contractdetails`
                   : selectedEvent?.InvoiceId
-                  ? `/${CompanyName}/invoice-details`
+                  ? `/${CompanyUrl}/invoice-details`
                   : "";
 
                 navigate(navigateTo, {

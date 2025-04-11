@@ -253,7 +253,7 @@ const NmiKeys = ({ modelOpen, setModelOpen, item, getAllData }) => {
     key: item.CompanyId,
     value: [
       page * rowsPerPage + index + 1,
-      item.CompanyName,
+      item.CompanyUrl,
       moment(item.createdAt).format("DD/MM/YYYY"),
       <>
         <EditIcon
@@ -315,7 +315,7 @@ const NmiKeys = ({ modelOpen, setModelOpen, item, getAllData }) => {
           <Formik
             initialValues={{
               CompanyId: selectedPlan?.CompanyId || item?.companyId || "",
-              CompanyName: selectedPlan?.CompanyName || item?.CompanyName || "",
+              CompanyUrl: selectedPlan?.CompanyUrl || item?.CompanyUrl || "",
               SecurityKey: selectedPlan?.SecurityKey || item?.SecurityKey || "",
               PublicKey: selectedPlan?.PublicKey || item?.PublicKey || "",
               SigningKey: selectedPlan?.SigningKey || item?.SigningKey || "",
@@ -345,7 +345,7 @@ const NmiKeys = ({ modelOpen, setModelOpen, item, getAllData }) => {
                         <Autocomplete
                           className="text-blue-color"
                           options={NmiData || []}
-                          getOptionLabel={(option) => option?.CompanyName || ""}
+                          getOptionLabel={(option) => option?.CompanyUrl || ""}
                           value={
                             NmiData.find(
                               (ind) => ind.companyId === values?.CompanyId
@@ -358,8 +358,8 @@ const NmiKeys = ({ modelOpen, setModelOpen, item, getAllData }) => {
                               newValue ? newValue?.companyId : ""
                             );
                             setFieldValue(
-                              "CompanyName",
-                              newValue ? newValue?.CompanyName : ""
+                              "CompanyUrl",
+                              newValue ? newValue?.CompanyUrl : ""
                             );
                           }}
                           onInputChange={(_, newInputValue) => {
@@ -378,7 +378,7 @@ const NmiKeys = ({ modelOpen, setModelOpen, item, getAllData }) => {
                                   event.key === "Enter" &&
                                   !NmiData.some(
                                     (ind) =>
-                                      ind.CompanyName.toLowerCase() ===
+                                      ind.CompanyUrl.toLowerCase() ===
                                       inputValue2.toLowerCase()
                                   )
                                 ) {
@@ -388,7 +388,7 @@ const NmiKeys = ({ modelOpen, setModelOpen, item, getAllData }) => {
                           )}
                           filterOptions={(options, state) => {
                             return options.filter((option) =>
-                              option.CompanyName
+                              option.CompanyUrl
                                 .toLowerCase()
                                 .includes(state.inputValue.toLowerCase())
                             );

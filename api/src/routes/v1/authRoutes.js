@@ -1,6 +1,13 @@
-
 const express = require("express");
-const { register, login, checkUserExists, getTokenData, checkTokenData, verifyAndFetchCompany, checkEmail } = require("../../controllers/v1/authController");
+const {
+  register,
+  login,
+  checkUserExists,
+  getTokenData,
+  checkTokenData,
+  verifyAndFetchCompany,
+  checkEmail,
+} = require("../../controllers/v1/authController");
 const { protect } = require("../../middleware/authMiddleware");
 const router = express.Router();
 

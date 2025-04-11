@@ -53,7 +53,7 @@ const CustomerDetails = ({
   navigate,
   data,
   dropdownOpen,
-  CompanyName,
+  CompanyUrl,
   CompanyId,
   location,
   setModelOpen,
@@ -102,8 +102,8 @@ const CustomerDetails = ({
               onClick={() => {    
                 navigate(
                   `/${
-                    CompanyName
-                      ? CompanyName + "/customer"
+                    CompanyUrl
+                      ? CompanyUrl + "/customer"
                       : "staff-member" + "/workercustomer"
                   }`,
                   {
@@ -367,7 +367,7 @@ const CustomerDetails = ({
                                     >
                                       Zip
                                     </TableCell>
-                                    {CompanyName && (
+                                    {CompanyUrl && (
                                       <TableCell
                                         className="fw-bold text-blue-color"
                                         style={{
@@ -389,9 +389,9 @@ const CustomerDetails = ({
                                       }}
                                       key={index}
                                       onClick={() => {
-                                        if (CompanyName) {
+                                        if (CompanyUrl) {
                                           navigate(
-                                            `/${CompanyName}/property-details`,
+                                            `/${CompanyUrl}/property-details`,
                                             {
                                               state: {
                                                 id: property.LocationId,

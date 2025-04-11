@@ -158,20 +158,28 @@ const SignUp = () => {
 
   const confirmPasswordRef = useRef(null);
   const nextFieldRef = useRef(null);
-
   const handlePasswordKeyDown = (e) => {
     if (e.key === "Tab") {
       e.preventDefault();
-      confirmPasswordRef.current.focus();
+      if (confirmPasswordRef.current) {
+        confirmPasswordRef.current.focus();
+      } else {
+        console.error("Confirm Password ref is not set");
+      }
     }
   };
 
   const handleConfirmPasswordKeyDown = (e) => {
     if (e.key === "Tab") {
       e.preventDefault();
-      nextFieldRef.current.focus();
+      if (signUpButtonRef.current) {
+        signUpButtonRef.current.focus();
+      } else {
+        console.error("Sign Up button ref is not set");
+      }
     }
   };
+  const signUpButtonRef = React.useRef(null);
 
   return (
     <>
@@ -251,19 +259,17 @@ const SignUp = () => {
                       placeholder="Enter password"
                       className="text-blue-color w-100"
                       fieldHeight="56px"
-                      autoComplete="off" // Disable autocomplete
-                      onKeyDown={(e) => {
-                        if (e.key === "Tab" && !e.shiftKey) {
-                          e.preventDefault();
-                          document.getElementById("cpassword").focus();
-                        }
-                      }}
+                      autoComplete="off"
+                      onKeyDown={handlePasswordKeyDown}
                       endAdornment={
                         <InputAdornment position="end" style={{ gap: "10px" }}>
                           <IconButton
                             aria-label="toggle password visibility"
                             onClick={() => setShowPassword(!showPassword)}
                             edge="end"
+                            tabIndex={-1}
+                            disableRipple
+                            sx={{ "&:focus": { outline: "none" } }}
                           >
                             {showPassword ? (
                               <VisibilityOffIcon />
@@ -271,20 +277,41 @@ const SignUp = () => {
                               <VisibilityIcon />
                             )}
                           </IconButton>
-                          {/* Prevents tooltip from being focused */}
-                          <div style={{ pointerEvents: "none" }} tabIndex="-1">
-                            <Tooltip title="Password must be at least 8 characters long" />
-                          </div>
+                          <Tooltip
+                            title="Password must be at least 8 characters long"
+                            disableFocusListener
+                            disableTouchListener
+                            disableInteractive
+                            PopperProps={{
+                              disablePortal: true,
+                              sx: {
+                                pointerEvents: "none",
+                                "& .MuiTooltip-tooltip": {
+                                  pointerEvents: "none",
+                                  tabIndex: -1,
+                                },
+                              },
+                            }}
+                          >
+                            <span
+                              aria-hidden="true"
+                              tabIndex={-1}
+                              style={{
+                                display: "inline-block",
+                                pointerEvents: "none",
+                              }}
+                            />
+                          </Tooltip>
                         </InputAdornment>
                       }
                     />
                   </FormGroup>
-
                   <FormGroup
                     style={{ width: "100%", marginTop: "8px", display: "flex" }}
                     className="reenterpassword"
                   >
                     <InputText
+                      inputRef={confirmPasswordRef} // Ensure this works with your InputText
                       id="cpassword"
                       value={formik.values?.cpassword}
                       onChange={formik.handleChange}
@@ -306,22 +333,16 @@ const SignUp = () => {
                       onPaste={(e) => e.preventDefault()}
                       onCopy={(e) => e.preventDefault()}
                       onCut={(e) => e.preventDefault()}
-                      onKeyDown={(e) => {
-                        if (e.key === "Tab" && !e.shiftKey) {
-                          e.preventDefault();
-                          const nextElement =
-                            document.getElementById("nextField");
-                          if (nextElement) {
-                            nextElement.focus();
-                          }
-                        }
-                      }}
+                      onKeyDown={handleConfirmPasswordKeyDown}
                       endAdornment={
                         <InputAdornment position="end" style={{ gap: "10px" }}>
                           <IconButton
                             aria-label="toggle password visibility"
                             onClick={() => setShowCPassword(!showCPassword)}
                             edge="end"
+                            tabIndex={-1}
+                            disableRipple
+                            sx={{ "&:focus": { outline: "none" } }}
                           >
                             {showCPassword ? (
                               <VisibilityOffIcon />
@@ -329,14 +350,35 @@ const SignUp = () => {
                               <VisibilityIcon />
                             )}
                           </IconButton>
-                          <div style={{ pointerEvents: "none" }} tabIndex="-1">
-                            <Tooltip title="Re-enter your password" />
-                          </div>
+                          <Tooltip
+                            title="Re-enter your password"
+                            disableFocusListener
+                            disableTouchListener
+                            disableInteractive
+                            PopperProps={{
+                              disablePortal: true,
+                              sx: {
+                                pointerEvents: "none",
+                                "& .MuiTooltip-tooltip": {
+                                  pointerEvents: "none",
+                                  tabIndex: -1,
+                                },
+                              },
+                            }}
+                          >
+                            <span
+                              aria-hidden="true"
+                              tabIndex={-1}
+                              style={{
+                                display: "inline-block",
+                                pointerEvents: "none",
+                              }}
+                            />
+                          </Tooltip>
                         </InputAdornment>
                       }
                     />
                   </FormGroup>
-
                   <Typography
                     style={{
                       fontSize: "14px",
@@ -359,6 +401,7 @@ const SignUp = () => {
                   </Typography>
                   <FormGroup style={{ width: "100%", marginTop: "15px" }}>
                     <Button
+                      ref={signUpButtonRef} // Attach ref to Button
                       style={{
                         backgroundColor: "rgba(51, 53, 71, 1)",
                         color: "#fff",
@@ -384,8 +427,7 @@ const SignUp = () => {
                         "Sign Up"
                       )}
                     </Button>
-                  </FormGroup>
-
+                  </FormGroup>{" "}
                   <Typography
                     style={{
                       fontSize: "14px",

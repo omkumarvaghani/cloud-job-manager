@@ -7,7 +7,7 @@ const router = express.Router();
 router.post("/", protect, createContract);
 router.post("/check_number/:CompanyId", protect, checkContractNumber);
 router.post("/contractpdf/:ContractId", protect, generateContractPdf);
-router.post("/send_mail", protect, sendContractEmail);
+router.post("/send_mail/:ContractId", protect, sendContractEmail);
 
 router.get("/:CompanyId", protect, getContracts);
 router.get("/contract_details/:ContractId", protect, getContractDetails);

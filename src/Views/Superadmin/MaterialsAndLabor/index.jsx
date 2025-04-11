@@ -475,7 +475,7 @@ const ProductAndService = () => {
                   Name: values?.Name,
                   Description: values?.Description,
                   Attachment: values?.Attachment,
-                  superAdminId: localStorage.getItem("admin_id") || "",
+                  AdminId: localStorage.getItem("admin_id") || "",
 
                   ...(values?.UnitsAndHoursType === "Unit"
                     ? {

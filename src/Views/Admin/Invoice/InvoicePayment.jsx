@@ -41,7 +41,7 @@ const InvoicePayment = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [invoiceData, setInvoiceData] = useState();
 
   let paymentMethods = [
@@ -124,7 +124,7 @@ const InvoicePayment = () => {
                 billing_id: Number(values?.billing_id),
                 customer_vault_id: Number(values?.customer_vault_id),
                 date: values?.date,
-                company: CompanyName,
+                company: CompanyUrl,
                 amount: values?.amount,
                 CompanyId: localStorage?.getItem("CompanyId"),
                 Total: invoiceData?.Total,
@@ -166,7 +166,7 @@ const InvoicePayment = () => {
                 billing_id: Number(values?.billing_id),
                 customer_vault_id: Number(values?.customer_vault_id),
                 date: values?.date,
-                company: CompanyName,
+                company: CompanyUrl,
                 amount: values?.amount,
                 CompanyId: localStorage?.getItem("CompanyId"),
                 Total: invoiceData?.Total,
@@ -201,7 +201,7 @@ const InvoicePayment = () => {
               var object = {
                 paymentDetails: {
                   date: values?.date,
-                  company: CompanyName,
+                  company: CompanyUrl,
                   amount: values?.amount,
                   CompanyId: localStorage?.getItem("CompanyId"),
                   Total: invoiceData?.Total,
@@ -217,7 +217,7 @@ const InvoicePayment = () => {
                 paymentDetails: {
                   date: values?.date,
                   cheque_number: values?.cheque_number,
-                  company: CompanyName,
+                  company: CompanyUrl,
                   amount: values?.amount,
                   CompanyId: localStorage?.getItem("CompanyId"),
                   Total: invoiceData?.Total,

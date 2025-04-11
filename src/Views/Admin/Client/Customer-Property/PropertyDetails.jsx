@@ -30,7 +30,7 @@ import Previous from "../../../../assets/image/icons/Previous.png";
 
 const PropertyDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_API;
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const location = useLocation();
   const [tokenDecode, setTokenDecode] = useState({});
   const [DateDecode, setDateDecode] = useState({});
@@ -88,7 +88,6 @@ const PropertyDetails = () => {
   };
 
   const [quotes, setQuotes] = useState([]);
-  console.log(quotes, "quotes");
 
   useEffect(() => {
     const fetchContract = async () => {
@@ -107,7 +106,6 @@ const PropertyDetails = () => {
   }, [data, tokenDecode]);
 
   const [contract, setContract] = useState([]);
-  console.log(contract, "contract");
   useEffect(() => {
     const fetchContract = async () => {
       if (data && data?.CustomerId && data?.LocationId) {
@@ -147,7 +145,7 @@ const PropertyDetails = () => {
   }, [data, tokenDecode]);
 
   const handleNavigate = (quoteId) => {
-    navigate(`/${CompanyName}/quotes-detail`, {
+    navigate(`/${CompanyUrl}/quotes-detail`, {
       state: {
         id: quoteId,
         navigats: [`/index`, `/quotes-detail`],
@@ -156,7 +154,7 @@ const PropertyDetails = () => {
   };
 
   const handleContractNavigate = (id) => {
-    navigate(`/${CompanyName}/contractdetails`, {
+    navigate(`/${CompanyUrl}/contractdetails`, {
       state: {
         id,
         navigats: [`/index`, `/contractdetails`],
@@ -165,7 +163,7 @@ const PropertyDetails = () => {
   };
 
   const handleInvoiceNavigate = (id) => {
-    navigate(`/${CompanyName}/invoice-details`, {
+    navigate(`/${CompanyUrl}/invoice-details`, {
       state: {
         id,
         navigats: [`/index`, `/invoice-details`],
@@ -198,8 +196,8 @@ const PropertyDetails = () => {
               navigate(-1);
               // navigate(
               //   `/${
-              //     CompanyName
-              //       ? CompanyName + "/customer"
+              //     CompanyUrl
+              //       ? CompanyUrl + "/customer"
               //       : "staff-member" + "/workercustomer"
               //   }`,
               //   {

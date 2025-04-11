@@ -33,7 +33,7 @@ const CustomerModal = ({
 }) => {
   const navigate = useNavigate();
   const locations = useLocation();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [customerData, setCustomerData] = useState([]);
   const [locationData, setLocationData] = useState([]);
   const [searchInput, setSearchInput] = useState("");
@@ -74,7 +74,7 @@ const CustomerModal = ({
 
     const newPath = isStaffMember
       ? `/staff-member/workerinvoicetable`
-      : `/${CompanyName}/invoicetable`;
+      : `/${CompanyUrl}/invoicetable`;
 
     navigate(newPath, {
       state: {
@@ -310,7 +310,7 @@ const CustomerModal = ({
                   }}
                   onClick={() => {
                     localStorage.setItem("formData", JSON.stringify(values));
-                    navigate(`/${CompanyName}/add-customer`, {
+                    navigate(`/${CompanyUrl}/add-customer`, {
                       state: {
                         previewPage: locations?.pathname,
                         previewData: {

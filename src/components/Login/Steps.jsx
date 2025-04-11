@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SignUp1 from "../../assets/image/sign_up1.jpg";
 import SignUp2 from "../../assets/image/sign_up2.jpg";
 import appLogo from "../../assets/image/CMS_LOGO.svg";
@@ -6,7 +6,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import AxiosInstance from "../../Views/AxiosInstance";
 import { Grid, FormGroup, Typography } from "@mui/material";
-import { useEffect } from "react";
 import Select from "react-select";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -76,10 +75,13 @@ const customStyles = {
 const Steps = ({ EmailAddress, Password }) => {
   const baseUrl = process.env.REACT_APP_BASE_API;
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
   const [industry, setIndustry] = useState([]);
   const [teamSize, setTeamSize] = useState([]);
   const [revenue, setRevenue] = useState([]);
+  const [loader, setLoader] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const fetchData = async (currentStepa) => {
     if (currentStepa === 1) {
@@ -115,69 +117,10 @@ const Steps = ({ EmailAddress, Password }) => {
     }
   };
 
-  useState(() => {
+  useEffect(() => {
     fetchData(1);
   }, []);
-  // useState(() => {
-  //   fetchData(1);
-  // }, []);
 
-  // const formik = useFormik({
-  //   initialValues: {
-  //     OwnerName: "",
-  //     PhoneNumber: "",
-  //     EmailAddress: "",
-  //     industry: {
-  //       label: "Select industry type here...",
-  //       value: "",
-  //     },
-  //     CompanyName: "",
-  //     teamSize: {
-  //       label: "Select your team size (including yourself) here...",
-  //       value: "",
-  //     },
-  //     revenue: {
-  //       label: "Select your estimated annual revenue here...",
-  //       value: "",
-  //     },
-  //   },
-  //   validationSchema:
-  //     currentStep === 1
-  //       ? Yup.object({
-  //           OwnerName: Yup.string().required("OwnerName Required"),
-  //           PhoneNumber: Yup.string()
-  //             .required("Phone number required")
-  //             .matches(
-  //               /^\(\d{3}\) \d{3}-\d{4}$/,
-  //               "Phone number must be in the format (xxx) xxx-xxxx"
-  //             ),
-  //           industry: Yup.object({
-  //             label: Yup.string().required("Label Required"),
-  //             value: Yup.string().required(" value Required"),
-  //           }).required("value Required"),
-  //         })
-  //       : Yup.object({
-  //           CompanyName: Yup.string().required("Company Name Required"),
-  //           teamSize: Yup.object({
-  //             label: Yup.string().required("Label Required"),
-  //             value: Yup.string().required("Value Required"),
-  //           }).required("Value is Required"),
-  //           revenue: Yup.object({
-  //             label: Yup.string().required("Label Required"),
-  //             value: Yup.string().required("Value Required"),
-  //           }).required("Value Required"),
-  //         }),
-  //   onSubmit: (values) => {
-  //     if (currentStep === 1) {
-  //       setCurrentStep(currentStep + 1);
-  //       fetchData(currentStep + 1);
-  //     } else {
-  //       handleSubmit(values);
-  //     }
-  //   },
-  //   validateOnChange: true,
-  //   validateOnBlur: true,
-  // });
   const formik = useFormik({
     initialValues: {
       OwnerName: "",
@@ -235,6 +178,7 @@ const Steps = ({ EmailAddress, Password }) => {
     validateOnChange: true,
     validateOnBlur: true,
   });
+
   const formatPhoneNumber = (value) => {
     const PhoneNumber = value.replace(/[^\d]/g, "");
     const limitedPhoneNumber = PhoneNumber.slice(0, 10);
@@ -251,11 +195,11 @@ const Steps = ({ EmailAddress, Password }) => {
       if (match[3]) {
         formattedNumber += `-${match[3]}`;
       }
-
       return formattedNumber;
     }
     return limitedPhoneNumber;
   };
+
   const handlePhoneChange = (e) => {
     if (formik.values.PhoneNumber?.length > e.target.value?.length) {
       formik.setFieldValue("PhoneNumber", e.target.value);
@@ -265,7 +209,6 @@ const Steps = ({ EmailAddress, Password }) => {
     }
   };
 
-  const [loader, setLoader] = useState(false);
   const handleSubmit = async (values) => {
     values.EmailAddress = EmailAddress;
     values.Password = Password;
@@ -273,50 +216,78 @@ const Steps = ({ EmailAddress, Password }) => {
     values.TeamSizeId = values.TeamSize.value;
     values.RevenueId = values.Revenue.value;
     values.Role = "Company";
+
     try {
       setLoader(true);
-      const res = await AxiosInstance.post(
+
+      // Register the user
+      const registerRes = await AxiosInstance.post(
         `${baseUrl}/v1/auth/register`,
         values
       );
-      if (res.data.statusCode === "200") {
-        showToast.success(res.data.message);
-        setTimeout(() => {
-          navigate("/auth/login");
-        }, 500);
+      if (registerRes.data.statusCode === "200") {
+        // After successful registration, automatically login
+        const loginPayload = {
+          EmailAddress: values.EmailAddress,
+          Password: values.Password,
+        };
+
+        const loginRes = await AxiosInstance.post(
+          `${baseUrl}/v1/auth/login`,
+          loginPayload
+        );
+
+        if (loginRes.data.statusCode === "200") {
+          // Store token and company ID
+          localStorage.setItem("adminToken", loginRes.data.token);
+          localStorage.setItem("CompanyId", loginRes.data.data.UserId);
+
+          showToast.success("Registration and login successful!", {
+            autoClose: 3000,
+          });
+
+          // Use CompanyName from form values if API doesn't provide it
+          const companyName = registerRes.data?.userProfile?.CompanyUrl;
+          if (!companyName) {
+            console.error("CompanyName not found in response or form values");
+            sendToast("Error: Company name not available");
+            navigate("/auth/login"); // Fallback navigation
+            return;
+          }
+
+          // Redirect to company dashboard
+          setTimeout(() => {
+            navigate(`/${companyName}/index`, {
+              state: { navigats: ["/index"] },
+            });
+          }, 1000);
+        } else {
+          sendToast(loginRes.data.message || "Login failed after registration");
+        }
       } else {
-        sendToast(res.data.message);
+        sendToast(registerRes.data.message || "Registration failed");
       }
     } catch (error) {
-      console.log(error, "error");
-      sendToast("Unable to connect to the server. Please try again later.");
+      if (error?.response?.data?.error) {
+        sendToast(error.response.data.error);
+      } else {
+        sendToast("Unable to connect to the server. Please try again later.");
+      }
     } finally {
       setLoader(false);
     }
   };
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const cdnUrl = process.env.REACT_APP_CDN_API;
 
   useEffect(() => {
     setIsImageLoaded(false);
-
     const img = new Image();
     img.src =
       currentStep === 1
         ? `https://app.cloudjobmanager.com/cdn/upload/20250213112822_united-business-team-celebrating-success3.jpg`
         : `https://app.cloudjobmanager.com/cdn/upload/20250213112308_unrecognizable-man-woman-shaking-hands-meeting-start1.png`;
-
     img.onload = () => setIsImageLoaded(true);
   }, [currentStep]);
 
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const step = queryParams.get("step");
-    if (step === "2") {
-      setCurrentStep(2);
-    }
-  }, []);
-  const location = useLocation();
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const step = queryParams.get("step");
@@ -334,7 +305,7 @@ const Steps = ({ EmailAddress, Password }) => {
 
   return (
     <>
-      <Grid container spacing={2} className="vh-100" style={{}}>
+      <Grid container spacing={2} className="vh-100">
         <Grid item xs={12} md={8}>
           <Grid className="steps">
             <Grid className="my-steps">
@@ -351,7 +322,7 @@ const Steps = ({ EmailAddress, Password }) => {
                 >
                   <Grid
                     className="progress-bar"
-                    Role="progressbar"
+                    role="progressbar"
                     style={{ width: currentStep > 0 ? "100%" : "0%" }}
                     aria-valuenow="0"
                     aria-valuemin="0"
@@ -365,7 +336,7 @@ const Steps = ({ EmailAddress, Password }) => {
                 >
                   <Grid
                     className="progress-bar"
-                    Role="progressbar"
+                    role="progressbar"
                     style={{ width: currentStep > 1 ? "100%" : "0%" }}
                     aria-valuenow="0"
                     aria-valuemin="0"
@@ -375,7 +346,7 @@ const Steps = ({ EmailAddress, Password }) => {
               </Row>
 
               <Grid
-                className=" mb-1 freetrialHeadFont"
+                className="mb-1 freetrialHeadFont"
                 style={{
                   fontSize: "32px",
                   color: "rgba(51, 53, 71, 1)",
@@ -598,7 +569,7 @@ const Steps = ({ EmailAddress, Password }) => {
                       onClick={() => {
                         formik.handleSubmit();
                       }}
-                      className="btn  btn-square bg-orange-color"
+                      className="btn btn-square bg-orange-color"
                       disabled={loader}
                       label={
                         loader ? (

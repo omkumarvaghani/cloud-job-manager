@@ -120,7 +120,7 @@ function Surcharge() {
           toast.success("Surcharge Added", {
             position: "top-center",
             autoClose: 800,
-            // onClose: () => navigate(`/${CompanyName}/surcharge`),
+            // onClose: () => navigate(`/${CompanyUrl}/surcharge`),
           });
         } else if (res.data.statusCode === 201) {
           toast.error(res.data.message, {
@@ -135,7 +135,7 @@ function Surcharge() {
           toast.success("Surcharge Updated", {
             position: "top-center",
             autoClose: 800,
-            // onClose: () => navigate(`/${CompanyName}/surcharge`),
+            // onClose: () => navigate(`/${CompanyUrl}/surcharge`),
           });
         } else if (res.data.statusCode === 400) {
           toast.error(res.data.message, {

@@ -64,8 +64,9 @@ function ClientDetails() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [data, setData] = useState();
+  console.log(data, "data");
   const [open, setOpen] = useState({ isOpen: false, propertyData: null });
   const [loader, setLoader] = useState(true);
   const [modelOpen, setModelOpen] = useState(false);
@@ -80,12 +81,12 @@ function ClientDetails() {
   const handleNoteChange = (event) => {
     setNote(event.target.value);
   };
-    
+
   const getData = async () => {
     try {
       const res = await AxiosInstance.get(
         `/v1/customer/detail/${location?.state?.id}`
-      ); 
+      );
       setData(res?.data?.data);
     } catch (error) {
       console.error("Error fetching customer data:", error);
@@ -147,8 +148,8 @@ function ClientDetails() {
     fetchQuote();
   }, [data]);
 
-  const handleNavigate = (quoteId, CompanyName) => {
-    navigate(`/${CompanyName}/quotes-detail`, {
+  const handleNavigate = (quoteId, CompanyUrl) => {
+    navigate(`/${CompanyUrl}/quotes-detail`, {
       state: {
         id: quoteId,
         navigats: ["/index", `/quotes-detail`],
@@ -237,7 +238,7 @@ function ClientDetails() {
                     className="dropdown-items"
                     style={{ fontSize: "16px" }}
                     onClick={() => {
-                      navigate(`/${CompanyName}/add-quotes`, {
+                      navigate(`/${CompanyUrl}/add-quotes`, {
                         state: {
                           navigats: [
                             ...location?.state?.navigats,
@@ -311,7 +312,7 @@ function ClientDetails() {
                     >
                       Properties
                     </Typography>
-                    {CompanyName && (
+                    {CompanyUrl && (
                       <BlueButton
                         className="bg-button-blue-color company-detail-btn"
                         onClick={() =>
@@ -335,7 +336,7 @@ function ClientDetails() {
                           <TableHead className="text-center">State</TableHead>
                           <TableHead className="text-center">Country</TableHead>
                           <TableHead className="text-center">Zip</TableHead>
-                          {CompanyName && (
+                          {CompanyUrl && (
                             <TableHead style={{ textAlign: "center" }}>
                               Actions
                             </TableHead>
@@ -348,7 +349,7 @@ function ClientDetails() {
                             style={{ cursor: "pointer", width: "318px" }}
                             key={index}
                             onClick={() =>
-                              navigate(`/${CompanyName}/property-details`, {
+                              navigate(`/${CompanyUrl}/property-details`, {
                                 state: {
                                   id: property?.LocationId,
                                   navigats: [
@@ -401,7 +402,7 @@ function ClientDetails() {
                             >
                               {property?.Zip ? property?.Zip : "-"}
                             </TableCell>
-                            {CompanyName && (
+                            {CompanyUrl && (
                               <TableCell
                                 style={{
                                   textAlign: "center",
@@ -463,7 +464,7 @@ function ClientDetails() {
                       Overview
                     </Typography>
 
-                    {CompanyName && (
+                    {CompanyUrl && (
                       <UncontrolledDropdown>
                         <DropdownToggle
                           className="bg-button-blue-color"
@@ -481,7 +482,7 @@ function ClientDetails() {
                           <DropdownItem
                             className="dropdown-items text-blue-color "
                             onClick={() => {
-                              navigate(`/${CompanyName}/add-quotes`, {
+                              navigate(`/${CompanyUrl}/add-quotes`, {
                                 state: {
                                   navigats: [
                                     ...location?.state?.navigats,
@@ -837,7 +838,7 @@ function ClientDetails() {
                       Schedule
                     </Typography>
 
-                    {CompanyName && (
+                    {CompanyUrl && (
                       <UncontrolledDropdown>
                         <DropdownToggle
                           className="bg-blue-color"
@@ -997,7 +998,7 @@ function ClientDetails() {
                       Billing History
                     </Typography>
 
-                    {CompanyName && (
+                    {CompanyUrl && (
                       <UncontrolledDropdown>
                         <DropdownToggle
                           className="bg-button-blue-color"

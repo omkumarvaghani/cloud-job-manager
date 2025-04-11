@@ -40,7 +40,7 @@ import { Typography } from "@mui/material";
 
 const InvoiceDetail = ({
   loader,
-  CompanyName,
+  CompanyUrl,
   location,
   invoicedata,
   setMail,
@@ -141,8 +141,8 @@ const InvoiceDetail = ({
                     // navigate(-1);
                     navigate(
                       `/${
-                        CompanyName
-                          ? CompanyName + "/invoice"
+                        CompanyUrl
+                          ? CompanyUrl + "/invoice"
                           : "staff-member" + "/workerinvoice"
                       }`,
                       {
@@ -165,7 +165,7 @@ const InvoiceDetail = ({
                 />
               </Grid>
               <Grid className="d-flex justify-content-end gap-2 buttonGroupthree  cancelInvoice_collectPayment_mail_btn emailEditAction_btn">
-                {CompanyName && (
+                {CompanyUrl && (
                   <BlueButton
                     className="bg-button-blue-color cancelInvoice_btn"
                     style={{
@@ -188,10 +188,10 @@ const InvoiceDetail = ({
                   />
                 )}
 
-                {CompanyName && (
+                {CompanyUrl && (
                   <BlueButton
                     onClick={() =>
-                      navigate(`/${CompanyName}/invoice-payment`, {
+                      navigate(`/${CompanyUrl}/invoice-payment`, {
                         state: {
                           navigats: [
                             ...location?.state?.navigats,

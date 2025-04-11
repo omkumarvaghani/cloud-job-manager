@@ -30,16 +30,18 @@ import {
   LoaderComponent,
   NavigateButton,
 } from "../../../components/Icon/Index";
+import clientcontact from "../../../assets/White-sidebar-icon/Home.svg";
 
 function AddClient() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
   const [loader, setLoader] = useState(false);
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [CompanyId, setCompanyId] = useState(localStorage.getItem("CompanyId"));
   const [isEdited, setIsEdited] = useState(false);
+  const [userAddress, setUserAddress] = useState([]);
 
   const fetchTokenData = async () => {
     if (!CompanyId) {
@@ -67,8 +69,6 @@ function AddClient() {
   useEffect(() => {
     fetchTokenData();
   }, []);
-
-  const [userAddress, setUserAddress] = useState();
 
   const formik = useFormik({
     initialValues: {
@@ -107,21 +107,18 @@ function AddClient() {
     onSubmit: async (values) => {
       setLoader(true);
       try {
-        // If it's an update, handle PUT request
         if (location?.state?.id) {
           const response = await AxiosInstance.put(
             `/v1/user/${location?.state?.id}`,
             values
           );
-          // consol.log(response, "responsess");
           if (response?.data?.statusCode === "200") {
             setLoader(false);
             showToast.success(response?.data?.message);
-            // Handle navigatio n after successful update
             navigate(
               `/${
-                CompanyName
-                  ? CompanyName + "/customer"
+                CompanyUrl
+                  ? CompanyUrl + "/customer"
                   : "staff-member" + "/workercustomer"
               }`,
               {
@@ -135,9 +132,7 @@ function AddClient() {
           } else {
             showToast.error(response?.data?.message, "error");
           }
-        }
-        // If it's a new customer, handle POST request
-        else {
+        } else {
           const response = await AxiosInstance.post(`/v1/user`, {
             ...values,
             CompanyId: CompanyId,
@@ -161,8 +156,8 @@ function AddClient() {
             } else {
               navigate(
                 `/${
-                  CompanyName
-                    ? CompanyName + "/customer"
+                  CompanyUrl
+                    ? CompanyUrl + "/customer"
                     : "staff-member" + "/workercustomer"
                 }`,
                 {
@@ -224,7 +219,6 @@ function AddClient() {
       if (match[3]) {
         formattedNumber += `-${match[3]}`;
       }
-
       return formattedNumber;
     }
     return limitedPhoneNumber;
@@ -239,6 +233,7 @@ function AddClient() {
     }
     setIsEdited(true);
   };
+
   useEffect(() => {
     setCountries(Country.getAllCountries());
     if (formik?.values?.Country) {
@@ -250,37 +245,38 @@ function AddClient() {
       });
     }
   }, [formik]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await AxiosInstance.get(`/v1/user/${location?.state?.id}`);
-        const userProfile = res?.data?.data?.userProfile;
-        const userLocations = res?.data?.data?.locations;
-        console.log(res,"resres20")
-        setUserAddress(userLocations); // Make sure userAddress is updated here
-              
-        if (userProfile && userLocations?.length) {
-          formik.setValues({
-            FirstName: userProfile?.FirstName || "",
-            LastName: userProfile?.LastName || "",
-            PhoneNumber: userProfile?.PhoneNumber || "",
-            EmailAddress: res?.data?.data?.user?.EmailAddress || "",
-            // Use the first address if available
-            Address: userLocations[0]?.Address || "",
-            City: userLocations[0]?.City || "",
-            State: userLocations[0]?.State || "",
-            Zip: userLocations[0]?.Zip || "",
-            Country: userLocations[0]?.Country || "",
-          });
+        if (location?.state?.id) {
+          const res = await AxiosInstance.get(
+            `/v1/user/${location?.state?.id}`
+          );
+          const userProfile = res?.data?.data?.userProfile;
+          const userLocations = res?.data?.data?.locations || [];
+          setUserAddress(userLocations);
+
+          if (userProfile) {
+            formik.setValues({
+              FirstName: userProfile?.FirstName || "",
+              LastName: userProfile?.LastName || "",
+              PhoneNumber: userProfile?.PhoneNumber || "",
+              EmailAddress: res?.data?.data?.user?.EmailAddress || "",
+              Address: userLocations[0]?.Address || "",
+              City: userLocations[0]?.City || "",
+              State: userLocations[0]?.State || "",
+              Zip: userLocations[0]?.Zip || "",
+              Country: userLocations[0]?.Country || "",
+            });
+          }
         }
       } catch (error) {
         console.error("Error: ", error?.message);
       }
     };
 
-    if (location?.state?.id) {
-      fetchData();
-    }
+    fetchData();
   }, [location?.state?.id]);
 
   const handleChange = (e) => {
@@ -343,8 +339,8 @@ function AddClient() {
               }
               navigate(
                 `/${
-                  CompanyName
-                    ? CompanyName + "/customer"
+                  CompanyUrl
+                    ? CompanyUrl + "/customer"
                     : "staff-member" + "/workercustomer"
                 }`,
                 {
@@ -518,7 +514,7 @@ function AddClient() {
               </Col>
             </Row>
             <Row
-              className=" col-lg-6 col-md-6 CustomerRightRemove"
+              className="col-lg-6 col-md-6 CustomerRightRemove"
               style={{ paddingRight: "12px" }}
             >
               <Col>
@@ -543,14 +539,13 @@ function AddClient() {
                       justifyContent: "center",
                     }}
                   >
-                    {/* <img src={clientcontract} alt="Property Details" /> */}
+                    <img src={clientcontact} alt="Property Details" />
                   </Grid>
-                  <span className="" style={{ fontSize: "16pxx" }}>
+                  <span className="" style={{ fontSize: "16px" }}>
                     Property details
                   </span>
                 </CardTitle>
-                {!location?.state?.id ||
-                (Array.isArray(userAddress) && userAddress.length <= 1) ? (
+                {!location?.state?.id || userAddress.length <= 1 ? (
                   <Grid className="my-4 mb-0 px-0">
                     <Address
                       setSelectedCountry={setSelectedCountry}

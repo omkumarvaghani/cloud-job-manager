@@ -12,7 +12,7 @@ import { handleAuth } from "../../../components/Login/Auth";
 
 const InvoiceDetails = () => {
   const navigate = useNavigate();
-  const { CompanyName } = useParams();
+  const { CompanyUrl } = useParams();
 
   const location = useLocation();
   const [lineItems, setLineItems] = useState([
@@ -134,8 +134,8 @@ const InvoiceDetails = () => {
           }, 500);
           if (isCollect) {
             navigate(
-              CompanyName
-                ? `/${CompanyName}/invoice-payment`
+              CompanyUrl
+                ? `/${CompanyUrl}/invoice-payment`
                 : `/staff-member/invoice-payment`,
               {
                 state: {
@@ -146,15 +146,15 @@ const InvoiceDetails = () => {
             );
           } else {
             navigate(
-              CompanyName
-                ? `/${CompanyName}/invoice`
+              CompanyUrl
+                ? `/${CompanyUrl}/invoice`
                 : `/staff-member/workerinvoice`,
               {
                 replace: true,
                 state: {
                   navigats: [
                     "/index",
-                    CompanyName ? "/invoice" : "/workerinvoice",
+                    CompanyUrl ? "/invoice" : "/workerinvoice",
                   ],
                 },
               }
@@ -523,7 +523,7 @@ const InvoiceDetails = () => {
         mail={mail}
         setMail={setMail}
         setIsCollect={setIsCollect}
-        CompanyName={CompanyName}
+        CompanyUrl={CompanyUrl}
         setLoading={setLoading}
       />
     </>

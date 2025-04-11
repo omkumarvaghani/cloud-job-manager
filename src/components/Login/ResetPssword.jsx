@@ -40,15 +40,16 @@ const ResetPassword = () => {
 
     setLoader(true);
 
-    AxiosInstance.get(`/resetpassword/check_token_status/${token}`)
+    AxiosInstance.get(`/v1/forget-pass/check_forget_token_status/${token}`)
       .then((response) => {
         const data = response?.data;
+
         setLoader(false);
         if (data.expired) {
           setTokenExpired(true);
         } else {
           setEmail(token);
-        } 
+        }
       })
       .catch((error) => {
         console.error("Error checking token status:", error);
@@ -73,7 +74,7 @@ const ResetPassword = () => {
         setLoader(true);
 
         const response = await AxiosInstance.put(
-          `/v1/forget-pass/reset_passwords/${email}`, 
+          `/v1/forget-pass/reset_forget_passwords/${email}`,
           {
             Password: values.password,
           },
@@ -131,7 +132,11 @@ const ResetPassword = () => {
   }
 
   if (tokenExpired) {
-    return <div>Token has expired. Please request a new reset link.</div>;
+    return (
+      <Grid style={{ padding: "20px" }}>
+        Token has expired. Please request a new reset link.
+      </Grid>
+    );
   }
 
   return (

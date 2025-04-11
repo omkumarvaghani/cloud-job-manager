@@ -36,7 +36,12 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import "./style.css";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  Navigate,
+} from "react-router-dom";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import routes from "../../routes";
 import setting from "../../assets/image/icons/setting.svg";
@@ -106,125 +111,6 @@ const ArrowSeparator = () => {
     </Typography>
   );
 };
-
-// const JobberTable = ({
-//   headerData,
-//   cellData,
-//   CollapseComponent,
-//   isCollapse,
-//   isNavigate,
-//   navigatePath,
-// }) => {
-//   const [collapseIndex, setCollapseIndex] = useState(null);
-//   const navigate = useNavigate();
-//   const location = useLocation();
-
-//   const handleRowClick = (index, id) => {
-//     setCollapseIndex(collapseIndex === index ? null : index);
-//     if (isNavigate) {
-//       const newPath = navigatePath.split("/");
-//       navigate(navigatePath, {
-//         state: { id, navigats: [...location.state.navigats, `/${newPath[2]}`] },
-//       });
-//     }
-//   };
-
-//   return (
-//     <Grid style={{ overflow: "auto" }}>
-//       <Table>
-//         <TableHead>
-//           <TableRow>
-//             {isCollapse && (
-//               <TableCell
-//                 className="bg-orange-color text-white-color"
-//                 style={{
-//                   width: "10px",
-//                   textAlign: "end",
-//                 }}
-//               />
-//             )}
-//             {headerData &&
-//               headerData?.map((item, index) => (
-//                 <TableCell
-//                   className="bg-orange-color text-white-color"
-//                   key={index}
-//                   style={{
-//                     fontWeight: "600",
-//                     whiteSpace: "nowrap",
-//                   }}
-//                 >
-//                   {item}
-//                 </TableCell>
-//               ))}
-//           </TableRow>
-//         </TableHead>
-//         <TableBody>
-//           {cellData?.length > 0 ? (
-//             cellData?.map((item, index) => (
-//               <React.Fragment key={index}>
-//                 <TableRow
-//                   style={{ cursor: "pointer" }}
-//                   onClick={() => {
-//                     handleRowClick(index, item.key);
-//                   }}
-//                 >
-//                   {isCollapse && (
-//                     <TableCell>
-//                       <IconButton size="small">
-//                         {collapseIndex === index ? (
-//                           <ArrowDropUpIcon className="text-blue-color" />
-//                         ) : (
-//                           <ArrowDropDownIcon className="text-blue-color" />
-//                         )}
-//                       </IconButton>
-//                     </TableCell>
-//                   )}
-//                   {item?.value?.map((value, cellIndex) => (
-//                     <TableCell
-//                       key={cellIndex}
-//                       className="text-blue-color"
-//                       style={{ color: "#063164" }}
-//                     >
-//                       {value}
-//                     </TableCell>
-//                   ))}
-//                 </TableRow>
-//                 {isCollapse && (
-//                   <TableRow>
-//                     <TableCell
-//                       style={{ paddingBottom: 0, paddingTop: 0 }}
-//                       colSpan={headerData?.length + 1}
-//                     >
-//                       <Collapse
-//                         in={collapseIndex === index}
-//                         timeout="auto"
-//                         unmountOnExit
-//                       >
-//                         {CollapseComponent && (
-//                           <CollapseComponent data={item.component} />
-//                         )}
-//                       </Collapse>
-//                     </TableCell>
-//                   </TableRow>
-//                 )}
-//               </React.Fragment>
-//             ))
-//           ) : (
-//             <TableRow>
-//               <TableCell
-//                 align="center"
-//                 className="text-blue-color "
-//                 colSpan={headerData?.length}
-//               >
-//                 Data Not Available
-//               </TableCell>
-//             </TableRow>
-//           )}
-//         </TableBody>
-//       </Table>
-//     </Grid>
-//   );
-// };
 
 const JobberTable = ({
   headerData,
@@ -696,7 +582,7 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
   const cdnUrl = process.env.REACT_APP_CDN_API;
   const location = useLocation();
   const navigate = useNavigate();
-  const { CompanyName, customers } = useParams();
+  const { CompanyUrl } = useParams();
   const isMediumScreen = useMediaQuery("(max-width:767px)");
   const [data, setData] = useState({});
 
@@ -754,8 +640,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
             route?.isCollapse &&
             route?.children &&
             route?.layout ===
-              (CompanyName
-                ? `/:CompanyName`
+              (CompanyUrl
+                ? `/:CompanyUrl`
                 : `/${location?.pathname.split("/")[1]}`)
           ) {
             route?.children?.forEach((child) => {
@@ -766,8 +652,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
           } else if (
             !route?.isCollapse &&
             route?.layout ===
-              (CompanyName
-                ? `/:CompanyName`
+              (CompanyUrl
+                ? `/:CompanyUrl`
                 : `/${location.pathname.split("/")[1]}`)
           ) {
             if (route?.path === item) {
@@ -789,8 +675,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
             route?.isCollapse &&
             route?.children &&
             route?.layout ===
-              (CompanyName
-                ? `/:CompanyName`
+              (CompanyUrl
+                ? `/:CompanyUrl`
                 : `/${location?.pathname.split("/")[1]}`)
           ) {
             route?.children?.forEach((child) => {
@@ -801,8 +687,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
           } else if (
             !route?.isCollapse &&
             route?.layout ===
-              (CompanyName
-                ? `/:CompanyName`
+              (CompanyUrl
+                ? `/:CompanyUrl`
                 : `/${location.pathname.split("/")[1]}`)
           ) {
             if (route?.path === item) {
@@ -892,6 +778,23 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
     fetchNotifications();
     // }
   }, []);
+  const [tokenDecode, setTokenDecode] = useState({});
+  // const location = useLocation();
+  const fetchDatas = async () => {
+    try {
+      const res = await handleAuth(Navigate, location);
+      setTokenDecode(res?.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
+    fetchDatas();
+  }, []);
+
+  const Worker = "Worker";
+  const Customer = "Customer";
+
   return (
     <Grid
       className="my-nav bg-orange-color "
@@ -979,8 +882,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                       if (index === 0) {
                         navigate(
                           `/${
-                            CompanyName
-                              ? CompanyName
+                            CompanyUrl
+                              ? CompanyUrl
                               : location?.pathname?.split("/")[1]
                           }/index`,
                           {
@@ -1000,6 +903,48 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                 </React.Fragment>
               ))}
           </Breadcrumb>
+        </Grid>
+        <Grid className="d-flex align-items-center Navigator navigatorBarUrl">
+          {tokenDecode.Role === "Worker" ||
+          tokenDecode.Role === "Customer" ||
+          tokenDecode.Role === "Company" ? (
+            <Grid
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                borderRadius: "6px",
+                backgroundColor: "transparent",
+                padding: "8px 24px",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+                border: "2px solid white",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.boxShadow =
+                  "0 6px 16px rgba(0, 0, 0, 0.12)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.boxShadow =
+                  "0 4px 12px rgba(0, 0, 0, 0.08)")
+              }
+            >
+              <Typography
+                style={{
+                  color: "white", // Changed to white
+                  fontSize: "15px",
+                  fontWeight: 600,
+                  margin: 0,
+                  textTransform: "uppercase",
+                  letterSpacing: "1.2px",
+                  fontFamily: "'Roboto', sans-serif",
+                }}
+              >
+                {tokenDecode.CompanyName || "Unnamed Company"}
+              </Typography>
+            </Grid>
+          ) : null}
         </Grid>
         <Grid className="setting-notification d-md-flex d-none settingNotificationIcon">
           <Grid
@@ -1024,73 +969,82 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                       tag="Grid"
                       style={{ cursor: "pointer" }}
                       onClick={(e) => {
-                        if (CompanyName) {
-                          navigate(`/${CompanyName}/profile`, {
+                        let path = `/${CompanyUrl}/profile`;
+
+                        // Assuming CompanyUrl is defined (e.g., "sparrowsofttechtechnology")
+                        if (
+                          location.pathname?.split("/")[2] === "customers" ||
+                          location.pathname?.split("/")[2] === "staff-member"
+                        ) {
+                          if (
+                            location.pathname?.split("/")[2] === "customers"
+                          ) {
+                            navigate(`/${CompanyUrl}/customers/profile`, {
+                              state: {
+                                navigats: [
+                                  "/index",
+                                  `/${CompanyUrl}/customers/profile`,
+                                ],
+                              },
+                            });
+                          } else if (
+                            location.pathname?.split("/")[2] === "staff-member"
+                          ) {
+                            navigate(`/${CompanyUrl}/staff-member/profile`, {
+                              state: {
+                                navigats: [
+                                  "/index",
+                                  `/${CompanyUrl}/staff-member/profile`,
+                                ],
+                              },
+                            });
+                          }
+                        } else if (CompanyUrl) {
+                          navigate(`/${CompanyUrl}/profile`, {
                             state: {
                               navigats: ["/index", "/profile"],
                             },
                           });
                         } else if (
-                          location.pathname?.split("/")[1] === "staff-member"
-                        ) {
-                          navigate(
-                            `/${
-                              location?.pathname?.split("/")[1]
-                            }/staff-memberprofile`,
-                            {
-                              state: {
-                                navigats: ["/index", "/staff-memberprofile"],
-                              },
-                            }
-                          );
-                        } else if (
                           location.pathname?.split("/")[1] === "superadmin"
                         ) {
-                          navigate(
-                            `/${
-                              location?.pathname.split("/")[1]
-                            }/SuperAdminProfile`,
-                            {
-                              state: {
-                                navigats: ["/index", "SuperAdminProfile"],
-                              },
-                            }
-                          );
+                          navigate(`/superadmin/SuperAdminProfile`, {
+                            state: {
+                              navigats: ["/index", "SuperAdminProfile"],
+                            },
+                          });
                         } else {
-                          navigate(
-                            `/${
-                              location?.pathname?.split("/")[1]
-                            }/customerprofile`,
-                            {
-                              state: {
-                                navigats: ["/index", "/customerprofile"],
-                              },
-                            }
-                          );
+                          navigate(`/${CompanyUrl}/staff-member/profile`, {
+                            state: {
+                              navigats: [
+                                "/index",
+                                `/${CompanyUrl}/staff-member/profile`,
+                              ],
+                            },
+                          });
                         }
                       }}
                     >
                       {/* <Typography
-                        className="text-overflow m-0 "
-                        style={{
-                          padding: "8px",
-                          borderRadius: "5px",
-                          color: "#E88C44",
-                          fontSize: "12px",
-                          backgroundColor: "#FFF",
-                        }}
-                      > */}
+                          className="text-overflow m-0 "
+                          style={{
+                            padding: "8px",
+                            borderRadius: "5px",
+                            color: "#E88C44",
+                            fontSize: "12px",
+                            backgroundColor: "#FFF",
+                          }}
+                        > */}
                       {/* {data?.full_name
-                          ?.split(" ")
-                          ?.map((part) => part.charAt(0).toUpperCase())
-                          ?.join("")} */}
+                            ?.split(" ")
+                            ?.map((part) => part.charAt(0).toUpperCase())
+                            ?.join("")} */}
                       <>
                         {data?.ProfileImage ? (
                           <img
                             src={`${cdnUrl}/upload/${data?.ProfileImage}`}
                             alt="Profile"
                             style={{
-                              // borderRadius: "50%",
                               width: "40px",
                               height: "40px",
                               borderRadius: "5px",
@@ -1106,7 +1060,16 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                               borderRadius: "4px",
                             }}
                           >
-                            {data?.full_name
+                            {(data?.FirstName &&
+                            (data?.LastName || data?.FullName)
+                              ? `${data.FirstName} ${
+                                  data.LastName || data.FullName
+                                }`
+                              : data?.FirstName ||
+                                data?.FullName ||
+                                data?.OwnerName ||
+                                ""
+                            )
                               ?.split(" ")
                               ?.map((part) => part.charAt(0).toUpperCase())
                               ?.join("")}
@@ -1126,15 +1089,15 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             {/* {data?.OwnerName ||
                               data?.FirstName + " " + data?.LastName ||
                               data?.FullName}  */}
-                            {data?.OwnerName ||
-                              (data?.FirstName &&
-                              (data?.LastName || data?.FullName)
-                                ? `${data.FirstName} ${
-                                    data.LastName || data.FullName
-                                  }`
-                                : data?.FirstName || data?.FullName || "")}
-
-                            {console.log(data, "datadata")}
+                            {data?.FirstName &&
+                            (data?.LastName || data?.FullName)
+                              ? `${data.FirstName} ${
+                                  data.LastName || data.FullName
+                                }`
+                              : data?.FirstName ||
+                                data?.FullName ||
+                                data?.OwnerName ||
+                                ""}
                           </Typography>
                         </Typography>
                         <Typography
@@ -1155,8 +1118,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             onClick={() => {
                               if (!location?.pathname?.includes("/customers")) {
                                 navigate(
-                                  CompanyName
-                                    ? `/${CompanyName}/materials&labor`
+                                  CompanyUrl
+                                    ? `/${CompanyUrl}/materials&labor`
                                     : "/superadmin/materials&labor",
                                   {
                                     state: {
@@ -1178,8 +1141,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             onClick={() => {
                               if (!location.pathname.includes("/customers")) {
                                 navigate(
-                                  CompanyName
-                                    ? `/${CompanyName}/account-billing`
+                                  CompanyUrl
+                                    ? `/${CompanyUrl}/account-billing`
                                     : "/superadmin/account-billing",
                                   {
                                     state: {
@@ -1201,8 +1164,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             onClick={() => {
                               if (!location.pathname.includes("/customers")) {
                                 navigate(
-                                  CompanyName
-                                    ? `/${CompanyName}/activity `
+                                  CompanyUrl
+                                    ? `/${CompanyUrl}/activity `
                                     : "/superadmin/activity",
                                   {
                                     state: {
@@ -1224,8 +1187,8 @@ const MainNav = ({ setIsSidebarDisplay, isSidebarClosed }) => {
                             onClick={() => {
                               if (!location.pathname.includes("/customers")) {
                                 navigate(
-                                  CompanyName
-                                    ? `/${CompanyName}/manageteam `
+                                  CompanyUrl
+                                    ? `/${CompanyUrl}/manageteam `
                                     : "/superadmin/manageteam",
                                   {
                                     state: {
