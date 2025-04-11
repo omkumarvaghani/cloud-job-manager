@@ -56,6 +56,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { LoaderComponent } from "../Icon/Index";
 import styled from "styled-components";
+
 const InternalNotes = ({
   notes,
   setNotes,
@@ -342,14 +343,14 @@ const OneOffContract = ({
                             "& .MuiOutlinedInput-root": {
                               borderRadius: "8px",
                               "& .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "#063164", // ✅ Default #063164 border
+                                borderColor: "#063164",
                               },
                               "&:hover .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "#063164", // ✅ Hover par bhi #063164
+                                borderColor: "#063164",
                               },
                               "&.Mui-focused .MuiOutlinedInput-notchedOutline":
                                 {
-                                  borderColor: "#063164", // ✅ Focus hone par bhi red
+                                  borderColor: "#063164",
                                 },
                             },
                             "& .MuiInputBase-input": { color: "#063164" },
@@ -418,14 +419,14 @@ const OneOffContract = ({
                             "& .MuiOutlinedInput-root": {
                               borderRadius: "8px",
                               "& .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "#063164", // ✅ Default #063164 border
+                                borderColor: "#063164",
                               },
                               "&:hover .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "#063164", // ✅ Hover par bhi #063164
+                                borderColor: "#063164",
                               },
                               "&.Mui-focused .MuiOutlinedInput-notchedOutline":
                                 {
-                                  borderColor: "#063164", // ✅ Focus hone par bhi red
+                                  borderColor: "#063164",
                                 },
                             },
                             "& .MuiInputBase-input": { color: "#063164" },
@@ -812,13 +813,13 @@ const RecurringContract = ({
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "8px",
                       "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#063164", // ✅ Default #063164 border
+                        borderColor: "#063164", 
                       },
                       "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#063164", // ✅ Hover par bhi #063164
+                        borderColor: "#063164",
                       },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#063164", // ✅ Focus hone par bhi red
+                        borderColor: "#063164",
                       },
                     },
                     "& .MuiInputBase-input": { color: "#063164" },
@@ -1578,6 +1579,7 @@ const Team = ({ setIds = (assignPersonId) => {}, ids, isAddTeam = true }) => {
 
   const handleTeamSelect = (event, team) => {
     if (event.target.checked) {
+      console.log(event.target.checked, "event.target.checked");
       setSelectedTeams((prevTeams) => [
         ...prevTeams,
         {
