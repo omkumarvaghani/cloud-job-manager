@@ -701,7 +701,18 @@ const AddContract = ({
                                                   handleTeamSelect(e, person)
                                                 }
                                               />
-
+                                              {person?.Role === "Company" && (
+                                                <Label
+                                                  style={{
+                                                    fontSize: "14px",
+                                                    color: "rgba(6,49,100,0.6)",
+                                                    fontWeight: "500",
+                                                    marginBottom: "0px",
+                                                  }}
+                                                >
+                                                  Account Owner :
+                                                </Label>
+                                              )}
                                               <Label
                                                 style={{
                                                   fontSize: "16px",
@@ -714,19 +725,6 @@ const AddContract = ({
                                                   person?.LastName || ""
                                                 }`}
                                               </Label>
-
-                                              {person?.Role === "Company" && (
-                                                <Label
-                                                  style={{
-                                                    fontSize: "14px",
-                                                    color: "rgba(6,49,100,0.6)",
-                                                    fontWeight: "500",
-                                                    marginBottom: "4px",
-                                                  }}
-                                                >
-                                                  Account Owner
-                                                </Label>
-                                              )}
 
                                               <Label
                                                 style={{

@@ -229,7 +229,7 @@ const QuoteMail = ({
       console.log(data, "data user");
       const url = `/v1/quote/send_mail/${data?.UserId}`;
       const object = {
-        CustomerId: customerData?.CustomerId,
+        CustomerId: quotesData?.CustomerId,
         QuoteId: quotesData?.QuoteId,
         Title: formik?.Title || quotesData?.Title || "",
         QuoteNumber: formik?.QuoteNumber || quotesData?.QuoteNumber || "",
@@ -336,7 +336,7 @@ const QuoteMail = ({
               }}
               className="text-orange-color"
             >
-              {customerData?.EmailAddress || "the customer's email"}
+              {quotesData?.customerData?.EmailAddress || "the customer's email"}
             </Typography>
             ?{/* <br /> */}
             <Typography

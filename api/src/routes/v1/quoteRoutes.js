@@ -6,7 +6,7 @@ const router = express.Router();
 router.post("/", protect, createQuoteWithDetails);
 router.post("/check_number/:CompanyId", protect, checkQuoteNumberExists);
 router.post("/quotepdf/:QuoteId", protect, generateQuotePdf);
-router.post("/send_mail", protect, sendEmailWithConfig);
+router.post("/send_mail/:QuoteId", protect, sendEmailWithConfig);
 
 router.get("/get_number/:CompanyId", protect, getMaxQuoteNumber);
 router.get("/quotes/:CustomerId", protect, getCustomerQuotes);

@@ -1384,25 +1384,27 @@ exports.sendEmailWithConfig = async (req, res) => {
   try {
     const { IsSendpdf, ...data } = req.body;
     const { CustomerId, QuoteId } = data;
+    console.log(data, 'data')
+    console.log(CustomerId, 'CustomerId')
 
     const CompanyId = Array.isArray(req.user.CompanyId)
       ? req.user.CompanyId
       : [req.user.CompanyId];
 
-    const findCustomer = await User.findOne({ CustomerId });
-    const findCustomerProfile = await UserProfile.findOne({ CustomerId });
+    const findCustomer = await User.findOne({ UserId: CustomerId });
+    const findCustomerProfile = await UserProfile.findOne({ UserId: CustomerId });
     const findCompany = await User.findOne({ CompanyId });
     const findCompanyProfile = await UserProfile.findOne({
       CompanyId,
       Role: "Company",
     });
 
-    console.log(findCustomerProfile, "findCustomerProfile");
-    console.log(findCustomer, "findCustomer");
     if (!findCustomer || !findCustomerProfile) {
+      console.log(findCustomer, "findCustomer");
       return res.status(404).json({ message: "Customer not found" });
     }
     if (!findCompany || !findCompanyProfile) {
+      console.log(findCustomerProfile, "findCustomerProfile");
       return res.status(404).json({ message: "Company not found" });
     }
 
@@ -1426,55 +1428,50 @@ exports.sendEmailWithConfig = async (req, res) => {
 
     const defaultSubject = "Your Custom Quote from Cloud Job Manager";
     const defaultBody = `
-      <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 20px auto; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); border: 1px solid #e88c44;">
-        <tr>
-          <td style="padding: 30px 0; text-align: center; background-color: #063164; border-top-left-radius: 12px; border-top-right-radius: 12px;">
-            <div style="display: inline-block; padding: 15px; background-color: white; border-radius: 8px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);">
-              <img src="https://app.cloudjobmanager.com/cdn/upload/20250213103016_site-logo2.png" alt="CloudJobManager Logo" style="width: 180px; max-width: 100%; display: block; margin: auto;" />
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 40px;font-family: 'Arial', sans-serif; color: #555;text-align:center;">
-            <h2 style="font-size: 24px; color: #003366; text-align: center; font-weight: 700;">Your Custom Quote is Ready!</h2>
-            <p style="font-size: 18px; color: #555; line-height: 1.7; text-align: center; font-weight: 400;">Dear <strong style="color: #003366;">${
-              findCustomerProfile.FirstName
-            } ${findCustomerProfile.LastName}</strong>,</p>
-            <p style="font-size: 16px; color: #555; line-height: 1.6;">Thank you for the opportunity to receive a quote for <strong style="color: #003366;">${
-              data.Title
-            }</strong> with a total amount of <strong>$${
-      data.Total
-    }</strong>.</p>
-  
-            <div style="padding: 15px; text-align: center;">
-              <h3 style="font-size: 21px; color: #e88c44; font-weight: 700;">Total Amount: <strong style="font-size: 21px; color: #003366;">$${
-                data.Total
-              }</strong></h3>
-              <p style="font-size: 16px; color: #718096; font-weight: 400;">Quote Date: <strong>${moment(
-                data.createdAt
-              ).format("DD-MM-YYYY")}</strong></p>
-            </div>
-  
-           
-  
-            <p style="font-size: 16px; color: #555;">If you have any questions, please reach out to <a href="mailto:${
-              findCompany.EmailAddress
-            }" style="color: #003366; text-decoration: none; font-weight: 600;">${
-      findCompany.EmailAddress
-    }</a>.</p>
-  
-            <p style="font-size: 16px; color: #555;">Best regards,<br />
-              <strong style="color: #003366; font-weight: 700;">${
-                findCompanyProfile.CompanyName
-              }</strong><br />
-              <span style="font-size: 14px; color: #718096;">${
-                findCompany.EmailAddress
-              }</span>
-            </p>
-          </td>
-        </tr>
-      </table>
-    `;
+  <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 20px auto; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); border: 1px solid #e88c44;">
+    <tr>
+      <td style="padding: 30px 0; text-align: center; background-color: #063164; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+        <div style="display: inline-block; padding: 15px; background-color: white; border-radius: 8px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);">
+          <img src="https://app.cloudjobmanager.com/cdn/upload/20250213103016_site-logo2.png" alt="CloudJobManager Logo" style="width: 180px; max-width: 100%; display: block; margin: auto;" />
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td style="padding: 40px; font-family: 'Arial', sans-serif; color: #555; text-align: center;">
+        <h2 style="font-size: 24px; color: #003366; text-align: center; font-weight: 700;">Your Custom Quote is Ready!</h2>
+        <p style="font-size: 18px; color: #555; line-height: 1.7; font-weight: 400;">Dear <strong style="color: #003366;">${findCustomerProfile.FirstName} ${findCustomerProfile.LastName}</strong>,</p>
+        <p style="font-size: 16px; color: #555; line-height: 1.6;">Thank you for the opportunity to receive a quote for <strong style="color: #003366;">${data.Title}</strong> with a total amount of <strong>$${data.Total}</strong>.</p>
+
+        <div style="padding: 15px; text-align: center;">
+          <h3 style="font-size: 21px; color: #e88c44; font-weight: 700;">Total Amount: <strong style="font-size: 21px; color: #003366;">$${data.Total}</strong></h3>
+          <p style="font-size: 16px; color: #718096; font-weight: 400;">Quote Date: <strong>${moment(data.createdAt).format("DD-MM-YYYY")}</strong></p>
+        </div>
+
+        <p style="font-size: 16px; color: #555;">If you have any questions, please reach out to <a href="mailto:${findCompany.EmailAddress}" style="color: #003366; text-decoration: none; font-weight: 600;">${findCompany.EmailAddress}</a>.</p>
+      </td>
+    </tr>
+
+    <!-- Right-aligned Best regards section -->
+    <tr>
+      <td style="padding: 20px 40px 0 40px; text-align: right; font-family: 'Arial', sans-serif;">
+        <p style="font-size: 16px; color: #555; margin: 0;">Best regards,<br />
+          <strong style="color: #003366; font-weight: 700;">${findCompanyProfile.CompanyName}</strong><br />
+          <span style="font-size: 14px; color: #718096;">${findCompany.EmailAddress}</span>
+        </p>
+      </td>
+    </tr>
+
+    <!-- Footer Section -->
+    <tr>
+      <td style="padding: 20px; text-align: center; font-size: 12px; color: #888888; background-color: #f4f4f7; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; font-family: 'Arial', sans-serif;">
+        Cloud Job Manager, Inc. | All rights reserved.<br>
+        <a href="#" style="color: #e88c44; text-decoration: none; font-weight: 600;">Unsubscribe</a> if you no longer wish to receive these emails.
+      </td>
+    </tr>
+  </table>
+`;
+
 
     const QuoteData = [
       {
@@ -1482,8 +1479,8 @@ exports.sendEmailWithConfig = async (req, res) => {
         LastName: findCustomerProfile.LastName || "",
         EmailAddress: findCustomer.EmailAddress || "",
         PhoneNumber: findCustomerProfile.PhoneNumber || "",
-        CompanyName: findCompany.CompanyName || "",
-        EmailAddress: findCompany.EmailAddress || "",
+        CompanyName: findCompanyProfile.CompanyName || "",
+        companyEmailAddress: findCompany.EmailAddress || "",
         companyPhoneNumber: findCompanyProfile.PhoneNumber || "",
         Title: data.Title || "",
         QuoteNumber: data.QuoteNumber || "",
@@ -1495,7 +1492,7 @@ exports.sendEmailWithConfig = async (req, res) => {
     ];
 
     const emailStatus = await handleTemplate(
-      "Quote",
+      findCustomer.EmailAddress,
       CompanyId,
       QuoteData,
       [fileName],

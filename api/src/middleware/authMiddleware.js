@@ -117,7 +117,6 @@ const verifyForgetToken = async (token) => {
 const verifyResetToken = async (token) => {
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    console.log(decoded, "878878");
 
     const email = decoded.EmailAddress;
     if (!email) {

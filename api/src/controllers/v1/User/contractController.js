@@ -1471,8 +1471,8 @@ exports.sendContractEmail = async (req, res) => {
 
     const CompanyId = Array.isArray(req.user.CompanyId) ? req.user.CompanyId : [req.user.CompanyId];
 
-    const findCustomer = await User.findOne({ CustomerId });
-    const findCustomerProfile = await UserProfile.findOne({ CustomerId });
+    const findCustomer = await User.findOne({ UserId: CustomerId });
+    const findCustomerProfile = await UserProfile.findOne({ UserId: CustomerId });
     const findCompany = await User.findOne({ CompanyId });
     const findCompanyProfile = await UserProfile.findOne({ CompanyId, Role: "Company" });
 
@@ -1567,7 +1567,7 @@ exports.sendContractEmail = async (req, res) => {
         EmailAddress: findCustomer.EmailAddress || "",
         PhoneNumber: findCustomerProfile.PhoneNumber || "",
         companyName: findCompanyProfile.CompanyName || "",
-        EmailAddress: findCompany.EmailAddress || "",
+        companyEmailAddress: findCompany.EmailAddress || "",
         companyPhoneNumber: findCompanyProfile.PhoneNumber || "",
         Title: data.Title || "",
         ContractNumber: data.ContractNumber || "",
@@ -1579,7 +1579,7 @@ exports.sendContractEmail = async (req, res) => {
     ];
 
     const emailStatus = await handleTemplate(
-      "Contract",
+      findCustomer.EmailAddress,
       CompanyId,
       ContractData,
       [fileName],

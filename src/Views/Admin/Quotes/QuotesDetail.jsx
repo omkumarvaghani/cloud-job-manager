@@ -191,7 +191,7 @@ function QuotesDetail() {
   const generatePDF = async () => {
     try {
       const res = await AxiosInstance.post(
-        `/quote/quotepdf/${location?.state?.id}`
+        `/v1/quote/quotepdf/${location?.state?.id}`
       );
       if (res?.data?.statusCode === 200) {
         const url = `${cdnUrl}/upload/${res?.data?.fileName}`;
@@ -290,7 +290,7 @@ function QuotesDetail() {
 
             try {
               const res = await AxiosInstance.post(
-                `/quote/quotepdf/${location?.state?.id}`
+                `/v1/quote/quotepdf/${location?.state?.id}`
               );
 
               const staticFilePath = `${cdnUrl}/upload/${res.data.fileName}`;

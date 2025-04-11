@@ -682,12 +682,7 @@ exports.getCustomerWelcomeData = async (UserId) => {
             <p style="font-size: 14px; color: #888888; margin-top: 30px; font-weight: 400;">Best regards,<br>The ${companyProfile.CompanyName} Team</p>
           </td>
         </tr>
-        <tr>
-          <td style="padding: 30px 20px; text-align: center; font-size: 12px; color: #888888; background-color: #f4f4f7; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-            ${companyProfile.CompanyName}, Inc. | All rights reserved.<br>
-            <a href="#" style="color: #e88c44; text-decoration: none;">Unsubscribe</a> if you no longer wish to receive these emails.
-          </td>
-        </tr>
+      
       </table>
     </div>
   `;

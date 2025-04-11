@@ -369,7 +369,15 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-
+    // if (
+    //   (user.Role === "Worker" || user.Role === "Customer") &&
+    //   user.IsPassSet === false
+    // ) {
+    //   return res.status(403).json({
+    //     statusCode: "205",
+    //     message: "Please set your password using the invitation link.",
+    //   });
+    // }
     const isMatch = await user.comparePassword(Password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });

@@ -493,7 +493,7 @@ exports.handleTemplate = async (
         html = html.replace(regex, elem[key] || "");
         emailSubject = emailSubject.replace(regex, elem[key] || "");
       });
-
+      console.log(elem, 'elemelem')
       let info;
 
       if (emailConfig) {
