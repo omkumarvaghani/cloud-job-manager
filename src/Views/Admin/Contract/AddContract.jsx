@@ -28,6 +28,7 @@ function AddContract() {
       console.error("Error fetching data:", error);
     }
   };
+
   useEffect(() => {
     fetchDatas();
   }, []);
@@ -77,6 +78,7 @@ function AddContract() {
 
   const toggle = () => setDropdownOpen((prevState) => !prevState);
   const { startDate } = location.state || {};
+
   const formik = useFormik({
     initialValues: {
       Title: "",
@@ -224,6 +226,7 @@ function AddContract() {
   const [menuIsOpen, setMenuIsOpen] = useState(
     new Array(lineItems?.length).fill(false)
   );
+
   const handleSelectChange = (index, selectedOption) => {
     const newLineItems = [...lineItems];
 
@@ -267,6 +270,7 @@ function AddContract() {
   const addLineItem = () => {
     setLineItems([...lineItems, {}]);
   };
+
   const deleteLineItem = (index) => {
     const newLineItems = lineItems.filter((_, i) => i !== index);
     setLineItems(newLineItems);
@@ -301,7 +305,6 @@ function AddContract() {
             State: locationData?.State || "",
             Zip: locationData?.Zip || "",
             Country: locationData?.Country || "",
-
             ContractNumber: data.ContractNumber || "",
             CompanyId: data.CompanyId || "",
             UserId: data.UserId || "",
@@ -328,30 +331,45 @@ function AddContract() {
           });
           setActiveTab(data.IsOneoffJob ? 1 : 2);
 
+          // Initialize selected teams with both Company role members and contract-assigned members
           const members = teamData.filter((item) =>
             data.WorkerId.includes(item.UserId)
           );
-          if (members.length > 0) {
-            setSelectedTeams(
-              members.map((member) => ({
+          const companyTeams = teamData
+            .filter((team) => team.Role === "Company")
+            .map((team) => ({
+              OwnerName: team.OwnerName,
+              FirstName: team.FirstName,
+              LastName: team.LastName,
+              EmailAddress: team.EmailAddress,
+              WorkerId: team.UserId,
+            }));
+
+          const selectedMembers = [
+            ...companyTeams,
+            ...members
+              .filter((member) => member.Role !== "Company") // Avoid duplicates
+              .map((member) => ({
                 OwnerName: member.OwnerName,
                 FirstName: member.FirstName,
                 LastName: member.LastName,
                 EmailAddress: member.EmailAddress,
                 WorkerId: member.UserId,
-              }))
-            );
+              })),
+          ];
 
-            setCheckedState((prevState) => {
-              const updatedState = { ...prevState };
-              members.forEach((member) => {
-                updatedState[member.UserId] = true;
-              });
-              return updatedState;
+          setSelectedTeams(selectedMembers);
+
+          setCheckedState((prevState) => {
+            const updatedState = { ...prevState };
+            selectedMembers.forEach((member) => {
+              updatedState[member.WorkerId] = true;
             });
+            return updatedState;
+          });
 
-            setAssignPersonId(members.map((member) => member.WorkerId));
-          }
+          setAssignPersonId(selectedMembers.map((member) => member.WorkerId));
+          setIds(selectedMembers.map((member) => member.WorkerId));
 
           setLineItems(
             data.Items || [
@@ -381,9 +399,10 @@ function AddContract() {
       }
     }
   };
+
   useEffect(() => {
     fetchData();
-  }, [location, tokenDecode]);
+  }, [location, tokenDecode, teamData]);
 
   useEffect(() => {
     const getNumber = async () => {
@@ -453,7 +472,6 @@ function AddContract() {
     };
 
     initialize();
-    fetchData();
     return () => {
       formik.resetForm();
       setLineItems([
@@ -489,6 +507,7 @@ function AddContract() {
   };
 
   const subTotal = calculateSubTotal();
+
   const handleCahngeIds = (value) => {};
 
   const handleContractNumberChange = async () => {
@@ -553,6 +572,12 @@ function AddContract() {
   };
 
   const handleRemoveTeam = (team) => {
+    // Prevent removing Company role members
+    if (team.Role === "Company") {
+      showToast.warning("Cannot remove team member with Company role.");
+      return;
+    }
+
     setSelectedTeams((prevTeams) =>
       prevTeams.filter(
         (selectedTeam) => selectedTeam?.WorkerId !== team?.WorkerId
@@ -573,26 +598,60 @@ function AddContract() {
   };
 
   const handleTeamSelect = (event, team) => {
+    // Always include team members with Role "Company"
+    const companyTeams =
+      team.Role === "Company"
+        ? [
+            {
+              OwnerName: team.OwnerName,
+              FirstName: team?.FirstName,
+              LastName: team?.LastName,
+              EmailAddress: team.EmailAddress,
+              WorkerId: team?.UserId,
+            },
+          ]
+        : [];
+
     if (event.target.checked) {
-      setSelectedTeams((prevTeams) => [
-        ...prevTeams,
-        {
-          OwnerName: team.OwnerName,
-          FirstName: team?.FirstName,
-          LastName: team?.LastName,
-          EmailAddress: team.EmailAddress,
-          WorkerId: team?.UserId,
-        },
-      ]);
+      // If checking a box, add the team to selected teams
+      setSelectedTeams((prevTeams) => {
+        // Filter out any existing entry for this team to avoid duplicates
+        const filteredTeams = prevTeams.filter(
+          (selectedTeam) => selectedTeam.WorkerId !== team.UserId
+        );
+        return [
+          ...companyTeams,
+          ...filteredTeams,
+          ...(team.Role !== "Company"
+            ? [
+                {
+                  OwnerName: team.OwnerName,
+                  FirstName: team?.FirstName,
+                  LastName: team?.LastName,
+                  EmailAddress: team.EmailAddress,
+                  WorkerId: team?.UserId,
+                },
+              ]
+            : []),
+        ];
+      });
 
       setCheckedState((prevState) => ({
         ...prevState,
         [team?.UserId]: true,
       }));
 
-      setIds((prevIds) => [...prevIds, team?.UserId]);
-      setAssignPersonId((prevIds) => [...prevIds, team?.WorkerId]);
-    } else {
+      setIds((prevIds) => {
+        const newIds = prevIds.filter((id) => id !== team.UserId);
+        return [...newIds, team?.UserId];
+      });
+
+      setAssignPersonId((prevIds) => {
+        const newIds = prevIds.filter((id) => id !== team.WorkerId);
+        return [...newIds, team?.UserId];
+      });
+    } else if (team.Role !== "Company") {
+      // Only allow unchecking for non-Company roles
       setSelectedTeams((prevTeams) =>
         prevTeams.filter(
           (selectedTeam) => selectedTeam?.WorkerId !== team?.UserId
@@ -606,14 +665,54 @@ function AddContract() {
 
       setIds((prevIds) => prevIds.filter((id) => id !== team?.UserId));
       setAssignPersonId((prevIds) =>
-        prevIds.filter((id) => id !== team?.WorkerId)
+        prevIds.filter((id) => id !== team?.UserId)
       );
     }
+  };
+
+  const initializeCompanyTeams = (teams) => {
+    const companyTeams = teams
+      .filter((team) => team.Role === "Company")
+      .map((team) => ({
+        OwnerName: team.OwnerName,
+        FirstName: team?.FirstName,
+        LastName: team?.LastName,
+        EmailAddress: team.EmailAddress,
+        WorkerId: team?.UserId,
+      }));
+
+    setSelectedTeams((prevTeams) => {
+      const nonCompanyTeams = prevTeams.filter(
+        (team) => !companyTeams.some((ct) => ct.WorkerId === team.WorkerId)
+      );
+      return [...companyTeams, ...nonCompanyTeams];
+    });
+
+    setCheckedState((prevState) => {
+      const newState = { ...prevState };
+      companyTeams.forEach((team) => {
+        newState[team.WorkerId] = true;
+      });
+      return newState;
+    });
+
+    setIds((prevIds) => {
+      const companyIds = companyTeams.map((team) => team.WorkerId);
+      const nonCompanyIds = prevIds.filter((id) => !companyIds.includes(id));
+      return [...companyIds, ...nonCompanyIds];
+    });
+
+    setAssignPersonId((prevIds) => {
+      const companyIds = companyTeams.map((team) => team.WorkerId);
+      const nonCompanyIds = prevIds.filter((id) => !companyIds.includes(id));
+      return [...companyIds, ...nonCompanyIds];
+    });
   };
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
+
   const fetchTeamData = async () => {
     setloader(true);
     try {
@@ -628,7 +727,10 @@ function AddContract() {
       const response = await AxiosInstance.get(`/v1/worker/get`);
 
       if (response?.status === 200) {
-        setTeamData(response?.data?.data);
+        const teams = response?.data?.data;
+        setTeamData(teams);
+        // Initialize Company role members after fetching team data
+        initializeCompanyTeams(teams);
       } else {
         console.error("Error fetching team data:", response);
       }
@@ -640,7 +742,9 @@ function AddContract() {
   };
 
   useEffect(() => {
-    fetchTeamData();
+    if (tokenDecode?.CompanyId) {
+      fetchTeamData();
+    }
   }, [tokenDecode]);
 
   const formikTeam = useFormik({
@@ -724,6 +828,7 @@ function AddContract() {
       }
     },
   });
+
   const formatPhoneNumber = (value) => {
     const PhoneNumber = value.replace(/[^\d]/g, "");
     const limitedPhoneNumber = PhoneNumber.slice(0, 10);
@@ -745,6 +850,7 @@ function AddContract() {
     }
     return limitedPhoneNumber;
   };
+
   const handlePhoneChange = (e) => {
     if (formikTeam?.values?.MobileNumber?.length > e.target.value?.length) {
       formikTeam?.setFieldValue("MobileNumber", e.target.value);
