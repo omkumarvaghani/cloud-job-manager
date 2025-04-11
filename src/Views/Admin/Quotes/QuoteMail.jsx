@@ -50,7 +50,7 @@ const QuoteMail = ({
   formik,
   handleSubmit,
   Attachment,
-  handleSubmits
+  handleSubmits,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -223,7 +223,11 @@ const QuoteMail = ({
           }
         }
       }
-      const url = `/v1/quote/send_mail/${data?.CompanyId}`;
+      {
+        console.log(data?.UserId, "data?.UserId");
+      }
+      console.log(data, "data user");
+      const url = `/v1/quote/send_mail/${data?.UserId}`;
       const object = {
         CustomerId: customerData?.CustomerId,
         QuoteId: quotesData?.QuoteId,
@@ -235,7 +239,8 @@ const QuoteMail = ({
         Total: Total || quotesData?.Total || "",
         IsSendpdf: !!isPdfChecked,
       };
-
+      console.log(customerData, "customerData");
+      console.log(object, "object");
       const response = await AxiosInstance.post(url, object);
       if (response?.data?.statusCode === 200) {
         showToast.success(response?.data?.message);
@@ -256,16 +261,12 @@ const QuoteMail = ({
     try {
       setLoader(true);
       const saveResponse = await handleSubmits();
-           if (saveResponse?.statusCode === 200) {
-        await handleSendMail(
-
-        );
-       
+      if (saveResponse?.statusCode === 200) {
+        await handleSendMail();
       } else {
         sendToast(saveResponse?.message || "Failed to save quote.");
       }
     } catch (error) {
-      console.log("Error in handleSaveAndSendMail:", error?.message);
     } finally {
       setLoader(false);
     }
@@ -304,7 +305,7 @@ const QuoteMail = ({
           className="d-flex justify-content-between  "
           style={{
             color: "#fff",
-            fontSize: "18px", 
+            fontSize: "18px",
             fontWeight: "bold",
             borderBottom: "4px solid #e88c44",
           }}
@@ -539,10 +540,9 @@ const QuoteMail = ({
                     style={{ marginTop: "0px" }}
                   >
                     <Grid className="ButtomWithN">
-                     <BlueButton
-                       onClick={async () => 
-                        handleSendMail()} 
-                        style={{  
+                      <BlueButton
+                        onClick={async () => handleSendMail()}
+                        style={{
                           fontSize: "14px",
                           color: "#fff",
                           textTransform: "none",
@@ -554,7 +554,7 @@ const QuoteMail = ({
                         }}
                         label="Yes, Send email"
                         className="yesSnedmailQuote"
-                      /> 
+                      />
                       {/* <BlueButton
                         onClick={async () => handleSaveAndSendMail()}
                         style={{

@@ -74,10 +74,10 @@ const Visit = ({
         EndTime: visitRes?.data?.data?.EndTime,
         StartDate: visitRes?.data?.data?.StartDate,
         EndDate: visitRes?.data?.data?.EndDate,
-        WorkerId: visitRes?.data?.data?.WorkerId,
+        UserId: visitRes?.data?.data?.UserId,
       });
       const members = teamData.filter((item) =>
-        visitRes?.data?.data?.WorkerId?.includes(item?.WorkerId)
+        visitRes?.data?.data?.UserId?.includes(item?.UserId)
       );
 
       if (members && members.length > 0) {
@@ -86,19 +86,19 @@ const Visit = ({
             FirstName: member?.FirstName,
             LastName: member?.LastName,
             EmailAddress: member?.EmailAddress,
-            WorkerId: member?.WorkerId,
+            UserId: member?.UserId,
           }))
         );
         setCheckedState((prevState) => {
           const updatedState = { ...prevState };
 
           members.forEach((member) => {
-            updatedState[member?.WorkerId] = true;
+            updatedState[member?.UserId] = true;
           });
 
           return updatedState;
         });
-        setAssignPersonId(members?.map((member) => member?.WorkerId));
+        setAssignPersonId(members?.map((member) => member?.UserId));
       }
     } catch (error) {
       console.error("Error: ", error?.message);
@@ -113,7 +113,7 @@ const Visit = ({
     initialValues: {
       CompanyId: "",
       ContractId: "",
-      WorkerId: "",
+      UserId: "",
       CustomerId: "",
       LocationId: "",
       ItemName: "",
@@ -133,7 +133,7 @@ const Visit = ({
 
           values["CompanyId"] = CompanyId;
           values["ContractId"] = ContractId;
-          values["WorkerId"] = assignPersonId;
+          values["UserId"] = assignPersonId;
           values["CustomerId"] = CustomerId;
           values["LocationId"] = LocationId;
           const response = await AxiosInstance.post(
@@ -168,7 +168,7 @@ const Visit = ({
           setLoader(true);
           values["CompanyId"] = CompanyId;
           values["ContractId"] = ContractId;
-          values["WorkerId"] = assignPersonId;
+          values["UserId"] = assignPersonId;
           values["CustomerId"] = CustomerId;
           values["LocationId"] = LocationId;
 
@@ -289,21 +289,21 @@ const Visit = ({
   const handleRemoveTeam = (team) => {
     setSelectedTeams((prevTeams) =>
       prevTeams.filter(
-        (selectedTeam) => selectedTeam?.WorkerId !== team?.WorkerId
+        (selectedTeam) => selectedTeam?.UserId !== team?.UserId
       )
     );
 
     setCheckedState((prevState) => {
       const updatedState = { ...prevState };
-      delete updatedState[team?.WorkerId];
+      delete updatedState[team?.UserId];
       return updatedState;
     });
 
     setAssignPersonId((prevIds) =>
-      prevIds.filter((id) => id !== team?.WorkerId)
+      prevIds.filter((id) => id !== team?.UserId)
     );
 
-    setIds((prevIds) => prevIds.filter((id) => id !== team?.WorkerId));
+    setIds((prevIds) => prevIds.filter((id) => id !== team?.UserId));
   };
 
   const handleTeamSelect = (event, team) => {
@@ -314,32 +314,32 @@ const Visit = ({
           FirstName: team?.FirstName,
           LastName: team?.LastName,
           EmailAddress: team?.EmailAddress,
-          WorkerId: team?.WorkerId,
+          UserId: team?.UserId,
         },
       ]);
 
       setCheckedState((prevState) => ({
         ...prevState,
-        [team?.WorkerId]: true,
+        [team?.UserId]: true,
       }));
 
-      setIds((prevIds) => [...prevIds, team?.WorkerId]);
-      setAssignPersonId((prevIds) => [...prevIds, team?.WorkerId]);
+      setIds((prevIds) => [...prevIds, team?.UserId]);
+      setAssignPersonId((prevIds) => [...prevIds, team?.UserId]);
     } else {
       setSelectedTeams((prevTeams) =>
         prevTeams.filter(
-          (selectedTeam) => selectedTeam?.WorkerId !== team?.WorkerId
+          (selectedTeam) => selectedTeam?.UserId !== team?.UserId
         )
       );
 
       setCheckedState((prevState) => ({
         ...prevState,
-        [team?.WorkerId]: false,
+        [team?.UserId]: false,
       }));
 
-      setIds((prevIds) => prevIds.filter((id) => id !== team?.WorkerId));
+      setIds((prevIds) => prevIds.filter((id) => id !== team?.UserId));
       setAssignPersonId((prevIds) =>
-        prevIds.filter((id) => id !== team?.WorkerId)
+        prevIds.filter((id) => id !== team?.UserId)
       );
     }
   };
@@ -814,7 +814,7 @@ const Visit = ({
                             justifyContent: "space-between",
                           }}
                         >
-                          Select team
+                          Select 
                           <CloseIcon
                             onClick={toggleDropdown}
                             style={{ cursor: "pointer" }}
@@ -843,13 +843,12 @@ const Visit = ({
                                     type="checkbox"
                                     checked={
                                       checkedState &&
-                                      !!checkedState[person?.WorkerId]
+                                      !!checkedState[person?.UserId]
                                     }
                                     onChange={(e) =>
                                       handleTeamSelect(e, person)
                                     }
                                   />
-
                                   <Grid>
                                     <Label
                                       style={{

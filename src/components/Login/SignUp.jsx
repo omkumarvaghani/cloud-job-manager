@@ -28,7 +28,6 @@ import showToast from "../../components/Toast/Toster";
 const SignUp = () => {
   useEffect(() => {
     window.onload = () => {
-      console.log("Page has loaded!");
     };
     return () => {
       window.onload = null;

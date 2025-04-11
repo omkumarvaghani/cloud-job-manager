@@ -953,7 +953,9 @@ const AddContract = ({
                                     className="tag-text"
                                     style={{ fontSize: "16px" }}
                                   >
-                                    <span>
+                                    {console.log(tokenDecode,"tokn")}
+                                    <span> 
+                                      {tokenDecode.FirstName && team.FirstName}
                                       {team?.OwnerName
                                         ? `${
                                             team?.OwnerName ||
@@ -968,24 +970,7 @@ const AddContract = ({
                                         "EmailAddress not available"}
                                     </span>
                                   </Typography>
-
-                                  {team?.Role === "Company" && (
-                                    <Typography
-                                      className="tag-text"
-                                      style={{
-                                        fontSize: "14px",
-                                        color: "#666",
-                                        fontStyle: "italic",
-                                      }}
-                                    >
-                                      Company
-                                    </Typography>
-                                  )}
-                                  {console.log(team, "team234")}
-                                  {console.log(
-                                    team?.OwnerName,
-                                    "team?.OwnerName"
-                                  )}
+                                        {console.log(team,"team123")}
                                   <button
                                     className="tag-close"
                                     onClick={() => handleRemoveTeam(team)}
