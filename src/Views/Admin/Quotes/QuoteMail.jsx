@@ -223,10 +223,6 @@ const QuoteMail = ({
           }
         }
       }
-      {
-        console.log(data?.UserId, "data?.UserId");
-      }
-      console.log(data, "data user");
       const url = `/v1/quote/send_mail/${data?.UserId}`;
       const object = {
         CustomerId: quotesData?.CustomerId,
@@ -239,8 +235,7 @@ const QuoteMail = ({
         Total: Total || quotesData?.Total || "",
         IsSendpdf: !!isPdfChecked,
       };
-      console.log(customerData, "customerData");
-      console.log(object, "object");
+
       const response = await AxiosInstance.post(url, object);
       if (response?.data?.statusCode === 200) {
         showToast.success(response?.data?.message);

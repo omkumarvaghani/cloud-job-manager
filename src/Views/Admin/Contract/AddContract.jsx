@@ -148,6 +148,7 @@ function AddContract() {
           Total: Total,
           subTotal: subTotal,
           WorkerId: workerId,
+          CustomerId: customersData.CustomerId,
           QuoteId: location?.state?.QuoteId,
           Frequency: values?.RecuringJob?.Frequency,
           Duration: values?.RecuringJob?.Duration,
@@ -331,7 +332,6 @@ function AddContract() {
           });
           setActiveTab(data.IsOneoffJob ? 1 : 2);
 
-          // Initialize selected teams with both Company role members and contract-assigned members
           const members = teamData.filter((item) =>
             data.WorkerId.includes(item.UserId)
           );
@@ -343,6 +343,7 @@ function AddContract() {
               LastName: team.LastName,
               EmailAddress: team.EmailAddress,
               WorkerId: team.UserId,
+              CompanyId: team.UserId,
             }));
 
           const selectedMembers = [
@@ -571,13 +572,31 @@ function AddContract() {
     toggleDropdown();
   };
 
-  const handleRemoveTeam = (team) => {
-    // Prevent removing Company role members
-    if (team.Role === "Company") {
-      showToast.warning("Cannot remove team member with Company role.");
-      return;
-    }
+  // const handleRemoveTeam = (team) => {
+  //   if (team.Role === "Company") {
+  //     showToast.warning("Cannot remove team member with Company role.");
+  //     return;
+  //   }
 
+  //   setSelectedTeams((prevTeams) =>
+  //     prevTeams.filter(
+  //       (selectedTeam) => selectedTeam?.WorkerId !== team?.WorkerId
+  //     )
+  //   );
+
+  //   setCheckedState((prevState) => {
+  //     const updatedState = { ...prevState };
+  //     delete updatedState[team?.WorkerId];
+  //     return updatedState;
+  //   });
+
+  //   setAssignPersonId((prevIds) =>
+  //     prevIds.filter((id) => id !== team?.WorkerId)
+  //   );
+
+  //   setIds((prevIds) => prevIds.filter((id) => id !== team?.WorkerId));
+  // };
+  const handleRemoveTeam = (team) => {
     setSelectedTeams((prevTeams) =>
       prevTeams.filter(
         (selectedTeam) => selectedTeam?.WorkerId !== team?.WorkerId
@@ -597,43 +616,90 @@ function AddContract() {
     setIds((prevIds) => prevIds.filter((id) => id !== team?.WorkerId));
   };
 
+  // const handleTeamSelect = (event, team) => {
+  //   const companyTeams =
+  //     team.Role === "Company"
+  //       ? [
+  //           {
+  //             OwnerName: team.OwnerName,
+  //             FirstName: team?.FirstName,
+  //             LastName: team?.LastName,
+  //             EmailAddress: team.EmailAddress,
+  //             WorkerId: team?.UserId,
+  //           },
+  //         ]
+  //       : [];
+
+  //   if (event.target.checked) {
+  //     setSelectedTeams((prevTeams) => {
+  //       const filteredTeams = prevTeams.filter(
+  //         (selectedTeam) => selectedTeam.WorkerId !== team.UserId
+  //       );
+  //       return [
+  //         ...companyTeams,
+  //         ...filteredTeams,
+  //         ...(team.Role !== "Company"
+  //           ? [
+  //               {
+  //                 OwnerName: team.OwnerName,
+  //                 FirstName: team?.FirstName,
+  //                 LastName: team?.LastName,
+  //                 EmailAddress: team.EmailAddress,
+  //                 WorkerId: team?.UserId,
+  //               },
+  //             ]
+  //           : []),
+  //       ];
+  //     });
+
+  //     setCheckedState((prevState) => ({
+  //       ...prevState,
+  //       [team?.UserId]: true,
+  //     }));
+
+  //     setIds((prevIds) => {
+  //       const newIds = prevIds.filter((id) => id !== team.UserId);
+  //       return [...newIds, team?.UserId];
+  //     });
+
+  //     setAssignPersonId((prevIds) => {
+  //       const newIds = prevIds.filter((id) => id !== team.WorkerId);
+  //       return [...newIds, team?.UserId];
+  //     });
+  //   } else if (team.Role !== "Company") {
+  //     // Only allow unchecking for non-Company roles
+  //     setSelectedTeams((prevTeams) =>
+  //       prevTeams.filter(
+  //         (selectedTeam) => selectedTeam?.WorkerId !== team?.UserId
+  //       )
+  //     );
+
+  //     setCheckedState((prevState) => ({
+  //       ...prevState,
+  //       [team?.UserId]: false,
+  //     }));
+
+  //     setIds((prevIds) => prevIds.filter((id) => id !== team?.UserId));
+  //     setAssignPersonId((prevIds) =>
+  //       prevIds.filter((id) => id !== team?.UserId)
+  //     );
+  //   }
+  // };
   const handleTeamSelect = (event, team) => {
-    // Always include team members with Role "Company"
-    const companyTeams =
-      team.Role === "Company"
-        ? [
-            {
-              OwnerName: team.OwnerName,
-              FirstName: team?.FirstName,
-              LastName: team?.LastName,
-              EmailAddress: team.EmailAddress,
-              WorkerId: team?.UserId,
-            },
-          ]
-        : [];
+    const newTeam = {
+      OwnerName: team.OwnerName,
+      FirstName: team?.FirstName,
+      LastName: team?.LastName,
+      EmailAddress: team.EmailAddress,
+      WorkerId: team?.UserId,
+    };
 
     if (event.target.checked) {
-      // If checking a box, add the team to selected teams
       setSelectedTeams((prevTeams) => {
-        // Filter out any existing entry for this team to avoid duplicates
         const filteredTeams = prevTeams.filter(
           (selectedTeam) => selectedTeam.WorkerId !== team.UserId
         );
-        return [
-          ...companyTeams,
-          ...filteredTeams,
-          ...(team.Role !== "Company"
-            ? [
-                {
-                  OwnerName: team.OwnerName,
-                  FirstName: team?.FirstName,
-                  LastName: team?.LastName,
-                  EmailAddress: team.EmailAddress,
-                  WorkerId: team?.UserId,
-                },
-              ]
-            : []),
-        ];
+        return [...filteredTeams, newTeam];
       });
 
       setCheckedState((prevState) => ({
@@ -647,11 +713,11 @@ function AddContract() {
       });
 
       setAssignPersonId((prevIds) => {
-        const newIds = prevIds.filter((id) => id !== team.WorkerId);
+        const newIds = prevIds.filter((id) => id !== team.UserId);
         return [...newIds, team?.UserId];
       });
-    } else if (team.Role !== "Company") {
-      // Only allow unchecking for non-Company roles
+    } else {
+      // Allow unchecking any role including Company
       setSelectedTeams((prevTeams) =>
         prevTeams.filter(
           (selectedTeam) => selectedTeam?.WorkerId !== team?.UserId
@@ -669,7 +735,6 @@ function AddContract() {
       );
     }
   };
-
   const initializeCompanyTeams = (teams) => {
     const companyTeams = teams
       .filter((team) => team.Role === "Company")
@@ -729,7 +794,6 @@ function AddContract() {
       if (response?.status === 200) {
         const teams = response?.data?.data;
         setTeamData(teams);
-        // Initialize Company role members after fetching team data
         initializeCompanyTeams(teams);
       } else {
         console.error("Error fetching team data:", response);

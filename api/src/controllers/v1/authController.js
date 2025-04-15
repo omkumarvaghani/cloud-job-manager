@@ -207,10 +207,10 @@ const sendWelcomeEmailToCompanyLogic = async (UserId) => {
 
   return emailStatus
     ? {
-      statusCode: 200,
-      message: `Email sent to ${findUser.EmailAddress}`,
-      defaultBody,
-    }
+        statusCode: 200,
+        message: `Email sent to ${findUser.EmailAddress}`,
+        defaultBody,
+      }
     : { statusCode: 500, message: "Failed to send email" };
 };
 

@@ -377,14 +377,14 @@ const ContractDetails = ({
                         style={{ fontSize: "14px", width: "80%" }}
                       >
                         {contractData?.location?.Address ||
-                          "Address not available"}{" "}
-                        ,{contractData?.location?.City || "City not available"}{" "}
-                        ,
-                        {contractData?.location?.State || "State not available"}{" "}
-                        ,
+                          "Address not available"}
+                        , {contractData?.location?.City || "City not available"}
+                        ,{" "}
+                        {contractData?.location?.State || "State not available"}
+                        ,{" "}
                         {contractData?.location?.Country ||
-                          "Country not available"}{" "}
-                        ,{contractData?.location?.Zip || "Zip not available"}
+                          "Country not available"}
+                        , {contractData?.location?.Zip || "Zip not available"}
                       </Typography>
                     </Col>
                   </Col>
@@ -750,7 +750,7 @@ const ContractDetails = ({
                     label="+ New Expense"
                   />
                 </Grid>
-       
+
                 {contractData?.expenseData &&
                 contractData?.expenseData.length > 0 ? (
                   <Grid className="w-100">
@@ -808,7 +808,6 @@ const ContractDetails = ({
                         <TableBody>
                           {contractData?.expenseData.map((item, index) => (
                             <TableRow key={index}>
-                             
                               <TableCell
                                 className="text-blue-color contractDataTableSub"
                                 style={{ fontSize: "16px", fontWeight: 600 }}
@@ -1194,6 +1193,7 @@ const ContractDetails = ({
                                           ? item?.AssignPersons.join(", ")
                                           : "Not Assigned Yet"}
                                       </TableCell>
+
                                       <TableCell
                                         className="text-blue-color text-end contractEditDeleteTable"
                                         style={{
@@ -1413,7 +1413,7 @@ const ContractDetails = ({
         VisitId={VisitId}
         setVisitId={setVisitId}
         CustomerId={CustomerId}
-      /> 
+      />
       <ContractMail
         modal={mail}
         setModal={setMail}

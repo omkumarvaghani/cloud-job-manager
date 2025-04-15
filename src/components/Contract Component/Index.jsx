@@ -1579,7 +1579,6 @@ const Team = ({ setIds = (assignPersonId) => {}, ids, isAddTeam = true }) => {
 
   const handleTeamSelect = (event, team) => {
     if (event.target.checked) {
-      console.log(event.target.checked, "event.target.checked");
       setSelectedTeams((prevTeams) => [
         ...prevTeams,
         {

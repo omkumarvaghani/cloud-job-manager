@@ -825,7 +825,7 @@ exports.updateContract = async (req, res) => {
   }
 
   const contract = await Contract.findOne({ ContractId, IsDelete: false });
-  console.log(contract,"contract")
+ 
   if (!contract) {
     return {
       statusCode: 404,

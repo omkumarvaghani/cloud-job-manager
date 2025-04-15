@@ -304,12 +304,12 @@ const QuotesDetails = ({
                     style={{ fontSize: "14px", width: "80%" }}
                   >
                     {quotesData?.locationData?.Address ||
-                      "Address not available"}{" "}
-                    ,{quotesData?.locationData?.City || "City not available"} ,
-                    {quotesData?.locationData?.State || "State not available"} ,
+                      "Address not available"}
+                    , {quotesData?.locationData?.City || "City not available"},{" "}
+                    {quotesData?.locationData?.State || "State not available"},{" "}
                     {quotesData?.locationData?.Country ||
-                      "Country not available"}{" "}
-                    ,{quotesData?.locationData?.Zip || "Zip not available"}
+                      "Country not available"}
+                    , {quotesData?.locationData?.Zip || "Zip not available"}
                   </Typography>
                 </Col>
                 <Col className="col-2 " xl={3}>
