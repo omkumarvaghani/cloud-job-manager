@@ -6,10 +6,11 @@ const moment = require("moment");
 //**CREATE VISIT**
 exports.createVisit = async (req, res) => {
   const data = req.body;
+  console.log(data, "data");
 
-  if (!Array.isArray(data.WorkerId)) {
-    data.WorkerId = [data.WorkerId];
-  }
+  data.WorkerId = Array.isArray(data.UserId) ? data.UserId : [data.UserId];
+  delete data.UserId;
+
   if (data.StartDate) {
     data.StartDate = convertLocalToUTC(data.StartDate);
   }

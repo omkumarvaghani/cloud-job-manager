@@ -717,7 +717,6 @@ function AddContract() {
         return [...newIds, team?.UserId];
       });
     } else {
-      // Allow unchecking any role including Company
       setSelectedTeams((prevTeams) =>
         prevTeams.filter(
           (selectedTeam) => selectedTeam?.WorkerId !== team?.UserId

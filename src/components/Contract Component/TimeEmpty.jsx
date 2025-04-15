@@ -569,23 +569,29 @@ const TimeEmpty = ({
                     setSelectedPerson(newValue);
                   }}
                   textFieldProps={formik?.getFieldProps("WorkerId")}
-                  options={teamData || []} // Ensure options is an array, default to empty if undefined
+                  options={teamData || []} 
                   value={selectedPerson || null}
                   inputValue={
                     selectedPerson
-                      ? selectedPerson.OwnerName ||
-                        `${selectedPerson.FirstName || ""} ${
-                          selectedPerson.LastName || ""
-                        }`.trim()
+                      ? [
+                          `${selectedPerson.FirstName || ""} ${
+                            selectedPerson.LastName || ""
+                          }`.trim(),
+                          selectedPerson.OwnerName || "",
+                        ]
+                          .filter(Boolean)
+                          .join(" || ")
                       : ""
                   }
                   onTextFieldChange={formik?.handleChange}
                   onBlur={formik?.handleBlur}
-                  getOptionLabel={(option) =>
-                    `${option?.FirstName || ""} ${option?.LastName || ""} || ${
-                      option?.OwnerName || ""
-                    }`.trim()
-                  }
+                  getOptionLabel={(option) => {
+                    const fullName = `${option?.FirstName || ""} ${
+                      option?.LastName || ""
+                    }`.trim();
+                    const ownerName = option?.OwnerName || "";
+                    return [fullName, ownerName].filter(Boolean).join(" || ");
+                  }}
                   error={
                     formik?.touched?.WorkerId &&
                     Boolean(formik?.errors?.WorkerId)
@@ -594,13 +600,18 @@ const TimeEmpty = ({
                     formik?.touched?.WorkerId && formik?.errors?.WorkerId
                   }
                   filterOptions={(options, state) => {
-                    return (options || []).filter((option) =>
-                      `${option?.FirstName || ""} ${
+                    return (options || []).filter((option) => {
+                      const fullName = `${option?.FirstName || ""} ${
                         option?.LastName || ""
-                      } || ${option?.OwnerName || ""}`
+                      }`.trim();
+                      const ownerName = option?.OwnerName || "";
+                      const label = [fullName, ownerName]
+                        .filter(Boolean)
+                        .join(" || ");
+                      return label
                         .toLowerCase()
-                        .includes(state?.inputValue?.toLowerCase() || "")
-                    );
+                        .includes(state?.inputValue?.toLowerCase() || "");
+                    });
                   }}
                   name="Employee"
                   label="Employee"

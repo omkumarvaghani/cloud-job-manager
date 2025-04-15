@@ -67,6 +67,7 @@ const Visit = ({
       const visitRes = await AxiosInstance.get(
         `/v1/visit/visits/${VisitId}/${ContractId}`
       );
+      console.log(visitRes, "visitResvisitRes");
       formik.setValues({
         ItemName: visitRes?.data?.data?.ItemName,
         Note: visitRes?.data?.data?.Note,
@@ -74,10 +75,10 @@ const Visit = ({
         EndTime: visitRes?.data?.data?.EndTime,
         StartDate: visitRes?.data?.data?.StartDate,
         EndDate: visitRes?.data?.data?.EndDate,
-        UserId: visitRes?.data?.data?.UserId,
+        UserId: visitRes?.data?.data?.WorkerId,
       });
       const members = teamData.filter((item) =>
-        visitRes?.data?.data?.UserId?.includes(item?.UserId)
+        visitRes?.data?.data?.WorkerId?.includes(item?.UserId)
       );
 
       if (members && members.length > 0) {
@@ -289,46 +290,58 @@ const Visit = ({
   const handleRemoveTeam = (team) => {
     setSelectedTeams((prevTeams) =>
       prevTeams.filter(
-        (selectedTeam) => selectedTeam?.UserId !== team?.UserId
+        (selectedTeam) => selectedTeam?.WorkerId !== team?.WorkerId
       )
     );
 
     setCheckedState((prevState) => {
       const updatedState = { ...prevState };
-      delete updatedState[team?.UserId];
+      delete updatedState[team?.WorkerId];
       return updatedState;
     });
 
     setAssignPersonId((prevIds) =>
-      prevIds.filter((id) => id !== team?.UserId)
+      prevIds.filter((id) => id !== team?.WorkerId)
     );
 
-    setIds((prevIds) => prevIds.filter((id) => id !== team?.UserId));
+    setIds((prevIds) => prevIds.filter((id) => id !== team?.WorkerId));
   };
 
   const handleTeamSelect = (event, team) => {
-    if (event?.target?.checked) {
-      setSelectedTeams((prevTeams) => [
-        ...prevTeams,
-        {
-          FirstName: team?.FirstName,
-          LastName: team?.LastName,
-          EmailAddress: team?.EmailAddress,
-          UserId: team?.UserId,
-        },
-      ]);
+    const newTeam = {
+      OwnerName: team.OwnerName,
+      FirstName: team?.FirstName,
+      LastName: team?.LastName,
+      EmailAddress: team.EmailAddress,
+      WorkerId: team?.UserId,
+    };
+
+    if (event.target.checked) {
+      setSelectedTeams((prevTeams) => {
+        const filteredTeams = prevTeams.filter(
+          (selectedTeam) => selectedTeam.WorkerId !== team.UserId
+        );
+        return [...filteredTeams, newTeam];
+      });
 
       setCheckedState((prevState) => ({
         ...prevState,
         [team?.UserId]: true,
       }));
 
-      setIds((prevIds) => [...prevIds, team?.UserId]);
-      setAssignPersonId((prevIds) => [...prevIds, team?.UserId]);
+      setIds((prevIds) => {
+        const newIds = prevIds.filter((id) => id !== team.UserId);
+        return [...newIds, team?.UserId];
+      });
+
+      setAssignPersonId((prevIds) => {
+        const newIds = prevIds.filter((id) => id !== team.UserId);
+        return [...newIds, team?.UserId];
+      });
     } else {
       setSelectedTeams((prevTeams) =>
         prevTeams.filter(
-          (selectedTeam) => selectedTeam?.UserId !== team?.UserId
+          (selectedTeam) => selectedTeam?.WorkerId !== team?.UserId
         )
       );
 
@@ -803,7 +816,7 @@ const Visit = ({
                         style={{
                           height: "300px",
                           right: "200px",
-                          width: "280px",
+                          width: "300px",
                         }}
                         className="selectTeamModel"
                       >
@@ -814,7 +827,7 @@ const Visit = ({
                             justifyContent: "space-between",
                           }}
                         >
-                          Select 
+                          Select Team
                           <CloseIcon
                             onClick={toggleDropdown}
                             style={{ cursor: "pointer" }}
@@ -828,16 +841,11 @@ const Visit = ({
                         >
                           <Grid onClick={handleOutsideClick}>
                             {teamData && teamData?.length > 0 ? (
-                              teamData?.map((person) => (
+                              teamData.map((person) => (
                                 <FormGroup
                                   check
                                   className="my-3 mb-0"
-                                  key={person?._id}
-                                  style={{
-                                    display: "flex",
-                                    gap: "10px",
-                                    flexDirection: "row",
-                                  }}
+                                  key={person.WorkerId}
                                 >
                                   <Input
                                     type="checkbox"
@@ -849,32 +857,41 @@ const Visit = ({
                                       handleTeamSelect(e, person)
                                     }
                                   />
-                                  <Grid>
+                                  {person?.Role === "Company" && (
                                     <Label
                                       style={{
-                                        fontSize: "16px",
-                                        color: "rgba(6,49,100,0.7)",
-                                        fontWeight: "400",
-                                        marginBottom: 0,
+                                        fontSize: "14px",
+                                        color: "rgba(6,49,100,0.6)",
+                                        fontWeight: "500",
+                                        marginBottom: "0px",
                                       }}
                                     >
-                                      {`${person?.FirstName} ${person?.LastName}` ||
-                                        "Name not available"}
+                                      Account Owner :
                                     </Label>
-                                    <Label
-                                      style={{
-                                        fontSize: "16px",
-                                        color: "rgba(6,49,100,0.7)",
-                                        fontWeight: "400",
-                                        marginBottom: 0,
-                                      }}
-                                    >
-                                      (
-                                      {person?.EmailAddress ||
-                                        "EmailAddress not available"}{" "}
-                                      )
-                                    </Label>
-                                  </Grid>
+                                  )}
+                                  <Label
+                                    style={{
+                                      fontSize: "16px",
+                                      color: "rgba(6,49,100,0.7)",
+                                      fontWeight: "400",
+                                      marginBottom: 0,
+                                    }}
+                                  >
+                                    {`${person?.FirstName || ""} ${
+                                      person?.LastName || ""
+                                    }`}
+                                  </Label>
+
+                                  <Label
+                                    style={{
+                                      fontSize: "16px",
+                                      color: "rgba(6,49,100,0.7)",
+                                      fontWeight: "400",
+                                      marginBottom: 0,
+                                    }}
+                                  >
+                                    <span>({person?.EmailAddress})</span>
+                                  </Label>
                                 </FormGroup>
                               ))
                             ) : (
