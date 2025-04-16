@@ -26,5 +26,6 @@ router.use("/v1/company-mail", require("../routes/v1/companyMailRoutes"));
 router.use("/v1/email-logs", require("../routes/v1/emailLogRoutes"));
 router.use("/v1/super-admin", require("../routes/v1/superRoutes"));
 router.use("/v1/forget-pass", require("../routes/v1/forgetRoutes"));
+router.use("/v1/dropbox", require("../routes/v1/dropboxRoutes"));
 
 module.exports = router;

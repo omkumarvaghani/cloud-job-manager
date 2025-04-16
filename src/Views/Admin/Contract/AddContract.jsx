@@ -168,11 +168,12 @@ function AddContract() {
           response = await AxiosInstance.post(`/v1/contract`, object);
         } else {
           response = await AxiosInstance.put(
-            `/contract/${location?.state?.id}`,
+            `/v1/contract/${location?.state?.id}`,
             object
           );
+          console.log(response, "response");
         }
-        if (response?.data?.statusCode === 200) {
+        if (response?.data?.statusCode === "200") {
           setTimeout(() => {
             showToast.success(response?.data?.message);
           }, 500);

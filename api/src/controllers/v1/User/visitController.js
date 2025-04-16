@@ -8,8 +8,9 @@ exports.createVisit = async (req, res) => {
   const data = req.body;
   console.log(data, "data");
 
-  data.WorkerId = Array.isArray(data.UserId) ? data.UserId : [data.UserId];
-  delete data.UserId;
+  const workerIds = Array.isArray(data.WorkerId)
+    ? data.WorkerId
+    : [data.WorkerId];
 
   if (data.StartDate) {
     data.StartDate = convertLocalToUTC(data.StartDate);
@@ -19,13 +20,18 @@ exports.createVisit = async (req, res) => {
   }
 
   try {
-    const createdVisit = await Visit.create(data);
+    const createdVisit = await Visit.create({
+      ...data,
+      WorkerId: workerIds,
+    });
+
     await logUserEvent(
       req.user.UserId,
       "CREATE",
       `Visit created with ID ${createdVisit.VisitId}.`,
       createdVisit
     );
+
     return res.status(200).json({
       statusCode: 200,
       message: "Visit created successfully.",

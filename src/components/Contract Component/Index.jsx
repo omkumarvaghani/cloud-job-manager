@@ -125,31 +125,6 @@ const InternalNotes = ({
             setFiles={(value) => setAttachments(value)}
             IsDeleted={true}
           />
-          {/* <hr /> */}
-          {/* <Grid>
-            <Typography
-              style={{ fontSize: "14px" }}
-              className="text-blue-color mb-2"
-            >
-              Link note to related
-            </Typography>
-            <FormGroup check>
-              <Grid className="d-flex gap-2 align-items-center">
-                <Input
-                  type="checkbox"
-                  className="text-blue-color"
-                  style={{ marginTop: 0 }}
-                />
-                <Label
-                  className="text-blue-color"
-                  style={{ fontSize: "15px", marginBottom: 0 }}
-                  check
-                >
-                  Invoices
-                </Label>
-              </Grid>
-            </FormGroup>
-          </Grid> */}
         </Grid>
       </Card>
     </>
@@ -164,69 +139,11 @@ const OneOffContract = ({
     setIsCalendarVisible(!isCalendarVisible);
   };
 
-  const handleStartDateChange = (e) => {
-    const startDate = e?.target?.value;
-    formik.setFieldValue("OneoffJob.StartDate", startDate);
-
-    if (
-      formik?.values?.OneoffJob?.EndDate &&
-      startDate > formik?.values?.OneoffJob?.EndDate
-    ) {
-      formik.setFieldValue("OneoffJob.EndDate", startDate);
-    }
-  };
-
-  const handleEndDateChange = (e) => {
-    const endDate = e?.target?.value;
-    if (
-      formik?.values?.OneoffJob?.StartDate &&
-      endDate >= formik?.values?.OneoffJob?.StartDate
-    ) {
-      formik.setFieldValue("OneoffJob.EndDate", endDate);
-    } else if (
-      formik?.values?.OneoffJob?.StartDate &&
-      endDate < formik?.values?.OneoffJob?.StartDate
-    ) {
-      formik.setFieldValue(
-        "OneoffJob.EndDate",
-        formik?.values?.OneoffJob?.StartDate
-      );
-    }
-  };
-
-  const handleStartTimeChange = (e) => {
-    const startTime = e.target.value;
-    formik.setFieldValue("OneoffJob.StartTime", startTime);
-
-    if (
-      formik?.values?.OneoffJob?.EndTime &&
-      startTime > formik?.values?.OneoffJob?.EndTime
-    ) {
-      formik.setFieldValue("OneoffJob.EndTime", startTime);
-    }
-  };
-
-  const handleEndTimeChange = (e) => {
-    const endTime = e.target.value;
-    if (
-      formik?.values?.OneoffJob?.StartTime &&
-      endTime >= formik?.values?.OneoffJob?.StartTime
-    ) {
-      formik.setFieldValue("OneoffJob.EndTime", endTime);
-    } else if (
-      formik?.values?.OneoffJob?.StartTime &&
-      endTime < formik?.values?.OneoffJob?.StartTime
-    ) {
-      formik?.setFieldValue(
-        "OneoffJob.EndTime",
-        formik?.values?.OneoffJob?.StartTime
-      );
-    }
-  };
+  const isScheduleLetterChecked = formik?.values?.OneoffJob?.ScheduleLetter;
 
   return (
     <Col
-      className="col-md-4 col-lg-12 col-sm-12 first-tab "
+      className="col-md-4 col-lg-12 col-sm-12 first-tab"
       md={4}
       lg={12}
       sm={12}
@@ -263,54 +180,21 @@ const OneOffContract = ({
                   />
                 </Typography>
               </CardHeader>
-              <CardBody>
+
+              <CardBody
+                className={isScheduleLetterChecked ? "blurred-fields" : ""}
+              >
                 <Row className="d-flex flex-wrap row start-end-date mb-2">
-                  {/* Start Date */}
-                  <FormGroup className="col-sm-12 col-md-6 start-date d-flex flex-column mb-3 mb-md-0">
+                 
+                  <FormGroup className="col-sm-12 col-md-6 d-flex flex-column mb-3 mb-md-0">
                     <Label htmlFor="startDate" className="mt-2 text-blue-color">
                       Start Date
                     </Label>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={["DatePicker"]}>
-                        {/* <DatePicker
-                          label="Start Date"
-                          value={
-                            formik?.values?.OneoffJob?.StartDate &&
-                            dayjs(
-                              formik?.values?.OneoffJob?.StartDate
-                            ).isValid()
-                              ? dayjs(formik?.values?.OneoffJob?.StartDate)
-                              : null
-                          }
-                          onChange={(value) => {
-                            const startDate =
-                              value && dayjs(value).isValid()
-                                ? value.toISOString()
-                                : null;
-                            formik.setFieldValue(
-                              "OneoffJob.StartDate",
-                              startDate
-                            );
-                            if (
-                              formik?.values?.OneoffJob?.EndDate &&
-                              new Date(startDate) >
-                                new Date(formik?.values?.OneoffJob?.EndDate)
-                            ) {
-                              formik.setFieldValue("OneoffJob.EndDate", null);
-                            }
-                          }}
-                          onBlur={formik?.handleBlur}
-                          sx={{
-                            width: "100%",
-                            minWidth: "250px", // Minimum width to prevent shrinking
-                            "& .MuiInputBase-root": { borderRadius: "8px" },
-                            "& .MuiInputBase-input": { color: "#063164" },
-                            "& .MuiInputLabel-root": { color: "#063164" },
-                            "& .MuiSvgIcon-root": { color: "#063164" },
-                          }}
-                        /> */}
                         <DatePicker
                           label="Start Date"
+                          disabled={isScheduleLetterChecked}
                           value={
                             formik?.values?.OneoffJob?.StartDate &&
                             dayjs(
@@ -336,10 +220,12 @@ const OneOffContract = ({
                               formik.setFieldValue("OneoffJob.EndDate", null);
                             }
                           }}
-                          onBlur={formik?.handleBlur}
                           sx={{
                             width: "100%",
                             minWidth: "250px",
+                            filter: isScheduleLetterChecked
+                              ? "blur(1px)"
+                              : "none",
                             "& .MuiOutlinedInput-root": {
                               borderRadius: "8px",
                               "& .MuiOutlinedInput-notchedOutline": {
@@ -359,23 +245,11 @@ const OneOffContract = ({
                           }}
                         />
                       </DemoContainer>
-                      {formik?.touched?.OneoffJob?.StartDate &&
-                        formik?.errors?.OneoffJob?.StartDate && (
-                          <Typography
-                            style={{
-                              color: "red",
-                              marginLeft: "10px",
-                              fontSize: "13px",
-                            }}
-                          >
-                            {formik?.errors?.OneoffJob?.StartDate}
-                          </Typography>
-                        )}
                     </LocalizationProvider>
                   </FormGroup>
 
                   {/* End Date */}
-                  <FormGroup className="col-sm-12 col-md-6 end-date d-flex flex-column">
+                  <FormGroup className="col-sm-12 col-md-6 d-flex flex-column">
                     <Label htmlFor="endDate" className="mt-2">
                       End Date (optional)
                     </Label>
@@ -383,6 +257,7 @@ const OneOffContract = ({
                       <DemoContainer components={["DatePicker"]}>
                         <DatePicker
                           label="End Date"
+                          disabled={isScheduleLetterChecked}
                           value={
                             formik?.values?.OneoffJob?.EndDate &&
                             dayjs(formik?.values?.OneoffJob?.EndDate).isValid()
@@ -407,7 +282,6 @@ const OneOffContract = ({
                               formik.setFieldValue("OneoffJob.EndDate", null);
                             }
                           }}
-                          onBlur={formik?.handleBlur}
                           minDate={
                             formik?.values?.OneoffJob?.StartDate
                               ? dayjs(formik?.values?.OneoffJob?.StartDate)
@@ -416,6 +290,9 @@ const OneOffContract = ({
                           sx={{
                             width: "100%",
                             minWidth: "250px",
+                            filter: isScheduleLetterChecked
+                              ? "blur(1px)"
+                              : "none",
                             "& .MuiOutlinedInput-root": {
                               borderRadius: "8px",
                               "& .MuiOutlinedInput-notchedOutline": {
@@ -435,18 +312,6 @@ const OneOffContract = ({
                           }}
                         />
                       </DemoContainer>
-                      {formik?.touched?.OneoffJob?.EndDate &&
-                        formik?.errors?.OneoffJob?.EndDate && (
-                          <Typography
-                            style={{
-                              color: "red",
-                              marginLeft: "10px",
-                              fontSize: "13px",
-                            }}
-                          >
-                            {formik?.errors?.OneoffJob?.EndDate}
-                          </Typography>
-                        )}
                     </LocalizationProvider>
                   </FormGroup>
                 </Row>
@@ -463,27 +328,37 @@ const OneOffContract = ({
                     className="col-6 border-blue-color"
                     style={{
                       borderBottomLeftRadius: "10px",
-                      border: "1px solid rgba(6, 49, 100, 30%)",
                       borderTopLeftRadius: "10px",
+                      border: "1px solid rgba(6, 49, 100, 30%)",
                     }}
                   >
                     <Input
                       id="startTime"
-                      placeholder="Start time"
                       type="time"
                       name="OneoffJob.StartTime"
-                      className="text-blue-color border-blue-color boxShadowNone"
-                      onChange={handleStartTimeChange}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        formik.setFieldValue("OneoffJob.StartTime", val);
+                        if (
+                          formik?.values?.OneoffJob?.EndTime &&
+                          val > formik?.values?.OneoffJob?.EndTime
+                        ) {
+                          formik.setFieldValue("OneoffJob.EndTime", val);
+                        }
+                      }}
                       value={formik?.values?.OneoffJob?.StartTime}
+                      disabled={isScheduleLetterChecked}
                       style={{
                         fontSize: "14px",
                         border: "none",
+                        height: "40px",
                         borderBottomLeftRadius: "10px",
                         borderTopLeftRadius: "10px",
-                        height: "40px",
+                        filter: isScheduleLetterChecked ? "blur(1px)" : "none",
                       }}
                     />
                   </Col>
+
                   <Col
                     className="col-6 border-blue-color"
                     style={{
@@ -495,19 +370,32 @@ const OneOffContract = ({
                   >
                     <Input
                       id="EndTime"
-                      placeholder="Start time"
                       type="time"
                       name="OneoffJob.EndTime"
-                      onChange={handleEndTimeChange}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (
+                          formik?.values?.OneoffJob?.StartTime &&
+                          val < formik?.values?.OneoffJob?.StartTime
+                        ) {
+                          formik.setFieldValue(
+                            "OneoffJob.EndTime",
+                            formik?.values?.OneoffJob?.StartTime
+                          );
+                        } else {
+                          formik.setFieldValue("OneoffJob.EndTime", val);
+                        }
+                      }}
                       value={formik?.values?.OneoffJob?.EndTime}
+                      disabled={isScheduleLetterChecked}
                       style={{
                         fontSize: "14px",
                         border: "none",
+                        height: "40px",
                         borderBottomRightRadius: "14px",
                         borderTopRightRadius: "14px",
-                        height: "40px",
+                        filter: isScheduleLetterChecked ? "blur(1px)" : "none",
                       }}
-                      className="boxShadowNone"
                     />
                   </Col>
                 </Grid>
@@ -518,7 +406,7 @@ const OneOffContract = ({
                       type="checkbox"
                       name="OneoffJob.ScheduleLetter"
                       onChange={formik?.handleChange}
-                      checked={formik?.values?.OneoffJob?.ScheduleLetter}
+                      checked={isScheduleLetterChecked}
                     />
                     <Label
                       className="text-blue-color"
@@ -541,6 +429,7 @@ const OneOffContract = ({
     </Col>
   );
 };
+
 const RecurringContract = ({
   formik,
   isCalendarVisible,
@@ -813,7 +702,7 @@ const RecurringContract = ({
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "8px",
                       "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#063164", 
+                        borderColor: "#063164",
                       },
                       "&:hover .MuiOutlinedInput-notchedOutline": {
                         borderColor: "#063164",

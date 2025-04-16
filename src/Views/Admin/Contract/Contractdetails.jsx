@@ -596,7 +596,7 @@ function ContractDetails() {
               };
 
               const response = await AxiosInstance.post(
-                "/dropbox/signature_request/send",
+                "/v1/dropbox/signature_request/send",
                 data,
                 {
                   headers: {

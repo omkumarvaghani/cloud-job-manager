@@ -293,19 +293,19 @@ function QuotesDetail() {
                 `/v1/quote/quotepdf/${location?.state?.id}`
               );
 
-              const staticFilePath = `${cdnUrl}/upload/${res.data.fileName}`;
+              // const staticFilePath = `${cdnUrl}/upload/${res.data.fileName}`;
 
-              // const staticFilePath =
-              //   "${cdnUrl}/upload/20241204124543_quotes_document123.pdf";
-
+              const staticFilePath =
+                "${cdnUrl}/upload/20241204124543_quotes_document123.pdf";
+              console.log(quotesData, "quotesDataquotesData");
               const data = {
                 title: "Agreement",
                 subject: "Please sign the agreement",
                 message: "Please review and sign the document",
                 signers: [
                   {
-                    email: quotesData?.customer?.EmailAddress,
-                    name: quotesData?.customer?.FirstName,
+                    email: quotesData?.customerData?.EmailAddress,
+                    name: `${quotesData?.customerData?.FirstName} ${quotesData?.customerData?.LastName}`,
                     order: 0,
                   },
                 ],
@@ -315,7 +315,7 @@ function QuotesDetail() {
               };
 
               const response = await AxiosInstance.post(
-                "/dropbox/signature_request/send",
+                "/v1/dropbox/signature_request/send",
                 data,
                 {
                   headers: {

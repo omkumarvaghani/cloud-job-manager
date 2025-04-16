@@ -138,8 +138,6 @@ const Permissions = ({ data, setData }) => {
     }
   }, [selectedPermission, permissions, setData]);
 
- 
-
   return (
     <Grid>
       <Card
@@ -169,12 +167,61 @@ const Permissions = ({ data, setData }) => {
           Start with a predefined permission setting and modify it according to
           your needs.
         </Typography>
+
+        {/* ✅ Make Administrator Checkbox */}
+        {data && (
+          <Grid className="d-flex gap-2 mt-3">
+            <Input
+              type="checkbox"
+              className="border-blue-color"
+              style={{
+                height: "15px",
+                width: "15px",
+                marginTop: "3px",
+                cursor: data.Role === "Company" ? "not-allowed" : "pointer",
+              }}
+              checked={data.Role === "Company" || data.IsAdmin}
+              disabled={data.Role === "Company"}
+              onChange={(e) => {
+                if (data.Role !== "Company") {
+                  setData({ ...data, IsAdmin: e.target.checked });
+                }
+              }}
+            />
+            <Label check className="ml-2">
+              <Typography
+                className="text-blue-color"
+                style={{ fontSize: "14px", fontWeight: 600 }}
+              >
+                Make Administrator
+              </Typography>
+            </Label>
+          </Grid>
+        )}
+
+        {data?.Role === "Company" && (
+          <Typography
+            style={{
+              fontSize: "12px",
+              color: "rgba(6, 49, 100, 0.6)",
+              marginTop: "4px",
+              marginLeft: "24px",
+              fontStyle: "italic",
+            }}
+          >
+            Account owners are administrators with full permissions. Adjust
+            permissions by transferring account ownership to another
+            administrator.
+          </Typography>
+        )}
+
         <Grid
           className="adminPemissionList"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
             gap: "10px",
+            marginTop: "20px",
           }}
         >
           {permissions.length > 0 &&
@@ -197,7 +244,10 @@ const Permissions = ({ data, setData }) => {
                     {item.Title || "Title not available"}
                   </Typography>
                   <Typography
-                    style={{ fontSize: "10px", color: "rgba(6, 49, 100, 50%)" }}
+                    style={{
+                      fontSize: "10px",
+                      color: "rgba(6, 49, 100, 50%)",
+                    }}
                     className="permissionTitleTag"
                   >
                     {item.Description || "Description not available"}
@@ -238,6 +288,7 @@ const Permissions = ({ data, setData }) => {
             </Label>
           </Grid>
         </Grid>
+
         {selectedPermission &&
           Object.entries(selectedPermission).map(
             ([key, value], index) =>

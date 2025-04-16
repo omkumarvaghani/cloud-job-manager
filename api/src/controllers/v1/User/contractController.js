@@ -8,7 +8,9 @@ const User = require("../../../models/User/User");
 const { addNotification } = require("../../../models/User/AddNotification");
 const Notification = require("../../../models/User/Notification");
 const { contractPdf } = require("../../../HtmlFormates/ContractFunction");
-const { generateAndSavePdf } = require("../../../DocumentGenerator/generateDocuments");
+const {
+  generateAndSavePdf,
+} = require("../../../DocumentGenerator/generateDocuments");
 const UserProfile = require("../../../models/User/UserProfile");
 const { handleTemplate } = require("./templateController");
 
@@ -685,7 +687,6 @@ exports.getContractDetails = async (req, res) => {
   }
 };
 
-
 // **GET CONTRACT MAX CONTRACT NUMBER**
 exports.getMaxContractNumber = async (req, res) => {
   try {
@@ -813,6 +814,10 @@ exports.getContractByCustomer = async (req, res) => {
 };
 
 // **UPDATE CONTRACT**
+function isValidDate(date) {
+  return date && !isNaN(new Date(date).getTime());
+}
+
 exports.updateContract = async (req, res) => {
   const { ContractId } = req.params;
   const { products, ...contractData } = req.body;
@@ -825,7 +830,7 @@ exports.updateContract = async (req, res) => {
   }
 
   const contract = await Contract.findOne({ ContractId, IsDelete: false });
- 
+
   if (!contract) {
     return {
       statusCode: 404,
@@ -840,8 +845,14 @@ exports.updateContract = async (req, res) => {
 
   if (
     contractData.OneoffJob &&
-    contractData.OneoffJob.StartDate !== "" &&
-    contractData.OneoffJob.EndDate !== ""
+    contractData.OneoffJob.ScheduleLetter === true
+  ) {
+    await Visit.updateMany({ ContractId, IsDelete: false }, { IsDelete: true });
+  } else if (
+    contractData.OneoffJob &&
+    isValidDate(contractData.OneoffJob.StartDate) &&
+    isValidDate(contractData.OneoffJob.EndDate) &&
+    contractData.OneoffJob.ScheduleLetter !== true
   ) {
     const assignPersonIds = Array.isArray(contractData.WorkerId)
       ? contractData.WorkerId
@@ -859,9 +870,12 @@ exports.updateContract = async (req, res) => {
     );
   }
 
-  await Visit.updateMany({ ContractId, IsRecurring: true }, { IsDelete: true });
+  await Visit.updateMany({ ContractId }, { IsDelete: true });
 
-  if (contractData.RecuringJob && contractData.RecuringJob.StartDate !== "") {
+  if (
+    contractData.RecuringJob &&
+    isValidDate(contractData.RecuringJob.StartDate)
+  ) {
     const assignPersonIds = Array.isArray(contractData.WorkerId)
       ? contractData.WorkerId
       : [];
@@ -961,7 +975,7 @@ exports.updateContract = async (req, res) => {
   await addNotification(notificationData);
 
   return res.status(200).json({
-    statusCode: 200,
+    statusCode: "200",
     message: "Contract updated successfully.",
     data: contract,
     products,
@@ -1284,7 +1298,9 @@ exports.getContractCustomerProperty = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching contracts:", error);
-    return res.status(500).json({ message: "Internal server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -1302,14 +1318,14 @@ exports.generateContractPdf = async (req, res) => {
 
     const contracts = await Contract.aggregate([
       {
-        $match: { ContractId, IsDelete: false }
+        $match: { ContractId, IsDelete: false },
       },
       {
         $lookup: {
           from: "contract-items",
           localField: "ContractId",
           foreignField: "ContractId",
-          as: "items"
+          as: "items",
         },
       },
       {
@@ -1317,7 +1333,7 @@ exports.generateContractPdf = async (req, res) => {
           from: "user-profiles",
           localField: "CustomerId",
           foreignField: "UserId",
-          as: "customerData"
+          as: "customerData",
         },
       },
       { $unwind: { path: "$customerData", preserveNullAndEmptyArrays: true } },
@@ -1326,7 +1342,7 @@ exports.generateContractPdf = async (req, res) => {
           from: "users",
           localField: "CustomerId",
           foreignField: "UserId",
-          as: "userData"
+          as: "userData",
         },
       },
       { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
@@ -1335,7 +1351,7 @@ exports.generateContractPdf = async (req, res) => {
           from: "locations",
           localField: "LocationId",
           foreignField: "LocationId",
-          as: "locationData"
+          as: "locationData",
         },
       },
       { $unwind: { path: "$locationData", preserveNullAndEmptyArrays: true } },
@@ -1350,16 +1366,18 @@ exports.generateContractPdf = async (req, res) => {
                 $expr: {
                   $and: [
                     { $in: ["$$companyId", "$CompanyId"] },
-                    { $eq: ["$Role", "Company"] }
-                  ]
-                }
-              }
-            }
+                    { $eq: ["$Role", "Company"] },
+                  ],
+                },
+              },
+            },
           ],
-          as: "companyUserData"
-        }
+          as: "companyUserData",
+        },
       },
-      { $unwind: { path: "$companyUserData", preserveNullAndEmptyArrays: true } },
+      {
+        $unwind: { path: "$companyUserData", preserveNullAndEmptyArrays: true },
+      },
 
       {
         $lookup: {
@@ -1371,16 +1389,21 @@ exports.generateContractPdf = async (req, res) => {
                 $expr: {
                   $and: [
                     { $eq: ["$CompanyId", "$$companyId"] },
-                    { $eq: ["$Role", "Company"] }
-                  ]
-                }
-              }
-            }
+                    { $eq: ["$Role", "Company"] },
+                  ],
+                },
+              },
+            },
           ],
-          as: "companyProfileData"
-        }
+          as: "companyProfileData",
+        },
       },
-      { $unwind: { path: "$companyProfileData", preserveNullAndEmptyArrays: true } },
+      {
+        $unwind: {
+          path: "$companyProfileData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
 
       {
         $addFields: {
@@ -1392,10 +1415,10 @@ exports.generateContractPdf = async (req, res) => {
             Zip: "$companyProfileData.Zip",
             Country: "$companyProfileData.Country",
             PhoneNumber: "$companyProfileData.PhoneNumber",
-            CompanyName: "$companyProfileData.CompanyName"
+            CompanyName: "$companyProfileData.CompanyName",
           },
-          "customerData.EmailAddress": "$userData.EmailAddress"
-        }
+          "customerData.EmailAddress": "$userData.EmailAddress",
+        },
       },
 
       {
@@ -1469,15 +1492,22 @@ exports.sendContractEmail = async (req, res) => {
     const { IsSendpdf, ...data } = req.body;
     const { CustomerId, ContractId } = data;
 
-    const CompanyId = Array.isArray(req.user.CompanyId) ? req.user.CompanyId : [req.user.CompanyId];
+    const CompanyId = Array.isArray(req.user.CompanyId)
+      ? req.user.CompanyId
+      : [req.user.CompanyId];
 
     const findCustomer = await User.findOne({ UserId: CustomerId });
-    const findCustomerProfile = await UserProfile.findOne({ UserId: CustomerId });
+    const findCustomerProfile = await UserProfile.findOne({
+      UserId: CustomerId,
+    });
     const findCompany = await User.findOne({ CompanyId });
-    const findCompanyProfile = await UserProfile.findOne({ CompanyId, Role: "Company" });
+    const findCompanyProfile = await UserProfile.findOne({
+      CompanyId,
+      Role: "Company",
+    });
 
-    console.log(findCustomerProfile, 'findCustomerProfile')
-    console.log(findCustomer, 'findCustomer')
+    console.log(findCustomerProfile, "findCustomerProfile");
+    console.log(findCustomer, "findCustomer");
     if (!findCustomer || !findCustomerProfile) {
       return res.status(404).json({ message: "Customer not found" });
     }
@@ -1518,34 +1548,42 @@ exports.sendContractEmail = async (req, res) => {
         <tr>
           <td style="padding: 40px;font-family: 'Arial', sans-serif; color: #555;text-align:center;">
             <h2 style="font-size: 24px; color: #003366; text-align: center;  font-weight: 700;">Your Custom Contract is Ready!</h2>
-            <p style="font-size: 18px; color: #555; line-height: 1.7; text-align: center; font-weight: 400;">Dear <strong style="color: #003366;">${findCustomerProfile.FirstName
-      } ${findCustomerProfile.LastName}</strong>,</p>
-            <p style="font-size: 16px; color: #555; line-height: 1.6;">Thank you for the opportunity to provide a Contract for <strong style="color: #003366;">${data.Title
-      }</strong> with a total amount of <strong>$${data.Total
-      }</strong>.</p>
+            <p style="font-size: 18px; color: #555; line-height: 1.7; text-align: center; font-weight: 400;">Dear <strong style="color: #003366;">${
+              findCustomerProfile.FirstName
+            } ${findCustomerProfile.LastName}</strong>,</p>
+            <p style="font-size: 16px; color: #555; line-height: 1.6;">Thank you for the opportunity to provide a Contract for <strong style="color: #003366;">${
+              data.Title
+            }</strong> with a total amount of <strong>$${
+      data.Total
+    }</strong>.</p>
             <p style="font-size: 16px; color: #555; line-height: 1.6;">We are excited to present this custom Contract tailored just for you.</p>
       
             <!-- Quote Details Section -->
             <div style=" padding: 15px; text-align: center;  ">
-              <h3 style="font-size: 21px; color: #e88c44; font-weight: 700;">Total Amount: <strong style="font-size: 21px; color: #003366;">$${data.Total
-      }</strong></h3>
+              <h3 style="font-size: 21px; color: #e88c44; font-weight: 700;">Total Amount: <strong style="font-size: 21px; color: #003366;">$${
+                data.Total
+              }</strong></h3>
               <p style="font-size: 16px; color: #718096; font-weight: 400;">Contract Date: <strong>${moment(
-        data.createdAt
-      ).format("DD-MM-YYYY")}</strong></p>
+                data.createdAt
+              ).format("DD-MM-YYYY")}</strong></p>
             </div>
 
       
-            <p style="font-size: 16px; color: #555; line-height: 1.7; text-align: center;">If you have any questions or would like to proceed with this Contract, please reach out to us at <a href="mailto:${findCompany.EmailAddress
-      }" style="color: #003366; text-decoration: none; font-weight: 600;">${findCompany.EmailAddress
-      }</a>.</p>
+            <p style="font-size: 16px; color: #555; line-height: 1.7; text-align: center;">If you have any questions or would like to proceed with this Contract, please reach out to us at <a href="mailto:${
+              findCompany.EmailAddress
+            }" style="color: #003366; text-decoration: none; font-weight: 600;">${
+      findCompany.EmailAddress
+    }</a>.</p>
             <p style="font-size: 16px; color: #555; line-height: 1.7; text-align: center;">We look forward to working with you!</p>
       
             <div style="text-align: end; margin-top: 40px;">
               <p style="font-size: 16px; color: #555;">Best regards,<br />
-                <strong style="color: #003366; font-weight: 700;">${findCompanyProfile.CompanyName
-      }</strong><br />
-                <span style="font-size: 14px; color: #718096;">${findCompany.EmailAddress
-      }</span>
+                <strong style="color: #003366; font-weight: 700;">${
+                  findCompanyProfile.CompanyName
+                }</strong><br />
+                <span style="font-size: 14px; color: #718096;">${
+                  findCompany.EmailAddress
+                }</span>
               </p>
             </div>
           </td>

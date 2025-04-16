@@ -49,7 +49,6 @@ const Visit = ({
   ContractId,
   contractData,
   CompanyId,
-
   fetchData,
   VisitId,
   setVisitId,
@@ -67,7 +66,6 @@ const Visit = ({
       const visitRes = await AxiosInstance.get(
         `/v1/visit/visits/${VisitId}/${ContractId}`
       );
-      console.log(visitRes, "visitResvisitRes");
       formik.setValues({
         ItemName: visitRes?.data?.data?.ItemName,
         Note: visitRes?.data?.data?.Note,
@@ -134,7 +132,7 @@ const Visit = ({
 
           values["CompanyId"] = CompanyId;
           values["ContractId"] = ContractId;
-          values["UserId"] = assignPersonId;
+          values["WorkerId"] = assignPersonId;
           values["CustomerId"] = CustomerId;
           values["LocationId"] = LocationId;
           const response = await AxiosInstance.post(
@@ -169,7 +167,7 @@ const Visit = ({
           setLoader(true);
           values["CompanyId"] = CompanyId;
           values["ContractId"] = ContractId;
-          values["UserId"] = assignPersonId;
+          values["WorkerId"] = assignPersonId;
           values["CustomerId"] = CustomerId;
           values["LocationId"] = LocationId;
 

@@ -266,7 +266,6 @@ const ContractMail = ({
       //   content,
       //   sendToMe: sendToMail ? data?.EmailAddress : false,
       //   selectedFiles: fileUrls,
-
       // };
       const object = {
         CustomerId: contractData?.CustomerId,

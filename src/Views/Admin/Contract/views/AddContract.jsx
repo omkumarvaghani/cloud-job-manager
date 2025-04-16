@@ -411,6 +411,10 @@ const AddContract = ({
                           </Typography>
                         </Typography>
                         <Typography className="text-blue-color">
+                          {console.log(
+                            customersData,
+                            "customersDatacustomersData"
+                          )}
                           {propertyData?.Address ||
                             (Array.isArray(customersData?.location) &&
                             customersData.location.length > 0
@@ -423,6 +427,10 @@ const AddContract = ({
                             "Address not available"}
                           ,
                           <br />
+                          {console.log(
+                            propertyData,
+                            "propertyDatapropertyData"
+                          )}
                           {propertyData?.City ||
                             (Array.isArray(customersData?.location) &&
                             customersData.location.length > 0
