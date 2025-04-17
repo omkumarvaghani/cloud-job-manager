@@ -12,6 +12,10 @@ const {
 const User = require("../../../models/User/User");
 const UserProfile = require("../../../models/User/UserProfile");
 const { handleTemplate } = require("./templateController");
+const {
+  getFileDataUri,
+  getSignatureRequestDetails,
+} = require("./dropboxController");
 
 // **CREATE QUOTE WITH DETAILS**
 exports.createQuoteWithDetails = async (req, res) => {
@@ -390,8 +394,17 @@ exports.getQuotes = async (req, res) => {
 };
 
 // **GET QUOTES DETAILS PAGE**
+const getDropboxFileData = async (signatureRequestId) => {
+  console.log(signatureRequestId, "signatureRequestIdsignatureRequestId");
+  const dataUri = await getFileDataUri(signatureRequestId);
+  console.log(dataUri, "dataUri");
+  const statusCode = await getSignatureRequestDetails(signatureRequestId);
+  console.log(statusCode, "statusCode");
+  return { dataUri: dataUri?.fileDataUri?.dataUri, statusCode };
+};
 const fetchQuoteDetails = async (QuoteId) => {
   try {
+    console.log(QuoteId, "QuoteId");
     const quotes = await Quote.aggregate([
       { $match: { QuoteId, IsDelete: false } },
       {
@@ -435,6 +448,26 @@ const fetchQuoteDetails = async (QuoteId) => {
         },
       },
       {
+        $lookup: {
+          from: "dropboxes",
+          localField: "QuoteId",
+          foreignField: "QuoteId",
+          as: "dropboxFiles",
+          pipeline: [
+            {
+              $match: { IsDeleted: false },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$dropboxFiles",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
         $project: {
           QuoteId: 1,
           CompanyId: 1,
@@ -469,9 +502,22 @@ const fetchQuoteDetails = async (QuoteId) => {
           "locationData.Zip": 1,
           "locationData.Country": 1,
           products: 1,
+          dropboxFiles: 1,
         },
       },
     ]);
+    if (!Array.isArray(quotes[0].dropboxFiles)) {
+      quotes[0].dropboxFiles = [];
+    } else {
+      quotes[0].dropboxFiles = await Promise.all(
+        quotes[0].dropboxFiles.map(async (dropboxFile) => {
+          const { dataUri, statusCode } = await getDropboxFileData(
+            dropboxFile.signatureRequestId
+          );
+          return { ...dropboxFile, dataUri, statusCode };
+        })
+      );
+    }
 
     if (quotes.length === 0) {
       return { success: false, message: "Quote not found", data: null };
@@ -492,7 +538,7 @@ exports.getQuoteDetails = async (req, res) => {
   const { QuoteId } = req.params;
 
   const response = await fetchQuoteDetails(QuoteId);
-
+  console.log(response, "response");
   if (!response.success) {
     return res
       .status(404)
@@ -1384,15 +1430,17 @@ exports.sendEmailWithConfig = async (req, res) => {
   try {
     const { IsSendpdf, ...data } = req.body;
     const { CustomerId, QuoteId } = data;
-    console.log(data, 'data')
-    console.log(CustomerId, 'CustomerId')
+    console.log(data, "data");
+    console.log(CustomerId, "CustomerId");
 
     const CompanyId = Array.isArray(req.user.CompanyId)
       ? req.user.CompanyId
       : [req.user.CompanyId];
 
     const findCustomer = await User.findOne({ UserId: CustomerId });
-    const findCustomerProfile = await UserProfile.findOne({ UserId: CustomerId });
+    const findCustomerProfile = await UserProfile.findOne({
+      UserId: CustomerId,
+    });
     const findCompany = await User.findOne({ CompanyId });
     const findCompanyProfile = await UserProfile.findOne({
       CompanyId,
@@ -1440,15 +1488,27 @@ exports.sendEmailWithConfig = async (req, res) => {
     <tr>
       <td style="padding: 40px; font-family: 'Arial', sans-serif; color: #555; text-align: center;">
         <h2 style="font-size: 24px; color: #003366; text-align: center; font-weight: 700;">Your Custom Quote is Ready!</h2>
-        <p style="font-size: 18px; color: #555; line-height: 1.7; font-weight: 400;">Dear <strong style="color: #003366;">${findCustomerProfile.FirstName} ${findCustomerProfile.LastName}</strong>,</p>
-        <p style="font-size: 16px; color: #555; line-height: 1.6;">Thank you for the opportunity to receive a quote for <strong style="color: #003366;">${data.Title}</strong> with a total amount of <strong>$${data.Total}</strong>.</p>
+        <p style="font-size: 18px; color: #555; line-height: 1.7; font-weight: 400;">Dear <strong style="color: #003366;">${
+          findCustomerProfile.FirstName
+        } ${findCustomerProfile.LastName}</strong>,</p>
+        <p style="font-size: 16px; color: #555; line-height: 1.6;">Thank you for the opportunity to receive a quote for <strong style="color: #003366;">${
+          data.Title
+        }</strong> with a total amount of <strong>$${data.Total}</strong>.</p>
 
         <div style="padding: 15px; text-align: center;">
-          <h3 style="font-size: 21px; color: #e88c44; font-weight: 700;">Total Amount: <strong style="font-size: 21px; color: #003366;">$${data.Total}</strong></h3>
-          <p style="font-size: 16px; color: #718096; font-weight: 400;">Quote Date: <strong>${moment(data.createdAt).format("DD-MM-YYYY")}</strong></p>
+          <h3 style="font-size: 21px; color: #e88c44; font-weight: 700;">Total Amount: <strong style="font-size: 21px; color: #003366;">$${
+            data.Total
+          }</strong></h3>
+          <p style="font-size: 16px; color: #718096; font-weight: 400;">Quote Date: <strong>${moment(
+            data.createdAt
+          ).format("DD-MM-YYYY")}</strong></p>
         </div>
 
-        <p style="font-size: 16px; color: #555;">If you have any questions, please reach out to <a href="mailto:${findCompany.EmailAddress}" style="color: #003366; text-decoration: none; font-weight: 600;">${findCompany.EmailAddress}</a>.</p>
+        <p style="font-size: 16px; color: #555;">If you have any questions, please reach out to <a href="mailto:${
+          findCompany.EmailAddress
+        }" style="color: #003366; text-decoration: none; font-weight: 600;">${
+      findCompany.EmailAddress
+    }</a>.</p>
       </td>
     </tr>
 
@@ -1456,8 +1516,12 @@ exports.sendEmailWithConfig = async (req, res) => {
     <tr>
       <td style="padding: 20px 40px 0 40px; text-align: right; font-family: 'Arial', sans-serif;">
         <p style="font-size: 16px; color: #555; margin: 0;">Best regards,<br />
-          <strong style="color: #003366; font-weight: 700;">${findCompanyProfile.CompanyName}</strong><br />
-          <span style="font-size: 14px; color: #718096;">${findCompany.EmailAddress}</span>
+          <strong style="color: #003366; font-weight: 700;">${
+            findCompanyProfile.CompanyName
+          }</strong><br />
+          <span style="font-size: 14px; color: #718096;">${
+            findCompany.EmailAddress
+          }</span>
         </p>
       </td>
     </tr>
@@ -1471,7 +1535,6 @@ exports.sendEmailWithConfig = async (req, res) => {
     </tr>
   </table>
 `;
-
 
     const QuoteData = [
       {

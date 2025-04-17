@@ -227,19 +227,8 @@ function QuotesDetail() {
 
   const menuItems = [
     {
-      // convrt to contarct is comment but the in live got error so that temporarily this is comment
       label: "Convert to contract",
-      // UCOMMENT FOR THE CONVERT TO CONTRACT
-      // onClick: () => {
-      //   navigate(`/${CompanyUrl}/add-contract`, {
-      //     state: {
-      //       navigats: [...location?.state?.navigats, "/add-contract"],
-      //       QuoteId: location?.state?.id,
-      //       formData: quotesData,
-      //       products: quotesData?.products,
-      //     },
-      //   });
-      // },
+
       onClick: () => {
         if (CompanyUrl) {
           navigate(`/${CompanyUrl}/add-contract`, {
@@ -296,7 +285,7 @@ function QuotesDetail() {
               // const staticFilePath = `${cdnUrl}/upload/${res.data.fileName}`;
 
               const staticFilePath =
-                "${cdnUrl}/upload/20241204124543_quotes_document123.pdf";
+                "https://app.cloudjobmanager.com/cdn/upload/20250417053843_quotes_document(1).pdf";
               console.log(quotesData, "quotesDataquotesData");
               const data = {
                 title: "Agreement",
@@ -329,7 +318,14 @@ function QuotesDetail() {
               fetchData();
             } catch (error) {
               console.error("Error:", error);
-              showToast.error("Failed to send the PDF. Please try again.");
+
+              const errorMessage =
+                error.response?.data?.error || 
+                error.response?.data?.message || 
+                error.message || 
+                "Failed to send the PDF. Please try again."; 
+
+              showToast.error(errorMessage);
             } finally {
               setCollectSignatureLoader(false);
               setProgress(0);

@@ -23,11 +23,11 @@ exports.createSignatureRequest = async (req, res) => {
     const pendingRequest = await SignatureRequest.findOne(query);
 
     if (pendingRequest) {
-      return {
+      return res.status(403).json({
         statusCode: 403,
         message:
           "A signature request is already pending. Please complete it first.",
-      };
+      });
     }
 
     const queryone = {
@@ -45,12 +45,13 @@ exports.createSignatureRequest = async (req, res) => {
     const signedRequest = await SignatureRequest.findOne(queryone);
 
     if (signedRequest) {
-      return {
+      return res.status(405).json({
         statusCode: 405,
         message: "Your document is already signed.",
-      };
+      });
     }
     console.log(data, "data");
+
     const signers = data.signers.map((signer, index) => ({
       emailAddress: signer.email,
       name: signer.name,
@@ -162,6 +163,291 @@ exports.createSignatureRequest = async (req, res) => {
       statusCode: 400,
       message: "Failed to create signature request.",
       error: error.response?.data?.error?.message || error.message,
+    });
+  }
+};
+
+// **GET PDF DIRECT DOWNLOAD**
+exports.getSignatureRequestDetails = async (req, res) => {
+  try {
+    const { signatureRequestId } = req.params;
+
+    const response = await signatureRequestApi.signatureRequestGet(
+      signatureRequestId
+    );
+
+    return res.status(200).json({
+      statusCode: 200,
+      message: "Signature request details retrieved successfully.",
+      data: response.body,
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching signature request:",
+      error.response?.body || error.message
+    );
+    return res.status(400).json({
+      statusCode: 400,
+      message: "Failed to retrieve signature request.",
+      error: error.response?.body || error.message,
+    });
+  }
+};
+
+// **GET PDF**
+exports.getFileDataUri = async (req, res) => {
+  try {
+    const { signatureRequestId } = req.params;
+
+    const response = await signatureRequestApi.signatureRequestFilesAsDataUri(
+      signatureRequestId
+    );
+    return res.status(200).json({
+      success: true,
+      fileDataUri: response.body,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.response?.body || error.message,
+    });
+  }
+};
+
+// **GET PDF URL**
+exports.getDropboxFileUrl = async (req, res) => {
+  try {
+    const { signatureRequestId } = req.params;
+
+    const response = await signatureRequestApi.signatureRequestFilesAsFileUrl(
+      signatureRequestId
+    );
+
+    return res.status(200).json({
+      success: true,
+      fileUrl: response.body.fileUrl,
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching file URL for SignatureRequestId:",
+      signatureRequestId,
+      error.message
+    );
+    return res.status(400).json({
+      success: false,
+      error: error.response?.body || error.message,
+    });
+  }
+};
+
+// **DELET DROPBOX REQUEST**
+exports.deleteAccount = async (req, res) => {
+  try {
+    const { signatureRequestId } = req.params;
+    const DeleteReason = req.body.reason || "No Reason Provided";
+    const signatureRequest = await SignatureRequest.findOne({
+      signatureRequestId,
+    });
+
+    if (!signatureRequest) {
+      return res.status(404).json({
+        statusCode: 404,
+        message: "Dropbox file not found with the given signatureRequestId!",
+      });
+    }
+
+    const result = await SignatureRequest.updateOne(
+      { signatureRequestId },
+      { $set: { IsDeleted: true } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({
+        statusCode: 404,
+        message: "Dropbox file not found with the given signatureRequestId!",
+      });
+    }
+
+    const data = {
+      CompanyId: signatureRequest.CompanyId,
+      QuoteId: signatureRequest.QuoteId,
+      ContractId: signatureRequest.ContractId,
+      InvoiceId: signatureRequest.InvoiceId,
+    };
+
+    const signerName =
+      signatureRequest.signers.length > 0
+        ? signatureRequest.signers[0].name
+        : "Unknown Signer";
+
+    const cancelResult = await this.cancelSignatureRequest(
+      signatureRequestId,
+      signatureRequest,
+      req
+    );
+    if (cancelResult.statusCode !== 200) {
+      const removeResult = await this.removeSignatureRequest(
+        signatureRequestId
+      );
+      if (removeResult.statusCode !== 200) {
+        return res.status(200).json({
+          statusCode: removeResult.statusCode,
+          message: removeResult.message,
+        });
+      }
+      return res.status(200).json({
+        statusCode: 200,
+        message:
+          "Dropbox file marked as deleted and signature request removed successfully!",
+      });
+    }
+
+    return res.status(200).json({
+      statusCode: 200,
+      message:
+        "Dropbox file marked as deleted and signature request canceled successfully!",
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({
+      statusCode: 500,
+      message: "Something went wrong. Please try again later!",
+    });
+  }
+};
+
+// **CANCEL SIGNATURE REQUEST**
+exports.cancelSignatureRequestLogic = async (
+  signatureRequestId,
+  signatureRequest,
+  req
+) => {
+  try {
+    const result = await signatureRequestApi.signatureRequestCancel(
+      signatureRequestId
+    );
+
+    if (!signatureRequest) {
+      return {
+        statusCode: 404,
+        message: "Dropbox file not found with the given signatureRequestId!",
+      };
+    }
+
+    const data = {
+      CompanyId: signatureRequest.CompanyId,
+      QuoteId: signatureRequest.QuoteId,
+      ContractId: signatureRequest.ContractId,
+      InvoiceId: signatureRequest.InvoiceId,
+    };
+
+    const signerName =
+      signatureRequest.signers.length > 0
+        ? signatureRequest.signers[0].name
+        : "Unknown Signer";
+
+    return {
+      statusCode: 200,
+      data: result.body,
+    };
+  } catch (error) {
+    console.error("Error in cancelSignatureRequestLogic:", error);
+    return {
+      statusCode: 500,
+      message: error.body?.error?.errorMsg || error.message,
+    };
+  }
+};
+exports.cancelSignatureRequest = async (req, res) => {
+  const { signatureRequestId } = req.params;
+
+  if (!signatureRequestId) {
+    return res.status(400).json({ error: "signatureRequestId is required" });
+  }
+
+  try {
+    const signatureRequest = await SignatureRequest.findOne({
+      signatureRequestId,
+    });
+
+    const result = await this.cancelSignatureRequestLogic(
+      signatureRequestId,
+      signatureRequest,
+      req
+    );
+
+    if (result.statusCode !== 200) {
+      return res.status(result.statusCode).json({ message: result.message });
+    }
+
+    return res.status(200).json({
+      message: "Signature request cancelled successfully.",
+      data: result.data,
+    });
+  } catch (error) {
+    console.error("Unhandled error in cancelSignatureRequest:", error);
+    return res.status(500).json({
+      message: "Something went wrong while cancelling the signature request.",
+      error: error.message,
+    });
+  }
+};
+
+// **REMOVE SIGNATURE REQUEST**
+exports.removeSignatureRequest = async (req, res) => {
+  const { signatureRequestId } = req.params;
+
+  if (!signatureRequestId) {
+    return res.status(400).json({ error: "signatureRequestId is required" });
+  }
+
+  try {
+    const result = await signatureRequestApi.signatureRequestRemove(
+      signatureRequestId
+    );
+
+    const signatureRequest = await SignatureRequest.findOne({
+      signatureRequestId,
+    });
+
+    if (!signatureRequest) {
+      return res.status(404).json({
+        message: "Dropbox file not found with the given signatureRequestId!",
+      });
+    }
+
+    if (
+      result.body?.error?.errorName === "signature_request_remove_failed" &&
+      result.body?.error?.errorMsg.includes(
+        "To cancel an incomplete signature request"
+      )
+    ) {
+      const cancelResult = await signatureRequestApi.signatureRequestCancel(
+        signatureRequestId
+      );
+
+      if (!cancelResult.body) {
+        return res.status(500).json({
+          message:
+            "Failed to cancel the signature request as part of removal process",
+        });
+      }
+
+      return res.status(200).json({
+        message: "Signature request canceled and removed successfully.",
+        data: cancelResult.body,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Signature request removed successfully.",
+      data: result.body,
+    });
+  } catch (error) {
+    console.error("Error in removeSignatureRequest:", error);
+    return res.status(500).json({
+      message: "Something went wrong while removing the signature request.",
+      error: error.message,
     });
   }
 };
