@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const { v4: uuidv4 } = require("uuid");
 
 const SignatureRequestSchema = new Schema(
   {
@@ -9,7 +10,11 @@ const SignatureRequestSchema = new Schema(
     InvoiceId: { type: String },
     LocationId: { type: String },
     QuoteId: { type: String },
-    signatureRequestId: { type: String },
+    signatureRequestId: {
+      type: String,
+      default: uuidv4,
+      unique: true,
+    },
     signatureId: { type: String },
     title: { type: Array },
     signers: [{ email: { type: String }, name: { type: String } }],
