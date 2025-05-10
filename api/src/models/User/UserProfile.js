@@ -20,7 +20,7 @@ const userProfileSchema = new mongoose.Schema(
     },
     LocationId: {
       type: String,
-      default: uuidv4,
+      ref: "Location", 
     },
     /*** COMMON FIELDS ***/
     FirstName: { type: String, trim: true },
@@ -55,7 +55,6 @@ const userProfileSchema = new mongoose.Schema(
 
 userProfileSchema.index({ UserId: 1 });
 userProfileSchema.index({ CompanyId: 1 });
-userProfileSchema.index({ CustomerId: 1 });
 userProfileSchema.index({ IsActive: 1, IsDelete: 1 });
 
 const UserProfile = mongoose.model("User-Profile", userProfileSchema);

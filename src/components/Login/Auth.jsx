@@ -47,7 +47,6 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
           state.navigats = ["/index"];
         }
         break;
-
       case "customer":
         if (!window.location.pathname.includes("/customer")) {
           localStorage.setItem("CustomerId", CustomerId);
@@ -61,6 +60,7 @@ const handleAuth = async (navigate, location, redirectPath = "/auth/login") => {
           localStorage.setItem("CompanyId", CompanyId);
           state.redirect = `/${CompanyName}/index`;
           state.navigats = ["/index"];
+          console.log(location, "location123");
         } else if (!IsPlanActive) {
           if (!location.state?.navigats?.includes("/account-billing")) {
             state.redirect = `/${CompanyName}/account-billing`;

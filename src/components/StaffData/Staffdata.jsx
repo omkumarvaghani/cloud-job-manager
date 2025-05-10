@@ -15,12 +15,12 @@ export const StaffProvider = ({ children }) => {
       try {
         const response = await AxiosInstance.get(
           `${process.env.REACT_APP_BASE_API}/worker/get/${localStorage.getItem(
-            "worker_id"
+            "CompanyId"
           )}`
         );
         setStaffData(response?.data?.data?.permissions);
       } catch (error) {
-        console.error("Error fetching staff data:", error);
+        // console.error("Error fetching staff data:", error);
       }
     };
 

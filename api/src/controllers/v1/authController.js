@@ -12,14 +12,14 @@ const generateToken = (user) => {
   return jwt.sign(
     { UserId: user.UserId, Role: user.Role, CompanyId: user.CompanyId, EmailAddress: user.EmailAddress, OwnerName: user.OwnerName },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRATION || "7d" }
+    { expiresIn: process.env.JWT_EXPIRATION || "4h" }
   );
 };
 
 // **REGISTER API**
 exports.register = async (req, res) => {
   try {
-    const { Role, EmailAddress, Password, ...profileDetails } = req.body;
+    const { Role, EmailAddress, Password, CompanyName, ...profileDetails } = req.body;
 
     const existingUser = await User.findOne({ EmailAddress, IsDelete: false });
     if (existingUser) {
@@ -29,6 +29,9 @@ exports.register = async (req, res) => {
     let CompanyId = profileDetails.CompanyId;
     if (Role === "Company") {
       CompanyId = uuidv4();
+      if (CompanyName) {
+        profileDetails.CompanyName = CompanyName.split(" ").join("");
+      }
     } else if (!CompanyId) {
       return res
         .status(400)

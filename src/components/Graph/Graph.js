@@ -332,143 +332,180 @@ const Graph = ({
         className="w-100 d-flex gap-2 mb-5 plan-company-graph"
         style={{ height: "200px" }}
       >
-        {invoiceRespopnse?.appointmentSummary?.length !== 0 ||
-        invoiceRespopnse?.invoiceSummary?.length !== 0 ? (
-          <Col xs={12} lg={6} sm={12} md={12} className="pt-3">
-            <Card
+        {/* First Graph - Invoice & Appointment */}
+        <Col xs={12} lg={6} sm={12} md={12} className="pt-3">
+          <Card
+            style={{
+              boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0",
+              border: "0.3px solid rgba(82, 84, 89, 0.5)",
+              borderRadius: "12px",
+              height: "400px",
+            }}
+          >
+            <Row className="w-100 px-3 my-3">
+              <Col className="d-flex justify-content-end">
+                <Dropdown
+                  isOpen={dropdownOpenCompany}
+                  toggle={togglePlanSecond}
+                  style={{ zIndex: "9" }}
+                >
+                  <DropdownToggle
+                    className="bg-blue-color"
+                    caret
+                    style={{ color: "#fff" }}
+                  >
+                    {localSelectedYear}
+                  </DropdownToggle>
+                  <DropdownMenu className="text-blue-color">
+                    <DropdownItem
+                      onClick={() => handleLocalChange("This Year")}
+                    >
+                      This Year
+                    </DropdownItem>
+                    <DropdownItem
+                      onClick={() => handleLocalChange("Previous Year")}
+                    >
+                      Previous Year
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </Col>
+            </Row>
+
+            {/* Graph Content */}
+            <Row
+              className="w-100 py-3 px-5 d-flex justify-content-center align-items-center"
               style={{
-                boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0",
-                border: "0.3px solid rgba(82, 84, 89, 0.5)",
-                borderRadius: "12px",
+                height: "100%",
+                minHeight: "150px",
+                textAlign: "center",
               }}
             >
-              <Row className="w-100 px-3 my-3">
-                <Col className="d-flex justify-content-end">
-                  <Dropdown
-                    isOpen={dropdownOpenCompany}
-                    toggle={togglePlanSecond}
-                    style={{ zIndex: "9" }}
-                  >
-                    <DropdownToggle
-                      className="bg-blue-color"
-                      caret
-                      style={{ color: "#fff" }}
-                    >
-                      {localSelectedYear}
-                    </DropdownToggle>
-                    <DropdownMenu className="text-blue-color">
-                      <DropdownItem
-                        onClick={() => handleLocalChange("This Year")}
-                      >
-                        This Year
-                      </DropdownItem>
-                      <DropdownItem
-                        onClick={() => handleLocalChange("Previous Year")}
-                      >
-                        Previous Year
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
-                </Col>
-              </Row>
-              <Row className="w-100 py-3 px-5">
+              {invoiceRespopnse?.appointmentSummary?.length > 0 ||
+              invoiceRespopnse?.invoiceSummary?.length > 0 ? (
                 <PlanComparisonChartContainer
                   poll2={"#F9A146"}
                   poll1={"#063164"}
                 />
-              </Row>
-              <Row className="w-100 px-3 my-1">
-                <Col
-                  lg={12}
-                  className="d-flex justify-content-center align-items-center
-                active_deactive-graph"
+              ) : (
+                <div className="no-data-message" style={{fontSize:"24px",fontWeight:"500",color:"#063164"}}>No graph data found</div>
+              )}
+            </Row>
+
+            <Row className="w-100 px-3 my-1">
+              <Col
+                lg={12}
+                className="d-flex justify-content-center align-items-center active_deactive-graph"
+              >
+                <Typography
+                  style={{ fontFamily: "Poppins", fontSize: "15px" }}
+                  className="px-3"
                 >
-                  <Typography
-                    style={{ fontFamily: "Poppins", fontSize: "15px" }}
-                    className="px-3"
+                  <i className="fa-solid fa-circle px-1 text-blue-color"></i>{" "}
+                  Invoices
+                </Typography>
+                <Typography
+                  style={{ fontFamily: "Poppins", fontSize: "15px" }}
+                  className="px-3 inactive-para"
+                >
+                  <i className="fa-solid fa-circle px-1 text-orange-color"></i>{" "}
+                  Appointments
+                </Typography>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+
+        {/* Second Graph - Contracts & Quotes */}
+        <Col xs={12} lg={6} sm={12} md={12} className="pt-3">
+          <Card
+            style={{
+              boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0",
+              border: "0.3px solid rgba(82, 84, 89, 0.5)",
+              borderRadius: "12px",
+              height: "400px",
+            }}
+          >
+            <Row className="w-100 px-3 my-3">
+              <Col className="d-flex justify-content-end">
+                <Dropdown
+                  isOpen={dropdownOpenPlan}
+                  toggle={togglePlan}
+                  style={{ zIndex: "9" }}
+                >
+                  <DropdownToggle
+                    className="bg-blue-color"
+                    caret
+                    style={{ color: "#fff" }}
                   >
-                    <i class="fa-solid fa-circle px-1 text-blue-color"></i>
-                    Invoices
-                  </Typography>
-                  <Typography
-                    style={{ fontFamily: "Poppins", fontSize: "15px" }}
-                    className="px-3 inactive-para"
-                  >
-                    <i class="fa-solid fa-circle px-1 text-orange-color"></i>
-                    Appointments
-                  </Typography>
-                </Col>
-              </Row>
-            </Card>
-          </Col>
-        ) : null}
-        {respopnse?.contractSummary?.length !== 0 ||
-        respopnse?.quoteSummary?.length !== 0 ? (
-          <Col xs={12} lg={6} sm={12} md={12} className="pt-3">
-            <Card
+                    {localSelectYearContract}
+                  </DropdownToggle>
+                  <DropdownMenu className="text-blue-color">
+                    <DropdownItem
+                      onClick={() => handleLocalChangeQuote("This Year")}
+                    >
+                      This Year
+                    </DropdownItem>
+                    <DropdownItem
+                      onClick={() => handleLocalChangeQuote("Previous Year")}
+                    >
+                      Previous Year
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </Col>
+            </Row>
+
+            {/* Graph Content */}
+            <Row
+              className="w-100 py-3 px-5 d-flex justify-content-center align-items-center"
               style={{
-                boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0",
-                border: "0.3px solid rgba(82, 84, 89, 0.5)",
-                borderRadius: "12px",
+                height: "100%",
+                minHeight: "150px",
+                textAlign: "center",
               }}
             >
-              <Row className="w-100 px-3 my-3">
-                <Col className="d-flex justify-content-end">
-                  <Dropdown
-                    isOpen={dropdownOpenPlan}
-                    toggle={togglePlan}
-                    style={{ zIndex: "9" }}
-                    className="dropDOwnContractOth"
-                  >
-                    <DropdownToggle
-                      className="bg-blue-color"
-                      caret
-                      style={{ color: "#fff" }}
-                    >
-                      {localSelectYearContract}
-                    </DropdownToggle>
-                    <DropdownMenu className="text-blue-color">
-                      <DropdownItem
-                        onClick={() => handleLocalChangeQuote("This Year")}
-                      >
-                        This Year
-                      </DropdownItem>
-                      <DropdownItem
-                        onClick={() => handleLocalChangeQuote("Previous Year")}
-                      >
-                        Previous Year
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
-                </Col>
-              </Row>
-              <Row className="w-100 py-3 px-5">
+              {respopnse?.contractSummary?.length > 0 ||
+              respopnse?.quoteSummary?.length > 0 ? (
                 <ComparisonChartContainer poll1={"#F9A146"} poll2={"#063164"} />
-              </Row>
-              <Row className="w-100 px-3 my-1">
-                <Col
-                  lg={12}
-                  className="d-flex justify-content-center align-items-center active_deactive-graph"
+              ) : (
+                <div className="no-data-message" style={{fontSize:"24px",fontWeight:"500",color:"#063164"}}>No graph data found</div>
+              )}
+            </Row>
+
+            <Row className="w-100 px-3 my-1">
+              <Col
+                lg={12}
+                className="d-flex justify-content-center align-items-center active_deactive-graph"
+              >
+                <Typography
+                  style={{ fontFamily: "Poppins", fontSize: "15px" }}
+                  className="px-3"
                 >
-                  <Typography
-                    style={{ fontFamily: "Poppins", fontSize: "15px" }}
-                    className="px-3"
-                  >
-                    <i class="fa-solid fa-circle px-1 text-orange-color"></i>
-                    Contracts
-                  </Typography>
-                  <Typography
-                    style={{ fontFamily: "Poppins", fontSize: "15px" }}
-                    className="px-3 inactive-para"
-                  >
-                    <i class="fa-solid fa-circle px-1 text-blue-color"></i>
-                    Quotes
-                  </Typography>
-                </Col>
-              </Row>
-            </Card>
-          </Col>
-        ) : null}
+                  <i className="fa-solid fa-circle px-1 text-orange-color"></i>{" "}
+                  Contracts
+                </Typography>
+                <Typography
+                  style={{ fontFamily: "Poppins", fontSize: "15px" }}
+                  className="px-3 inactive-para"
+                >
+                  <i className="fa-solid fa-circle px-1 text-blue-color"></i>{" "}
+                  Quotes
+                </Typography>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+
+        {/* If all data is empty, show "No data found" */}
+        {invoiceRespopnse?.appointmentSummary?.length === 0 &&
+          invoiceRespopnse?.invoiceSummary?.length === 0 &&
+          respopnse?.contractSummary?.length === 0 &&
+          respopnse?.quoteSummary?.length === 0 && (
+            <div className="no-data-message text-center w-100 py-5">
+              No data found
+            </div>
+          )}
       </Grid>
     </>
   );

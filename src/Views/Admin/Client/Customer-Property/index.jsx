@@ -366,7 +366,7 @@ const CustomerProperty = ({ open, setOpen, data, getData }) => {
           const response = await AxiosInstance.put(
             `${baseUrl}/v1/location/${open.propertyData.LocationId}`,
             values
-          ); 
+          );
           if (response?.data.statusCode === 200) {
             showToast.success("Property updated successfully!");
             getData();

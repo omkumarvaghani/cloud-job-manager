@@ -377,12 +377,14 @@ const ContractDetails = ({
                         style={{ fontSize: "14px", width: "80%" }}
                       >
                         {contractData?.location?.Address ||
-                          "Address not available"}{" "},
-                        {contractData?.location?.City || "City not available"}{" "},
-                        {contractData?.location?.State || "State not available"}{" "},
+                          "Address not available"}{" "}
+                        ,{contractData?.location?.City || "City not available"}{" "}
+                        ,
+                        {contractData?.location?.State || "State not available"}{" "}
+                        ,
                         {contractData?.location?.Country ||
-                          "Country not available"}{" "},
-                        {contractData?.location?.Zip || "Zip not available"}
+                          "Country not available"}{" "}
+                        ,{contractData?.location?.Zip || "Zip not available"}
                       </Typography>
                     </Col>
                   </Col>

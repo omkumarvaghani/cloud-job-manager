@@ -89,34 +89,52 @@ function ContractDetails() {
     }, 200);
   };
 
-  const CompanyId = localStorage.getItem("CompanyId") || tokenDecode?.companyId;
+  const CompanyId = localStorage.getItem("CompanyId") || tokenDecode?.CompanyId;
   const CustomerId = contractData?.CustomerId;
 
   let fetchData = async () => {
     try {
       const res = await AxiosInstance.get(
-        `/contract/contract_details/${location?.state?.id}`
+        `/v1/contract/contract_details/${location?.state?.id}`
       );
+      setContractData({
+        ...res?.data?.data,
+        // laborData: labourRes?.data?.data,
+        // expenseData: expenseRes?.data?.result,
+        // visitsData: visitsRes?.data?.data,
+      });
       if (res.data.statusCode === 200) {
         const labourRes = await AxiosInstance.get(
-          `/labour/${location?.state?.id}/${
-            localStorage.getItem("CompanyId") || tokenDecode?.companyId
+          `/v1/labour/${location?.state?.id}/${
+            localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
           }`
-        );
+          );
+        setContractData({
+          // ...res?.data?.data,
+          laborData: labourRes?.data?.data,
+          // expenseData: expenseRes?.data?.result,
+          // visitsData: visitsRes?.data?.data,
+        });
         const expenseRes = await AxiosInstance.get(
           `/expenses/${location?.state?.id}/${
-            localStorage.getItem("CompanyId") || tokenDecode?.companyId
-          }`
-        );
-        const visitsRes = await AxiosInstance.get(
-          `/visits/${location?.state?.id}/${
-            localStorage.getItem("CompanyId") || tokenDecode?.companyId
+            localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
           }`
         );
         setContractData({
-          ...res?.data?.data,
-          laborData: labourRes?.data?.data,
+          // ...res?.data?.data,
+          // laborData: labourRes?.data?.data,
           expenseData: expenseRes?.data?.result,
+          // visitsData: visitsRes?.data?.data,
+        });
+        const visitsRes = await AxiosInstance.get(
+          `/visits/${location?.state?.id}/${
+            localStorage.getItem("CompanyId") || tokenDecode?.CompanyId
+          }`
+        );
+        setContractData({
+          // ...res?.data?.data,
+          // laborData: labourRes?.data?.data,
+          // expenseData: expenseRes?.data?.result,
           visitsData: visitsRes?.data?.data,
         });
       }
@@ -343,7 +361,7 @@ function ContractDetails() {
       if (deleteReason) {
         try {
           const response = await AxiosInstance.delete(
-            `/labour/${LabourId}/${ContractId}`,
+            `/v1/labour/${LabourId}/${ContractId}`,
             {
               data: { DeleteReason: deleteReason },
             }

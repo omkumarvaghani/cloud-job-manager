@@ -28,6 +28,7 @@ import { fontSize, padding } from "@mui/system";
 
 const AddCustomer = ({
   formik,
+  userAddress,
   handleChange,
   loader,
   countries,
@@ -42,6 +43,7 @@ const AddCustomer = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+
   return (
     <Grid className="justify-content-center align-items-center mb-3 mt-5 client">
       <Grid className="d-flex align-items-center text-white-color">
@@ -308,14 +310,8 @@ const AddCustomer = ({
                   Property details
                 </span>
               </CardTitle>
-              {console.log(formik, "formik")}
-              {console.log(
-                formik?.values?.location?.length ?? 0,
-                "formik?.values?.location?.length"
-              )}
-              {console.log(location?.state?.id, "location?.state?.id")}
               {!location?.state?.id ||
-              (location?.state?.id && (formik?.values?.length ?? 0) <= 1) ? (
+              (Array.isArray(userAddress) && userAddress.length <= 1) ? (
                 <Grid className="my-4 mb-0 px-0">
                   <Address
                     setSelectedCountry={setSelectedCountry}
@@ -351,7 +347,7 @@ const AddCustomer = ({
                         }}
                       >
                         This Customer has multiple properties
-                      </CardHeader>
+                      </CardHeader>  
                       <CardBody>
                         Multiple properties can only be edited individually. To
                         edit a property, select it from the Customer's list of
