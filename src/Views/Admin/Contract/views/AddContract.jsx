@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ContractMail from "../ContractMail";
 import CustomerModal from "../../Quotes/CustomerModal";
 import { FormGroup } from "@mui/material";
@@ -48,6 +48,7 @@ import { LoaderComponent } from "../../../../components/Icon/Index";
 import { Typography } from "@mui/material";
 import DiscountTable from "../../../../components/DiscountTable/DiscountTable";
 import showToast from "../../../../components/Toast/Toster";
+import { handleAuth } from "../../../../components/Login/Auth";
 
 const AddContract = ({
   lineItems,
@@ -102,12 +103,31 @@ const AddContract = ({
   toggleModal,
   isModalOpen,
   handlePhoneChange,
+  emailData,
   loader,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [tokenDecode, setTokenDecode] = useState({});
+
+  const fetchDatas = async () => {
+    try {
+      const res = await handleAuth(navigate, location);
+      setTokenDecode(res.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
+    fetchDatas();
+  }, []);
+  const [isVisible, setIsVisible] = useState(true);
+  const handleRemove = () => {
+    setIsVisible(false);
+  };
   return (
     <>
+      {console.log(tokenDecode, "tokenDecode")}
       {loader ? (
         <Grid
           className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5"
@@ -214,10 +234,25 @@ const AddContract = ({
                         fontWeight: "600",
                       }}
                     >
-                      {customersData?.FirstName
+                      {console.log(
+                        location?.state?.formData,
+                        "location?.state?.formData"
+                      )}
+                      {console.log(
+                        customersData,
+                        "customersData12334423454345"
+                      )}
+                      {customersData?.customer?.FirstName &&
+                      customersData?.customer?.LastName
+                        ? `${customersData?.customer?.FirstName} ${customersData?.customer?.LastName}`
+                        : customersData?.FirstName && customersData?.LastName
                         ? `${customersData?.FirstName} ${customersData?.LastName}`
+                        : location?.state?.formData?.customerData?.FirstName &&
+                          location?.state?.formData?.customerData?.LastName
+                        ? `${location.state.formData.customerData.FirstName} ${location.state.formData.customerData.LastName}`
                         : "Customer Name"}
                     </Typography>
+
                     {!customersData?.FirstName && (
                       <Button
                         className="mx-3 bg-button-blue-color text-white-color "
@@ -389,22 +424,25 @@ const AddContract = ({
                         </Typography>
                         <Typography>
                           {propertyData?.Address ||
-                            customersData?.location[0]?.Address ||
-                            "-"}{" "},
+                            customersData?.location?.Address ||
+                            "-"}{" "}
+                          ,
                           <br />
                           {propertyData?.City ||
-                            customersData?.location[0]?.City ||
+                            customersData?.location?.City ||
                             "-"}
                           ,{" "}
                           {propertyData?.State ||
-                            customersData?.location[0]?.State ||
-                            "-"}{" "},
+                            customersData?.location?.State ||
+                            "-"}{" "}
+                          ,
                           {propertyData?.Zip ||
-                            customersData?.location[0]?.Zip ||
-                            "-"},
+                            customersData?.location?.Zip ||
+                            "-"}
+                          ,
                           <br />
                           {propertyData?.Country ||
-                            customersData?.location[0]?.Country ||
+                            customersData?.location?.Country ||
                             "-"}{" "}
                           <br />
                           <a
@@ -428,9 +466,14 @@ const AddContract = ({
                           Contact details
                         </Typography>
                         <Typography>
+                          {console.log(customersData, "customersData1234321")}
                           {customersData?.PhoneNumber || "-"}
                           <br />
                           {customersData?.EmailAddress || "-"}
+                          {console.log(
+                            emailData?.EmailAddress,
+                            "customersData?.EmailAddress"
+                          )}
                         </Typography>
                       </Col>
                     </Col>
@@ -635,9 +678,7 @@ const AddContract = ({
                                                 type="checkbox"
                                                 checked={
                                                   checkedState &&
-                                                  !!checkedState[
-                                                    person?.WorkerId
-                                                  ]
+                                                  !!checkedState[person?.UserId]
                                                 }
                                                 onChange={(e) =>
                                                   handleTeamSelect(e, person)
@@ -867,6 +908,41 @@ const AddContract = ({
                               style={{ marginTop: "-10px", height: "18px" }}
                               className="assingPersoneSeeHereToAssign"
                             >
+                              <Grid
+                                className="tag assignPersonNameHereTo"
+                                style={{
+                                  marginTop: "6px",
+                                  marginLeft: "10px",
+                                  gap: "10px",
+                                }}
+                              >
+                                {isVisible && (
+                                  <Typography
+                                    className="tag-text"
+                                    style={{ fontSize: "16px" }}
+                                  >
+                                    <span>
+                                      {`${
+                                        tokenDecode?.OwnerName ||
+                                        "FullName not available"
+                                      } - ${
+                                        tokenDecode?.EmailAddress ||
+                                        "EmailAddress not available"
+                                      }`}
+                                    </span>
+                                    <button
+                                      className="tag-close"
+                                      onClick={handleRemove}
+                                      aria-label="Close"
+                                    >
+                                      <span style={{ marginTop: "-1px" }}>
+                                        x
+                                      </span>
+                                    </button>
+                                  </Typography>
+                                )}
+                              </Grid>
+
                               {selectedTeams?.map((team, index) => (
                                 <Grid
                                   key={index}
@@ -882,9 +958,11 @@ const AddContract = ({
                                     style={{ fontSize: "16px" }}
                                   >
                                     <span>
-                                      {`${team?.FirstName} ${team?.LastName}` ||
-                                        "FullName not available"}{" "}
-                                      -{" "}
+                                      {`${
+                                        team?.FirstName ||
+                                        "FullName not available"
+                                      } ${team?.LastName || ""}`}{" "}
+                                      -
                                       {team?.EmailAddress ||
                                         "EmailAddress not available"}
                                     </span>
@@ -894,10 +972,7 @@ const AddContract = ({
                                     onClick={() => handleRemoveTeam(team)}
                                     label={"x"}
                                   >
-                                    {" "}
-                                    <span style={{ marginTop: "-1px" }}>
-                                      x{" "}
-                                    </span>{" "}
+                                    <span style={{ marginTop: "-1px" }}>x</span>
                                   </button>
                                 </Grid>
                               ))}

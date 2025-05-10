@@ -25,10 +25,10 @@ const StaffMember = () => {
   useEffect(() => {
     const fetchStaffData = async () => {
       try {
-        let response;   
-        // const response = await AxiosInstance.get(
-        //   `${baseUrl}/worker/get/${localStorage.getItem("worker_id")}`
-        // );
+        // let response;   
+        const response = await AxiosInstance.get(
+          `${baseUrl}/worker/get/${localStorage.getItem("worker_id")}`
+        );
         setStaffData(response?.data?.data?.permissions);
       } catch (error) {}
     };

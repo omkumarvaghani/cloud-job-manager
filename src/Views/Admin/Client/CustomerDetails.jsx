@@ -61,13 +61,15 @@ function CustomerDetails() {
   const [customersDetails, setCustomersDetails] = useState([]);
 
   const getData = async () => {
-    try {
-      const res = await AxiosInstance.get(`/v1/customer/${location?.state?.id}`);
-      console.log(res,"res")
+    try { 
+      const res = await AxiosInstance.get(
+        `/v1/customer/${location?.state?.id}`
+      );                                                      
+     
       setData(res?.data?.data);
       setCustomersDetails([res?.data?.data]);
     } catch (error) {
-    } finally {
+    } finally {  
       setLoader(false);
     }
   };
@@ -130,7 +132,7 @@ function CustomerDetails() {
     setLoading(true);
     try {
       const response = await AxiosInstance.post(
-        `/customer/send_mail/${data?.CustomerId}`
+        `/v1/customer/send_mail/${data?.UserId}`
       );
       if (response?.data?.statusCode === 200) {
         showToast.success(response?.data?.message);
@@ -161,7 +163,7 @@ function CustomerDetails() {
         navigate(`/${CompanyName}/add-quotes`, {
           state: {
             Customer: data,
-            CustomerId: data?.CustomerId,
+            UserId: data?.UserId,
             navigats: [...location?.state?.navigats, "/add-quotes"],
           },
         });
@@ -181,7 +183,7 @@ function CustomerDetails() {
         navigate(`/${CompanyName}/add-contract`, {
           state: {
             Customer: data,
-            CustomerId: data?.CustomerId,
+            UserId: data?.UserId,
             navigats: [...location?.state?.navigats, "/add-contract"],
           },
         });
@@ -200,7 +202,7 @@ function CustomerDetails() {
       onClick: () => {
         navigate(`/${CompanyName}/invoicetable`, {
           state: {
-            CustomerId: data?.CustomerId,
+            UserId: data?.UserId,
             navigats: [...location?.state?.navigats, "/invoicetable"],
           },
         });
@@ -236,7 +238,7 @@ function CustomerDetails() {
   const toggles1 = () => setSelectChargetDropDown(!selectChargeDropDown);
 
   const CompanyId = localStorage?.getItem("CompanyId");
-  const CustomerId = location?.state?.id;
+  const UserId = location?.state?.id;
 
   const handleAddButtonClick = () => {
     setPaymentOpen(false);
@@ -258,7 +260,7 @@ function CustomerDetails() {
   const chargeFormik = useFormik({
     initialValues: {
       CompanyId: CompanyId,
-      CustomerId: CustomerId,
+      UserId: UserId,
       account_id: selectedChargeAccountId || "",
       description: "",
       amount: "",
@@ -275,8 +277,7 @@ function CustomerDetails() {
         const chargedataToPost = {
           ...values,
           CompanyId: CompanyId,
-          CustomerId: CustomerId,
-          
+          UserId: UserId,
         };
         const res = await AxiosInstance.post(`/charge`, chargedataToPost);
         if (res.data.statusCode === 200) {

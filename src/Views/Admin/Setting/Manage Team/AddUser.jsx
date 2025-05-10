@@ -74,8 +74,10 @@ const AddUser = () => {
     try {
       if (location?.state?.id) {
         const response = await AxiosInstance.get(
-          `${baseUrl}/worker/get/${location?.state?.id}`
+          `${baseUrl}/v1/worker/get/${location?.state?.id}`
         );
+        console.log(response,"responseresponse")
+        console.log(location?.state?.id,"location?.state?.id")
         const fetchedData = response?.data?.data;
         formik.setValues(fetchedData);
         const data = fetchedData.permissions;
@@ -152,6 +154,7 @@ const AddUser = () => {
           WorkerPermission: selectedRole,
           ScheduleTime: JSON.stringify(times),
           AddedAt: new Date(),
+          Role: "Worker",
         };
 
         let response;
@@ -161,24 +164,19 @@ const AddUser = () => {
             object
           );
         } else {
-          response = await AxiosInstance.post(`${baseUrl}/worker`, object);
+          response = await AxiosInstance.post(`${baseUrl}/v1/user`, object);
         }
 
-        if (response?.data.statusCode === 200) {
-          setTimeout(() => {
-            showToast.success(response?.data.message);
-          }, 500);
+        if (response?.data.statusCode === "200") {
+          showToast.success(response?.data.message);
           navigate(-1);
-        } else if (response?.data.statusCode === 203) {
-          setTimeout(() => {
-            showToast.error(response?.data.message);
-          }, 500);
-        } else if (response?.data.statusCode === 202) {
-          setTimeout(() => {
-            showToast.error(response?.data.message);
-          }, 500);
+        } else if (
+          response?.data.statusCode === "203" ||
+          response?.data.statusCode === "202"
+        ) {
+          showToast.error(response?.data.message);
         } else {
-          showToast.error("", response?.data.message, "error");
+          showToast.error(response?.data.message);
         }
       } catch (error) {
         if (error?.response?.status === 400) {
@@ -593,7 +591,7 @@ const AddUser = () => {
                     "You have unsaved changes. Are you sure you want to leave?"
                   );
                   if (!confirmLeave) {
-                    return; 
+                    return;
                   }
                 }
                 navigate(

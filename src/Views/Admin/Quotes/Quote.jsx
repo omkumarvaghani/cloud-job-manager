@@ -80,6 +80,7 @@ const Quotes = () => {
       const res = await AxiosInstance.get(`/v1/quote/get_quotes/${CompanyId}`, {
         params,
       });
+      console.log(res,"resres12")
       if (res?.data) {
         setQuotesData(res?.data?.data || []);
         setCountData(res?.data?.totalCount || 0);

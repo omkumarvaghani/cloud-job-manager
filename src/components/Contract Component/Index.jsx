@@ -239,21 +239,10 @@ const OneOffContract = ({
           <Col sm="12" className="d-flex">
             <Card className="mx-0 border-blue-color" style={{ width: "100%" }}>
               <CardHeader
-                className="d-flex justify-content-between calenderHead_HideBtn"
-                style={{
-                  width: "100%",
-                  alignItems: "center",
-                  padding: "0 10px 0 10px",
-                  borderBottom: "none",
-                }}
+                style={{ display: "flex", justifyContent: "space-between" }}
+                className="recurringSchedule_hideCalender"
               >
-                <Typography
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: 600,
-                  }}
-                  className="my-3 text-blue-color calender_head recurringScheTitle"
-                >
+                <Typography className="calender_head heading-five text-blue-color">
                   One off Contract Schedule
                 </Typography>
                 <Typography className="btngotoright">
@@ -521,29 +510,6 @@ const OneOffContract = ({
                     />
                   </Col>
                 </Grid>
-                <Label htmlFor="Repeats" className="mt-2">
-                  Repeats
-                </Label>
-                <Input
-                  type="select"
-                  name="OneoffJob.Repeats"
-                  className="text-blue-color border-blue-color"
-                  onChange={(e) => {
-                    formik?.handleChange(e);
-                  }}
-                  value={formik?.values?.OneoffJob?.Repeats}
-                  style={{
-                    fontSize: "14px",
-                    border: "1px solid rgba(6, 49, 100, 30%)",
-                    borderRadius: "10px",
-                    fontSize: "12px",
-                    height: "40px",
-                  }}
-                >
-                  <option value="Daily">Daily</option>
-                  <option value="Weekly">Weekly</option>
-                  <option value="Monthly">Monthly</option>
-                </Input>
 
                 <Grid>
                   <FormGroup className="my-3 mb-0 d-flex">
@@ -1474,15 +1440,15 @@ const Team = ({ setIds = (assignPersonId) => {}, ids, isAddTeam = true }) => {
   const fetchTeamData = async () => {
     setLoading(true);
     try {
-      const companyId =
-        localStorage.getItem("CompanyId") || tokenDecode?.companyId;
+      const CompanyId =
+        localStorage.getItem("CompanyId") || tokenDecode?.CompanyId;
 
-      if (!companyId) {
+      if (!CompanyId) {
         console.error("CompanyId is not found in localStorage or tokenDecode.");
         return;
       }
 
-      const response = await AxiosInstance.get(`/worker/${companyId}`);
+      const response = await AxiosInstance.get(`v1/user/${CompanyId}`);
 
       if (response?.status === 200) {
         setTeamData(response?.data?.data);
@@ -1526,24 +1492,25 @@ const Team = ({ setIds = (assignPersonId) => {}, ids, isAddTeam = true }) => {
     onSubmit: async (values) => {
       try {
         setLoading(true);
-        const companyId =
-          localStorage.getItem("CompanyId") || tokenDecode?.companyId;
+        const CompanyId =
+          localStorage.getItem("CompanyId") || tokenDecode?.CompanyId;
 
-        if (!companyId) {
+        if (!CompanyId) {
           console.error("CompanyId is not found in localStorage");
           return;
         }
         const object = {
           ...values,
-          companyId: companyId,
+          CompanyId: CompanyId,
           WorkerId: values?.WorkerId,
           FullName: values?.FullName,
           EmailAddress: values?.EmailAddress,
           PhoneNumber: values?.MobileNumber,
           AddedAt: new Date(),
+          Role: "Worker",
         };
 
-        const response = await AxiosInstance.post(`/worker`, object);
+        const response = await AxiosInstance.post(`/v1/user`, object);
         if (response?.data?.statusCode === 200) {
           showToast.success(response?.data?.message);
           toggleModal();

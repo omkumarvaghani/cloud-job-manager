@@ -40,7 +40,6 @@ const CustomerModal = ({
   const [loader, setLoader] = useState(true);
   const [CompanyId, setCompanyId] = useState();
 
-  // Memoized fetch function
   const fetchTokenData = useCallback(async () => {
     if (!CompanyId) {
       try {
@@ -84,15 +83,12 @@ const CustomerModal = ({
       },
     });
   };
-
-  // Improved fetchData with error handling
   const fetchData = useCallback(async () => {
     try {
       setLoader(true);
       const res = await AxiosInstance.get(
         `/v1/customer/get_customer/${CompanyId}`
       );
-
       if (res?.data?.statusCode === 200) {
         const normalizedData = res?.data?.data.map((customer) => ({
           ...customer,
@@ -108,7 +104,6 @@ const CustomerModal = ({
 
         setCustomerData(normalizedData);
 
-        // If there's a customer in location state, update it
         if (locations?.state?.Customer) {
           const customer = locations.state.Customer;
           setCustomersData(customer);
@@ -128,13 +123,12 @@ const CustomerModal = ({
     }
   }, [CompanyId, fetchData]);
 
-  // Improved customer and property selection handlers
   const handleCustomerSelect = useCallback(
     (customer) => {
       if (!customer) return;
 
       setFieldValue("UserId", customer.UserId);
-      setCustomersData(customer); // This should now properly update the parent component
+      setCustomersData(customer); 
 
       if (customer?.locations?.length === 1) {
         const property = customer.locations[0];
@@ -180,7 +174,6 @@ const CustomerModal = ({
     [setFieldValue, setPropertyData, setIsProperty, setIsCustomer, source]
   );
 
-  // Effect for initial data setup
   useEffect(() => {
     const updateData = () => {
       if (locations?.state?.UserId) {
@@ -211,7 +204,6 @@ const CustomerModal = ({
     setIsProperty,
   ]);
 
-  // Effect for saved form data
   useEffect(() => {
     const savedData = localStorage.getItem("formData");
     if (savedData) {

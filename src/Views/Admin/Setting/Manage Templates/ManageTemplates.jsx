@@ -454,7 +454,7 @@ function ManageTeamTable() {
     try {
       setEventsData((prevData) => {
         const updatedEventsData = prevData.map((item, index) =>
-          index === itemIndex ? { ...item, is_enabled: currentStatus } : item
+          index === itemIndex ? { ...item, IsEnabled: currentStatus } : item
         );
 
         return updatedEventsData;
@@ -477,7 +477,7 @@ function ManageTeamTable() {
             }
           );
         }
-        enabledArray[item.type] = item.is_enabled;
+        enabledArray[item.type] = item.IsEnabled;
       }
 
       const response = await AxiosInstance.put(`/mailPreference`, {
@@ -598,7 +598,7 @@ function ManageTeamTable() {
                                   class="form-checkbox border-blue-color"
                                   id="form-checkbox"
                                   checked={
-                                    item.is_enabled ? item.is_enabled : false
+                                    item.IsEnabled ? item.IsEnabled : false
                                   }
                                   onChange={(e) =>
                                     handleToggle(e.target.checked, itemIndex)
@@ -640,7 +640,7 @@ function ManageTeamTable() {
                                 renderValue={(selected) =>
                                   selected || "Select Template"
                                 }
-                                disabled={!item.is_enabled}
+                                disabled={!item.IsEnabled}
                                 style={{ width: "65%" }}
                                 className="border-blue-color border-blue-color text-blue-color template-dropdown-select"
                          

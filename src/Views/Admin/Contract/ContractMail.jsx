@@ -1,4 +1,11 @@
-import { Dialog, DialogContent, DialogTitle, Button, FormControlLabel, Checkbox } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Button,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { Input, CardBody, CardHeader, FormGroup, Label } from "reactstrap";
@@ -252,7 +259,7 @@ const ContractMail = ({
           }
         }
       }
-      const url = `/contract/send_mail/${data?.companyId}`;
+      const url = `/v1/contract/send_mail`;
       // const object = {
       //   to: inputValue,
       //   subject,
@@ -261,6 +268,7 @@ const ContractMail = ({
       //   selectedFiles: fileUrls,
 
       // };
+      console.log(customerData, "customerData");
       const object = {
         CustomerId: customerData?.CustomerId,
         ContractId: contractData?.ContractId,
@@ -299,7 +307,7 @@ const ContractMail = ({
   const handleCheckboxChange = (event) => {
     setIsPdfChecked(true);
     setTimeout(() => {
-      setIsPdfChecked(false); 
+      setIsPdfChecked(false);
     }, 3000);
   };
 
@@ -383,9 +391,8 @@ const ContractMail = ({
                 />
               </Grid>
             ) : (
-             
               <Grid className="d-flex  justify-content-between  QUoteSendCancelBtn ">
-              {/* <Grid
+                {/* <Grid
                 className="d-flex  button-responsive"
                 style={{ marginTop: "0px" }}
               > */}
@@ -410,10 +417,7 @@ const ContractMail = ({
                   />
                 </Grid>
                 <Grid style={{ display: "flex" }}>
-                  <Grid
-                    style={{ marginRight: "10px" }}
-                    className="ButtomWithN"
-                  >
+                  <Grid style={{ marginRight: "10px" }} className="ButtomWithN">
                     <WhiteButton
                       onClick={() => {
                         setModal(false);
@@ -456,8 +460,8 @@ const ContractMail = ({
                     </Grid>
                   </Grid>
                 </Grid>
-              {/* </Grid> */}
-            </Grid>
+                {/* </Grid> */}
+              </Grid>
             )}
           </Grid>
         </DialogContent>

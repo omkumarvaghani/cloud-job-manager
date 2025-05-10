@@ -398,7 +398,6 @@ exports.updateMaterialsAndLabor = async (req, res) => {
     }
 };
 
-
 // **Delete Product and Service (Superadmin)
 exports.deleteMaterialsAndLabor = async (req, res) => {
     const { ProductId } = req.params;
@@ -423,12 +422,12 @@ exports.deleteMaterialsAndLabor = async (req, res) => {
 
             return res.status(200).json({
                 statusCode: 200,
-                message: "Material & Labour deleted successfully",
+                message: "Material & Labor deleted successfully",
             });
         } else {
             return res.status(404).json({
                 statusCode: 404,
-                message: "Material & Labour not found",
+                message: "Material & Labor not found",
             });
         }
     } catch (error) {

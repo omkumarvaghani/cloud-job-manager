@@ -377,12 +377,14 @@ const ContractDetails = ({
                         style={{ fontSize: "14px", width: "80%" }}
                       >
                         {contractData?.location?.Address ||
-                          "Address not available"}{" "},
-                        {contractData?.location?.City || "City not available"}{" "},
-                        {contractData?.location?.State || "State not available"}{" "},
+                          "Address not available"}{" "}
+                        ,{contractData?.location?.City || "City not available"}{" "}
+                        ,
+                        {contractData?.location?.State || "State not available"}{" "}
+                        ,
                         {contractData?.location?.Country ||
-                          "Country not available"}{" "},
-                        {contractData?.location?.Zip || "Zip not available"}
+                          "Country not available"}{" "}
+                        ,{contractData?.location?.Zip || "Zip not available"}
                       </Typography>
                     </Col>
                   </Col>
@@ -643,7 +645,7 @@ const ContractDetails = ({
                                 {/* {item?.WorkerId?.FullName ||
                                   "FullName not available"} */}
                                 {item?.WorkerId
-                                  ? `${item?.WorkerId?.FirstName} ${item?.WorkerId?.LastName}`
+                                  ? `${item?.Worker?.FirstName} ${item?.Worker?.LastName}`
                                   : "Name not available"}
                               </Col>
 
@@ -748,6 +750,7 @@ const ContractDetails = ({
                     label="+ New Expense"
                   />
                 </Grid>
+       
                 {contractData?.expenseData &&
                 contractData?.expenseData.length > 0 ? (
                   <Grid className="w-100">
@@ -805,6 +808,7 @@ const ContractDetails = ({
                         <TableBody>
                           {contractData?.expenseData.map((item, index) => (
                             <TableRow key={index}>
+                             
                               <TableCell
                                 className="text-blue-color contractDataTableSub"
                                 style={{ fontSize: "16px", fontWeight: 600 }}
@@ -812,7 +816,7 @@ const ContractDetails = ({
                                 {/* {item?.WorkerId?.FullName ||
                                   "FullName not available"} */}
                                 {item?.WorkerId
-                                  ? `${item?.WorkerId?.FirstName} ${item?.WorkerId?.LastName}`
+                                  ? `${item?.Worker?.FirstName} ${item?.Worker?.LastName}`
                                   : "Name not available"}
                               </TableCell>
                               <TableCell
@@ -1409,7 +1413,7 @@ const ContractDetails = ({
         VisitId={VisitId}
         setVisitId={setVisitId}
         CustomerId={CustomerId}
-      />
+      /> 
       <ContractMail
         modal={mail}
         setModal={setMail}

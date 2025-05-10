@@ -76,16 +76,18 @@ const Customer = () => {
     }
 
     try {
-      const res = await AxiosInstance.get(`/v1/customer/customers/${CompanyId}`, {
-        params: {
-          pageSize: rowsPerPage,
-          pageNumber: page,
-          search: search || "",
-          sortField: sortField,
-          sortOrder: sortOrder,
-        },
-      });
-
+      const res = await AxiosInstance.get(
+        `/v1/customer/customers`,
+        {
+          params: {
+            pageSize: rowsPerPage,
+            pageNumber: page,
+            search: search || "",
+            sortField: sortField,
+            sortOrder: sortOrder,
+          },
+        }
+      );
       if (res?.data) {
         setcustomersData(res?.data?.data || []);
         setCountData(res?.data?.totalCount || 0);
@@ -132,7 +134,7 @@ const Customer = () => {
           });
           if (response?.data?.statusCode == 200) {
             showToast.success(response?.data?.message);
-            
+
             setcustomersData((prevData) =>
               prevData.filter((customer) => customer.UserId !== id)
             );
@@ -162,9 +164,7 @@ const Customer = () => {
   };
 
   const cellData = customersData?.map((item, index) => {
-    // const properties = item?.location || [];
-    const properties = item?.profile ? [item.profile] : [];
-
+    const properties = item?.location || [];
     let propertyDisplay;
     if (properties.length === 1) {
       const property = properties[0];
@@ -172,10 +172,10 @@ const Customer = () => {
         property?.City || "City not available"
       }, ${property?.State || "State not available"}, ${
         property?.Country || "Country not available"
-      }, ${property?.Zip || "Zip not available"}`;
+      }, ${property?.Zip || "Zip not available"} `;
     } else {
       propertyDisplay = `${properties.length} ${
-        properties.length > 1 ? "Properties" : "Property"
+        properties?.length > 1 ? "Properties" : "Property"
       }`;
     }
 

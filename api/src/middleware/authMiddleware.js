@@ -1,6 +1,10 @@
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto-js");
+const User = require("../models/User/User");
 require("dotenv").config();
+
+var SECRET_KEY =
+  "fuirfgerug^%GF(Fijrijgrijgidjg#$@#$TYFSD()*$#%^&S(*^uk8olrgrtg#%^%#gerthr%B&^#eergege*&^#gg%*B^";
 
 const secretKey = process.env.JWT_SECRET || "f00e2fb1a87d0663bfc7f38cbab5091e0326e6e668a315a587b54ac2ee98456e";
 
@@ -28,72 +32,24 @@ const protect = async (req, res, next) => {
       Role: decoded.Role,
       CompanyId: decoded.CompanyId,
     };
+    const companyExists = await User.findOne({ CompanyId: decoded.CompanyId });
+
+    if (!companyExists) {
+      return res.status(401).json({ error: "Not authorized, invalid CompanyId" });
+    }
 
     next();
   } catch (error) {
-    console.log(token, '222')
     res.status(401).json({ error: "Not authorized, token failed" });
   }
 };
 
-// const protect = async (req, res, next) => {
-//   try {
-//     const authHeader = req.headers["authorization"];
-//     const idHeader = req.headers["id"];
-//     const token = authHeader && authHeader.split(" ")[1];
-//     const id = idHeader && idHeader.split(" ")[1];
-
-//     if (!token || !id) {
-//       return res.status(401).json({
-//         statusCode: 401,
-//         message: "Authorization token and Id are required",
-//       });
-//     }
-
-//     let decoded; // Declare decoded before using it
-//     try {
-//       decoded = jwt.verify(
-//         token,
-//         process.env.JWT_SECRET ||
-//         "f00e2fb1a87d0663bfc7f38cbab5091e0326e6e668a315a587b54ac2ee98456e"
-//       );
-//     } catch (error) {
-//       return res.status(401).json({
-//         statusCode: 401,
-//         message: "Invalid or expired token",
-//       });
-//     }
-
-//     console.log(decoded, "decoded");
-
-//     // Fix for Company role comparison
-//     if (
-//       (decoded.Role === "Admin" && id !== decoded.UserId) ||
-//       (decoded.Role === "Company" && !(Array.isArray(decoded.CompanyId) ? decoded.CompanyId.includes(id) : id === decoded.CompanyId)) ||
-//       (decoded.Role === "Customer" && id !== decoded.UserId) ||
-//       (decoded.Role === "Worker" && id !== decoded.UserId)
-//     ) {
-//       return res.status(401).json({
-//         statusCode: 401,
-//         error: "User is not verified or does not have the correct ID for the role",
-//       });
-//     }
-
-//     req.user = {
-//       UserId: decoded.UserId,
-//       Role: decoded.Role,
-//       CompanyId: decoded.CompanyId,
-//     };
-
-//     next();
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({
-//       statusCode: 500,
-//       message: "Authorization token is expired or invalid",
-//     });
-//   }
-// };
+const createResetToken = async (data) => {
+  let token = await jwt.sign(data, SECRET_KEY, {
+    expiresIn: "4h",
+  });
+  return token;
+};
 
 const decryptData = (ciphertext) => {
   const bytes = crypto.AES.decrypt(ciphertext, secretKey);
@@ -122,4 +78,5 @@ module.exports = {
   decryptData,
   verifyToken,
   protect,
+  createResetToken
 };

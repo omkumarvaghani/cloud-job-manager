@@ -523,7 +523,7 @@ const MaterialsLabor = () => {
           </Typography>
           <Typography className="text-blue-color" style={{ marginTop: "5px" }}>
             By keeping your materials and labor information updated, you can
-            more easily create accurate quotes, jobs, and invoices.
+            more easily create accurate quotes, contracts, and invoices.
           </Typography>
 
           <Grid className=" justify-content-end align-items-center">

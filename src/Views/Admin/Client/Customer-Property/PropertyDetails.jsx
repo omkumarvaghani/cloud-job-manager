@@ -69,7 +69,7 @@ const PropertyDetails = () => {
       if (location?.state?.id) {
         try {
           const res = await AxiosInstance.get(
-            `${baseUrl}/location/properties/${location?.state?.id}`
+            `${baseUrl}/v1/location/properties/${location?.state?.id}`
           );
           setData(res?.data?.data);
         } catch (error) {
@@ -88,37 +88,32 @@ const PropertyDetails = () => {
   };
 
   const [quotes, setQuotes] = useState([]);
-  useEffect(() => {
-    const fetchQuote = async () => {
-      if (data && data?.CustomerId && data?.LocationId) {
-        try {
-          const response = await AxiosInstance.get(
-            `${baseUrl}/quote/get_quotes_customer_property/${
-              localStorage.getItem("CompanyId") || tokenDecode?.companyId
-            }/${data?.CustomerId}/${data?.LocationId}`
-          );
-          if (response?.data?.statusCode === 200) {
-            setQuotes(response?.data?.data);
-          }
-        } catch (err) {
-          console.error("Error: ", err.message);
-        }
-      }
-    };
-
-    fetchQuote();
-  }, [data, tokenDecode]);
-
-  const [contract, setContract] = useState([]);
+  console.log(quotes, "quotes");
 
   useEffect(() => {
     const fetchContract = async () => {
       if (data && data?.CustomerId && data?.LocationId) {
         try {
           const response = await AxiosInstance.get(
-            `${baseUrl}/contract/get_contract_customer_property/${
-              localStorage.getItem("CompanyId") || tokenDecode?.companyId
-            }/${data?.CustomerId}/${data?.LocationId}`
+            `${baseUrl}/v1/quote/get_quotes_customer_property/${data?.CustomerId}/${data?.LocationId}`
+          );
+          setQuotes(response?.data?.data);
+        } catch (err) {
+          console.error("Error: ", err.message);
+        }
+      }
+    };
+    fetchContract();
+  }, [data, tokenDecode]);
+
+  const [contract, setContract] = useState([]);
+  console.log(contract, "contract");
+  useEffect(() => {
+    const fetchContract = async () => {
+      if (data && data?.CustomerId && data?.LocationId) {
+        try {
+          const response = await AxiosInstance.get(
+            `${baseUrl}/v1/contract/get_contract_customer_property/${data?.CustomerId}/${data?.LocationId}`
           );
           setContract(response?.data?.data);
         } catch (err) {
@@ -252,7 +247,11 @@ const PropertyDetails = () => {
                   >
                     <Typography
                       className="text-blue-color heading-five"
-                      style={{ fontWeight: 600, paddingLeft: "18px",paddingTop:"17px" }}
+                      style={{
+                        fontWeight: 600,
+                        paddingLeft: "18px",
+                        paddingTop: "17px",
+                      }}
                     >
                       Location
                     </Typography>
@@ -284,7 +283,9 @@ const PropertyDetails = () => {
                               className="text-blue-color"
                               style={{ fontSize: "14px" }}
                             >
-                              {data?.Address ? data?.Address : "Addres not available"}{" "}
+                              {data?.Address
+                                ? data?.Address
+                                : "Addres not available"}{" "}
                             </Typography>
                           </TableCell>
                           <TableCell
@@ -303,7 +304,9 @@ const PropertyDetails = () => {
                             className="text-center text-blue-color"
                             style={{ fontSize: "14px" }}
                           >
-                            {data?.Country ? data?.Country : "Country not available"}
+                            {data?.Country
+                              ? data?.Country
+                              : "Country not available"}
                           </TableCell>
                           <TableCell
                             className="text-end text-blue-color"
@@ -390,8 +393,8 @@ const PropertyDetails = () => {
                           tabId={1}
                           style={{
                             maxHeight: "300px",
-                            overflowY:"scroll",
-                            overflowX:"clip"
+                            overflowY: "scroll",
+                            overflowX: "clip",
                           }}
                         >
                           <Row>
@@ -449,15 +452,16 @@ const PropertyDetails = () => {
                                                   }}
                                                 >
                                                   Quote #
-                                                  {data?.QuoteNumber || "QuoteNumber not available"}
+                                                  {data?.QuoteNumber ||
+                                                    "QuoteNumber not available"}
                                                 </Typography>
                                               </Typography>
                                               <Typography
                                                 style={{
                                                   color:
-                                                    data?.status === "Approved"
+                                                    data?.Status === "Approved"
                                                       ? "rgb(88, 204, 88)"
-                                                      : data?.status ===
+                                                      : data?.Status ===
                                                         "Awaiting Response"
                                                       ? "orange"
                                                       : "#063164",
@@ -469,7 +473,8 @@ const PropertyDetails = () => {
                                                     fontSize: "13px",
                                                   }}
                                                 >
-                                                  {data?.status || "status not available"}
+                                                  {data?.Status ||
+                                                    "Status not available"}
                                                 </Typography>
                                               </Typography>
                                             </Col>
@@ -492,7 +497,8 @@ const PropertyDetails = () => {
                                                   fontWeight: "500",
                                                 }}
                                               >
-                                                {data?.Title || "Title not available"}
+                                                {data?.Title ||
+                                                  "Title not available"}
                                               </Typography>
                                             </Col>
                                             <Col className="col text-center">
@@ -587,9 +593,9 @@ const PropertyDetails = () => {
                                                     }}
                                                   >
                                                     Contract #{" "}
-                                                    {data?.ContractNumber ||
-                                                      ""}
-                                                       not available                                              </Typography>
+                                                    {data?.ContractNumber || ""}
+                                                    not available{" "}
+                                                  </Typography>
                                                 </Typography>
                                                 <Typography
                                                   style={{
@@ -645,7 +651,8 @@ const PropertyDetails = () => {
                                                     fontWeight: "500",
                                                   }}
                                                 >
-                                                  {data?.Title || "Title not available"}
+                                                  {data?.Title ||
+                                                    "Title not available"}
                                                 </Typography>
                                               </Col>
 
@@ -755,15 +762,16 @@ const PropertyDetails = () => {
                                                   }}
                                                 >
                                                   Invoice #
-                                                  {data?.InvoiceNumber || "InvoiceNumber not available"}
+                                                  {data?.InvoiceNumber ||
+                                                    "InvoiceNumber not available"}
                                                 </Typography>
                                               </Typography>
                                               <Typography
                                                 style={{
                                                   color:
-                                                    data?.status === "Approved"
+                                                    data?.Status === "Approved"
                                                       ? "rgb(88, 204, 88)"
-                                                      : data?.status ===
+                                                      : data?.Status ===
                                                         "Awaiting Response"
                                                       ? "orange"
                                                       : "#063164",
@@ -777,7 +785,8 @@ const PropertyDetails = () => {
                                                   }}
                                                 >
                                                   {" "}
-                                                  {data?.Status || "Status not available"}
+                                                  {data?.Status ||
+                                                    "Status not available"}
                                                 </Typography>
                                               </Typography>
                                             </Col>
@@ -800,7 +809,8 @@ const PropertyDetails = () => {
                                                   fontWeight: "500",
                                                 }}
                                               >
-                                                {data?.Subject || "Subject not available"}
+                                                {data?.Subject ||
+                                                  "Subject not available"}
                                               </Typography>
                                             </Col>
                                             <Col className="col text-center">
@@ -944,15 +954,16 @@ const PropertyDetails = () => {
                                               }}
                                             >
                                               Quote #
-                                              {data?.QuoteNumber || "QuoteNumber not available"}
+                                              {data?.QuoteNumber ||
+                                                "QuoteNumber not available"}
                                             </Typography>
                                           </Typography>
                                           <Typography
                                             style={{
                                               color:
-                                                data?.status === "Approved"
+                                                data?.Status === "Approved"
                                                   ? "rgb(88, 204, 88)"
-                                                  : data?.status ===
+                                                  : data?.Status ===
                                                     "Awaiting Response"
                                                   ? "orange"
                                                   : "#063164",
@@ -965,7 +976,8 @@ const PropertyDetails = () => {
                                                 fontSize: "13px",
                                               }}
                                             >
-                                              {data?.status || "status not available"}
+                                              {data?.Status ||
+                                                "Status not available"}
                                             </Typography>
                                           </Typography>
                                         </Col>
@@ -988,7 +1000,8 @@ const PropertyDetails = () => {
                                               fontWeight: "500",
                                             }}
                                           >
-                                            {data?.Title || "Title not available"}
+                                            {data?.Title ||
+                                              "Title not available"}
                                           </Typography>
                                         </Col>
                                         <Col className="col text-center">
@@ -1130,7 +1143,8 @@ const PropertyDetails = () => {
                                               }}
                                             >
                                               Contract #
-                                              {data?.ContractNumber || "ContractNumber not available"}
+                                              {data?.ContractNumber ||
+                                                "ContractNumber not available"}
                                             </Typography>
                                           </Typography>
                                           <Typography
@@ -1154,7 +1168,8 @@ const PropertyDetails = () => {
                                                 fontSize: "13px",
                                               }}
                                             >
-                                              {data?.Status || "Status not available"}
+                                              {data?.Status ||
+                                                "Status not available"}
                                             </Typography>
                                           </Typography>
                                         </Col>
@@ -1177,7 +1192,8 @@ const PropertyDetails = () => {
                                               fontWeight: "500",
                                             }}
                                           >
-                                            {data?.Title || "Title not available"}
+                                            {data?.Title ||
+                                              "Title not available"}
                                           </Typography>
                                         </Col>
                                         <Col className="col text-center">
@@ -1319,15 +1335,16 @@ const PropertyDetails = () => {
                                               }}
                                             >
                                               Invoice #
-                                              {data?.InvoiceNumber || "InvoiceNumber not available"}
+                                              {data?.InvoiceNumber ||
+                                                "InvoiceNumber not available"}
                                             </Typography>
                                           </Typography>
                                           <Typography
                                             style={{
                                               color:
-                                                data?.status === "Approved"
+                                                data?.Status === "Approved"
                                                   ? "rgb(88, 204, 88)"
-                                                  : data?.status ===
+                                                  : data?.Status ===
                                                     "Awaiting Response"
                                                   ? "orange"
                                                   : "#063164",
@@ -1341,7 +1358,8 @@ const PropertyDetails = () => {
                                               }}
                                             >
                                               {" "}
-                                              {data?.Status || "Status not available"}
+                                              {data?.Status ||
+                                                "Status not available"}
                                             </Typography>
                                           </Typography>
                                         </Col>
@@ -1364,7 +1382,8 @@ const PropertyDetails = () => {
                                               fontWeight: "500",
                                             }}
                                           >
-                                            {data?.Subject || "Subject not available"}
+                                            {data?.Subject ||
+                                              "Subject not available"}
                                           </Typography>
                                         </Col>
                                         <Col className="col text-center">

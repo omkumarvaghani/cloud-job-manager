@@ -154,12 +154,9 @@ const Addquotes = ({
                         fontWeight: "600",
                       }}
                     >
-                      {console.log(customersData, "customersData")}
-                      {console.log(propertyData?.FirstName,"propertyData?.FirstName")}
-                      {propertyData?.FirstName
-                        ? `${propertyData?.FirstName} ${propertyData?.LastName}`
-                        : "Customer Name"} 
-    
+                      {customersData?.FirstName
+                        ? `${customersData?.FirstName} ${customersData?.LastName}`
+                        : "Customer Name"}
                     </Typography>
                     {!Object.keys(customersData).length > 0 ? (
                       <Button
@@ -198,12 +195,13 @@ const Addquotes = ({
                         }
                         name="Title"
                         id="title"
-                        placeholder="Enter job title"
+                        placeholder="Enter Quote Title"
                         label="Quote Title"
                         type="text"
                         className="text-blue-color w-100"
                       />
                     </Grid>
+
                     {customersData?.FirstName && (
                       <Grid
                         className="d-flex mt-5 gap-3 quoteProperty_detail"
@@ -220,27 +218,46 @@ const Addquotes = ({
                               Property address{" "}
                             </Typography>
                           </Typography>
+                          {console.log(customersData, "customersData")}
                           <Typography className="text-blue-color">
-                            {console.log(propertyData, "propertyData")}
                             {propertyData?.Address ||
-                              customersData?.location?.Address ||
-                              "-"}{" "}
+                              (Array.isArray(customersData?.location) &&
+                              customersData.location.length > 0
+                                ? customersData.location[0]?.Address
+                                : undefined) ||
+                              customersData?.location?.Address ||  customersData?.locationDetails?.Address ||
+                              "Address not available"}
                             ,
                             <br />
                             {propertyData?.City ||
+                              (Array.isArray(customersData?.location) &&
+                              customersData.location.length > 0
+                                ? customersData.location[0]?.City
+                                : undefined) ||
                               customersData?.location?.City ||
-                              "-"}
-                            ,{" "}
+                              "-"}{" "}
                             {propertyData?.State ||
+                              (Array.isArray(customersData?.location) &&
+                              customersData.location.length > 0
+                                ? customersData.location[0]?.State
+                                : undefined) ||
                               customersData?.location?.State ||
                               "-"}{" "}
                             ,
                             {propertyData?.Zip ||
+                              (Array.isArray(customersData?.location) &&
+                              customersData.location.length > 0
+                                ? customersData.location[0]?.Zip
+                                : undefined) ||
                               customersData?.location?.Zip ||
                               "-"}
                             ,
                             <br />
                             {propertyData?.Country ||
+                              (Array.isArray(customersData?.location) &&
+                              customersData.location.length > 0
+                                ? customersData.location[0]?.Country
+                                : undefined) ||
                               customersData?.location?.Country ||
                               "-"}{" "}
                             <br />
@@ -261,6 +278,7 @@ const Addquotes = ({
                             Contact details
                           </Typography>
                           <Typography className="text-blue-color">
+                            {console.log(customersData, "customersData")}
                             {customersData?.PhoneNumber || "-"}
                             <br />
                             {customersData?.EmailAddress || "-"}

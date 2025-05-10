@@ -191,7 +191,7 @@ const InvoiceDetails = () => {
           } else {
             url = `/invoice/invoice_detail/${location?.state?.invoiceId}`;
           }
-
+          
           const res = await AxiosInstance.get(url);
           if (res.data?.statusCode === 200) {
             const data = res.data?.data;

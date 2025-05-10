@@ -96,7 +96,6 @@ function Theme() {
         });
         setColors(themeRes.data.data.colors);
       } else {
-        console.log("Something Wrong!");
       }
     } catch (error) {
       console.error("Error: ", error.message);
